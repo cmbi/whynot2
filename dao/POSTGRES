@@ -1,0 +1,9 @@
+Install postgresql 7.4
+Configure postgresql 7.4
+Edit /var/lib/pgsql/postgresql.conf
+	Set: #tcpip_socket = false
+	To:  tcpip_socket = true
+Edit  /var/lib/pgsql/pg_hba.conf
+	Set: #host    all         all         127.0.0.1         255.255.255.255   trust
+	To:  host    all         all         127.0.0.1         255.255.255.255   trust
+Start postgresql 7.4

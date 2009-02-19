@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jardesc>
+    <jar path="/home/stage/tbeek/workspace/crawler/whynot-crawler.jar"/>
+    <options buildIfNeeded="true" compress="false" descriptionLocation="/crawler/jardesc.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="true" overwrite="true" saveDescription="true" storeRefactorings="false" useSourceFolders="true"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="false" mainClassHandleIdentifier="=crawler/&lt;{Main.java[Main" manifestLocation="/crawler/manifest.mf" manifestVersion="1.0" reuseManifest="true" saveManifest="true" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="true" exportOutputFolder="false">
+        <javaElement handleIdentifier="=crawler/&lt;inout.database"/>
+        <file path="/crawler/manifest.mf"/>
+        <file path="/crawler/.classpath"/>
+        <javaElement handleIdentifier="=crawler/&lt;"/>
+        <javaElement handleIdentifier="=crawler/&lt;inout.crawl"/>
+        <javaElement handleIdentifier="=crawler/&lt;controller"/>
+        <javaElement handleIdentifier="=crawler/&lt;inout.file"/>
+        <javaElement handleIdentifier="=crawler/&lt;inout"/>
+        <file path="/crawler/.project"/>
+        <file path="/crawler/jardesc.jardesc"/>
+    </selectedElements>
+</jardesc>

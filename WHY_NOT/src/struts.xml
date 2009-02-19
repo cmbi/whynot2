@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+
+    <constant name="struts.enable.DynamicMethodInvocation" value="false" />
+    <constant name="struts.devMode" value="true" />
+
+	<package name="jsp" namespace="/" extends="struts-default">
+		<action name="home" class="nl.ru.cmbi.whynot.jsp.Home">
+			<result>index.jsp</result>
+		</action>
+
+		<action name="form_*" method="{1}" class="nl.ru.cmbi.whynot.jsp.Form">
+			<result name="input">whynot/index.jsp</result>
+			<result name="success">whynot/whynot.jsp</result>
+		</action>
+
+		<action name="about" class="nl.ru.cmbi.whynot.jsp.Default"><result>about/index.jsp</result></action>
+			<action name="problem" class="nl.ru.cmbi.whynot.jsp.Default"><result>about/problem.jsp</result></action>
+			<action name="solution" class="nl.ru.cmbi.whynot.jsp.Default"><result>about/solution.jsp</result></action>
+			<action name="databases" class="nl.ru.cmbi.whynot.jsp.about.Databases">
+				<result name="error">about/databases.jsp</result>
+				<result>about/databases.jsp</result>
+			</action>
+			<action name="implementation" class="nl.ru.cmbi.whynot.jsp.Default"><result>about/implementation.jsp</result></action>
+			<action name="futurework" class="nl.ru.cmbi.whynot.jsp.Default"><result>about/futurework.jsp</result></action>
+			<action name="references" class="nl.ru.cmbi.whynot.jsp.Default"><result>about/references.jsp</result></action>
+			<action name="software" class="nl.ru.cmbi.whynot.jsp.Default"><result>about/software.jsp</result></action>
+
+		<action name="whynot_*" method="{1}" class="nl.ru.cmbi.whynot.jsp.whynot.WhyNot">
+			<result name="collection" type="redirect-action">collection</result>
+			<result>whynot/index.jsp</result>
+		</action>
+			<action name="collection_*" method="{1}" class="nl.ru.cmbi.whynot.jsp.whynot.Collection">
+				<result>whynot/collection.jsp</result>
+			</action>
+			<action name="comments_*" method="{1}" class="nl.ru.cmbi.whynot.jsp.whynot.Comments">
+				<result name="collection" type="redirect-action">collection</result>
+				<result name="error">whynot/comments.jsp</result>
+				<result>whynot/comments.jsp</result>
+			</action>
+			<action name="reports_*" method="{1}" class="nl.ru.cmbi.whynot.jsp.whynot.Reports">
+				<result name="collection" type="redirect-action">collection</result>
+				<result name="error">whynot/reports.jsp</result>
+				<result>whynot/reports.jsp</result>
+			</action>
+	</package>
+
+</struts>

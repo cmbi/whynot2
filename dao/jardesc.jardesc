@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
 <jardesc>
-    <jar path="/home/tim/workspace/dao/whynot-dao.jar"/>
+    <jar path="/home/tbeek/workspace/dao/whynot-dao.jar"/>
     <options buildIfNeeded="true" compress="false" descriptionLocation="/dao/jardesc.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="true" overwrite="true" saveDescription="true" storeRefactorings="false" useSourceFolders="true"/>
     <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
     <selectedProjects/>
@@ -22,4 +22,5 @@
         <file path="/dao/manifest.mf"/>
         <javaElement handleIdentifier="=dao/&lt;persistance.connect"/>
     </selectedElements>
+    <fatjar builder="org.eclipse.jdt.ui.plain_jar_builder" launchConfig=""/>
 </jardesc>

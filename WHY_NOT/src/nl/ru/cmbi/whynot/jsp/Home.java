@@ -1,10 +1,11 @@
 package nl.ru.cmbi.whynot.jsp;
 
+import nl.ru.cmbi.whynot.all.MyActionSupport;
+
 import org.apache.struts2.ServletActionContext;
 
 import persistance.PersistanceException;
 import persistance.functions.RDBStats;
-import nl.ru.cmbi.whynot.all.MyActionSupport;
 
 import com.opensymphony.xwork2.Action;
 
@@ -13,10 +14,10 @@ import com.opensymphony.xwork2.Action;
  */
 @SuppressWarnings("serial")
 public final class Home extends MyActionSupport {
-	public static final String DETAIL = "detail";
-	public static final String RDBSTATS = "rdbstats";
+	public static final String	DETAIL			= "detail";
+	public static final String	RDBSTATS		= "rdbstats";
 
-	private int levelOfDetail = 0;
+	private int					levelOfDetail	= 0;
 
 	@Override
 	public String execute() {
@@ -30,7 +31,7 @@ public final class Home extends MyActionSupport {
 	public String getRelationalDatabaseStats() {
 		try {
 			RDBStats rdbstats = this.getRDB().getRDBStats();
-			ServletActionContext.getRequest().setAttribute(Home.RDBSTATS,rdbstats);
+			ServletActionContext.getRequest().setAttribute(Home.RDBSTATS, rdbstats);
 		}
 		catch (PersistanceException e) {
 			e.printStackTrace();
@@ -38,11 +39,11 @@ public final class Home extends MyActionSupport {
 		return "done";
 	}
 
-	public String getLevelOfDetail(){
-		return ""+levelOfDetail;
+	public String getLevelOfDetail() {
+		return "" + levelOfDetail;
 	}
 
-	public String setLevelOfDetail(){
+	public String setLevelOfDetail() {
 		this.levelOfDetail = Integer.parseInt(this.getSdetail());
 		return Action.SUCCESS;
 	}

@@ -16,13 +16,12 @@ import persistance.RDB;
 
 import com.opensymphony.xwork2.ActionSupport;
 
-public class MyActionSupport extends ActionSupport implements SessionAware,
-		ApplicationAware {
+public class MyActionSupport extends ActionSupport implements SessionAware, ApplicationAware {
 
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long	serialVersionUID	= 1L;
 
 	/**
 	 * Return CANCEL so apropriate result can be selected.
@@ -38,10 +37,10 @@ public class MyActionSupport extends ActionSupport implements SessionAware,
 	 * <code>Log</code> instance for this application.
 	 * </p>
 	 */
-	protected Log log = LogFactory.getLog(Constants.PACKAGE);
+	protected Log	log	= LogFactory.getLog(Constants.PACKAGE);
 
 	// ---- ApplicationAware ----
-	private Map application;
+	private Map		application;
 
 	public Map getApplication() {
 		return this.application;
@@ -52,7 +51,7 @@ public class MyActionSupport extends ActionSupport implements SessionAware,
 	}
 
 	// ---- SessionAware ----
-	private Map session;
+	private Map	session;
 
 	public Map getSession() {
 		return this.session;
@@ -65,8 +64,15 @@ public class MyActionSupport extends ActionSupport implements SessionAware,
 	// ---- RDB property ----
 	public RDB getRDB() {
 		Object rdb = this.getApplication().get(Constants.RDB_KEY);
-		if (rdb == null)
-			this.addActionError(this.getText("error.database.missing"));
+		if (rdb == null) {
+			RDB retry = ApplicationListener.connectDatabase();
+			if (retry != null) {
+				this.getApplication().put(Constants.RDB_KEY, retry);
+				return retry;
+			}
+			else
+				this.addActionError(this.getText("error.database.missing"));
+		}
 		return (RDB) rdb;
 	}
 
@@ -76,7 +82,7 @@ public class MyActionSupport extends ActionSupport implements SessionAware,
 	}
 
 	// ---- scomid property ----
-	private String scomid = null;
+	private String	scomid	= null;
 
 	public String getScomid() {
 		return this.scomid;
@@ -87,7 +93,7 @@ public class MyActionSupport extends ActionSupport implements SessionAware,
 	}
 
 	// ---- sdetail property ----
-	private String sdetail = null;
+	private String	sdetail	= null;
 
 	public String getSdetail() {
 		return this.sdetail;
@@ -98,7 +104,7 @@ public class MyActionSupport extends ActionSupport implements SessionAware,
 	}
 
 	// ---- spdbid property ----
-	private String spdbid = null;
+	private String	spdbid	= null;
 
 	public String getSpdbid() {
 		return this.spdbid;
@@ -109,15 +115,13 @@ public class MyActionSupport extends ActionSupport implements SessionAware,
 			this.spdbid = value.toLowerCase();
 		else
 			if (value.matches("") || value == null)
-				this.addActionError(this
-					.getText("form.error.validation.spdbid_missing"));
+				this.addActionError(this.getText("form.error.validation.spdbid_missing"));
 			else
-				this.addActionError(this
-					.getText("form.error.validation.spdbid_format"));
+				this.addActionError(this.getText("form.error.validation.spdbid_format"));
 	}
 
 	// ---- PDBID property ----
-	private PDBID pdbid = null;
+	private PDBID	pdbid	= null;
 
 	public PDBID getPDBID() {
 		return this.pdbid;
@@ -128,7 +132,7 @@ public class MyActionSupport extends ActionSupport implements SessionAware,
 	}
 
 	// ---- sdatabase property ----
-	private String sdatabase = null;
+	private String	sdatabase	= null;
 
 	public String getSdatabase() {
 		return this.sdatabase;
@@ -139,7 +143,7 @@ public class MyActionSupport extends ActionSupport implements SessionAware,
 	}
 
 	// ---- Comments property ----
-	private Comment[] comments = null;
+	private Comment[]	comments	= null;
 
 	public Comment[] getComments() {
 		return this.comments;
@@ -150,7 +154,7 @@ public class MyActionSupport extends ActionSupport implements SessionAware,
 	}
 
 	// ---- Databases property ----
-	private Database[] databases = null;
+	private Database[]	databases	= null;
 
 	public Database[] getDatabases() {
 		return this.databases;
@@ -161,7 +165,7 @@ public class MyActionSupport extends ActionSupport implements SessionAware,
 	}
 
 	// ---- sproperty property ----
-	private String sproperty = null;
+	private String	sproperty	= null;
 
 	public String getSproperty() {
 		return this.sproperty;
@@ -172,7 +176,7 @@ public class MyActionSupport extends ActionSupport implements SessionAware,
 	}
 
 	// ---- number property ----
-	public String snumber = "nan";
+	public String	snumber	= "nan";
 
 	public String getNumber() {
 		return this.snumber;
@@ -183,7 +187,7 @@ public class MyActionSupport extends ActionSupport implements SessionAware,
 	}
 
 	// ---- collection property ----
-	public static final String COLLECTION = "collection";
+	public static final String	COLLECTION	= "collection";
 
 	/**
 	 * The Collection of PDBIDs stored in the user session as an array of PDBIDs
@@ -197,7 +201,7 @@ public class MyActionSupport extends ActionSupport implements SessionAware,
 		this.getSession().put(MyActionSupport.COLLECTION, values);
 	}
 
-	public static final String COLLECTIONSOURCE = "collectionsource";
+	public static final String	COLLECTIONSOURCE	= "collectionsource";
 
 	/**
 	 * The Collection of PDBIDs stored in the user session as an array of PDBIDs

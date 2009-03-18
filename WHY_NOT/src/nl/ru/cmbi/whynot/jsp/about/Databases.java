@@ -14,8 +14,12 @@ public final class Databases extends MyActionSupport {
 	@Override
 	public String execute() {
 		Database[] databases = null;
-		try { databases = this.getRDB().getDatabases(); }
-		catch (PersistanceException e) {}
+		try {
+			databases = this.getRDB().getDatabases();
+		}
+		catch (PersistanceException e) {
+			e.printStackTrace();
+		}
 		if (databases == null)
 			this.addActionError(this.getText("rdb.error.databases"));
 		this.setDatabases(databases);

@@ -1,0 +1,16 @@
+<Context>
+	<Environment name="whynot-db-host"
+			type="java.lang.String"
+			value="cmbi11.cmbi.ru.nl"/>
+	<Environment name="whynot-db-port"
+			type="java.lang.String"
+			value="5432"/>
+	<Environment name="whynot-db-user"
+			type="java.lang.String"
+			value="whynot_owner"/>
+	<Environment name="whynot-db-pass"
+			type="java.lang.String"
+			value=""/>
+</Context>
+
+

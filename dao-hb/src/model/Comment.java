@@ -6,4 +6,6 @@ public class Comment {
 	private Author		author;
 	private String		text;
 	private Set<Entry>	entries;
+
+	protected Comment() {}
 }

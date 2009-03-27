@@ -12,4 +12,6 @@ public class Database {
 
 	private Pattern		filepattern;
 	private Set<Entry>	entries;
+
+	protected Database() {}
 }

@@ -1,11 +1,19 @@
 package model;
 
-import java.util.Set;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
+@Entity
 public class Comment {
-	private Author		author;
-	private String		text;
-	private Set<Entry>	entries;
+	@Id
+	private String	text;
+
+	@ManyToOne
+	private Author	author;
+
+	//@ManyToMany
+	//private Set<Entry>	entries;
 
 	protected Comment() {}
 }

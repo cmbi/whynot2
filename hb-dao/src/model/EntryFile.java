@@ -8,7 +8,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-public class EntryFile extends Entry {
+public class EntryFile extends EntryComments {
 	private URI		path;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date	timestamp;

@@ -1,13 +1,18 @@
 package model;
 
-import javax.persistence.*;
+import java.util.Set;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Author {
 	@Id
-	private String	name;
+	private String			name;
 
-	//private Set<Comment>	comments;
+	@OneToMany
+	private Set<Comment>	comments;
 
 	public Author() {}
 

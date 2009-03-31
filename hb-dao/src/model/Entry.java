@@ -1,11 +1,15 @@
 package model;
 
-import java.util.Set;
+import java.io.Serializable;
 
-public class Entry {
-	private String			pdbid;
-	private Database		database;
-	private Set<Comment>	comments;
+import javax.persistence.Embeddable;
+import javax.persistence.OneToOne;
+
+@Embeddable
+public class Entry implements Serializable {
+	private String		pdbid;
+	@OneToOne
+	private Database	database;
 
 	protected Entry() {}
 }

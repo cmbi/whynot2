@@ -1,15 +1,35 @@
 package model;
 
-import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
-import javax.persistence.Embeddable;
-import javax.persistence.OneToOne;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.ManyToMany;
 
-@Embeddable
-public class Entry implements Serializable {
-	private String		pdbid;
-	@OneToOne
-	private Database	database;
+@Entity
+@IdClass(EntryPK.class)
+@Inheritance(strategy = InheritanceType.JOINED)
+public class Entry {
+	@Id
+	private Database		database;
+	@Id
+	private String			pdbid;
+
+	@ManyToMany
+	private Set<Comment>	comments	= new HashSet<Comment>();
 
 	protected Entry() {}
+
+	public Entry(Database db, String pid) {
+		database = db;
+		pdbid = pid;
+	}
+
+	public Set<Comment> getComments() {
+		return comments;
+	}
 }

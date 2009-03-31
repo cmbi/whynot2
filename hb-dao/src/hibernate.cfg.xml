@@ -28,8 +28,8 @@
 		<mapping class="model.Author"/>
 		<mapping class="model.Comment"/>
 		<mapping class="model.Database"/>
+		<mapping class="model.EntryPK"/>
 		<mapping class="model.Entry"/>
-		<mapping class="model.EntryComments"/>
 		<mapping class="model.EntryFile"/>
 <!--
         <mapping package="test.animals"/>

@@ -11,16 +11,12 @@ public class Author {
 	@Id
 	private String			name;
 
-	@OneToMany
+	@OneToMany(mappedBy = "author")
 	private Set<Comment>	comments;
 
-	public Author() {}
+	protected Author() {}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
+	public Author(String nm) {
+		name = nm;
 	}
 }

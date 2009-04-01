@@ -6,9 +6,12 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import org.hibernate.validator.NotEmpty;
+
 @Entity
 public class Author {
 	@Id
+	@NotEmpty
 	private String			name;
 
 	@OneToMany(mappedBy = "author")

@@ -1,5 +1,6 @@
 package model;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -19,7 +20,7 @@ public class Comment {
 	private Author		author;
 
 	@ManyToMany(mappedBy = "comments")
-	private Set<Entry>	entries;
+	private Set<Entry>	entries	= new HashSet<Entry>();
 
 	protected Comment() {}
 

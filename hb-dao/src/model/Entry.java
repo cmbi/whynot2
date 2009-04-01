@@ -15,9 +15,9 @@ import javax.persistence.ManyToMany;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Entry {
 	@Id
-	private Database		database;
+	protected Database		database;
 	@Id
-	private String			pdbid;
+	protected String		pdbid;
 
 	@ManyToMany
 	private Set<Comment>	comments	= new HashSet<Comment>();

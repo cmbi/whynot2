@@ -1,5 +1,6 @@
 package model;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -15,7 +16,7 @@ public class Author {
 	private String			name;
 
 	@OneToMany(mappedBy = "author")
-	private Set<Comment>	comments;
+	private Set<Comment>	comments	= new HashSet<Comment>();
 
 	protected Author() {}
 

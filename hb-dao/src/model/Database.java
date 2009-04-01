@@ -26,7 +26,7 @@ public class Database {
 	private Database	parent;
 
 	@NotEmpty
-	private String		pattern;
+	private String		regex;
 
 	@OneToMany(mappedBy = "database", cascade = CascadeType.ALL)
 	private Set<Entry>	entries	= new HashSet<Entry>();
@@ -38,11 +38,15 @@ public class Database {
 		reference = ref;
 		filelink = link;
 		parent = par;
-		pattern = pat;
+		regex = pat;
 	}
 
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	public String getRegex() {
+		return regex;
 	}
 }

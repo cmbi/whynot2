@@ -9,8 +9,16 @@
         <property name="connection.username">whynotadmin</property>
         <property name="connection.password">pass</property>
 
-<!-- JDBC connection pool (use the built-in) -->
-        <property name="connection.pool_size">2</property>
+		<!-- JDBC connection pool (use the built-in) -->
+<!--	<property name="connection.pool_size">2</property>-->
+        <!-- Use the C3P0 connection pool provider -->
+		<property name="hibernate.c3p0.min_size">5</property>
+		<property name="hibernate.c3p0.max_size">20</property>
+		<property name="hibernate.c3p0.timeout">300</property>
+		<property name="hibernate.c3p0.max_statements">50</property>
+		<property name="hibernate.c3p0.idle_test_period">3000</property>
+
+
 <!-- SQL dialect -->
         <property name="dialect">org.hibernate.dialect.PostgreSQLDialect</property>
 <!-- Enable Hibernate's current session context -->
@@ -21,9 +29,9 @@
 <!-- Echo all executed SQL to stdout -->
         <property name="show_sql">true</property>
 <!-- Drop and re-create the database schema on startup -->
-		<property name="hbm2ddl.auto">create</property>
-		
-	
+		<!--<property name="hbm2ddl.auto">create</property>-->
+
+
 		<mapping package="model"/>
 		<mapping class="model.Author"/>
 		<mapping class="model.Comment"/>
@@ -31,15 +39,5 @@
 		<mapping class="model.EntryPK"/>
 		<mapping class="model.Entry"/>
 		<mapping class="model.EntryFile"/>
-<!--
-        <mapping package="test.animals"/>
-		<mapping class="test.Flight"/>
-		<mapping class="test.Sky"/>
-		<mapping class="test.Person"/>
-		<mapping class="test.animals.Dog"/>
-		<mapping resource="test/animals/orm.xml"/>
-        <mapping resource="org/hibernate/tutorial/domain/Event.hbm.xml"/>
-        <mapping resource="org/hibernate/tutorial/domain/Person.hbm.xml"/>
--->
     </session-factory>
 </hibernate-configuration>

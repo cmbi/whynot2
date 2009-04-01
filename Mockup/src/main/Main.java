@@ -19,12 +19,12 @@ public class Main {
 		for (File f : Arrays.asList(new File(dir).listFiles()))
 			f.delete();
 		
-		String abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		String abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 		Random r = new Random();
 		for (int i = 0; i < 5; i++)
-			new File(dir+"pdb" + r.nextInt(10) + abc.charAt(r.nextInt(26)) + abc.charAt(r.nextInt(26)) + abc.charAt(r.nextInt(26))+".ent").createNewFile();
+			new File(dir+"pdb" + r.nextInt(10) + abc.charAt(r.nextInt(36)) + abc.charAt(r.nextInt(36)) + abc.charAt(r.nextInt(36))+".ent").createNewFile();
 		for (int i = 0; i < 5; i++)
-			new File(dir+"" + r.nextInt(10) + abc.charAt(r.nextInt(26)) + abc.charAt(r.nextInt(26)) + abc.charAt(r.nextInt(26))+".dssp").createNewFile();
+			new File(dir+"" + r.nextInt(10) + abc.charAt(r.nextInt(36)) + abc.charAt(r.nextInt(36)) + abc.charAt(r.nextInt(36))+".dssp").createNewFile();
 	}
 
 }

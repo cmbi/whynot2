@@ -24,4 +24,14 @@ public class EntryFile extends Entry {
 		path = pth;
 		timestamp = time;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(pdbid + " - ");
+		sb.append(database + " - ");
+		sb.append(path + " - ");
+		sb.append(timestamp);
+		return sb.toString();
+	}
 }

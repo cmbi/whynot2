@@ -1,7 +1,7 @@
 package hello;
 
 import java.util.Calendar;
-import java.util.Date;
+import java.util.List;
 
 import model.Author;
 import model.Comment;
@@ -10,6 +10,7 @@ import model.Entry;
 import model.EntryFile;
 
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 public class SomeManager {
 
@@ -18,12 +19,26 @@ public class SomeManager {
 
 		mgr.createAndStoreStuff();
 
-		HibernateUtil.getSession().close();
+		mgr.doSomeMoreStuff();
+
+		HibernateUtil.getSessionFactory().close();
+	}
+
+	private void doSomeMoreStuff() {
+		// Second unit of work
+		Session newSession = HibernateUtil.getSessionFactory().openSession();
+		Transaction newTransaction = newSession.beginTransaction();
+		List<EntryFile> messages = newSession.createQuery("from EntryFile m order by m.pdbid asc").list();
+
+		System.out.println(messages.size() + " entryfile(s) found:");
+		for (EntryFile ef : messages)
+			System.out.println(ef.toString());
+		newTransaction.commit();
+		newSession.close();
 	}
 
 	private void createAndStoreStuff() {
-
-		Session session = HibernateUtil.getSession().getCurrentSession();
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		session.beginTransaction();
 
 		Author robbie;
@@ -47,17 +62,17 @@ public class SomeManager {
 		entry.getComments().add(example_comment);
 		session.save(entry);
 
-		Date tm = Calendar.getInstance().getTime();
+		Calendar tm = Calendar.getInstance();
 
-		session.save(new EntryFile(pdb, "101D", "/home/tbeek/Desktop/file", tm));
-		session.save(new EntryFile(pdb, "101M", "/home/tbeek/Desktop/file", tm));
-		session.save(new EntryFile(pdb, "101Z", "/home/tbeek/Desktop/file", tm));
-		session.save(new EntryFile(pdb, "101X", "/home/tbeek/Desktop/file", tm));
-		session.save(new EntryFile(dssp, "101M", "/home/tbeek/Desktop/file", tm));
-		session.save(new EntryFile(dssp, "101D", "/home/tbeek/Desktop/file", tm));
-		session.save(new EntryFile(dssp, "101Y", "/home/tbeek/Desktop/file", tm));
-		session.save(new EntryFile(hssp, "101M", "/home/tbeek/Desktop/file", tm));
-		session.save(new EntryFile(hssp, "101D", "/home/tbeek/Desktop/file", tm));
+		session.save(new EntryFile(pdb, "101D", "/home/tbeek/Desktop/file", tm.getTime()));
+		session.save(new EntryFile(pdb, "101M", "/home/tbeek/Desktop/file", tm.getTime()));
+		session.save(new EntryFile(pdb, "101Z", "/home/tbeek/Desktop/file", tm.getTime()));
+		session.save(new EntryFile(pdb, "101X", "/home/tbeek/Desktop/file", tm.getTime()));
+		session.save(new EntryFile(dssp, "101M", "/home/tbeek/Desktop/file", tm.getTime()));
+		session.save(new EntryFile(dssp, "101D", "/home/tbeek/Desktop/file", tm.getTime()));
+		session.save(new EntryFile(dssp, "101Y", "/home/tbeek/Desktop/file", tm.getTime()));
+		session.save(new EntryFile(hssp, "101M", "/home/tbeek/Desktop/file", tm.getTime()));
+		session.save(new EntryFile(hssp, "101D", "/home/tbeek/Desktop/file", tm.getTime()));
 
 		session.getTransaction().commit();
 	}

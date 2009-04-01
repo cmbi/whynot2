@@ -16,7 +16,7 @@ public class HibernateUtil {
 		}
 	}
 
-	public static SessionFactory getSession() throws HibernateException {
+	public static SessionFactory getSessionFactory() throws HibernateException {
 		return HibernateUtil.sessionFactory;
 	}
 }

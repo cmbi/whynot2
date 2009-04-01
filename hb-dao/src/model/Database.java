@@ -40,4 +40,9 @@ public class Database {
 		parent = par;
 		pattern = pat;
 	}
+
+	@Override
+	public String toString() {
+		return name;
+	}
 }

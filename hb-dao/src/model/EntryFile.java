@@ -6,10 +6,15 @@ import javax.persistence.Entity;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.validator.NotEmpty;
+import org.hibernate.validator.NotNull;
+
 @Entity
 public class EntryFile extends Entry {
+	@NotEmpty
 	private String	path;
 	@Temporal(TemporalType.TIMESTAMP)
+	@NotNull
 	private Date	timestamp;
 
 	protected EntryFile() {}

@@ -38,10 +38,10 @@ public class SomeManager {
 		session.save(new Comment("Another example comment", robbie));
 
 		Database pdb, dssp, hssp;
-		session.save(pdb = new Database("PDB", "", "", null, ""));
-		session.save(dssp = new Database("DSSP", "", "", pdb, ""));
-		session.save(hssp = new Database("HSSP", "", "", dssp, ""));
-		session.save(new Database("PDBFINDER", "", "", pdb, ""));
+		session.save(pdb = new Database("PDB", "pdb.org", "google.com/?q=", null, ".*/pdb[\\d\\w]{4}\\.ent(\\.gz)?"));
+		session.save(dssp = new Database("DSSP", "dssp.org", "google.com/?q=", pdb, ".*/[\\d\\w]{4}\\.dssp"));
+		session.save(hssp = new Database("HSSP", "hssp.org", "google.com/?q=", dssp, ".*/[\\d\\w]{4}\\.hssp"));
+		session.save(new Database("PDBFINDER", "pdbfinder.org", "google.com/?q=", pdb, ".*/PDBFIND2?\\.TXT"));
 
 		Entry entry = new Entry(dssp, "101X");
 		entry.getComments().add(example_comment);

@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Crawler {
+public class FileCrawler {
 	private FileFilter	entryfilter, directoryfilter;
 
-	public Crawler(final String regex) {
+	public FileCrawler(final String regex) {
 		entryfilter = new FileFilter() {
 			public boolean accept(File pathname) {
 				return pathname.getAbsolutePath().matches(regex);

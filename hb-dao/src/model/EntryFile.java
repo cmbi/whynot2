@@ -19,10 +19,10 @@ public class EntryFile extends Entry {
 
 	protected EntryFile() {}
 
-	public EntryFile(Database db, String pid, String pth, Date time) {
+	public EntryFile(Database db, String pid, String pth, long time) {
 		super(db, pid);
 		path = pth;
-		timestamp = time;
+		timestamp = new Date(time);
 	}
 
 	@Override

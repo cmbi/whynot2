@@ -2,14 +2,14 @@ package controller;
 
 import interfaces.CrawlImpl;
 import interfaces.ICrawl;
-import io.Crawler;
+import io.FileCrawler;
 
 import java.io.File;
 import java.util.List;
 
 import model.Database;
 
-public class Main {
+public class Crawler {
 
 	/**
 	 * @param args
@@ -23,7 +23,7 @@ public class Main {
 		ICrawl dao = new CrawlImpl();
 		Database db = dao.getDatabase(args[0]);
 		String regex = db.getRegex();
-		List<File> entries = new Crawler(regex).getEntries(args[1]);
+		List<File> entries = new FileCrawler(regex).getEntries(args[1]);
 		dao.addToDB(args[0], entries);
 	}
 }

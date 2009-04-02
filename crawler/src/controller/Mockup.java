@@ -5,42 +5,30 @@ import java.io.IOException;
 import java.util.Random;
 
 public class Mockup {
+	private static String	raw	= "/home/tbeek/Desktop/raw/";
+	private static int		pdb	= 0, dssp = 0, hssp = 0;
 
 	/**
 	 * @param args
 	 * @throws IOException 
 	 */
 	public static void main(String[] args) throws IOException {
-		String raw = "/home/tbeek/Desktop/raw/", pdb = raw + "pdb/", dssp = raw + "dssp/", hssp = raw + "hssp/";
-
-		int count = 0;
-		String pdbid, dir;
+		String pdbid;
 		for (int i = 0; i < 50000; i++) {
 			pdbid = Mockup.genID();
-			dir = pdb + pdbid.substring(0, 2) + "/";
-			new File(dir).mkdirs();
-			if (new File(dir + "pdb" + pdbid + ".ent").createNewFile())
-				count++;
+			Mockup.writePDB(pdbid);
+			if (Mockup.r.nextDouble() < 0.9) {
+				Mockup.writeDSSP(pdbid);
+				if (Mockup.r.nextDouble() < 0.9)
+					Mockup.writeHSSP(pdbid);
+			}
 		}
-		System.out.println("PDB: " + count);
-		count = 0;
-		for (int i = 0; i < 40000; i++) {
-			pdbid = Mockup.genID();
-			dir = dssp + pdbid.substring(0, 2) + "/";
-			new File(dir).mkdirs();
-			if (new File(dir + pdbid + ".dssp").createNewFile())
-				count++;
-		}
-		System.out.println("DSSP: " + count);
-		count = 0;
-		for (int i = 0; i < 30000; i++) {
-			pdbid = Mockup.genID();
-			dir = hssp + pdbid.substring(0, 2) + "/";
-			new File(dir).mkdirs();
-			if (new File(dir + pdbid + ".hssp").createNewFile())
-				count++;
-		}
-		System.out.println("HSSP: " + count);
+		System.out.println("pdb: " + Mockup.pdb + ", dssp: " + Mockup.dssp + ", hssp: " + Mockup.hssp);
+		for (int i = 0; i < 1000; i++)
+			Mockup.writeDSSP(Mockup.genID());
+		for (int i = 0; i < 1000; i++)
+			Mockup.writeHSSP(Mockup.genID());
+		System.out.println("pdb: " + Mockup.pdb + ", dssp: " + Mockup.dssp + ", hssp: " + Mockup.hssp);
 	}
 
 	private static Random	r	= new Random();
@@ -53,5 +41,26 @@ public class Mockup {
 		sb.append(Mockup.abc.charAt(Mockup.r.nextInt(36)));
 		sb.append(Mockup.abc.charAt(Mockup.r.nextInt(36)));
 		return sb.toString();
+	}
+
+	private static void writePDB(String pdbid) throws IOException {
+		String dir = Mockup.raw + "pdb/" + pdbid.substring(0, 2) + "/";
+		new File(dir).mkdirs();
+		if (new File(dir + "pdb" + pdbid + ".ent").createNewFile())
+			Mockup.pdb++;
+	}
+
+	private static void writeDSSP(String pdbid) throws IOException {
+		String dir = Mockup.raw + "dssp/" + pdbid.substring(0, 2) + "/";
+		new File(dir).mkdirs();
+		if (new File(dir + pdbid + ".dssp").createNewFile())
+			Mockup.dssp++;
+	}
+
+	private static void writeHSSP(String pdbid) throws IOException {
+		String dir = Mockup.raw + "hssp/" + pdbid.substring(0, 2) + "/";
+		new File(dir).mkdirs();
+		if (new File(dir + pdbid + ".hssp").createNewFile())
+			Mockup.hssp++;
 	}
 }

@@ -1,6 +1,5 @@
 package hello;
 
-import java.util.Calendar;
 import java.util.List;
 
 import model.Author;
@@ -53,26 +52,16 @@ public class SomeManager {
 		session.save(new Comment("Another example comment", robbie));
 
 		Database pdb, dssp, hssp;
-		session.save(pdb = new Database("PDB", "pdb.org", "google.com/?q=", null, ".*/pdb[\\d\\w]{4}\\.ent(\\.gz)?"));
-		session.save(dssp = new Database("DSSP", "dssp.org", "google.com/?q=", pdb, ".*/[\\d\\w]{4}\\.dssp"));
-		session.save(hssp = new Database("HSSP", "hssp.org", "google.com/?q=", dssp, ".*/[\\d\\w]{4}\\.hssp"));
+		session.save(pdb = new Database("PDB", "pdb.org", "google.com/?q=", null, ".*/pdb([\\d\\w]{4})\\.ent(\\.gz)?"));
+		session.save(dssp = new Database("DSSP", "dssp.org", "google.com/?q=", pdb, ".*/([\\d\\w]{4})\\.dssp"));
+		session.save(hssp = new Database("HSSP", "hssp.org", "google.com/?q=", dssp, ".*/([\\d\\w]{4})\\.hssp"));
 		session.save(new Database("PDBFINDER", "pdbfinder.org", "google.com/?q=", pdb, ".*/PDBFIND2?\\.TXT"));
 
 		Entry entry = new Entry(dssp, "101X");
 		entry.getComments().add(example_comment);
 		session.save(entry);
 
-		Calendar tm = Calendar.getInstance();
-
-		session.save(new EntryFile(pdb, "101D", "/home/tbeek/Desktop/file", tm.getTime()));
-		session.save(new EntryFile(pdb, "101M", "/home/tbeek/Desktop/file", tm.getTime()));
-		session.save(new EntryFile(pdb, "101Z", "/home/tbeek/Desktop/file", tm.getTime()));
-		session.save(new EntryFile(pdb, "101X", "/home/tbeek/Desktop/file", tm.getTime()));
-		session.save(new EntryFile(dssp, "101M", "/home/tbeek/Desktop/file", tm.getTime()));
-		session.save(new EntryFile(dssp, "101D", "/home/tbeek/Desktop/file", tm.getTime()));
-		session.save(new EntryFile(dssp, "101Y", "/home/tbeek/Desktop/file", tm.getTime()));
-		session.save(new EntryFile(hssp, "101M", "/home/tbeek/Desktop/file", tm.getTime()));
-		session.save(new EntryFile(hssp, "101D", "/home/tbeek/Desktop/file", tm.getTime()));
+		session.save(new EntryFile(pdb, "101D", "/home/tbeek/Desktop/file", System.currentTimeMillis()));
 
 		session.getTransaction().commit();
 	}

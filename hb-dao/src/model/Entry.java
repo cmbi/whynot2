@@ -10,6 +10,8 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToMany;
 
+import org.hibernate.validator.Length;
+
 @Entity
 @IdClass(EntryPK.class)
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -17,6 +19,7 @@ public class Entry {
 	@Id
 	protected Database		database;
 	@Id
+	@Length(max = 50)
 	protected String		pdbid;
 
 	@ManyToMany

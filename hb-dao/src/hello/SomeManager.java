@@ -1,5 +1,6 @@
 package hello;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import model.Author;
@@ -16,18 +17,32 @@ public class SomeManager {
 	public static void main(String[] args) {
 		SomeManager mgr = new SomeManager();
 
-		mgr.createAndStoreStuff();
+		Session newSession = HibernateUtil.getSessionFactory().openSession();
+		newSession.close();
+
+		mgr.doSomeStuffFirst();
+
+		//mgr.createAndStoreStuff();
 
 		mgr.doSomeMoreStuff();
 
 		HibernateUtil.getSessionFactory().close();
 	}
 
+	private void doSomeStuffFirst() {
+		List<EntryFile> messages = new ArrayList<EntryFile>();
+		while (true) {
+			messages.add(new EntryFile(new Database("", "", "", null, ""), "", "", 0));
+			if (messages.size() % 1000 == 0)
+				System.out.println(messages.size());
+		}
+	}
+
 	private void doSomeMoreStuff() {
 		// Second unit of work
 		Session newSession = HibernateUtil.getSessionFactory().openSession();
 		Transaction newTransaction = newSession.beginTransaction();
-		List<EntryFile> messages = newSession.createQuery("from EntryFile m order by m.pdbid asc").list();
+		List<EntryFile> messages = newSession.createQuery("from EntryFile m where m.database='PDB' order by m.pdbid asc").list();
 
 		System.out.println(messages.size() + " entryfile(s) found:");
 		for (EntryFile ef : messages)

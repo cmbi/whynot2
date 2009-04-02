@@ -8,12 +8,14 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
+import org.hibernate.validator.Length;
 import org.hibernate.validator.NotEmpty;
 
 @Entity
 public class Comment {
 	@Id
 	@NotEmpty
+	@Length(max = 200)
 	private String		text;
 
 	@ManyToOne

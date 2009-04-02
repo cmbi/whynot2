@@ -34,11 +34,10 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
             <version>1.5.2</version>
         </dependency>
 
-
-<dependency>
-    <groupId>javassist</groupId>
-    <artifactId>javassist</artifactId>
-    <version>3.8.0.GA</version>
-</dependency> 
+		<dependency>
+		    <groupId>javassist</groupId>
+		    <artifactId>javassist</artifactId>
+		    <version>3.8.0.GA</version>
+		</dependency> 
 	</dependencies>
 </project>

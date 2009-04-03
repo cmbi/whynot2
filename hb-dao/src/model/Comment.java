@@ -15,7 +15,7 @@ import org.hibernate.validator.NotEmpty;
 public class Comment {
 	@Id
 	@NotEmpty
-	@Length(max = 200)
+	@Length(min = 5, max = 200)
 	private String		text;
 
 	@ManyToOne

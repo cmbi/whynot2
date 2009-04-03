@@ -30,6 +30,7 @@ public class SomeManager {
 	}
 
 	private void doSomeStuffFirst() {
+		System.exit(1);
 		List<EntryFile> messages = new ArrayList<EntryFile>();
 		while (true) {
 			messages.add(new EntryFile(new Database("", "", "", null, ""), "", "", 0));

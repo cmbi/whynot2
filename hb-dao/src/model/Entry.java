@@ -11,12 +11,14 @@ import javax.persistence.InheritanceType;
 import javax.persistence.ManyToMany;
 
 import org.hibernate.validator.Length;
+import org.hibernate.validator.NotNull;
 
 @Entity
 @IdClass(EntryPK.class)
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Entry {
 	@Id
+	@NotNull
 	protected Database		database;
 	@Id
 	@Length(max = 50)

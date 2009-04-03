@@ -22,7 +22,7 @@ public class SomeManager {
 
 		mgr.doSomeStuffFirst();
 
-		mgr.createAndStoreStuff();
+		//mgr.createAndStoreStuff();
 
 		mgr.doSomeMoreStuff();
 

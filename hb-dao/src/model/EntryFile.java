@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 
 import org.hibernate.validator.Length;
@@ -27,7 +29,7 @@ public class EntryFile extends Entry {
 		StringBuilder sb = new StringBuilder();
 		sb.append(entryPK + " - ");
 		sb.append(path + " - ");
-		sb.append(timestamp);
+		sb.append(new Date(timestamp));
 		return sb.toString();
 	}
 }

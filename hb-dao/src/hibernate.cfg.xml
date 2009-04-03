@@ -35,6 +35,7 @@
 
 
 		<mapping package="model"/>
+		<mapping class="model.Annotation"/>
 		<mapping class="model.Author"/>
 		<mapping class="model.Comment"/>
 		<mapping class="model.Database"/>

@@ -18,7 +18,7 @@ public class Author {
 	private String			name;
 
 	@OneToMany(mappedBy = "author")
-	private Set<Comment>	comments	= new HashSet<Comment>();
+	private Set<Annotation>	annotations	= new HashSet<Annotation>();
 
 	protected Author() {}
 

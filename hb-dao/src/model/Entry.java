@@ -7,7 +7,7 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -15,17 +15,12 @@ public class Entry {
 	@EmbeddedId
 	protected EntryPK		entryPK;
 
-	@ManyToMany
-	private Set<Comment>	comments	= new HashSet<Comment>();
+	@OneToMany(mappedBy = "entry")
+	private Set<Annotation>	annotations	= new HashSet<Annotation>();
 
 	protected Entry() {}
 
-	public Entry(Database db, String pid) {
-		entryPK = new EntryPK(db, pid);
-
-	}
-
-	public Set<Comment> getComments() {
-		return comments;
+	public Entry(Database db, String pbdid) {
+		entryPK = new EntryPK(db, pbdid);
 	}
 }

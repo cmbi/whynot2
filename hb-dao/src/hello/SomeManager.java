@@ -2,6 +2,7 @@ package hello;
 
 import java.util.List;
 
+import model.Annotation;
 import model.Author;
 import model.Comment;
 import model.Database;
@@ -21,7 +22,7 @@ public class SomeManager {
 
 		mgr.doSomeStuffFirst();
 
-		//mgr.createAndStoreStuff();
+		mgr.createAndStoreStuff();
 
 		mgr.doSomeMoreStuff();
 
@@ -42,7 +43,7 @@ public class SomeManager {
 		// Second unit of work
 		Session newSession = HibernateUtil.getSessionFactory().openSession();
 		Transaction newTransaction = newSession.beginTransaction();
-		List<EntryFile> messages = newSession.createQuery("from EntryFile m where m.database='PDB' order by m.pdbid asc").list();
+		List<EntryFile> messages = newSession.createQuery("from EntryFile m where m.entryPK.database='PDB' order by m.entryPK.pdbid asc").list();
 
 		System.out.println(messages.size() + " entryfile(s) found:");
 		for (EntryFile ef : messages)
@@ -55,28 +56,28 @@ public class SomeManager {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		session.beginTransaction();
 
-		Author robbie;
-		session.save(robbie = new Author("Robbie"));
-		session.save(new Author("Tim"));
-		session.save(new Author("Jurgen"));
-		session.save(new Author("Script1"));
-		session.save(new Author("Script2"));
-
-		Comment example_comment;
-		session.save(example_comment = new Comment("This is an example comment", robbie));
-		session.save(new Comment("Another example comment", robbie));
-
 		Database pdb, dssp, hssp;
 		session.save(pdb = new Database("PDB", "pdb.org", "google.com/?q=", null, ".*/pdb([\\d\\w]{4})\\.ent(\\.gz)?"));
 		session.save(dssp = new Database("DSSP", "dssp.org", "google.com/?q=", pdb, ".*/([\\d\\w]{4})\\.dssp"));
 		session.save(hssp = new Database("HSSP", "hssp.org", "google.com/?q=", dssp, ".*/([\\d\\w]{4})\\.hssp"));
 		session.save(new Database("PDBFINDER", "pdbfinder.org", "google.com/?q=", pdb, ".*/PDBFIND2?\\.TXT"));
 
-		Entry entry = new Entry(dssp, "101X");
-		entry.getComments().add(example_comment);
-		session.save(entry);
+		Comment comment;
+		session.save(comment = new Comment("Example comment"));
 
-		session.save(new EntryFile(pdb, "101D", "/home/tbeek/Desktop/file", System.currentTimeMillis()));
+		Author author;
+		session.save(author = new Author("Robbie"));
+		session.save(new Author("Script1"));
+		session.save(new Author("Script2"));
+
+		Entry entry;
+		session.save(entry = new Entry(dssp, "101X"));
+
+		session.save(new Annotation(entry, comment, author));
+		//session.save(new Annotation(new Entry(pdb, "0TIM"), new Comment("My new comment"), new Author("Tim")));
+		//Only works if accessible from already persistent instance
+
+		session.save(new EntryFile(pdb, "101D", "/home/tbeek/Desktop/somefile", System.currentTimeMillis()));
 
 		session.getTransaction().commit();
 	}

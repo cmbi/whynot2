@@ -1,6 +1,5 @@
 package hello;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import model.Author;
@@ -30,13 +29,13 @@ public class SomeManager {
 	}
 
 	private void doSomeStuffFirst() {
-		System.exit(1);
-		List<EntryFile> messages = new ArrayList<EntryFile>();
-		while (true) {
-			messages.add(new EntryFile(new Database("", "", "", null, ""), "", "", 0));
-			if (messages.size() % 1000 == 0)
-				System.out.println(messages.size());
-		}
+	//		System.exit(1);
+	//		List<EntryFile> messages = new ArrayList<EntryFile>();
+	//		while (true) {
+	//			messages.add(new EntryFile(new Database("", "", "", null, ""), "", "", 0));
+	//			if (messages.size() % 1000 == 0)
+	//				System.out.println(messages.size());
+	//		}
 	}
 
 	private void doSomeMoreStuff() {

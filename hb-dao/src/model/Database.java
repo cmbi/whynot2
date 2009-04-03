@@ -33,7 +33,7 @@ public class Database {
 	@Length(max = 50)
 	private String		regex;
 
-	@OneToMany(mappedBy = "database", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "entryPK.database", cascade = CascadeType.ALL)
 	private Set<Entry>	entries	= new HashSet<Entry>();
 
 	protected Database() {}

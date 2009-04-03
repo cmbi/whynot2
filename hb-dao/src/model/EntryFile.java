@@ -25,8 +25,7 @@ public class EntryFile extends Entry {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(pdbid + " - ");
-		sb.append(database + " - ");
+		sb.append(entryPK + " - ");
 		sb.append(path + " - ");
 		sb.append(timestamp);
 		return sb.toString();

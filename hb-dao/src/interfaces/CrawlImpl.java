@@ -2,43 +2,41 @@ package interfaces;
 
 import hello.HibernateUtil;
 
-import java.io.File;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import model.Database;
 import model.EntryFile;
 
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 public class CrawlImpl implements ICrawl {
 
-	public Database getDatabase(String dbname) {
+	public Database retrieveDatabase(String dbname) {
 		Session newSession = HibernateUtil.getSessionFactory().openSession();
 		Transaction newTransaction = newSession.beginTransaction();
-		Database db = (Database) newSession.createQuery("from Database m where m.name IS :dbname").setParameter("dbname", dbname).uniqueResult();
+		Query query = newSession.createQuery("from Database m left join fetch m.entries where m.name IS :dbname");
+		query.setParameter("dbname", dbname);
+		Database db = (Database) query.uniqueResult();
 		newTransaction.commit();
 		newSession.close();
 		return db;
 	}
 
-	public void addToDB(String dbname, List<File> entries) {
+	public void storeAll(List<EntryFile> entries) {
 		Session newSession = HibernateUtil.getSessionFactory().openSession();
 		Transaction newTransaction = newSession.beginTransaction();
-		Database db = (Database) newSession.createQuery("from Database m where m.name IS :dbname").setParameter("dbname", dbname).uniqueResult();
+		for (EntryFile f : entries)
+			newSession.save(f);
+		newTransaction.commit();
+		newSession.close();
+	}
 
-		Pattern p = Pattern.compile(db.getRegex());
-		Matcher m;
-		String pdbid;
-		for (File f : entries) {
-			m = p.matcher(f.getAbsolutePath());
-			if (m.matches()) {
-				pdbid = m.group(1);
-				newSession.persist(new EntryFile(db, pdbid, f.getAbsolutePath(), f.lastModified()));
-			}
-		}
+	public void update(Database db) {
+		Session newSession = HibernateUtil.getSessionFactory().openSession();
+		Transaction newTransaction = newSession.beginTransaction();
+		newSession.update(db);
 		newTransaction.commit();
 		newSession.close();
 	}

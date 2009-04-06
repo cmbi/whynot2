@@ -1,12 +1,14 @@
 package interfaces;
 
-import java.io.File;
 import java.util.List;
 
 import model.Database;
+import model.EntryFile;
 
 public interface ICrawl {
-	public Database getDatabase(String name);
+	public Database retrieveDatabase(String name);
 
-	public void addToDB(String dbname, List<File> entries);
+	public void storeAll(List<EntryFile> entries);
+
+	public void update(Database db);
 }

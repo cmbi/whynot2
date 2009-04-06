@@ -14,14 +14,26 @@ public class EntryFile extends Entry {
 	@Length(max = 200)
 	private String	path;
 	@NotNull
-	private long	timestamp;
+	private Long	lastmodified;
 
 	protected EntryFile() {}
 
 	public EntryFile(Database db, String pid, String pth, long time) {
 		super(db, pid);
 		path = pth;
-		timestamp = time;
+		lastmodified = time;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public long getLastmodified() {
+		return lastmodified;
+	}
+
+	public void setLastmodified(long time) {
+		lastmodified = time;
 	}
 
 	@Override
@@ -29,7 +41,7 @@ public class EntryFile extends Entry {
 		StringBuilder sb = new StringBuilder();
 		sb.append(entryPK + " - ");
 		sb.append(path + " - ");
-		sb.append(new Date(timestamp));
+		sb.append(new Date(lastmodified));
 		return sb.toString();
 	}
 }

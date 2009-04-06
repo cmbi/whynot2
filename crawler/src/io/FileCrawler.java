@@ -2,8 +2,8 @@ package io;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,8 +35,8 @@ public class FileCrawler {
 	 * @param dirpath
 	 * @return list&lt;EntryFile&gt;
 	 */
-	public List<EntryFile> getEntries(String dirpath) {
-		List<EntryFile> entries = new ArrayList<EntryFile>();
+	public Set<EntryFile> getEntries(String dirpath) {
+		Set<EntryFile> entries = new HashSet<EntryFile>();
 		for (File dir : dirAndAllSubdirs(new File(dirpath)))
 			for (File file : dir.listFiles(entryfilter))
 				entries.add(new EntryFile(database, extractPDBID(file.getAbsolutePath()), file.getAbsolutePath(), file.lastModified()));
@@ -44,11 +44,11 @@ public class FileCrawler {
 	}
 
 	/**
-	 * Creates list of directories containing argument and all recursive
+	 * Creates set of directories containing argument and all recursive
 	 * subdirectories in argument, excluding directories that match entryfilter
 	 */
-	private List<File> dirAndAllSubdirs(File directory) {
-		List<File> directories = new ArrayList<File>();
+	private Set<File> dirAndAllSubdirs(File directory) {
+		Set<File> directories = new HashSet<File>();
 		directories.add(directory); // Add this
 		for (File subdir : directory.listFiles(directoryfilter))
 			directories.addAll(dirAndAllSubdirs(subdir)); // Add recursive subdirs

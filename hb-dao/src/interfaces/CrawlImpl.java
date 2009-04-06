@@ -2,7 +2,7 @@ package interfaces;
 
 import hello.HibernateUtil;
 
-import java.util.List;
+import java.util.Set;
 
 import model.Database;
 import model.EntryFile;
@@ -24,7 +24,7 @@ public class CrawlImpl implements ICrawl {
 		return db;
 	}
 
-	public void storeAll(List<EntryFile> entries) {
+	public void storeAll(Set<EntryFile> entries) {
 		Session newSession = HibernateUtil.getSessionFactory().openSession();
 		Transaction newTransaction = newSession.beginTransaction();
 		for (EntryFile f : entries)
@@ -33,10 +33,11 @@ public class CrawlImpl implements ICrawl {
 		newSession.close();
 	}
 
-	public void update(Database db) {
+	public void removeAll(Set<EntryFile> entries) {
 		Session newSession = HibernateUtil.getSessionFactory().openSession();
 		Transaction newTransaction = newSession.beginTransaction();
-		newSession.update(db);
+		for (EntryFile f : entries)
+			newSession.delete(f);
 		newTransaction.commit();
 		newSession.close();
 	}

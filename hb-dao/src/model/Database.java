@@ -3,13 +3,11 @@ package model;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
-import org.hibernate.annotations.Cascade;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotEmpty;
 
@@ -34,8 +32,7 @@ public class Database {
 	@Length(max = 50)
 	private String			regex;
 
-	@OneToMany(mappedBy = "entryPK.database", cascade = CascadeType.ALL)
-	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
+	@OneToMany(mappedBy = "entryPK.database")
 	private Set<EntryFile>	entries	= new HashSet<EntryFile>();
 
 	protected Database() {}

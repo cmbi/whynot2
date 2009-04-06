@@ -1,6 +1,6 @@
 package interfaces;
 
-import java.util.List;
+import java.util.Set;
 
 import model.Database;
 import model.EntryFile;
@@ -8,7 +8,7 @@ import model.EntryFile;
 public interface ICrawl {
 	public Database retrieveDatabase(String name);
 
-	public void storeAll(List<EntryFile> entries);
+	public void storeAll(Set<EntryFile> entries);
 
-	public void update(Database db);
+	public void removeAll(Set<EntryFile> invalids);
 }

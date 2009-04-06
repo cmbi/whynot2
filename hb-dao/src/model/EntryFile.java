@@ -14,7 +14,7 @@ public class EntryFile extends Entry {
 	@Length(max = 200)
 	private String	path;
 	@NotNull
-	private Long	lastmodified;
+	private long	lastmodified;
 
 	protected EntryFile() {}
 

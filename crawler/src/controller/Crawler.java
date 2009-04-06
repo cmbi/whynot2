@@ -5,7 +5,8 @@ import interfaces.ICrawl;
 import io.FileCrawler;
 
 import java.io.File;
-import java.util.Iterator;
+import java.util.HashSet;
+import java.util.Set;
 
 import model.Database;
 import model.EntryFile;
@@ -41,19 +42,11 @@ public class Crawler {
 		ICrawl dao = new CrawlImpl();
 		Database db = dao.retrieveDatabase(database);
 
-		File fl;
-		EntryFile ef;
-		Iterator<EntryFile> efItr = db.getEntries().iterator();
-		while (efItr.hasNext()) {
-			ef = efItr.next();
-			fl = new File(ef.getPath());
-			if (!fl.isFile())
-				efItr.remove();
-			else
-				if (fl.lastModified() != ef.getLastmodified())
-					ef.setLastmodified(fl.lastModified());
-		}
+		Set<EntryFile> invalids = new HashSet<EntryFile>();
+		for (EntryFile ef : db.getEntries())
+			if (!new File(ef.getPath()).exists())
+				invalids.add(ef);
 
-		dao.update(db);
+		dao.removeAll(invalids);
 	}
 }

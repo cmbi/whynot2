@@ -39,7 +39,7 @@ public class EntryFile extends Entry {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(entryPK + " - ");
+		sb.append(super.toString() + " - ");
 		sb.append(path + " - ");
 		sb.append(new Date(lastmodified));
 		return sb.toString();

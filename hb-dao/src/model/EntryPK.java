@@ -11,21 +11,16 @@ import org.hibernate.validator.NotEmpty;
 @Embeddable
 public class EntryPK implements Serializable {
 	@ManyToOne
-	private Database	database;
+	protected Database	database;
 
 	@Length(max = 50)
 	@NotEmpty
-	private String		pdbid;
+	protected String	pdbid;
 
 	protected EntryPK() {}
 
 	public EntryPK(Database db, String pid) {
 		database = db;
 		pdbid = pid;
-	}
-
-	@Override
-	public String toString() {
-		return database + "/" + pdbid;
 	}
 }

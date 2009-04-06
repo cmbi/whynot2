@@ -27,4 +27,9 @@ public class Entry {
 	public Entry(Database db, String pbdid) {
 		entryPK = new EntryPK(db, pbdid);
 	}
+
+	@Override
+	public String toString() {
+		return entryPK.database + "/" + entryPK.pdbid;
+	}
 }

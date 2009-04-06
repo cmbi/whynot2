@@ -2,7 +2,6 @@ package controller;
 
 import interfaces.CrawlImpl;
 import interfaces.ICrawl;
-import io.FileCrawler;
 
 import java.io.File;
 import java.util.HashSet;

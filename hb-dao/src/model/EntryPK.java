@@ -2,7 +2,6 @@ package model;
 
 import java.io.Serializable;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
 
@@ -11,7 +10,7 @@ import org.hibernate.validator.NotEmpty;
 
 @Embeddable
 public class EntryPK implements Serializable {
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne
 	private Database	database;
 
 	@Length(max = 50)

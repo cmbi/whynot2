@@ -3,13 +3,21 @@ package model;
 import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotEmpty;
 import org.hibernate.validator.NotNull;
 
 @Entity
-public class EntryFile extends Entry {
+public class EntryFile {
+	@OneToOne
+	@PrimaryKeyJoinColumn
+	private Entry entry;
+
+	@Id
 	@NotEmpty
 	@Length(max = 200)
 	private String	path;
@@ -18,8 +26,8 @@ public class EntryFile extends Entry {
 
 	protected EntryFile() {}
 
-	public EntryFile(Database db, String pid, String pth, long time) {
-		super(db, pid);
+	public EntryFile(Entry ent, String pth, long time) {
+		entry = ent;
 		path = pth;
 		lastmodified = time;
 	}

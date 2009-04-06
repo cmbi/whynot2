@@ -6,6 +6,7 @@ import model.Annotation;
 import model.Author;
 import model.Comment;
 import model.Database;
+import model.Entry;
 import model.EntryFile;
 
 import org.hibernate.Session;
@@ -35,8 +36,9 @@ public class SomeManager {
 		Database pdb = new Database("PDB", "pdb.org", "google.com/?q=", null, ".*/pdb([\\d\\w]{4})\\.ent(\\.gz)?");
 		Comment comment = new Comment("Example comment");
 		Author author = new Author("Robbie");
-		EntryFile entry = new EntryFile(pdb, "0TIM", "/home/tbeek/Desktop/somefile", System.currentTimeMillis());
-		session.save(entry);
+		Entry entry = new Entry(pdb, "0TIM");
+		EntryFile entryfile = new EntryFile(entry, "/home/tbeek/Desktop/somefile", System.currentTimeMillis());
+		session.save(entryfile);
 		session.save(new Annotation(entry, comment, author));
 
 		session.getTransaction().commit();
@@ -72,9 +74,12 @@ public class SomeManager {
 		session.save(author);
 		session.save(new Author("Script1"));
 		session.save(new Author("Script2"));
+		
+		Entry entry;
+		session.save(entry = new Entry(pdb, "0TIM"));
 
-		EntryFile entry;
-		session.save(entry = new EntryFile(pdb, "0TIM", "/home/tbeek/Desktop/somefile", System.currentTimeMillis()));
+		EntryFile entryfile;
+		session.save(entryfile = new EntryFile(entry, "/home/tbeek/Desktop/somefile", System.currentTimeMillis()));
 		//session.save(entry = new Entry(pdb, "0TIM"));
 
 		session.save(new Annotation(entry, comment, author));

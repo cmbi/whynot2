@@ -17,24 +17,24 @@ public class Database {
 	@Id
 	@NotEmpty
 	@Length(max = 50)
-	private String		name;
+	private String			name;
 
 	@NotEmpty
 	@Length(max = 200)
-	private String		reference;
+	private String			reference;
 	@NotEmpty
 	@Length(max = 200)
-	private String		filelink;
+	private String			filelink;
 
 	@OneToOne
-	private Database	parent;
+	private Database		parent;
 
 	@NotEmpty
 	@Length(max = 50)
-	private String		regex;
+	private String			regex;
 
 	@OneToMany(mappedBy = "entryPK.database", cascade = CascadeType.ALL)
-	private Set<Entry>	entries	= new HashSet<Entry>();
+	private Set<EntryFile>	entries	= new HashSet<EntryFile>();
 
 	protected Database() {}
 
@@ -53,5 +53,9 @@ public class Database {
 
 	public String getRegex() {
 		return regex;
+	}
+
+	public Set<EntryFile> getEntries() {
+		return entries;
 	}
 }

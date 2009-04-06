@@ -22,7 +22,7 @@ public class SomeManager {
 
 		mgr.doSomeStuffFirst();
 
-		//mgr.createAndStoreStuff();
+		mgr.createAndStoreStuff();
 
 		mgr.doSomeMoreStuff();
 
@@ -71,13 +71,15 @@ public class SomeManager {
 		session.save(new Author("Script2"));
 
 		Entry entry;
-		session.save(entry = new Entry(dssp, "101X"));
+		session.save(entry = new Entry(hssp, "0TIM"));
 
 		session.save(new Annotation(entry, comment, author));
-		//session.save(new Annotation(new Entry(pdb, "0TIM"), new Comment("My new comment"), new Author("Tim")));
 		//Only works if accessible from already persistent instance
+		//session.save(new Annotation(new Entry(pdb, "0TIM"), new Comment("My new comment"), new Author("Tim")));
+		//So this works:
+		//dssp.getEntries().add(new EntryFile(dssp, "0TIM", "/some/other/path", System.currentTimeMillis()));
 
-		session.save(new EntryFile(pdb, "101D", "/home/tbeek/Desktop/somefile", System.currentTimeMillis()));
+		session.save(new EntryFile(pdb, "0TIM", "/home/tbeek/Desktop/somefile", System.currentTimeMillis()));
 
 		session.getTransaction().commit();
 	}

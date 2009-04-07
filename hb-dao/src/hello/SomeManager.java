@@ -7,6 +7,7 @@ import model.Author;
 import model.Comment;
 import model.Database;
 import model.EntryFile;
+import model.EntryPK;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -17,31 +18,33 @@ public class SomeManager {
 	public static void main(String[] args) {
 		SomeManager mgr = new SomeManager();
 
-		Session newSession = HibernateUtil.getSessionFactory().openSession();
-		newSession.close();
+		//mgr.fillTabels();
 
-		mgr.doSomeStuffFirst();
+		//mgr.storeFileAndComment();
 
-		//mgr.createAndStoreStuff();
+		//mgr.listEntries();
 
-		mgr.doSomeMoreStuff();
+		//mgr.deleteHSSPDB();
+
+		mgr.unrelatedTest();
 
 		HibernateUtil.getSessionFactory().close();
 	}
 
-	private void deleteHSSPDB() {
+	private void unrelatedTest() {
+
 		Session newSession = HibernateUtil.getSessionFactory().openSession();
-		Transaction someTransaction = newSession.beginTransaction();
-		Query query = newSession.createQuery("from Database m where m.name IS :dbname");
-		query.setParameter("dbname", "HSSP");
-		Database db = (Database) query.uniqueResult();
-		newSession.delete(db);
-		someTransaction.commit();
+		Transaction newTransaction = newSession.beginTransaction();
+
+		Database db = (Database) newSession.get(Database.class, "PDB");
+		EntryFile ef = (EntryFile) newSession.get(EntryFile.class, new EntryPK(db, "0TIM"));
+		db.getEntries().remove(ef);
+
+		newTransaction.commit();
 		newSession.close();
 	}
 
-	private void doSomeStuffFirst() {
-
+	private void storeFileAndComment() {
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		Transaction newTransaction = session.beginTransaction();
 
@@ -55,7 +58,7 @@ public class SomeManager {
 		session.close();
 	}
 
-	private void doSomeMoreStuff() {
+	private void listEntries() {
 		Session newSession = HibernateUtil.getSessionFactory().openSession();
 		Transaction newTransaction = newSession.beginTransaction();
 		List<EntryFile> messages = newSession.createQuery("from EntryFile m where m.entry.database='PDB' order by m.entry.pdbid asc").list();
@@ -67,7 +70,7 @@ public class SomeManager {
 		newSession.close();
 	}
 
-	private void createAndStoreStuff() {
+	private void fillTabels() {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		session.beginTransaction();
 
@@ -95,5 +98,16 @@ public class SomeManager {
 		//dssp.getEntries().add(new EntryFile(dssp, "0TIM", "/some/other/path", System.currentTimeMillis()));
 
 		session.getTransaction().commit();
+	}
+
+	private void deleteHSSPDB() {
+		Session newSession = HibernateUtil.getSessionFactory().openSession();
+		Transaction someTransaction = newSession.beginTransaction();
+		Query query = newSession.createQuery("from Database m where m.name IS :dbname");
+		query.setParameter("dbname", "HSSP");
+		Database db = (Database) query.uniqueResult();
+		newSession.delete(db);
+		someTransaction.commit();
+		newSession.close();
 	}
 }

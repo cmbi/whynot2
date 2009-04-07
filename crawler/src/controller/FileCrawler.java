@@ -33,7 +33,7 @@ public class FileCrawler {
 	 * Gets all the FileEntries for the supplied database in the given directory
 	 * and any subdirectories
 	 * @param dirpath
-	 * @return list&lt;EntryFile&gt;
+	 * @return set&lt;EntryFile&gt;
 	 */
 	public Set<EntryFile> getEntries(String dirpath) {
 		Set<EntryFile> entries = new HashSet<EntryFile>();
@@ -41,6 +41,19 @@ public class FileCrawler {
 			for (File file : dir.listFiles(entryfilter))
 				entries.add(new EntryFile(database, extractPDBID(file.getAbsolutePath()), file.getAbsolutePath(), file.lastModified()));
 		return entries;
+	}
+
+	/**
+	 * Gets all the invalid FileEntries from entries by checking if the file exists
+	 * @param entries
+	 * @return set&lt;EntryFile&gt;
+	 */
+	public Set<EntryFile> getInvalidEntries(Set<EntryFile> entries) {
+		Set<EntryFile> invalids = new HashSet<EntryFile>();
+		for (EntryFile ef : entries)
+			if (!new File(ef.getPath()).exists())
+				invalids.add(ef);
+		return invalids;
 	}
 
 	/**

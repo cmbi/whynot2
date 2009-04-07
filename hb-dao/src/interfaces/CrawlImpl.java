@@ -7,18 +7,19 @@ import java.util.Set;
 import model.Database;
 import model.EntryFile;
 
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 public class CrawlImpl implements ICrawl {
 
-	public Database retrieveDatabase(String dbname) {
+	public Database getDatabase(String dbname) {
 		Session newSession = HibernateUtil.getSessionFactory().openSession();
 		Transaction newTransaction = newSession.beginTransaction();
-		Query query = newSession.createQuery("from Database m left join fetch m.entries where m.name IS :dbname");
-		query.setParameter("dbname", dbname);
-		Database db = (Database) query.uniqueResult();
+		//Query query = newSession.createQuery("from Database m left join fetch m.entries where m.name IS :dbname");
+		//query.setParameter("dbname", dbname);
+		//Database db = (Database) query.uniqueResult();
+		Database db = (Database) newSession.get(Database.class, dbname);
+		int noEntries = db.getEntries().size();//Ugly lazy collection initialization
 		newTransaction.commit();
 		newSession.close();
 		return db;

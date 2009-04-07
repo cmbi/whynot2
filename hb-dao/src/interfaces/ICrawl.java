@@ -6,7 +6,7 @@ import model.Database;
 import model.EntryFile;
 
 public interface ICrawl {
-	public Database retrieveDatabase(String name);
+	public Database getDatabase(String name);
 
 	public void storeAll(Set<EntryFile> entries);
 

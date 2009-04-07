@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import org.hibernate.annotations.Cascade;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotEmpty;
 
@@ -19,6 +20,7 @@ public class Author {
 	private String			name;
 
 	@OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
 	private Set<Annotation>	annotations	= new HashSet<Annotation>();
 
 	protected Author() {}

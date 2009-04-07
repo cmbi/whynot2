@@ -6,8 +6,8 @@ import model.Annotation;
 import model.Author;
 import model.Comment;
 import model.Database;
-import model.Entry;
 import model.EntryFile;
+import model.EntryPK;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -36,10 +36,9 @@ public class SomeManager {
 		Database pdb = new Database("PDB", "pdb.org", "google.com/?q=", null, ".*/pdb([\\d\\w]{4})\\.ent(\\.gz)?");
 		Comment comment = new Comment("Example comment");
 		Author author = new Author("Robbie");
-		Entry entry = new Entry(pdb, "0TIM");
-		EntryFile entryfile = new EntryFile(entry, "/home/tbeek/Desktop/somefile", System.currentTimeMillis());
-		session.save(entryfile);
-		session.save(new Annotation(entry, comment, author));
+		EntryPK entpk = new EntryPK(pdb, "0TIM");
+		session.save(new EntryFile(entpk, "/home/tbeek/Desktop/somefile", System.currentTimeMillis()));
+		session.save(new Annotation(entpk, comment, author));
 
 		session.getTransaction().commit();
 		session.close();
@@ -48,7 +47,7 @@ public class SomeManager {
 	private void doSomeMoreStuff() {
 		Session newSession = HibernateUtil.getSessionFactory().openSession();
 		Transaction newTransaction = newSession.beginTransaction();
-		List<EntryFile> messages = newSession.createQuery("from EntryFile m where m.entryPK.database='PDB' order by m.entryPK.pdbid asc").list();
+		List<EntryFile> messages = newSession.createQuery("from EntryFile m where m.entry.database='PDB' order by m.entry.pdbid asc").list();
 
 		System.out.println(messages.size() + " entryfile(s) found:");
 		for (EntryFile ef : messages)
@@ -74,15 +73,13 @@ public class SomeManager {
 		session.save(author);
 		session.save(new Author("Script1"));
 		session.save(new Author("Script2"));
-		
-		Entry entry;
-		session.save(entry = new Entry(pdb, "0TIM"));
 
-		EntryFile entryfile;
-		session.save(entryfile = new EntryFile(entry, "/home/tbeek/Desktop/somefile", System.currentTimeMillis()));
-		//session.save(entry = new Entry(pdb, "0TIM"));
+		EntryPK entpk = new EntryPK(pdb, "0TIM");
 
-		session.save(new Annotation(entry, comment, author));
+		EntryFile entry = new EntryFile(entpk, "/home/tbeek/Desktop/somefile", System.currentTimeMillis());
+		session.save(entry);
+
+		session.save(new Annotation(entpk, comment, author));
 		//Only works if accessible from already persistent instance
 		//session.save(new Annotation(new Entry(pdb, "0TIM"), new Comment("My new comment"), new Author("Tim")));
 		//So this works:

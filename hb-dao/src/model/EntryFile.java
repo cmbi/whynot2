@@ -2,10 +2,8 @@ package model;
 
 import java.util.Date;
 
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
 
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotEmpty;
@@ -13,21 +11,19 @@ import org.hibernate.validator.NotNull;
 
 @Entity
 public class EntryFile {
-	@OneToOne
-	@PrimaryKeyJoinColumn
-	private Entry entry;
+	@EmbeddedId
+	protected EntryPK	entry;
 
-	@Id
 	@NotEmpty
 	@Length(max = 200)
-	private String	path;
+	private String		path;
 	@NotNull
-	private long	lastmodified;
+	private long		lastmodified;
 
 	protected EntryFile() {}
 
-	public EntryFile(Entry ent, String pth, long time) {
-		entry = ent;
+	public EntryFile(EntryPK entpk, String pth, long time) {
+		entry = entpk;
 		path = pth;
 		lastmodified = time;
 	}
@@ -47,7 +43,7 @@ public class EntryFile {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(super.toString() + " - ");
+		sb.append(entry + " - ");
 		sb.append(path + " - ");
 		sb.append(new Date(lastmodified));
 		return sb.toString();

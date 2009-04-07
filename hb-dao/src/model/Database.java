@@ -32,7 +32,7 @@ public class Database {
 	@Length(max = 50)
 	private String			regex;
 
-	@OneToMany(mappedBy = "entry.entryPK.database")
+	@OneToMany(mappedBy = "entry.database")
 	private Set<EntryFile>	entries	= new HashSet<EntryFile>();
 
 	protected Database() {}

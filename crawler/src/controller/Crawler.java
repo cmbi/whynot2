@@ -22,7 +22,7 @@ public class Crawler {
 		else
 			;//throw new IllegalArgumentException("Usage: crawler DATABASE DIRECTORY/FILE");
 
-		//crawl("PDB", "/home/tbeek/Desktop/raw/");
+		crawl("PDB", "/home/tbeek/Desktop/raw/");
 		//crawl("DSSP", "/home/tbeek/Desktop/raw/");
 		//crawl("HSSP", "/home/tbeek/Desktop/raw/");
 

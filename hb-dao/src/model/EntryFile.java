@@ -22,8 +22,8 @@ public class EntryFile {
 
 	protected EntryFile() {}
 
-	public EntryFile(EntryPK entpk, String pth, long time) {
-		entry = entpk;
+	public EntryFile(Database db, String pdbid, String pth, long time) {
+		entry = new EntryPK(db, pdbid);
 		path = pth;
 		lastmodified = time;
 	}

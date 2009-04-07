@@ -7,7 +7,6 @@ import model.Author;
 import model.Comment;
 import model.Database;
 import model.EntryFile;
-import model.EntryPK;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -36,9 +35,8 @@ public class SomeManager {
 		Database pdb = new Database("PDB", "pdb.org", "google.com/?q=", null, ".*/pdb([\\d\\w]{4})\\.ent(\\.gz)?");
 		Comment comment = new Comment("Example comment");
 		Author author = new Author("Robbie");
-		EntryPK entpk = new EntryPK(pdb, "0TIM");
-		session.save(new EntryFile(entpk, "/home/tbeek/Desktop/somefile", System.currentTimeMillis()));
-		session.save(new Annotation(entpk, comment, author));
+		session.save(new EntryFile(pdb, "0TIM", "/home/tbeek/Desktop/somefile", System.currentTimeMillis()));
+		session.save(new Annotation(pdb, "0TIM", comment, author));
 
 		session.getTransaction().commit();
 		session.close();
@@ -74,12 +72,10 @@ public class SomeManager {
 		session.save(new Author("Script1"));
 		session.save(new Author("Script2"));
 
-		EntryPK entpk = new EntryPK(pdb, "0TIM");
-
-		EntryFile entry = new EntryFile(entpk, "/home/tbeek/Desktop/somefile", System.currentTimeMillis());
+		EntryFile entry = new EntryFile(pdb, "0TIM", "/home/tbeek/Desktop/somefile", System.currentTimeMillis());
 		session.save(entry);
 
-		session.save(new Annotation(entpk, comment, author));
+		session.save(new Annotation(pdb, "0TIM", comment, author));
 		//Only works if accessible from already persistent instance
 		//session.save(new Annotation(new Entry(pdb, "0TIM"), new Comment("My new comment"), new Author("Tim")));
 		//So this works:

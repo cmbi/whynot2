@@ -18,7 +18,7 @@ public class SomeManager {
 	public static void main(String[] args) {
 		SomeManager mgr = new SomeManager();
 
-		//mgr.fillTabels();
+		mgr.fillTabels();
 
 		//mgr.storeFileAndComment();
 
@@ -26,7 +26,7 @@ public class SomeManager {
 
 		//mgr.deleteHSSPDB();
 
-		mgr.unrelatedTest();
+		//mgr.unrelatedTest();
 
 		HibernateUtil.getSessionFactory().close();
 	}
@@ -78,7 +78,7 @@ public class SomeManager {
 		session.save(pdb);
 		session.save(dssp = new Database("DSSP", "dssp.org", "google.com/?q=", pdb, ".*/([\\d\\w]{4})\\.dssp"));
 		session.save(hssp = new Database("HSSP", "hssp.org", "google.com/?q=", dssp, ".*/([\\d\\w]{4})\\.hssp"));
-		session.save(new Database("PDBFINDER", "pdbfinder.org", "google.com/?q=", pdb, ".*/PDBFIND2?\\.TXT"));
+		session.save(new Database("PDBFINDER", "pdbfinder.org", "google.com/?q=", pdb, "ID           : ([\\d\\w]{4})"));
 
 		Comment comment = new Comment("Example comment");
 		session.save(comment);

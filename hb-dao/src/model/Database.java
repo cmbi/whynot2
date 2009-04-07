@@ -3,6 +3,7 @@ package model;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -32,7 +33,7 @@ public class Database {
 	@Length(max = 50)
 	private String			regex;
 
-	@OneToMany(mappedBy = "entry.database")
+	@OneToMany(mappedBy = "entry.database", cascade = CascadeType.ALL)
 	private Set<EntryFile>	entries	= new HashSet<EntryFile>();
 
 	protected Database() {}

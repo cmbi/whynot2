@@ -8,6 +8,7 @@ import model.Comment;
 import model.Database;
 import model.EntryFile;
 
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -19,26 +20,38 @@ public class SomeManager {
 		Session newSession = HibernateUtil.getSessionFactory().openSession();
 		newSession.close();
 
-		//mgr.doSomeStuffFirst();
+		mgr.doSomeStuffFirst();
 
-		mgr.createAndStoreStuff();
+		//mgr.createAndStoreStuff();
 
 		mgr.doSomeMoreStuff();
 
 		HibernateUtil.getSessionFactory().close();
 	}
 
+	private void deleteHSSPDB() {
+		Session newSession = HibernateUtil.getSessionFactory().openSession();
+		Transaction someTransaction = newSession.beginTransaction();
+		Query query = newSession.createQuery("from Database m where m.name IS :dbname");
+		query.setParameter("dbname", "HSSP");
+		Database db = (Database) query.uniqueResult();
+		newSession.delete(db);
+		someTransaction.commit();
+		newSession.close();
+	}
+
 	private void doSomeStuffFirst() {
-		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		session.beginTransaction();
+
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		Transaction newTransaction = session.beginTransaction();
 
 		Database pdb = new Database("PDB", "pdb.org", "google.com/?q=", null, ".*/pdb([\\d\\w]{4})\\.ent(\\.gz)?");
 		Comment comment = new Comment("Example comment");
 		Author author = new Author("Robbie");
-		session.save(new EntryFile(pdb, "0TIM", "/home/tbeek/Desktop/somefile", System.currentTimeMillis()));
-		session.save(new Annotation(pdb, "0TIM", comment, author));
+		session.saveOrUpdate(new EntryFile(pdb, "0TIM", "/home/tbeek/Desktop/somefile", System.currentTimeMillis()));
+		session.saveOrUpdate(new Annotation(pdb, "0TIM", comment, author));
 
-		session.getTransaction().commit();
+		newTransaction.commit();
 		session.close();
 	}
 

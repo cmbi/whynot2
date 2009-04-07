@@ -28,7 +28,7 @@ public class CrawlImpl implements ICrawl {
 		Session newSession = HibernateUtil.getSessionFactory().openSession();
 		Transaction newTransaction = newSession.beginTransaction();
 		for (EntryFile f : entries)
-			newSession.save(f);
+			newSession.saveOrUpdate(f);
 		newTransaction.commit();
 		newSession.close();
 	}

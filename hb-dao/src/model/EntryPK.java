@@ -23,4 +23,9 @@ public class EntryPK implements Serializable {
 		database = db;
 		pdbid = pid;
 	}
+
+	@Override
+	public String toString() {
+		return database + "/" + pdbid;
+	}
 }

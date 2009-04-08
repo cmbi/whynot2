@@ -2,8 +2,8 @@ package model;
 
 import java.util.Date;
 
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotEmpty;
@@ -11,7 +11,7 @@ import org.hibernate.validator.NotNull;
 
 @Entity
 public class EntryFile {
-	@EmbeddedId
+	@Id
 	protected EntryPK	entry;
 
 	@NotEmpty

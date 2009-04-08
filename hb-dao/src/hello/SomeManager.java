@@ -1,5 +1,7 @@
 package hello;
 
+import hibernate.HibernateUtil;
+
 import java.util.List;
 
 import model.Annotation;

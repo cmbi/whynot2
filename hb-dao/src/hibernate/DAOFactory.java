@@ -2,6 +2,8 @@ package hibernate;
 
 import interfaces.DatabaseDAO;
 
+import org.hibernate.Session;
+
 public abstract class DAOFactory {
 
 	/**
@@ -24,6 +26,8 @@ public abstract class DAOFactory {
 			throw new RuntimeException("Couldn't create DAOFactory: " + factory);
 		}
 	}
+
+	public abstract Session getCurrentSession();
 
 	// Add your DAO interfaces here
 	public abstract DatabaseDAO getDatabaseDAO();

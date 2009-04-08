@@ -7,9 +7,9 @@ import java.io.IOException;
 
 import model.Database;
 
-import org.hibernate.Transaction;
-
 public class Crawler {
+	private static DAOFactory	factory	= DAOFactory.instance(DAOFactory.HIBERNATE);
+
 	public static void main(String[] args) throws IOException {
 		if (args.length == 2)
 			Crawler.crawl(args[0], args[1]);
@@ -22,28 +22,32 @@ public class Crawler {
 	}
 
 	private static void crawl(String dbname, String path) throws IOException {
-		DAOFactory factory = DAOFactory.instance(DAOFactory.HIBERNATE);
+		DatabaseDAO dbdao = Crawler.factory.getDatabaseDAO();
+		try {
+			dbdao.getSession().beginTransaction(); //Plain JDBC
 
-		DatabaseDAO dbdao = factory.getDatabaseDAO();
-		Transaction t = dbdao.getSession().beginTransaction();
+			Database db = dbdao.findById(dbname, true);
+			AbstractCrawler fc;
+			switch (db.getCrawltype()) {
+			case FILE:
+				fc = new FileCrawler(db);
+				break;
+			case LINE:
+				fc = new LineCrawler(db);
+				break;
+			default:
+				throw new IllegalArgumentException("Invalid CrawlType");
+			}
+			int removed = fc.removeInvalidEntries();
+			int added = fc.addEntriesIn(path);
 
-		Database db = dbdao.findById(dbname, true);
-		AbstractCrawler fc;
-		switch (db.getCrawltype()) {
-		case FILE:
-			fc = new FileCrawler(db);
-			break;
-		case LINE:
-			fc = new LineCrawler(db);
-			break;
-		default:
-			throw new IllegalArgumentException("Invalid CrawlType");
+			dbdao.getSession().getTransaction().commit();//Plain JDBC: Don't forget exception handling
+
+			System.out.println(dbname + ": Removed " + removed + ", Added " + added);
 		}
-		int removed = fc.removeInvalidEntries();
-		int added = fc.addEntriesIn(path);
-
-		t.commit();
-
-		System.out.println(dbname + ": Removed " + removed + ", Added " + added);
+		catch (RuntimeException e) {
+			Crawler.factory.getCurrentSession().getTransaction().rollback();
+			throw e;
+		}
 	}
 }

@@ -1,6 +1,5 @@
 package hibernate;
 
-import hello.HibernateUtil;
 import interfaces.DatabaseDAO;
 import model.Database;
 
@@ -24,7 +23,8 @@ public class HibernateDAOFactory extends DAOFactory {
 	}
 
 	// You could override this if you don't want HibernateUtil for lookup
-	protected Session getCurrentSession() {
+	@Override
+	public Session getCurrentSession() {
 		return HibernateUtil.getSessionFactory().getCurrentSession();
 	}
 

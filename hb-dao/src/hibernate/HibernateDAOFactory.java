@@ -7,8 +7,9 @@ import org.hibernate.Session;
 
 public class HibernateDAOFactory extends DAOFactory {
 	@Override
+	//TODO: Maybe add a session as an argument here instead of DAO managed session?
 	public DatabaseDAO getDatabaseDAO() {
-		return (DatabaseDAO) instantiateDAO(DatabaseDAOHibernate.class);
+		return (DatabaseDAO) instantiateDAO(DatabaseHibernateDAO.class);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -31,5 +32,5 @@ public class HibernateDAOFactory extends DAOFactory {
 
 	// Inline concrete DAO implementations with no business-related data access methods.
 	// If we use public static nested classes, we can centralize all of them in one source file.
-	public static class DatabaseDAOHibernate extends GenericHibernateDAO<Database, String> implements DatabaseDAO {}
+	public static class DatabaseHibernateDAO extends GenericHibernateDAO<Database, String> implements DatabaseDAO {}
 }

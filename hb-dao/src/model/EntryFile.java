@@ -48,4 +48,31 @@ public class EntryFile {
 		sb.append(new Date(lastmodified));
 		return sb.toString();
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (entry == null ? 0 : entry.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		EntryFile other = (EntryFile) obj;
+		if (entry == null) {
+			if (other.entry != null)
+				return false;
+		}
+		else
+			if (!entry.equals(other.entry))
+				return false;
+		return true;
+	}
 }

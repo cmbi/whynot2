@@ -49,5 +49,8 @@ public class Crawler {
 			Crawler.factory.getCurrentSession().getTransaction().rollback();
 			throw e;
 		}
+		finally {
+			//Close session if using anything other than current session
+		}
 	}
 }

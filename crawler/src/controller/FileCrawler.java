@@ -40,8 +40,6 @@ public class FileCrawler extends AbstractCrawler {
 				if (m.matches())
 					if (database.getEntries().add(new EntryFile(database, m.group(1), file.getAbsolutePath(), file.lastModified())))
 						count++;
-					else
-						throw new IllegalArgumentException(database.getRegex() + " & " + file.getAbsolutePath());
 			}
 		return count;
 	}

@@ -28,8 +28,6 @@ public class LineCrawler extends AbstractCrawler {
 			if (m.matches())
 				if (database.getEntries().add(new EntryFile(database, m.group(1), filepath, lastmodified)))
 					count++;
-				else
-					;//Do nothing (we obviously don't expect ALL lines to match)
 		}
 		bf.close();
 		return count;

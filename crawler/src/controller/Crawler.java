@@ -41,7 +41,7 @@ public class Crawler {
 			int removed = fc.removeInvalidEntries();
 			int added = fc.addEntriesIn(path);
 
-			Crawler.factory.getCurrentSession().getTransaction().commit();//Plain JDBC: Don't forget exception handling
+			Crawler.factory.getCurrentSession().getTransaction().commit(); //Plain JDBC
 
 			System.out.println(dbname + ": Removed " + removed + ", Added " + added);
 		}

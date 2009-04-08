@@ -24,7 +24,7 @@ public class Crawler {
 	private static void crawl(String dbname, String path) throws IOException {
 		DatabaseDAO dbdao = Crawler.factory.getDatabaseDAO();
 		try {
-			dbdao.getSession().beginTransaction(); //Plain JDBC
+			Crawler.factory.getCurrentSession().beginTransaction(); //Plain JDBC
 
 			Database db = dbdao.findById(dbname, true);
 			AbstractCrawler fc;
@@ -41,7 +41,7 @@ public class Crawler {
 			int removed = fc.removeInvalidEntries();
 			int added = fc.addEntriesIn(path);
 
-			dbdao.getSession().getTransaction().commit();//Plain JDBC: Don't forget exception handling
+			Crawler.factory.getCurrentSession().getTransaction().commit();//Plain JDBC: Don't forget exception handling
 
 			System.out.println(dbname + ": Removed " + removed + ", Added " + added);
 		}

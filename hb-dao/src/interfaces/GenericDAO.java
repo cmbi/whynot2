@@ -3,8 +3,6 @@ package interfaces;
 import java.io.Serializable;
 import java.util.List;
 
-import org.hibernate.Session;
-
 public interface GenericDAO<T, ID extends Serializable> {
 
 	T findById(ID id, boolean lock);
@@ -16,6 +14,4 @@ public interface GenericDAO<T, ID extends Serializable> {
 	T makePersistent(T entity);
 
 	void makeTransient(T entity);
-
-	Session getSession();
 }

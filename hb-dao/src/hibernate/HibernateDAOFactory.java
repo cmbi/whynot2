@@ -11,6 +11,7 @@ public class HibernateDAOFactory extends DAOFactory {
 		return (DatabaseDAO) instantiateDAO(DatabaseDAOHibernate.class);
 	}
 
+	@SuppressWarnings("unchecked")
 	private GenericHibernateDAO instantiateDAO(Class daoClass) {
 		try {
 			GenericHibernateDAO dao = (GenericHibernateDAO) daoClass.newInstance();

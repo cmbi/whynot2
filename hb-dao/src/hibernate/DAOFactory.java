@@ -13,11 +13,13 @@ public abstract class DAOFactory {
 	 * propagation (CurrentSessionContext), thread-bound or transaction-bound,
 	 * and transaction scoped.
 	 */
+	@SuppressWarnings("unchecked")
 	public static final Class	HIBERNATE	= HibernateDAOFactory.class;
 
 	/**
 	 * Factory method for instantiation of concrete factories.
 	 */
+	@SuppressWarnings("unchecked")
 	public static DAOFactory instance(Class factory) {
 		try {
 			return (DAOFactory) factory.newInstance();

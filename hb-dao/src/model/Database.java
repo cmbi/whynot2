@@ -65,6 +65,10 @@ public class Database {
 		return name;
 	}
 
+	public Database getParent() {
+		return parent;
+	}
+
 	public String getRegex() {
 		return regex;
 	}

@@ -26,7 +26,7 @@ public abstract class GenericHibernateDAO<T, ID extends Serializable> implements
 		this.session = s;
 	}
 
-	public Session getSession() {
+	protected Session getSession() {
 		if (session == null)
 			throw new IllegalStateException("Session has not been set on DAO before usage");
 		return session;

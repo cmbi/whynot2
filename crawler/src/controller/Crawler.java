@@ -1,6 +1,7 @@
 package controller;
 
 import hibernate.DAOFactory;
+import hibernate.HibernateUtil;
 import interfaces.DatabaseDAO;
 
 import java.io.IOException;
@@ -22,6 +23,8 @@ public class Crawler {
 	}
 
 	private static void crawl(String dbname, String path) throws IOException {
+		//TODO: Supply the Session in calling getXXXDAO()
+		HibernateUtil.getSessionFactory().getCurrentSession();
 		DatabaseDAO dbdao = Crawler.factory.getDatabaseDAO();
 		try {
 			Crawler.factory.getCurrentSession().beginTransaction(); //Plain JDBC

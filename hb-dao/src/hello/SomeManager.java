@@ -1,6 +1,8 @@
 package hello;
 
+import hibernate.DAOFactory;
 import hibernate.HibernateUtil;
+import interfaces.DatabaseDAO;
 
 import java.util.List;
 
@@ -9,7 +11,6 @@ import model.Author;
 import model.Comment;
 import model.Database;
 import model.EntryFile;
-import model.EntryPK;
 import model.Database.CrawlType;
 
 import org.hibernate.Query;
@@ -21,7 +22,7 @@ public class SomeManager {
 	public static void main(String[] args) {
 		SomeManager mgr = new SomeManager();
 
-		mgr.fillTabels();
+		//mgr.fillTabels();
 
 		//mgr.storeFileAndComment();
 
@@ -29,22 +30,30 @@ public class SomeManager {
 
 		//mgr.deleteHSSPDB();
 
-		//mgr.unrelatedTest();
+		mgr.unrelatedTest();
 
 		HibernateUtil.getSessionFactory().close();
 	}
 
 	private void unrelatedTest() {
+		DAOFactory factory = DAOFactory.instance(DAOFactory.HIBERNATE);
+		DatabaseDAO dbdao = factory.getDatabaseDAO();
+		factory.getCurrentSession().beginTransaction(); //Plain JDBC
+		Database db = dbdao.findById("DSSP", false);
 
-		Session newSession = HibernateUtil.getSessionFactory().openSession();
-		Transaction newTransaction = newSession.beginTransaction();
+		System.out.println(dbdao.getMissingCount(db));
 
-		Database db = (Database) newSession.get(Database.class, "PDB");
-		EntryFile ef = (EntryFile) newSession.get(EntryFile.class, new EntryPK(db, "0TIM"));
-		db.getEntries().remove(ef);
+		factory.getCurrentSession().getTransaction().commit(); //Plain JDBC
 
-		newTransaction.commit();
-		newSession.close();
+		//		Session newSession = HibernateUtil.getSessionFactory().openSession();
+		//		Transaction newTransaction = newSession.beginTransaction();
+		//
+		//		Database db = (Database) newSession.get(Database.class, "DSSP");
+		//		EntryFile ef = (EntryFile) newSession.get(EntryFile.class, new EntryPK(db, "0TIM"));
+		//		db.getEntries().remove(ef);
+		//
+		//		newTransaction.commit();
+		//		newSession.close();
 	}
 
 	private void storeFileAndComment() {

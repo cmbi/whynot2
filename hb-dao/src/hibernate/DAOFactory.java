@@ -29,6 +29,8 @@ public abstract class DAOFactory {
 		}
 	}
 
+	@Deprecated
+	//TODO: Remove deprecated: Added before switching around session handling
 	public abstract Session getCurrentSession();
 
 	// Add your DAO interfaces here

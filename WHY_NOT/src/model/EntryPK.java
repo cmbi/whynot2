@@ -63,4 +63,12 @@ public class EntryPK implements Serializable {
 				return false;
 		return true;
 	}
+
+	public Database getDatabase() {
+		return database;
+	}
+
+	public String getPdbid() {
+		return pdbid;
+	}
 }

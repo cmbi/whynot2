@@ -28,4 +28,12 @@ public class Author {
 	public Author(String nm) {
 		name = nm;
 	}
+
+	public String getName() {
+		return name;
+	}
+
+	public Set<Annotation> getAnnotations() {
+		return annotations;
+	}
 }

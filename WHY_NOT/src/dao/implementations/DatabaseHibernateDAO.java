@@ -36,23 +36,34 @@ public class DatabaseHibernateDAO extends GenericHibernateDAO<Database, String> 
 											"from Annotation ann" + //
 											"where ann.entry NOT IN ";
 
-	public int getMissingCount(Database db) {
-		Query q = getSession().createQuery("select count(*) as count " + DatabaseHibernateDAO.MISSING);
-		q.setParameter("child", db);
-		q.setParameter("parent", db.getParent());
+	public int getValidCount(Database db) {
+		Query q = getSession().createQuery("select count(*) " + DatabaseHibernateDAO.VALID).setParameter("child", db);
 		return (Integer) q.uniqueResult();
 	}
 
+	@SuppressWarnings("unchecked")
 	public Set<EntryFile> getValidEntries(Database db) {
 		Query q = getSession().createQuery(DatabaseHibernateDAO.VALID).setParameter("child", db);
 		return new HashSet<EntryFile>(q.list());
 	}
 
+	public int getMissingCount(Database db) {
+		Query q = getSession().createQuery("select count(*) " + DatabaseHibernateDAO.MISSING).setParameter("child", db).setParameter("parent", db.getParent());
+		return (Integer) q.uniqueResult();
+	}
+
+	@SuppressWarnings("unchecked")
 	public Set<EntryFile> getMissingEntries(Database db) {
 		Query q = getSession().createQuery(DatabaseHibernateDAO.MISSING).setParameter("child", db).setParameter("parent", db.getParent());
 		return new HashSet<EntryFile>(q.list());
 	}
 
+	public int getObsoleteCount(Database db) {
+		Query q = getSession().createQuery("select count(*) " + DatabaseHibernateDAO.OBSOLETE).setParameter("child", db);
+		return (Integer) q.uniqueResult();
+	}
+
+	@SuppressWarnings("unchecked")
 	public Set<EntryFile> getObsoleteEntries(Database db) {
 		Query q = getSession().createQuery(DatabaseHibernateDAO.OBSOLETE).setParameter("child", db);
 		return new HashSet<EntryFile>(q.list());

@@ -28,4 +28,12 @@ public class Comment {
 	public Comment(String content) {
 		text = content;
 	}
+
+	public String getText() {
+		return text;
+	}
+
+	public Set<Annotation> getAnnotations() {
+		return annotations;
+	}
 }

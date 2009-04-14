@@ -66,4 +66,24 @@ public class Annotation {
 				return false;
 		return true;
 	}
+
+	public int getID() {
+		return id;
+	}
+
+	public EntryPK getEntry() {
+		return entry;
+	}
+
+	public Comment getComment() {
+		return comment;
+	}
+
+	public Author getAuthor() {
+		return author;
+	}
+
+	public long getTimestamp() {
+		return timestamp;
+	}
 }

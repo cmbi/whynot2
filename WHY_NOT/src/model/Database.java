@@ -65,6 +65,18 @@ public class Database {
 		return name;
 	}
 
+	public String getName() {
+		return name;
+	}
+
+	public String getReference() {
+		return reference;
+	}
+
+	public String getFilelink() {
+		return filelink;
+	}
+
 	public Database getParent() {
 		return parent;
 	}

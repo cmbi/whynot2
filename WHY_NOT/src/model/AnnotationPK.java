@@ -1,30 +1,16 @@
 package model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
+import java.io.Serializable;
+
+import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
 
-@Entity
-@IdClass(AnnotationPK.class)
-public class Annotation {
-	@Id
-	private Entry	entry;
-	@Id
-	private Comment	comment;
-
+@Embeddable
+public class AnnotationPK implements Serializable {
 	@ManyToOne
-	private Author	author;
-
-	private long	timestamp	= System.currentTimeMillis();
-
-	protected Annotation() {}
-
-	public Annotation(Database db, String pdbid, Comment com, Author aut) {
-		entry = new Entry(db, pdbid);
-		comment = com;
-		author = aut;
-	}
+	private Entry	entry;
+	@ManyToOne
+	private Comment	comment;
 
 	@Override
 	public int hashCode() {
@@ -43,7 +29,7 @@ public class Annotation {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Annotation other = (Annotation) obj;
+		AnnotationPK other = (AnnotationPK) obj;
 		if (comment == null) {
 			if (other.comment != null)
 				return false;
@@ -59,21 +45,5 @@ public class Annotation {
 			if (!entry.equals(other.entry))
 				return false;
 		return true;
-	}
-
-	public Entry getEntry() {
-		return entry;
-	}
-
-	public Comment getComment() {
-		return comment;
-	}
-
-	public Author getAuthor() {
-		return author;
-	}
-
-	public long getTimestamp() {
-		return timestamp;
 	}
 }

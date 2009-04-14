@@ -35,9 +35,11 @@
 		<!-- Mappings -->
 		<mapping package="model"/>
 		<mapping class="model.Annotation"/>
+		<mapping class="model.AnnotationPK"/>
 		<mapping class="model.Author"/>
 		<mapping class="model.Comment"/>
 		<mapping class="model.Database"/>
+		<mapping class="model.Entry"/>
 		<mapping class="model.EntryPK"/>
 		<mapping class="model.EntryFile"/>
     </session-factory>

@@ -16,7 +16,7 @@ public class DatabaseHibernateDAO extends GenericHibernateDAO<Database, String> 
 											"where chi.entry.database = :child and " + //
 											"par.entry = ( chi.entry.database.parent, chi.entry.pdbid )";
 
-	private static final String	MISSING		= // 
+	private static final String	MISSING		= //
 											"from EntryFile par " + //
 											"where par.entry.database = :parent and " + //
 											"(select chi.path from EntryFile chi " + //
@@ -28,17 +28,9 @@ public class DatabaseHibernateDAO extends GenericHibernateDAO<Database, String> 
 											"(select par.path from EntryFile par " + //
 											"where par.entry = ( chi.entry.database.parent, chi.entry.pdbid )) is null";
 
-	private static final String	ANNOTATED	= // + ( ... )!
-											"from Annotation ann" + //
-											"where ann.entry IN ";
-
-	private static final String	UNANNOTATED	= // + ( ... )!
-											"from Annotation ann" + //
-											"where ann.entry NOT IN ";
-
-	public int getValidCount(Database db) {
+	public long getValidCount(Database db) {
 		Query q = getSession().createQuery("select count(*) " + DatabaseHibernateDAO.VALID).setParameter("child", db);
-		return (Integer) q.uniqueResult();
+		return (Long) q.uniqueResult();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -47,9 +39,9 @@ public class DatabaseHibernateDAO extends GenericHibernateDAO<Database, String> 
 		return new HashSet<EntryFile>(q.list());
 	}
 
-	public int getMissingCount(Database db) {
+	public long getMissingCount(Database db) {
 		Query q = getSession().createQuery("select count(*) " + DatabaseHibernateDAO.MISSING).setParameter("child", db).setParameter("parent", db.getParent());
-		return (Integer) q.uniqueResult();
+		return (Long) q.uniqueResult();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -58,9 +50,9 @@ public class DatabaseHibernateDAO extends GenericHibernateDAO<Database, String> 
 		return new HashSet<EntryFile>(q.list());
 	}
 
-	public int getObsoleteCount(Database db) {
+	public long getObsoleteCount(Database db) {
 		Query q = getSession().createQuery("select count(*) " + DatabaseHibernateDAO.OBSOLETE).setParameter("child", db);
-		return (Integer) q.uniqueResult();
+		return (Long) q.uniqueResult();
 	}
 
 	@SuppressWarnings("unchecked")

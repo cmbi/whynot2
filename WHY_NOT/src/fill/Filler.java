@@ -15,6 +15,7 @@ import org.hibernate.Transaction;
 
 import dao.hibernate.DAOFactory;
 import dao.hibernate.HibernateUtil;
+import dao.interfaces.AnnotationDAO;
 import dao.interfaces.DatabaseDAO;
 
 public class Filler {
@@ -38,13 +39,16 @@ public class Filler {
 	private void unrelatedTest() {
 		DAOFactory factory = DAOFactory.instance(DAOFactory.HIBERNATE);
 		DatabaseDAO dbdao = factory.getDatabaseDAO();
+		AnnotationDAO anndao = factory.getAnnotationDAO();
+
 		factory.getCurrentSession().beginTransaction(); //Plain JDBC
 		Database db = dbdao.findById("DSSP", false);
 
 		//System.out.println(dbdao.getMissingCount(db));
-		System.out.println(dbdao.getValidEntries(db).size());
-		System.out.println(dbdao.getMissingEntries(db).size());
-		System.out.println(dbdao.getObsoleteEntries(db).size());
+		System.out.println(dbdao.getValidCount(db));
+		System.out.println(dbdao.getMissingCount(db));
+		System.out.println(dbdao.getObsoleteCount(db));
+		System.out.println(anndao.getRecent().size());
 
 		factory.getCurrentSession().getTransaction().commit(); //Plain JDBC
 

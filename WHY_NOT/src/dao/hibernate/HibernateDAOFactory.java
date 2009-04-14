@@ -1,11 +1,11 @@
 package dao.hibernate;
 
-import model.Annotation;
 import model.Author;
 import model.Comment;
 
 import org.hibernate.Session;
 
+import dao.implementations.AnnotationHibernateDAO;
 import dao.implementations.DatabaseHibernateDAO;
 import dao.implementations.GenericHibernateDAO;
 import dao.interfaces.AnnotationDAO;
@@ -54,8 +54,6 @@ public class HibernateDAOFactory extends DAOFactory {
 
 	// Inline concrete DAO implementations with no business-related data access methods.
 	// If we use public static nested classes, we can centralize all of them in one source file.
-	public static class AnnotationHibernateDAO extends GenericHibernateDAO<Annotation, Integer> implements AnnotationDAO {}
-
 	public static class AuthorHibernateDAO extends GenericHibernateDAO<Author, String> implements AuthorDAO {}
 
 	public static class CommentHibernateDAO extends GenericHibernateDAO<Comment, String> implements CommentDAO {}

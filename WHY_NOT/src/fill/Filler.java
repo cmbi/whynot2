@@ -1,6 +1,5 @@
 package fill;
 
-
 import java.util.List;
 
 import model.Annotation;
@@ -42,7 +41,10 @@ public class Filler {
 		factory.getCurrentSession().beginTransaction(); //Plain JDBC
 		Database db = dbdao.findById("DSSP", false);
 
-		System.out.println(dbdao.getMissingCount(db));
+		//System.out.println(dbdao.getMissingCount(db));
+		System.out.println(dbdao.getValidEntries(db).size());
+		System.out.println(dbdao.getMissingEntries(db).size());
+		System.out.println(dbdao.getObsoleteEntries(db).size());
 
 		factory.getCurrentSession().getTransaction().commit(); //Plain JDBC
 

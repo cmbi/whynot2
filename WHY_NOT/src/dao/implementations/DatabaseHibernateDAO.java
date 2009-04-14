@@ -1,6 +1,10 @@
 package dao.implementations;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import model.Database;
+import model.EntryFile;
 
 import org.hibernate.Query;
 
@@ -32,10 +36,25 @@ public class DatabaseHibernateDAO extends GenericHibernateDAO<Database, String> 
 											"from Annotation ann" + //
 											"where ann.entry NOT IN ";
 
-	public long getMissingCount(Database db) {
+	public int getMissingCount(Database db) {
 		Query q = getSession().createQuery("select count(*) as count " + DatabaseHibernateDAO.MISSING);
 		q.setParameter("child", db);
 		q.setParameter("parent", db.getParent());
-		return (Long) q.uniqueResult();
+		return (Integer) q.uniqueResult();
+	}
+
+	public Set<EntryFile> getValidEntries(Database db) {
+		Query q = getSession().createQuery(DatabaseHibernateDAO.VALID).setParameter("child", db);
+		return new HashSet<EntryFile>(q.list());
+	}
+
+	public Set<EntryFile> getMissingEntries(Database db) {
+		Query q = getSession().createQuery(DatabaseHibernateDAO.MISSING).setParameter("child", db).setParameter("parent", db.getParent());
+		return new HashSet<EntryFile>(q.list());
+	}
+
+	public Set<EntryFile> getObsoleteEntries(Database db) {
+		Query q = getSession().createQuery(DatabaseHibernateDAO.OBSOLETE).setParameter("child", db);
+		return new HashSet<EntryFile>(q.list());
 	}
 }

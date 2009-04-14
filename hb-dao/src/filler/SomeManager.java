@@ -1,4 +1,4 @@
-package hello;
+package filler;
 
 import hibernate.DAOFactory;
 import hibernate.HibernateUtil;

@@ -38,7 +38,7 @@ public class HibernateDAOFactory extends DAOFactory {
 	private GenericHibernateDAO instantiateDAO(Class daoClass) {
 		try {
 			GenericHibernateDAO dao = (GenericHibernateDAO) daoClass.newInstance();
-			dao.setSession(getCurrentSession());//TODO
+			dao.setSession(getCurrentSession());//TODO Session really here?
 			return dao;
 		}
 		catch (Exception ex) {

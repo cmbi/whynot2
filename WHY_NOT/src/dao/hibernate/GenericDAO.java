@@ -1,4 +1,4 @@
-package interfaces;
+package dao.hibernate;
 
 import java.io.Serializable;
 import java.util.List;

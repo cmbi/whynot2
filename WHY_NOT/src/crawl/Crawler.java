@@ -1,14 +1,15 @@
 package crawl;
 
-import hibernate.DAOFactory;
-import hibernate.HibernateUtil;
-import interfaces.DatabaseDAO;
 
 import java.io.IOException;
 
 import model.Database;
 
 import org.hibernate.Transaction;
+
+import dao.hibernate.DAOFactory;
+import dao.hibernate.HibernateUtil;
+import dao.interfaces.DatabaseDAO;
 
 public class Crawler {
 	private static DAOFactory	factory	= DAOFactory.instance(DAOFactory.HIBERNATE);

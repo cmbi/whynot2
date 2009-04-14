@@ -1,6 +1,5 @@
-package hibernate;
+package dao.implementations;
 
-import interfaces.GenericDAO;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
@@ -11,6 +10,8 @@ import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Example;
+
+import dao.hibernate.GenericDAO;
 
 public abstract class GenericHibernateDAO<T, ID extends Serializable> implements GenericDAO<T, ID> {
 

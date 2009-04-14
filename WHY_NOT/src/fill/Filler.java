@@ -1,8 +1,5 @@
 package fill;
 
-import hibernate.DAOFactory;
-import hibernate.HibernateUtil;
-import interfaces.DatabaseDAO;
 
 import java.util.List;
 
@@ -16,6 +13,10 @@ import model.Database.CrawlType;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+
+import dao.hibernate.DAOFactory;
+import dao.hibernate.HibernateUtil;
+import dao.interfaces.DatabaseDAO;
 
 public class Filler {
 

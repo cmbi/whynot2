@@ -1,4 +1,4 @@
-package crawler;
+package crawl;
 
 import hibernate.DAOFactory;
 import hibernate.HibernateUtil;

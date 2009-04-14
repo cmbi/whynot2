@@ -1,5 +1,8 @@
 package hibernate;
 
+import interfaces.AnnotationDAO;
+import interfaces.AuthorDAO;
+import interfaces.CommentDAO;
 import interfaces.DatabaseDAO;
 
 import org.hibernate.Session;
@@ -32,5 +35,11 @@ public abstract class DAOFactory {
 	public abstract Session getCurrentSession();
 
 	// Add your DAO interfaces here
+	public abstract AnnotationDAO getAnnotationDAO();
+
+	public abstract AuthorDAO getAuthorDAO();
+
+	public abstract CommentDAO getCommentDAO();
+
 	public abstract DatabaseDAO getDatabaseDAO();
 }

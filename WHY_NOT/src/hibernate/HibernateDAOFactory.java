@@ -1,7 +1,9 @@
 package hibernate;
 
+import interfaces.AnnotationDAO;
+import interfaces.AuthorDAO;
+import interfaces.CommentDAO;
 import interfaces.DatabaseDAO;
-import interfaces.GenericDAO;
 import model.Annotation;
 import model.Author;
 import model.Comment;
@@ -11,6 +13,21 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 public class HibernateDAOFactory extends DAOFactory {
+	@Override
+	public AnnotationDAO getAnnotationDAO() {
+		return (AnnotationDAO) instantiateDAO(AnnotationHibernateDAO.class);
+	}
+
+	@Override
+	public AuthorDAO getAuthorDAO() {
+		return (AuthorDAO) instantiateDAO(AuthorHibernateDAO.class);
+	}
+
+	@Override
+	public CommentDAO getCommentDAO() {
+		return (CommentDAO) instantiateDAO(CommentHibernateDAO.class);
+	}
+
 	@Override
 	public DatabaseDAO getDatabaseDAO() {
 		return (DatabaseDAO) instantiateDAO(DatabaseHibernateDAO.class);
@@ -36,11 +53,11 @@ public class HibernateDAOFactory extends DAOFactory {
 
 	// Inline concrete DAO implementations with no business-related data access methods.
 	// If we use public static nested classes, we can centralize all of them in one source file.
-	public static class AuthorHibernateDAO extends GenericHibernateDAO<Author, String> implements GenericDAO<Author, String> {}
+	public static class AnnotationHibernateDAO extends GenericHibernateDAO<Annotation, Integer> implements AnnotationDAO {}
 
-	public static class CommentHibernateDAO extends GenericHibernateDAO<Comment, String> implements GenericDAO<Comment, String> {}
+	public static class AuthorHibernateDAO extends GenericHibernateDAO<Author, String> implements AuthorDAO {}
 
-	public static class AnnotationHibernateDAO extends GenericHibernateDAO<Annotation, Integer> implements GenericDAO<Annotation, Integer> {}
+	public static class CommentHibernateDAO extends GenericHibernateDAO<Comment, String> implements CommentDAO {}
 
 	public static class DatabaseHibernateDAO extends GenericHibernateDAO<Database, String> implements DatabaseDAO {
 		private static final String	VALID		= //
@@ -61,11 +78,11 @@ public class HibernateDAOFactory extends DAOFactory {
 												"where par.entry = ( chi.entry.database.parent, chi.entry.pdbid )) is null";
 
 		private static final String	ANNOTATED	= // + ( ... )!
-												"select ann from Annotation ann" + //
+												"from Annotation ann" + //
 												"where ann.entry IN ";
 
 		private static final String	UNANNOTATED	= // + ( ... )!
-												"select ann from Annotation ann" + //
+												"from Annotation ann" + //
 												"where ann.entry NOT IN ";
 
 		public long getMissingCount(Database db) {

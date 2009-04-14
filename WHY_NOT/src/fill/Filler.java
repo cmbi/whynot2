@@ -1,4 +1,4 @@
-package filler;
+package fill;
 
 import hibernate.DAOFactory;
 import hibernate.HibernateUtil;
@@ -17,10 +17,10 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-public class SomeManager {
+public class Filler {
 
 	public static void main(String[] args) {
-		SomeManager mgr = new SomeManager();
+		Filler mgr = new Filler();
 
 		//mgr.fillTabels();
 

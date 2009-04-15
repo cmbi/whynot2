@@ -6,8 +6,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 
-import old_model.Databank;
-import old_model.Entry;
+import model.Databank;
+import model.Entry;
 
 
 public class FileCrawler extends AbstractCrawler {

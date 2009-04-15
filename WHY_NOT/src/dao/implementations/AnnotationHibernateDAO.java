@@ -2,8 +2,7 @@ package dao.implementations;
 
 import java.util.List;
 
-
-import old_model.Annotation;
+import model.Annotation;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;

@@ -25,8 +25,8 @@ public class Comment {
 
 	protected Comment() {}
 
-	public Comment(String content) {
-		text = content;
+	public Comment(String text) {
+		this.text = text;
 	}
 
 	@Override

@@ -49,6 +49,17 @@ public class Databank {
 	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
 	private Set<File>	files	= new HashSet<File>();
 
+	protected Databank() {}
+
+	public Databank(String name, String reference, String filelink, Databank parent, String regex, CrawlType crawltype) {
+		this.name = name;
+		this.reference = reference;
+		this.filelink = filelink;
+		this.parent = parent;
+		this.regex = regex;
+		this.crawltype = crawltype;
+	}
+
 	@Override
 	public String toString() {
 		return name + "," + reference + "," + filelink + "," + parent.name + "," + regex + "," + crawltype;

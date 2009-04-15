@@ -21,6 +21,13 @@ public class Annotation {
 	@ManyToMany
 	private Set<Entry>	entries		= new HashSet<Entry>();
 
+	protected Annotation() {}
+
+	public Annotation(Author author, Comment comment) {
+		this.author = author;
+		this.comment = comment;
+	}
+
 	@Override
 	public String toString() {
 		return author + "," + comment + "," + timestamp;

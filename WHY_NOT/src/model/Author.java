@@ -25,8 +25,8 @@ public class Author {
 
 	protected Author() {}
 
-	public Author(String nm) {
-		name = nm;
+	public Author(String name) {
+		this.name = name;
 	}
 
 	@Override

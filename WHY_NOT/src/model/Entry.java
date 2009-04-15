@@ -29,6 +29,13 @@ public class Entry {
 	@ManyToMany(mappedBy = "entries")
 	private Set<Annotation>	annotations	= new HashSet<Annotation>();
 
+	protected Entry() {}
+
+	public Entry(Databank databank, String pdbid) {
+		this.databank = databank;
+		this.pdbid = pdbid;
+	}
+
 	@Override
 	public String toString() {
 		return databank.name + "," + pdbid;

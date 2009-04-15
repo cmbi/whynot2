@@ -2,8 +2,7 @@ package dao.interfaces;
 
 import java.util.List;
 
-import old_model.Annotation;
-
+import model.Annotation;
 import dao.hibernate.GenericDAO;
 
 public interface AnnotationDAO extends GenericDAO<Annotation, Integer> {

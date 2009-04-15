@@ -2,13 +2,12 @@ package fill;
 
 import java.util.List;
 
-
-import old_model.Annotation;
-import old_model.Author;
-import old_model.Comment;
-import old_model.Databank;
-import old_model.Entry;
-import old_model.Databank.CrawlType;
+import model.Annotation;
+import model.Author;
+import model.Comment;
+import model.Databank;
+import model.Entry;
+import model.Databank.CrawlType;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -70,8 +69,8 @@ public class Filler {
 		Databank pdb = new Databank("PDB", "pdb.org", "google.com/?q=", null, ".*/pdb([\\d\\w]{4})\\.ent(\\.gz)?", CrawlType.FILE);
 		Comment comment = new Comment("Example comment");
 		Author author = new Author("Robbie");
-		session.saveOrUpdate(new Entry(pdb, "0TIM", "/home/tbeek/Desktop/somefile", System.currentTimeMillis()));
-		session.saveOrUpdate(new Annotation(pdb, "0TIM", comment, author));
+		session.saveOrUpdate(new Entry(pdb, "0TIM"));
+		session.saveOrUpdate(new Annotation(author, comment));
 
 		newTransaction.commit();
 		session.close();
@@ -107,9 +106,8 @@ public class Filler {
 		session.save(new Author("Script1"));
 		session.save(new Author("Script2"));
 
-		session.save(new Annotation(pdb, "0TIM", comment, author));
+		session.save(new Annotation(author, comment));
 
-		session.save(new Annotation(pdb, "100J", comment, author));
 		//session.save(new Annotation(new Entry(pdb, "100Q"), comment, author));
 		//Only works if accessible from already persistent instance
 		//session.save(new Annotation(new Entry(pdb, "0TIM"), new Comment("My new comment"), new Author("Tim")));

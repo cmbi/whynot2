@@ -7,6 +7,7 @@ import model.Author;
 import model.Comment;
 import model.Databank;
 import model.Entry;
+import model.File;
 import model.Databank.CrawlType;
 
 import org.hibernate.Query;
@@ -106,7 +107,15 @@ public class Filler {
 		session.save(new Author("Script1"));
 		session.save(new Author("Script2"));
 
-		session.save(new Annotation(author, comment));
+		Annotation ann;
+		session.save(ann = new Annotation(author, comment));
+
+		Entry ent;
+		ann.getEntries().add(ent = new Entry(pdb, "0TIM"));
+		ann.getEntries().add(new Entry(pdb, "100J"));
+		ann.getEntries().add(new Entry(pdb, "100Q"));
+		session.save(ent);
+		pdb.getFiles().add(new File(ent, "/home/tbeek/Desktop/raw/stats", 2L));
 
 		//session.save(new Annotation(new Entry(pdb, "100Q"), comment, author));
 		//Only works if accessible from already persistent instance

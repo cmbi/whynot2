@@ -26,7 +26,8 @@ public class Entry {
 	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
 	private File			file;
 
-	@ManyToMany(mappedBy = "entries")
+	@ManyToMany(mappedBy = "entries", cascade = CascadeType.ALL)
+	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
 	private Set<Annotation>	annotations	= new HashSet<Annotation>();
 
 	protected Entry() {}

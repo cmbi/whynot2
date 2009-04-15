@@ -60,6 +60,10 @@ public class Databank {
 		this.crawltype = crawltype;
 	}
 
+	public Set<File> getFiles() {
+		return files;
+	}
+
 	@Override
 	public String toString() {
 		return name + "," + reference + "," + filelink + "," + parent.name + "," + regex + "," + crawltype;

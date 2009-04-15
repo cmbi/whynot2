@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
@@ -20,45 +22,10 @@ public class Annotation {
 
 	protected Annotation() {}
 
-	public Annotation(Database db, String pdbid, Comment com, Author aut) {
+	public Annotation(Databank db, String pdbid, Comment com, Author aut) {
 		entry = new Entry(db, pdbid);
 		comment = com;
 		author = aut;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + (comment == null ? 0 : comment.hashCode());
-		result = prime * result + (entry == null ? 0 : entry.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Annotation other = (Annotation) obj;
-		if (comment == null) {
-			if (other.comment != null)
-				return false;
-		}
-		else
-			if (!comment.equals(other.comment))
-				return false;
-		if (entry == null) {
-			if (other.entry != null)
-				return false;
-		}
-		else
-			if (!entry.equals(other.entry))
-				return false;
-		return true;
 	}
 
 	public Entry getEntry() {
@@ -75,5 +42,14 @@ public class Annotation {
 
 	public long getTimestamp() {
 		return timestamp;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(entry + " - ");
+		sb.append(comment + "\n\t");
+		sb.append(author + ", " + new Date(timestamp));
+		return sb.toString();
 	}
 }

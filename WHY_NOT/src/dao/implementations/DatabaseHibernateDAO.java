@@ -3,14 +3,14 @@ package dao.implementations;
 import java.util.HashSet;
 import java.util.Set;
 
-import model.Database;
-import model.EntryFile;
+import model.Databank;
+import model.DBFile;
 
 import org.hibernate.Query;
 
 import dao.interfaces.DatabaseDAO;
 
-public class DatabaseHibernateDAO extends GenericHibernateDAO<Database, String> implements DatabaseDAO {
+public class DatabaseHibernateDAO extends GenericHibernateDAO<Databank, String> implements DatabaseDAO {
 	private static final String	VALID		= //
 											"from EntryFile par, EntryFile chi " + //
 											"where chi.entry.database = :child and " + //
@@ -28,36 +28,36 @@ public class DatabaseHibernateDAO extends GenericHibernateDAO<Database, String> 
 											"(select par.path from EntryFile par " + //
 											"where par.entry = ( chi.entry.database.parent, chi.entry.pdbid )) is null";
 
-	public long getValidCount(Database db) {
+	public long getValidCount(Databank db) {
 		Query q = getSession().createQuery("select count(*) " + DatabaseHibernateDAO.VALID).setParameter("child", db);
 		return (Long) q.uniqueResult();
 	}
 
 	@SuppressWarnings("unchecked")
-	public Set<EntryFile> getValidEntries(Database db) {
+	public Set<DBFile> getValidEntries(Databank db) {
 		Query q = getSession().createQuery(DatabaseHibernateDAO.VALID).setParameter("child", db);
-		return new HashSet<EntryFile>(q.list());
+		return new HashSet<DBFile>(q.list());
 	}
 
-	public long getMissingCount(Database db) {
+	public long getMissingCount(Databank db) {
 		Query q = getSession().createQuery("select count(*) " + DatabaseHibernateDAO.MISSING).setParameter("child", db).setParameter("parent", db.getParent());
 		return (Long) q.uniqueResult();
 	}
 
 	@SuppressWarnings("unchecked")
-	public Set<EntryFile> getMissingEntries(Database db) {
+	public Set<DBFile> getMissingEntries(Databank db) {
 		Query q = getSession().createQuery(DatabaseHibernateDAO.MISSING).setParameter("child", db).setParameter("parent", db.getParent());
-		return new HashSet<EntryFile>(q.list());
+		return new HashSet<DBFile>(q.list());
 	}
 
-	public long getObsoleteCount(Database db) {
+	public long getObsoleteCount(Databank db) {
 		Query q = getSession().createQuery("select count(*) " + DatabaseHibernateDAO.OBSOLETE).setParameter("child", db);
 		return (Long) q.uniqueResult();
 	}
 
 	@SuppressWarnings("unchecked")
-	public Set<EntryFile> getObsoleteEntries(Database db) {
+	public Set<DBFile> getObsoleteEntries(Databank db) {
 		Query q = getSession().createQuery(DatabaseHibernateDAO.OBSOLETE).setParameter("child", db);
-		return new HashSet<EntryFile>(q.list());
+		return new HashSet<DBFile>(q.list());
 	}
 }

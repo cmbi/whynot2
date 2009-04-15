@@ -38,9 +38,9 @@
 		<mapping class="model.AnnotationPK"/>
 		<mapping class="model.Author"/>
 		<mapping class="model.Comment"/>
-		<mapping class="model.Database"/>
+		<mapping class="model.Databank"/>
 		<mapping class="model.Entry"/>
 		<mapping class="model.EntryPK"/>
-		<mapping class="model.EntryFile"/>
+		<mapping class="model.DBFile"/>
     </session-factory>
 </hibernate-configuration>

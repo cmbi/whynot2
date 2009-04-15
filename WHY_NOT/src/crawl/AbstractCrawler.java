@@ -5,14 +5,14 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 
-import model.Database;
-import model.EntryFile;
+import model.DBFile;
+import model.Databank;
 
 public abstract class AbstractCrawler {
-	protected Database	database;
+	protected Databank	database;
 	protected Pattern	pattern;
 
-	public AbstractCrawler(Database database) {
+	public AbstractCrawler(Databank database) {
 		this.database = database;
 		pattern = Pattern.compile(database.getRegex());
 	}
@@ -33,8 +33,8 @@ public abstract class AbstractCrawler {
 	 */
 	public int removeInvalidEntries() {
 		int count = 0;
-		EntryFile ef;
-		for (Iterator<EntryFile> entritr = database.getEntries().iterator(); entritr.hasNext();) {
+		DBFile ef;
+		for (Iterator<DBFile> entritr = database.getFiles().iterator(); entritr.hasNext();) {
 			ef = entritr.next();
 			File file = new File(ef.getPath());
 			if (!file.exists() || file.lastModified() != ef.getLastmodified()) {

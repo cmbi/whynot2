@@ -17,7 +17,7 @@ import org.hibernate.validator.NotEmpty;
 import org.hibernate.validator.NotNull;
 
 @Entity
-public class Database {
+public class Databank {
 	public enum CrawlType {
 		FILE, LINE
 	};
@@ -25,33 +25,33 @@ public class Database {
 	@Id
 	@NotEmpty
 	@Length(max = 50)
-	private String			name;
+	private String		name;
 
 	@NotEmpty
 	@Length(max = 200)
-	private String			reference;
+	private String		reference;
 	@NotEmpty
 	@Length(max = 200)
-	private String			filelink;
+	private String		filelink;
 
 	@OneToOne
-	private Database		parent;
+	private Databank	parent;
 
 	@NotEmpty
 	@Length(max = 50)
-	private String			regex;
+	private String		regex;
 
 	@NotNull
 	@Enumerated(EnumType.STRING)
-	private CrawlType		crawltype;
+	private CrawlType	crawltype;
 
-	@OneToMany(mappedBy = "entry.database", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "databank", cascade = CascadeType.ALL)
 	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
-	private Set<EntryFile>	entries	= new HashSet<EntryFile>();
+	private Set<DBFile>	files	= new HashSet<DBFile>();
 
-	protected Database() {}
+	protected Databank() {}
 
-	public Database(String nm, String ref, String link, Database par, String pat, CrawlType type) {
+	public Databank(String nm, String ref, String link, Databank par, String pat, CrawlType type) {
 		name = nm;
 		reference = ref;
 		filelink = link;
@@ -77,7 +77,7 @@ public class Database {
 		return filelink;
 	}
 
-	public Database getParent() {
+	public Databank getParent() {
 		return parent;
 	}
 
@@ -89,7 +89,7 @@ public class Database {
 		return crawltype;
 	}
 
-	public Set<EntryFile> getEntries() {
-		return entries;
+	public Set<DBFile> getFiles() {
+		return files;
 	}
 }

@@ -3,7 +3,7 @@ package crawl;
 
 import java.io.IOException;
 
-import model.Database;
+import model.Databank;
 
 import org.hibernate.Transaction;
 
@@ -33,7 +33,7 @@ public class Crawler {
 		try {
 			transact = Crawler.factory.getCurrentSession().beginTransaction(); //Plain JDBC
 
-			Database db = dbdao.findById(dbname, true);
+			Databank db = dbdao.findById(dbname, true);
 			AbstractCrawler fc;
 			switch (db.getCrawltype()) {
 			case FILE:

@@ -2,28 +2,33 @@ package model;
 
 import java.util.Date;
 
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
 
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotEmpty;
 import org.hibernate.validator.NotNull;
 
 @Entity
-public class EntryFile {
-	@EmbeddedId
-	protected Entry	entry;
+@IdClass(EntryPK.class)
+public class DBFile {
+	@Id
+	private Databank	databank;
+	@Id
+	private String		pdbid;
 
 	@NotEmpty
 	@Length(max = 200)
-	private String	path;
+	private String		path;
 	@NotNull
-	private long	lastmodified;
+	private long		lastmodified;
 
-	protected EntryFile() {}
+	protected DBFile() {}
 
-	public EntryFile(Database db, String id, String pth, long time) {
-		entry = new Entry(db, id);
+	public DBFile(Databank db, String id, String pth, long time) {
+		databank = db;
+		pdbid = id;
 		path = pth;
 		lastmodified = time;
 	}
@@ -43,7 +48,7 @@ public class EntryFile {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		//sb.append(entry + " - ");
+		sb.append(databank + "/" + pdbid + " - ");
 		sb.append(path + " - ");
 		sb.append(new Date(lastmodified));
 		return sb.toString();

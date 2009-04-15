@@ -5,9 +5,9 @@ import java.util.List;
 import model.Annotation;
 import model.Author;
 import model.Comment;
-import model.Database;
-import model.EntryFile;
-import model.Database.CrawlType;
+import model.Databank;
+import model.DBFile;
+import model.Databank.CrawlType;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -42,7 +42,7 @@ public class Filler {
 		AnnotationDAO anndao = factory.getAnnotationDAO();
 
 		factory.getCurrentSession().beginTransaction(); //Plain JDBC
-		Database db = dbdao.findById("DSSP", false);
+		Databank db = dbdao.findById("DSSP", false);
 
 		//System.out.println(dbdao.getMissingCount(db));
 		System.out.println(dbdao.getValidCount(db));
@@ -67,10 +67,10 @@ public class Filler {
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		Transaction newTransaction = session.beginTransaction();
 
-		Database pdb = new Database("PDB", "pdb.org", "google.com/?q=", null, ".*/pdb([\\d\\w]{4})\\.ent(\\.gz)?", CrawlType.FILE);
+		Databank pdb = new Databank("PDB", "pdb.org", "google.com/?q=", null, ".*/pdb([\\d\\w]{4})\\.ent(\\.gz)?", CrawlType.FILE);
 		Comment comment = new Comment("Example comment");
 		Author author = new Author("Robbie");
-		session.saveOrUpdate(new EntryFile(pdb, "0TIM", "/home/tbeek/Desktop/somefile", System.currentTimeMillis()));
+		session.saveOrUpdate(new DBFile(pdb, "0TIM", "/home/tbeek/Desktop/somefile", System.currentTimeMillis()));
 		session.saveOrUpdate(new Annotation(pdb, "0TIM", comment, author));
 
 		newTransaction.commit();
@@ -80,10 +80,10 @@ public class Filler {
 	private void listEntries() {
 		Session newSession = HibernateUtil.getSessionFactory().openSession();
 		Transaction newTransaction = newSession.beginTransaction();
-		List<EntryFile> messages = newSession.createQuery("from EntryFile m where m.entry.database='PDB' order by m.entry.pdbid asc").list();
+		List<DBFile> messages = newSession.createQuery("from EntryFile m where m.entry.database='PDB' order by m.entry.pdbid asc").list();
 
 		System.out.println(messages.size() + " entryfile(s) found:");
-		for (EntryFile ef : messages)
+		for (DBFile ef : messages)
 			System.out.println(ef.toString());
 		newTransaction.commit();
 		newSession.close();
@@ -93,11 +93,11 @@ public class Filler {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		session.beginTransaction();
 
-		Database pdb = new Database("PDB", "pdb.org", "google.com/?q=", null, ".*/pdb([\\d\\w]{4})\\.ent(\\.gz)?", CrawlType.FILE), dssp, hssp;
+		Databank pdb = new Databank("PDB", "pdb.org", "google.com/?q=", null, ".*/pdb([\\d\\w]{4})\\.ent(\\.gz)?", CrawlType.FILE), dssp, hssp;
 		session.save(pdb);
-		session.save(dssp = new Database("DSSP", "dssp.org", "google.com/?q=", pdb, ".*/([\\d\\w]{4})\\.dssp", CrawlType.FILE));
-		session.save(hssp = new Database("HSSP", "hssp.org", "google.com/?q=", dssp, ".*/([\\d\\w]{4})\\.hssp", CrawlType.FILE));
-		session.save(new Database("PDBFINDER", "pdbfinder.org", "google.com/?q=", pdb, "ID           : ([\\d\\w]{4})", CrawlType.LINE));
+		session.save(dssp = new Databank("DSSP", "dssp.org", "google.com/?q=", pdb, ".*/([\\d\\w]{4})\\.dssp", CrawlType.FILE));
+		session.save(hssp = new Databank("HSSP", "hssp.org", "google.com/?q=", dssp, ".*/([\\d\\w]{4})\\.hssp", CrawlType.FILE));
+		session.save(new Databank("PDBFINDER", "pdbfinder.org", "google.com/?q=", pdb, "ID           : ([\\d\\w]{4})", CrawlType.LINE));
 
 		Comment comment = new Comment("Example comment");
 		session.save(comment);
@@ -107,7 +107,7 @@ public class Filler {
 		session.save(new Author("Script1"));
 		session.save(new Author("Script2"));
 
-		EntryFile entry = new EntryFile(pdb, "0TIM", "/home/tbeek/Desktop/somefile", System.currentTimeMillis());
+		DBFile entry = new DBFile(pdb, "0TIM", "/home/tbeek/Desktop/somefile", System.currentTimeMillis());
 		session.save(entry);
 
 		session.save(new Annotation(pdb, "0TIM", comment, author));
@@ -124,7 +124,7 @@ public class Filler {
 		Transaction someTransaction = newSession.beginTransaction();
 		Query query = newSession.createQuery("from Database m where m.name IS :dbname");
 		query.setParameter("dbname", "HSSP");
-		Database db = (Database) query.uniqueResult();
+		Databank db = (Databank) query.uniqueResult();
 		newSession.delete(db);
 		someTransaction.commit();
 		newSession.close();

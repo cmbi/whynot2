@@ -6,8 +6,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 
-import model.Database;
-import model.EntryFile;
+import model.DBFile;
+import model.Databank;
 
 public class FileCrawler extends AbstractCrawler {
 	private FileFilter	entryfilter, directoryfilter;
@@ -16,7 +16,7 @@ public class FileCrawler extends AbstractCrawler {
 	 * Recursive directory crawler
 	 * @param db
 	 */
-	public FileCrawler(Database db) {
+	public FileCrawler(Databank db) {
 		super(db);
 		entryfilter = new FileFilter() {
 			public boolean accept(File pathname) {
@@ -38,7 +38,7 @@ public class FileCrawler extends AbstractCrawler {
 			for (File file : dir.listFiles(entryfilter)) {
 				Matcher m = pattern.matcher(file.getAbsolutePath());
 				if (m.matches())
-					if (database.getEntries().add(new EntryFile(database, m.group(1), file.getAbsolutePath(), file.lastModified())))
+					if (database.getFiles().add(new DBFile(database, m.group(1), file.getAbsolutePath(), file.lastModified())))
 						count++;
 			}
 		return count;

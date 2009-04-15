@@ -2,21 +2,21 @@ package dao.interfaces;
 
 import java.util.Set;
 
-import model.Database;
-import model.EntryFile;
+import model.Databank;
+import model.DBFile;
 import dao.hibernate.GenericDAO;
 
-public interface DatabaseDAO extends GenericDAO<Database, String> {
-	long getValidCount(Database db);
+public interface DatabaseDAO extends GenericDAO<Databank, String> {
+	long getValidCount(Databank db);
 
-	Set<EntryFile> getValidEntries(Database db);
+	Set<DBFile> getValidEntries(Databank db);
 
-	long getMissingCount(Database db);
+	long getMissingCount(Databank db);
 
-	Set<EntryFile> getMissingEntries(Database db);
+	Set<DBFile> getMissingEntries(Databank db);
 
-	long getObsoleteCount(Database db);
+	long getObsoleteCount(Databank db);
 
-	Set<EntryFile> getObsoleteEntries(Database db);
+	Set<DBFile> getObsoleteEntries(Databank db);
 
 }

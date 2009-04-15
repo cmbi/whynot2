@@ -1,39 +1,49 @@
 package model;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
+import javax.persistence.OneToMany;
 
-import org.hibernate.validator.Length;
-import org.hibernate.validator.NotEmpty;
+import org.hibernate.annotations.Cascade;
 
 @Entity
 @IdClass(EntryPK.class)
 public class Entry {
 	@Id
-	protected Database	database;
+	private Databank		databank;
 	@Id
-	@Length(max=50)
-	@NotEmpty
-	protected String	pdbid;
+	private String			pdbid;
+
+	@OneToMany(mappedBy = "entry", cascade = CascadeType.ALL)
+	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
+	private Set<Annotation>	annotations	= new HashSet<Annotation>();
 
 	protected Entry() {}
 
-	public Entry(Database database, String pdbid) {
-		this.database = database;
-		this.pdbid = pdbid;
+	public Entry(Databank db, String id) {
+		databank = db;
+		pdbid = id;
 	}
 
 	@Override
 	public String toString() {
-		return database + "/" + pdbid;
+		return databank + "/" + pdbid;
 	}
 
-	public Database getDatabase() {
-		return database;
+	public Databank getDatabank() {
+		return databank;
 	}
 
 	public String getPdbid() {
 		return pdbid;
+	}
+
+	public Set<Annotation> getAnnotations() {
+		return annotations;
 	}
 }

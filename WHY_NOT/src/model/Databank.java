@@ -12,6 +12,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Where;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotEmpty;
 import org.hibernate.validator.NotNull;
@@ -47,7 +48,8 @@ public class Databank {
 
 	@OneToMany(mappedBy = "databank", cascade = CascadeType.ALL)
 	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
-	private Set<DBFile>	files	= new HashSet<DBFile>();
+	@Where(clause = "path != null")
+	private Set<Entry>	entries	= new HashSet<Entry>();
 
 	protected Databank() {}
 
@@ -89,7 +91,7 @@ public class Databank {
 		return crawltype;
 	}
 
-	public Set<DBFile> getFiles() {
-		return files;
+	public Set<Entry> getEntries() {
+		return entries;
 	}
 }

@@ -3,8 +3,8 @@ package dao.implementations;
 import java.util.HashSet;
 import java.util.Set;
 
-import model.DBFile;
 import model.Databank;
+import model.Entry;
 
 import org.hibernate.Query;
 
@@ -34,9 +34,9 @@ public class DatabankHibernateDAO extends GenericHibernateDAO<Databank, String> 
 	}
 
 	@SuppressWarnings("unchecked")
-	public Set<DBFile> getValidEntries(Databank db) {
+	public Set<Entry> getValidEntries(Databank db) {
 		Query q = getSession().createQuery(DatabankHibernateDAO.VALID).setParameter("child", db);
-		return new HashSet<DBFile>(q.list());
+		return new HashSet<Entry>(q.list());
 	}
 
 	public long getMissingCount(Databank db) {
@@ -45,9 +45,9 @@ public class DatabankHibernateDAO extends GenericHibernateDAO<Databank, String> 
 	}
 
 	@SuppressWarnings("unchecked")
-	public Set<DBFile> getMissingEntries(Databank db) {
+	public Set<Entry> getMissingEntries(Databank db) {
 		Query q = getSession().createQuery(DatabankHibernateDAO.MISSING).setParameter("child", db).setParameter("parent", db.getParent());
-		return new HashSet<DBFile>(q.list());
+		return new HashSet<Entry>(q.list());
 	}
 
 	public long getObsoleteCount(Databank db) {
@@ -56,8 +56,8 @@ public class DatabankHibernateDAO extends GenericHibernateDAO<Databank, String> 
 	}
 
 	@SuppressWarnings("unchecked")
-	public Set<DBFile> getObsoleteEntries(Databank db) {
+	public Set<Entry> getObsoleteEntries(Databank db) {
 		Query q = getSession().createQuery(DatabankHibernateDAO.OBSOLETE).setParameter("child", db);
-		return new HashSet<DBFile>(q.list());
+		return new HashSet<Entry>(q.list());
 	}
 }

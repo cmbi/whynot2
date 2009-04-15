@@ -5,19 +5,26 @@ import java.io.Serializable;
 import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
 
+import org.hibernate.validator.Length;
+
 @Embeddable
 public class AnnotationPK implements Serializable {
 	@ManyToOne
-	private Entry	entry;
+	protected Databank	databank;
+	@Length(min = 4, max = 50)
+	protected String	pdbid;
 	@ManyToOne
-	private Comment	comment;
+	protected Comment	comment;
+
+	protected AnnotationPK() {}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + (comment == null ? 0 : comment.hashCode());
-		result = prime * result + (entry == null ? 0 : entry.hashCode());
+		result = prime * result + (databank == null ? 0 : databank.hashCode());
+		result = prime * result + (pdbid == null ? 0 : pdbid.hashCode());
 		return result;
 	}
 
@@ -37,18 +44,20 @@ public class AnnotationPK implements Serializable {
 		else
 			if (!comment.equals(other.comment))
 				return false;
-		if (entry == null) {
-			if (other.entry != null)
+		if (databank == null) {
+			if (other.databank != null)
 				return false;
 		}
 		else
-			if (!entry.equals(other.entry))
+			if (!databank.equals(other.databank))
+				return false;
+		if (pdbid == null) {
+			if (other.pdbid != null)
+				return false;
+		}
+		else
+			if (!pdbid.equals(other.pdbid))
 				return false;
 		return true;
-	}
-
-	@Override
-	public String toString() {
-		return entry + " - " + comment;
 	}
 }

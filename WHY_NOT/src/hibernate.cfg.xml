@@ -41,6 +41,5 @@
 		<mapping class="model.Databank"/>
 		<mapping class="model.Entry"/>
 		<mapping class="model.EntryPK"/>
-		<mapping class="model.DBFile"/>
     </session-factory>
 </hibernate-configuration>

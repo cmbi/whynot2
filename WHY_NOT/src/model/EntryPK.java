@@ -10,9 +10,16 @@ import org.hibernate.validator.Length;
 @Embeddable
 public class EntryPK implements Serializable {
 	@ManyToOne
-	private Databank	databank;
+	protected Databank	databank;
 	@Length(min = 4, max = 50)
-	private String		pdbid;
+	protected String	pdbid;
+
+	protected EntryPK() {}
+
+	public EntryPK(Databank db, String id) {
+		databank = db;
+		pdbid = id;
+	}
 
 	@Override
 	public int hashCode() {

@@ -5,7 +5,6 @@ import java.util.List;
 import model.Annotation;
 import model.Author;
 import model.Comment;
-import model.DBFile;
 import model.Databank;
 import model.Entry;
 import model.Databank.CrawlType;
@@ -70,8 +69,8 @@ public class Filler {
 		Databank pdb = new Databank("PDB", "pdb.org", "google.com/?q=", null, ".*/pdb([\\d\\w]{4})\\.ent(\\.gz)?", CrawlType.FILE);
 		Comment comment = new Comment("Example comment");
 		Author author = new Author("Robbie");
-		session.saveOrUpdate(new DBFile(pdb, "0TIM", "/home/tbeek/Desktop/somefile", System.currentTimeMillis()));
-		session.saveOrUpdate(new Annotation(new Entry(pdb, "0TIM"), comment, author));
+		session.saveOrUpdate(new Entry(pdb, "0TIM", "/home/tbeek/Desktop/somefile", System.currentTimeMillis()));
+		session.saveOrUpdate(new Annotation(pdb, "0TIM", comment, author));
 
 		newTransaction.commit();
 		session.close();
@@ -80,10 +79,10 @@ public class Filler {
 	private void listEntries() {
 		Session newSession = HibernateUtil.getSessionFactory().openSession();
 		Transaction newTransaction = newSession.beginTransaction();
-		List<DBFile> messages = newSession.createQuery("from EntryFile m where m.entry.database='PDB' order by m.entry.pdbid asc").list();
+		List<Entry> messages = newSession.createQuery("from EntryFile m where m.entry.database='PDB' order by m.entry.pdbid asc").list();
 
 		System.out.println(messages.size() + " entryfile(s) found:");
-		for (DBFile ef : messages)
+		for (Entry ef : messages)
 			System.out.println(ef.toString());
 		newTransaction.commit();
 		newSession.close();
@@ -107,15 +106,10 @@ public class Filler {
 		session.save(new Author("Script1"));
 		session.save(new Author("Script2"));
 
-		DBFile file = new DBFile(pdb, "0TIM", "/home/tbeek/Desktop/somefile", System.currentTimeMillis());
-		session.save(file);
+		session.save(new Annotation(pdb, "0TIM", comment, author));
 
-		Entry entry = new Entry(pdb, "0TIM");
-		session.save(entry);
-
-		session.save(new Annotation(entry, comment, author));
-		//session.save(new Annotation(pdb, "100J", comment, author));
-		//session.save(new Annotation(pdb, "100Q", comment, author));
+		session.save(new Annotation(pdb, "100J", comment, author));
+		//session.save(new Annotation(new Entry(pdb, "100Q"), comment, author));
 		//Only works if accessible from already persistent instance
 		//session.save(new Annotation(new Entry(pdb, "0TIM"), new Comment("My new comment"), new Author("Tim")));
 		//So this works:

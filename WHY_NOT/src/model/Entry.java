@@ -1,31 +1,26 @@
 package model;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 
-import org.hibernate.annotations.Cascade;
+import org.hibernate.validator.Length;
+import org.hibernate.validator.NotEmpty;
+import org.hibernate.validator.NotNull;
 
 @Entity
 @IdClass(EntryPK.class)
 public class Entry {
 	@Id
-	private Databank		databank;
+	private Databank	databank;
 	@Id
-	private String			pdbid;
+	private String		pdbid;
 
-	@OneToOne(mappedBy = "entry")
-	private DBFile			file;
-
-	@OneToMany(mappedBy = "entry", cascade = CascadeType.ALL)
-	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
-	private Set<Annotation>	annotations	= new HashSet<Annotation>();
+	@NotEmpty
+	@Length(max = 200)
+	private String		path			= null;
+	@NotNull
+	private Long		lastmodified	= null;
 
 	protected Entry() {}
 
@@ -34,9 +29,10 @@ public class Entry {
 		pdbid = id;
 	}
 
-	@Override
-	public String toString() {
-		return databank + "/" + pdbid;
+	public Entry(Databank db, String id, String pth, long lm) {
+		this(db, id);
+		path = pth;
+		lastmodified = lm;
 	}
 
 	public Databank getDatabank() {
@@ -47,7 +43,55 @@ public class Entry {
 		return pdbid;
 	}
 
-	public Set<Annotation> getAnnotations() {
-		return annotations;
+	public String getPath() {
+		return path;
+	}
+
+	public Long getLastmodified() {
+		return lastmodified;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(databank + "/" + pdbid);
+		sb.append(" - " + path);
+		sb.append(" - " + lastmodified);
+		return sb.toString();
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (databank == null ? 0 : databank.getName().hashCode());
+		result = prime * result + (pdbid == null ? 0 : pdbid.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Entry other = (Entry) obj;
+		if (databank == null) {
+			if (other.databank != null)
+				return false;
+		}
+		else
+			if (!databank.getName().equals(other.databank.getName()))
+				return false;
+		if (pdbid == null) {
+			if (other.pdbid != null)
+				return false;
+		}
+		else
+			if (!pdbid.equals(other.pdbid))
+				return false;
+		return true;
 	}
 }

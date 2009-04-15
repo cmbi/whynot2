@@ -5,8 +5,9 @@ import java.util.List;
 import model.Annotation;
 import model.Author;
 import model.Comment;
-import model.Databank;
 import model.DBFile;
+import model.Databank;
+import model.Entry;
 import model.Databank.CrawlType;
 
 import org.hibernate.Query;
@@ -16,14 +17,14 @@ import org.hibernate.Transaction;
 import dao.hibernate.DAOFactory;
 import dao.hibernate.HibernateUtil;
 import dao.interfaces.AnnotationDAO;
-import dao.interfaces.DatabaseDAO;
+import dao.interfaces.DatabankDAO;
 
 public class Filler {
 
 	public static void main(String[] args) {
 		Filler mgr = new Filler();
 
-		//mgr.fillTabels();
+		mgr.fillTabels();
 
 		//mgr.storeFileAndComment();
 
@@ -31,20 +32,19 @@ public class Filler {
 
 		//mgr.deleteHSSPDB();
 
-		mgr.unrelatedTest();
+		//mgr.unrelatedTest();
 
 		HibernateUtil.getSessionFactory().close();
 	}
 
 	private void unrelatedTest() {
 		DAOFactory factory = DAOFactory.instance(DAOFactory.HIBERNATE);
-		DatabaseDAO dbdao = factory.getDatabaseDAO();
+		DatabankDAO dbdao = factory.getDatabaseDAO();
 		AnnotationDAO anndao = factory.getAnnotationDAO();
 
 		factory.getCurrentSession().beginTransaction(); //Plain JDBC
 		Databank db = dbdao.findById("DSSP", false);
 
-		//System.out.println(dbdao.getMissingCount(db));
 		System.out.println(dbdao.getValidCount(db));
 		System.out.println(dbdao.getMissingCount(db));
 		System.out.println(dbdao.getObsoleteCount(db));
@@ -71,7 +71,7 @@ public class Filler {
 		Comment comment = new Comment("Example comment");
 		Author author = new Author("Robbie");
 		session.saveOrUpdate(new DBFile(pdb, "0TIM", "/home/tbeek/Desktop/somefile", System.currentTimeMillis()));
-		session.saveOrUpdate(new Annotation(pdb, "0TIM", comment, author));
+		session.saveOrUpdate(new Annotation(new Entry(pdb, "0TIM"), comment, author));
 
 		newTransaction.commit();
 		session.close();
@@ -107,10 +107,15 @@ public class Filler {
 		session.save(new Author("Script1"));
 		session.save(new Author("Script2"));
 
-		DBFile entry = new DBFile(pdb, "0TIM", "/home/tbeek/Desktop/somefile", System.currentTimeMillis());
+		DBFile file = new DBFile(pdb, "0TIM", "/home/tbeek/Desktop/somefile", System.currentTimeMillis());
+		session.save(file);
+
+		Entry entry = new Entry(pdb, "0TIM");
 		session.save(entry);
 
-		session.save(new Annotation(pdb, "0TIM", comment, author));
+		session.save(new Annotation(entry, comment, author));
+		//session.save(new Annotation(pdb, "100J", comment, author));
+		//session.save(new Annotation(pdb, "100Q", comment, author));
 		//Only works if accessible from already persistent instance
 		//session.save(new Annotation(new Entry(pdb, "0TIM"), new Comment("My new comment"), new Author("Tim")));
 		//So this works:

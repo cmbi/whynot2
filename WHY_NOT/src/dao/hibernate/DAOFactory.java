@@ -6,7 +6,7 @@ import org.hibernate.Session;
 import dao.interfaces.AnnotationDAO;
 import dao.interfaces.AuthorDAO;
 import dao.interfaces.CommentDAO;
-import dao.interfaces.DatabaseDAO;
+import dao.interfaces.DatabankDAO;
 
 public abstract class DAOFactory {
 
@@ -42,5 +42,5 @@ public abstract class DAOFactory {
 
 	public abstract CommentDAO getCommentDAO();
 
-	public abstract DatabaseDAO getDatabaseDAO();
+	public abstract DatabankDAO getDatabaseDAO();
 }

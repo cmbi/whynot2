@@ -22,8 +22,8 @@ public class Annotation {
 
 	protected Annotation() {}
 
-	public Annotation(Databank db, String pdbid, Comment com, Author aut) {
-		entry = new Entry(db, pdbid);
+	public Annotation(Entry ent, Comment com, Author aut) {
+		entry = ent;
 		comment = com;
 		author = aut;
 	}

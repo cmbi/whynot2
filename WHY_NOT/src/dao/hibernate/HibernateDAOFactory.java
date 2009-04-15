@@ -6,12 +6,12 @@ import model.Comment;
 import org.hibernate.Session;
 
 import dao.implementations.AnnotationHibernateDAO;
-import dao.implementations.DatabaseHibernateDAO;
+import dao.implementations.DatabankHibernateDAO;
 import dao.implementations.GenericHibernateDAO;
 import dao.interfaces.AnnotationDAO;
 import dao.interfaces.AuthorDAO;
 import dao.interfaces.CommentDAO;
-import dao.interfaces.DatabaseDAO;
+import dao.interfaces.DatabankDAO;
 
 public class HibernateDAOFactory extends DAOFactory {
 	@Override
@@ -30,8 +30,8 @@ public class HibernateDAOFactory extends DAOFactory {
 	}
 
 	@Override
-	public DatabaseDAO getDatabaseDAO() {
-		return (DatabaseDAO) instantiateDAO(DatabaseHibernateDAO.class);
+	public DatabankDAO getDatabaseDAO() {
+		return (DatabankDAO) instantiateDAO(DatabankHibernateDAO.class);
 	}
 
 	@SuppressWarnings("unchecked")

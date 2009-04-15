@@ -6,7 +6,7 @@ import model.Databank;
 import model.DBFile;
 import dao.hibernate.GenericDAO;
 
-public interface DatabaseDAO extends GenericDAO<Databank, String> {
+public interface DatabankDAO extends GenericDAO<Databank, String> {
 	long getValidCount(Databank db);
 
 	Set<DBFile> getValidEntries(Databank db);

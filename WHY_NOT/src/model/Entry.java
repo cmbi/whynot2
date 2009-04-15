@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.Cascade;
 
@@ -18,6 +19,9 @@ public class Entry {
 	private Databank		databank;
 	@Id
 	private String			pdbid;
+
+	@OneToOne(mappedBy = "entry")
+	private DBFile			file;
 
 	@OneToMany(mappedBy = "entry", cascade = CascadeType.ALL)
 	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)

@@ -36,4 +36,9 @@ public class Author {
 	public Set<Annotation> getAnnotations() {
 		return annotations;
 	}
+
+	@Override
+	public String toString() {
+		return name;
+	}
 }

@@ -36,4 +36,9 @@ public class Comment {
 	public Set<Annotation> getAnnotations() {
 		return annotations;
 	}
+
+	@Override
+	public String toString() {
+		return text;
+	}
 }

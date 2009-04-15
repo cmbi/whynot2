@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
+import javax.persistence.OneToOne;
 
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotEmpty;
@@ -18,6 +19,9 @@ public class DBFile {
 	@Id
 	private String		pdbid;
 
+	@OneToOne
+	private Entry		entry;
+
 	@NotEmpty
 	@Length(max = 200)
 	private String		path;
@@ -29,6 +33,7 @@ public class DBFile {
 	public DBFile(Databank db, String id, String pth, long time) {
 		databank = db;
 		pdbid = id;
+		entry = new Entry(db, id);
 		path = pth;
 		lastmodified = time;
 	}

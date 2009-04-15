@@ -9,7 +9,7 @@ import org.hibernate.Transaction;
 
 import dao.hibernate.DAOFactory;
 import dao.hibernate.HibernateUtil;
-import dao.interfaces.DatabaseDAO;
+import dao.interfaces.DatabankDAO;
 
 public class Crawler {
 	private static DAOFactory	factory	= DAOFactory.instance(DAOFactory.HIBERNATE);
@@ -28,7 +28,7 @@ public class Crawler {
 	private static void crawl(String dbname, String path) throws IOException {
 		//TODO: Supply the Session after calling getXXXDAO()?
 		HibernateUtil.getSessionFactory().getCurrentSession();
-		DatabaseDAO dbdao = Crawler.factory.getDatabaseDAO();
+		DatabankDAO dbdao = Crawler.factory.getDatabaseDAO();
 		Transaction transact = null;
 		try {
 			transact = Crawler.factory.getCurrentSession().beginTransaction(); //Plain JDBC

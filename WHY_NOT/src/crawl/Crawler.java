@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import model.Databank;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Transaction;
 
 import dao.hibernate.DAOFactory;
@@ -47,12 +48,15 @@ public class Crawler {
 			int removed = fc.removeInvalidEntries();
 			int added = fc.addEntriesIn(path);
 
+			Logger.getLogger(Crawler.class).info(dbname + ": Removing " + removed + ", Adding " + added);
+
 			transact.commit(); //Plain JDBC
 
-			System.out.println(dbname + ": Removed " + removed + ", Added " + added);
+			Logger.getLogger(Crawler.class).info("Succes");
 		}
 		catch (RuntimeException e) {
 			transact.rollback();
+			Logger.getLogger(Crawler.class).error("Failure");
 			throw e;
 		}
 		finally {

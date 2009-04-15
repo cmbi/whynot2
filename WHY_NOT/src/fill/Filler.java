@@ -114,6 +114,7 @@ public class Filler {
 		ann.getEntries().add(ent = new Entry(pdb, "0TIM"));
 		ann.getEntries().add(new Entry(pdb, "100J"));
 		ann.getEntries().add(new Entry(pdb, "100Q"));
+		ann.getEntries().add(new Entry(pdb, "3H52"));
 		session.save(ent);
 		pdb.getFiles().add(new File(ent, "/home/tbeek/Desktop/raw/stats", 2L));
 

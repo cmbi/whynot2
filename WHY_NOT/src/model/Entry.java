@@ -23,7 +23,6 @@ public class Entry {
 	protected String		pdbid;
 
 	@OneToOne(mappedBy = "entry")
-	//TODO: Cascades
 	private File			file;
 
 	@ManyToMany(mappedBy = "entries", cascade = CascadeType.ALL)

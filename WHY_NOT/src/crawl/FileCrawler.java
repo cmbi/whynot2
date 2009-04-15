@@ -9,7 +9,6 @@ import java.util.regex.Matcher;
 import model.Databank;
 import model.Entry;
 
-
 public class FileCrawler extends AbstractCrawler {
 	private FileFilter	entryfilter, directoryfilter;
 
@@ -37,9 +36,11 @@ public class FileCrawler extends AbstractCrawler {
 		int count = 0;
 		for (File dir : dirAndAllSubdirs(new File(path)))
 			for (File file : dir.listFiles(entryfilter)) {
+				if (5 < count)
+					break;//TODO: Remove crawllimit 5
 				Matcher m = pattern.matcher(file.getAbsolutePath());
 				if (m.matches())
-					if (database.getEntries().add(new Entry(database, m.group(1), file.getAbsolutePath(), file.lastModified())))
+					if (database.getFiles().add(new model.File(new Entry(database, m.group(1)), file.getAbsolutePath(), file.lastModified())))
 						count++;
 			}
 		return count;

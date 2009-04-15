@@ -11,6 +11,7 @@ import org.hibernate.validator.NotNull;
 @Entity
 public class File {
 	@OneToOne
+	//(cascade = CascadeType.ALL)
 	@NotNull
 	private Entry		entry;
 
@@ -30,6 +31,14 @@ public class File {
 		entry_databank = entry.databank;
 		this.path = path;
 		this.time = time;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public Long getTime() {
+		return time;
 	}
 
 	@Override

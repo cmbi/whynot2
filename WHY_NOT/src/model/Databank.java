@@ -60,6 +60,18 @@ public class Databank {
 		this.crawltype = crawltype;
 	}
 
+	public Databank getParent() {
+		return parent;
+	}
+
+	public String getRegex() {
+		return regex;
+	}
+
+	public CrawlType getCrawltype() {
+		return crawltype;
+	}
+
 	public Set<File> getFiles() {
 		return files;
 	}

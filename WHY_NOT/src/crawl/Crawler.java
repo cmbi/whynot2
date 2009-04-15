@@ -20,8 +20,8 @@ public class Crawler {
 			;//throw new IllegalArgumentException("Usage: crawler DATABASE DIRECTORY/FILE");
 		Crawler.crawl("PDB", "/home/tbeek/Desktop/raw/");
 		Crawler.crawl("DSSP", "/home/tbeek/Desktop/raw/");
-		Crawler.crawl("HSSP", "/home/tbeek/Desktop/raw/");
-		Crawler.crawl("PDBFINDER", "/home/tbeek/Desktop/raw/pdbfinder/PDBFIND.TXT");
+		//Crawler.crawl("HSSP", "/home/tbeek/Desktop/raw/");
+		//Crawler.crawl("PDBFINDER", "/home/tbeek/Desktop/raw/pdbfinder/PDBFIND.TXT");
 	}
 
 	private static void crawl(String dbname, String path) throws IOException {

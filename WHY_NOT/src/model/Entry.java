@@ -22,8 +22,8 @@ public class Entry {
 	@Length(max = 10)
 	protected String		pdbid;
 
-	@OneToOne(mappedBy = "entry", cascade = CascadeType.ALL)
-	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
+	@OneToOne(mappedBy = "entry")
+	//TODO: Cascades
 	private File			file;
 
 	@ManyToMany(mappedBy = "entries", cascade = CascadeType.ALL)

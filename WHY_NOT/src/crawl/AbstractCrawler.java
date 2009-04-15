@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.regex.Pattern;
 
 import model.Databank;
-import model.Entry;
 
 public abstract class AbstractCrawler {
 	protected Databank	database;
@@ -33,11 +32,11 @@ public abstract class AbstractCrawler {
 	 */
 	public int removeInvalidEntries() {
 		int count = 0;
-		Entry ef;
-		for (Iterator<Entry> entritr = database.getEntries().iterator(); entritr.hasNext();) {
+		model.File ef;
+		for (Iterator<model.File> entritr = database.getFiles().iterator(); entritr.hasNext();) {
 			ef = entritr.next();
 			File file = new File(ef.getPath());
-			if (!file.exists() || file.lastModified() != ef.getLastmodified()) {
+			if (!file.exists() || file.lastModified() != ef.getTime().longValue()) {
 				entritr.remove();
 				count++;
 			}

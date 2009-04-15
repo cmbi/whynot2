@@ -33,7 +33,6 @@
         <property name="use_sql_comments">true</property>
 
 		<!-- Mappings -->
-<!--
 		<mapping package="model"/>
 		<mapping class="model.Annotation"/>
 		<mapping class="model.AnnotationPK"/>
@@ -42,17 +41,7 @@
 		<mapping class="model.Databank"/>
 		<mapping class="model.Entry"/>
 		<mapping class="model.EntryPK"/>
-    -->
-    
-		<mapping package="m2"/>
-		<mapping class="m2.Annotation"/>
-		<mapping class="m2.AnnotationPK"/>
-		<mapping class="m2.Author"/>
-		<mapping class="m2.Comment"/>
-		<mapping class="m2.Databank"/>
-		<mapping class="m2.Entry"/>
-		<mapping class="m2.EntryPK"/>
-		<mapping class="m2.File"/>
+		<mapping class="model.File"/>
     
     </session-factory>
 </hibernate-configuration>

@@ -1,8 +1,9 @@
-package m2;
+package model;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -10,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import org.hibernate.annotations.Cascade;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotEmpty;
 import org.hibernate.validator.NotNull;
@@ -23,7 +25,7 @@ public class Databank {
 	@Id
 	@NotEmpty
 	@Length(max = 50)
-	private String		name;
+	protected String	name;
 
 	@NotEmpty
 	@Length(max = 200)
@@ -43,11 +45,12 @@ public class Databank {
 	@Enumerated(EnumType.STRING)
 	private CrawlType	crawltype;
 
-	@OneToMany(mappedBy = "entry_databank")
+	@OneToMany(mappedBy = "entry_databank", cascade = CascadeType.ALL)
+	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
 	private Set<File>	files	= new HashSet<File>();
 
-	//	@OneToMany(mappedBy = "databank", cascade = CascadeType.ALL)
-	//	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
-	//	@Where(clause = "path != null")
-	//	private Set<Entry>	entries	= new HashSet<Entry>();
+	@Override
+	public String toString() {
+		return name + "," + reference + "," + filelink + "," + parent.name + "," + regex + "," + crawltype;
+	}
 }

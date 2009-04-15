@@ -1,4 +1,4 @@
-package m2;
+package model;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,12 +12,17 @@ import javax.persistence.ManyToMany;
 @IdClass(AnnotationPK.class)
 public class Annotation {
 	@Id
-	private Author		author;
+	protected Author	author;
 	@Id
-	private Comment		comment;
+	protected Comment	comment;
 
 	private long		timestamp	= System.currentTimeMillis();
 
 	@ManyToMany
 	private Set<Entry>	entries		= new HashSet<Entry>();
+
+	@Override
+	public String toString() {
+		return author + "," + comment + "," + timestamp;
+	}
 }

@@ -1,4 +1,4 @@
-package m2;
+package model;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -13,32 +13,24 @@ import org.hibernate.validator.Length;
 import org.hibernate.validator.NotEmpty;
 
 @Entity
-public class Comment {
+public class Author {
 	@Id
 	@NotEmpty
-	@Length(max = 200)
-	private String			text;
+	@Length(max = 50)
+	protected String		name;
 
-	@OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
 	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
 	private Set<Annotation>	annotations	= new HashSet<Annotation>();
 
-	protected Comment() {}
+	protected Author() {}
 
-	public Comment(String content) {
-		text = content;
-	}
-
-	public String getText() {
-		return text;
-	}
-
-	public Set<Annotation> getAnnotations() {
-		return annotations;
+	public Author(String nm) {
+		name = nm;
 	}
 
 	@Override
 	public String toString() {
-		return text;
+		return name;
 	}
 }

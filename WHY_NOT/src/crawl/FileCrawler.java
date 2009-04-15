@@ -6,8 +6,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 
-import model.Databank;
-import model.Entry;
+import old_model.Databank;
+import old_model.Entry;
+
 
 public class FileCrawler extends AbstractCrawler {
 	private FileFilter	entryfilter, directoryfilter;

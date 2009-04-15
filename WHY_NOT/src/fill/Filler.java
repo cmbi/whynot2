@@ -2,12 +2,13 @@ package fill;
 
 import java.util.List;
 
-import model.Annotation;
-import model.Author;
-import model.Comment;
-import model.Databank;
-import model.Entry;
-import model.Databank.CrawlType;
+
+import old_model.Annotation;
+import old_model.Author;
+import old_model.Comment;
+import old_model.Databank;
+import old_model.Entry;
+import old_model.Databank.CrawlType;
 
 import org.hibernate.Query;
 import org.hibernate.Session;

@@ -3,8 +3,9 @@ package dao.implementations;
 import java.util.HashSet;
 import java.util.Set;
 
-import model.Databank;
-import model.Entry;
+
+import old_model.Databank;
+import old_model.Entry;
 
 import org.hibernate.Query;
 

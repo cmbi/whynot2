@@ -1,7 +1,7 @@
 package dao.interfaces;
 
+import old_model.Author;
 import dao.hibernate.GenericDAO;
-import model.Author;
 
 public interface AuthorDAO extends GenericDAO<Author, String> {
 

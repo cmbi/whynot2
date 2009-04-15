@@ -3,7 +3,8 @@ package crawl;
 
 import java.io.IOException;
 
-import model.Databank;
+
+import old_model.Databank;
 
 import org.hibernate.Transaction;
 

@@ -1,7 +1,7 @@
 package dao.interfaces;
 
+import old_model.Comment;
 import dao.hibernate.GenericDAO;
-import model.Comment;
 
 public interface CommentDAO extends GenericDAO<Comment, String> {
 

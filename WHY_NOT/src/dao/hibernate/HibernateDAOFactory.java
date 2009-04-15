@@ -1,7 +1,8 @@
 package dao.hibernate;
 
-import model.Author;
-import model.Comment;
+
+import old_model.Author;
+import old_model.Comment;
 
 import org.hibernate.Session;
 

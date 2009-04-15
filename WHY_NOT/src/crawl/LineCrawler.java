@@ -6,8 +6,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.regex.Matcher;
 
-import model.Databank;
-import model.Entry;
+import old_model.Databank;
+import old_model.Entry;
+
 
 public class LineCrawler extends AbstractCrawler {
 	/**

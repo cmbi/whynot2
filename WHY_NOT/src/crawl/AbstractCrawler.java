@@ -5,8 +5,9 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 
-import model.Databank;
-import model.Entry;
+import old_model.Databank;
+import old_model.Entry;
+
 
 public abstract class AbstractCrawler {
 	protected Databank	database;

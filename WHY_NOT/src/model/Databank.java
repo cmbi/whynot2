@@ -45,7 +45,7 @@ public class Databank {
 	@Enumerated(EnumType.STRING)
 	private CrawlType	crawltype;
 
-	@OneToMany(mappedBy = "entry_databank", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "databank", cascade = CascadeType.ALL)
 	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
 	private Set<File>	files	= new HashSet<File>();
 

@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 
 import model.Databank;
-import model.Entry;
 
 public class FileCrawler extends AbstractCrawler {
 	private FileFilter	entryfilter, directoryfilter;
@@ -38,7 +37,7 @@ public class FileCrawler extends AbstractCrawler {
 			for (File file : dir.listFiles(entryfilter)) {
 				Matcher m = pattern.matcher(file.getAbsolutePath());
 				if (m.matches())
-					if (database.getFiles().add(new model.File(new Entry(database, m.group(1)), file.getAbsolutePath(), file.lastModified())))
+					if (database.getFiles().add(new model.File(database, m.group(1), file.getAbsolutePath(), file.lastModified())))
 						count++;
 			}
 		return count;

@@ -116,7 +116,7 @@ public class Filler {
 		ann.getEntries().add(new Entry(pdb, "100Q"));
 		ann.getEntries().add(new Entry(pdb, "3H52"));
 		session.save(ent);
-		pdb.getFiles().add(new File(ent, "/home/tbeek/Desktop/raw/stats", 2L));
+		pdb.getFiles().add(new File(pdb, "0TIM", "/home/tbeek/Desktop/raw/stats", 2L));
 
 		//session.save(new Annotation(new Entry(pdb, "100Q"), comment, author));
 		//Only works if accessible from already persistent instance

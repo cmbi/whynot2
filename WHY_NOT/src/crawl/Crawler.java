@@ -52,7 +52,7 @@ public class Crawler {
 
 			transact.commit(); //Plain JDBC
 
-			Logger.getLogger(Crawler.class).info("Succes");
+			Logger.getLogger(Crawler.class).info("Succes: " + db.getFiles().size());
 		}
 		catch (RuntimeException e) {
 			transact.rollback();

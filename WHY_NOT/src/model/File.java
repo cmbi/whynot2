@@ -2,35 +2,32 @@ package model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import javax.persistence.IdClass;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
+import org.hibernate.validator.Length;
+import org.hibernate.validator.NotEmpty;
 import org.hibernate.validator.NotNull;
 
 @Entity
+@IdClass(EntryPK.class)
 public class File {
-	@OneToOne
-	@Cascade(value = { CascadeType.SAVE_UPDATE })
-	@NotNull
-	private Entry		entry;
-
-	@ManyToOne
-	@JoinColumn(insertable = false, updatable = false)
-	private Databank	entry_databank; //Needed for @OneToMany Databank.files
-
 	@Id
+	protected Databank	databank;
+	@Id
+	@Length(max = 10)
+	protected String	pdbid;
+
+	@NotEmpty
+	@Length(max = 200)
 	protected String	path;
 	@NotNull
 	private Long		time;
 
 	protected File() {}
 
-	public File(Entry entry, String path, Long time) {
-		this.entry = entry;
-		entry_databank = entry.databank;
+	public File(Databank db, String id, String path, Long time) {
+		databank = db;
+		pdbid = id;
 		this.path = path;
 		this.time = time;
 	}
@@ -45,7 +42,7 @@ public class File {
 
 	@Override
 	public String toString() {
-		return entry + "," + path + "," + time;
+		return databank + "," + pdbid + "," + path + "," + time;
 	}
 
 	@Override

@@ -56,8 +56,13 @@ public class InitialTest {
 		Databank pdb = dbdao.findById("PDB", false);
 		Databank dssp = dbdao.findById("DSSP", false);
 
-		File p0TIM;
-		p0TIM = new File(pdb, "0TIM", "/home/tbeek/Desktop/raw/stats", System.currentTimeMillis());
+		new File(pdb, "0TIM", "/home/tbeek/Desktop/raw/stats", System.currentTimeMillis());
+		new File(pdb, "1TIM", "/home/tbeek/Desktop/raw/stats", System.currentTimeMillis());
+		new File(pdb, "100J", "/home/tbeek/Desktop/raw/stats", System.currentTimeMillis());
+		new File(pdb, "100Q", "/home/tbeek/Desktop/raw/stats", System.currentTimeMillis());
+		new File(dssp, "0TIM", "/home/tbeek/Desktop/raw/stats", System.currentTimeMillis());
+		new File(dssp, "1TIM", "/home/tbeek/Desktop/raw/stats", System.currentTimeMillis());
+		new File(dssp, "100J", "/home/tbeek/Desktop/raw/stats", System.currentTimeMillis());
 
 		transact.commit();
 	}
@@ -87,42 +92,14 @@ public class InitialTest {
 		System.out.println(p0TIM.getAnnotations().size());
 	}
 
-	private void fillTabels() {
-		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		session.beginTransaction();
-
-		Databank pdb = new Databank("PDB", "pdb.org", "google.com/?q=", null, ".*/pdb([\\d\\w]{4})\\.ent(\\.gz)?", CrawlType.FILE), dssp, hssp;
-		session.save(pdb);
-		session.save(dssp = new Databank("DSSP", "dssp.org", "google.com/?q=", pdb, ".*/([\\d\\w]{4})\\.dssp", CrawlType.FILE));
-		session.save(hssp = new Databank("HSSP", "hssp.org", "google.com/?q=", dssp, ".*/([\\d\\w]{4})\\.hssp", CrawlType.FILE));
-		session.save(new Databank("PDBFINDER", "pdbfinder.org", "google.com/?q=", pdb, "ID           : ([\\d\\w]{4})", CrawlType.LINE));
-
-		Comment comment = new Comment("Example comment");
-		session.save(comment);
-
-		Author author = new Author("Robbie");
-		session.save(author);
-		session.save(new Author("Script1"));
-		session.save(new Author("Script2"));
-
-		Entry ent;
-		session.save(ent = new Entry(pdb, "0TIM"));
-		session.save(new Entry(pdb, "100J"));
-		session.save(new Entry(pdb, "100Q"));
-		session.save(new Entry(pdb, "3H52"));
-
-		Annotation ann;
-		session.save(ann = new Annotation(author, comment, ent));
-
-		pdb.getFiles().add(new File(pdb, "0TIM", "/home/tbeek/Desktop/raw/stats", 2L));
-
-		//session.save(new Annotation(new Entry(pdb, "100Q"), comment, author));
-		//Only works if accessible from already persistent instance
-		//session.save(new Annotation(new Entry(pdb, "0TIM"), new Comment("My new comment"), new Author("Tim")));
-		//So this works:
-		//dssp.getEntries().add(new EntryFile(dssp, "0TIM", "/some/other/path", System.currentTimeMillis()));
-
-		session.getTransaction().commit();
+	@Test
+	public void listFiles() {
+		Transaction transact = session.beginTransaction();
+		DatabankDAO dbdao = factory.getDatabankDAO();
+		Databank pdb = dbdao.findById("PDB", false);
+		for (File file : pdb.getFiles())
+			System.out.println(file);
+		transact.commit();
 	}
 
 	private void printCounts() {
@@ -149,21 +126,6 @@ public class InitialTest {
 		//
 		//		newTransaction.commit();
 		//		newSession.close();
-	}
-
-	private void storeFileAndComment() {
-		Session session = HibernateUtil.getSessionFactory().openSession();
-		Transaction newTransaction = session.beginTransaction();
-
-		Databank pdb = new Databank("PDB", "pdb.org", "google.com/?q=", null, ".*/pdb([\\d\\w]{4})\\.ent(\\.gz)?", CrawlType.FILE);
-		Comment comment = new Comment("Example comment");
-		Author author = new Author("Robbie");
-		Entry entry = new Entry(pdb, "0TIM");
-		session.saveOrUpdate(entry);
-		session.saveOrUpdate(new Annotation(author, comment, entry));
-
-		newTransaction.commit();
-		session.close();
 	}
 
 	private void listEntries() {

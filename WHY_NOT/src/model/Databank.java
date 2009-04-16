@@ -64,6 +64,14 @@ public class Databank {
 		return name;
 	}
 
+	public String getReference() {
+		return reference;
+	}
+
+	public String getFilelink() {
+		return filelink;
+	}
+
 	public Databank getParent() {
 		return parent;
 	}
@@ -82,6 +90,6 @@ public class Databank {
 
 	@Override
 	public String toString() {
-		return name + "," + reference + "," + filelink + "," + parent.name + "," + regex + "," + crawltype;
+		return name + "," + reference + "," + filelink + "," + (parent != null ? parent.getName() : null) + "," + regex + "," + crawltype;
 	}
 }

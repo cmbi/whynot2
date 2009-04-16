@@ -32,15 +32,13 @@ public class FileCrawler extends AbstractCrawler {
 
 	@Override
 	public int addEntriesIn(String path) {
-		int count = 0;
 		for (File dir : dirAndAllSubdirs(new File(path)))
 			for (File file : dir.listFiles(entryfilter)) {
 				Matcher m = pattern.matcher(file.getAbsolutePath());
 				if (m.matches())
-					if (database.getFiles().add(new model.File(database, m.group(1), file.getAbsolutePath(), file.lastModified())))
-						count++;
+					new model.File(database, m.group(1), file.getAbsolutePath(), file.lastModified());
 			}
-		return count;
+		return database.getFiles().size();
 	}
 
 	/**

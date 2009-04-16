@@ -19,16 +19,14 @@ public class LineCrawler extends AbstractCrawler {
 
 	@Override
 	public int addEntriesIn(String filepath) throws IOException {
-		int count = 0;
 		long lastmodified = new File(filepath).lastModified();
 		BufferedReader bf = new BufferedReader(new FileReader(filepath));
 		for (String line = ""; (line = bf.readLine()) != null;) {
 			Matcher m = pattern.matcher(line);
 			if (m.matches())
-				if (database.getFiles().add(new model.File(database, m.group(1), filepath, lastmodified)))
-					count++;
+				new model.File(database, m.group(1), filepath, lastmodified);
 		}
 		bf.close();
-		return count;
+		return database.getFiles().size();
 	}
 }

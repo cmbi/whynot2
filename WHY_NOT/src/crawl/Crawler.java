@@ -43,9 +43,9 @@ public class Crawler {
 				throw new IllegalArgumentException("Invalid CrawlType");
 			}
 			int removed = fc.removeInvalidEntries();
-			int added = fc.addEntriesIn(path);
+			int newtotal = fc.addEntriesIn(path);
 
-			Logger.getLogger(Crawler.class).info(dbname + ": Removing " + removed + ", Adding " + added);
+			Logger.getLogger(Crawler.class).info(dbname + ": Removing " + removed + ", New total " + newtotal);
 
 			transact.commit(); //Plain JDBC
 			succes = true;

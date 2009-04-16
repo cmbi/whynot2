@@ -47,11 +47,11 @@ public class Databank {
 
 	@OneToMany(mappedBy = "databank", cascade = CascadeType.ALL)
 	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
-	private Set<File>	files	= new HashSet<File>();
+	private Set<Entry>	entries	= new HashSet<Entry>();
 
 	@OneToMany(mappedBy = "databank", cascade = CascadeType.ALL)
 	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
-	private Set<Entry>	entries	= new HashSet<Entry>();
+	private Set<File>	files	= new HashSet<File>();
 
 	protected Databank() {}
 

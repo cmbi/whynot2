@@ -25,12 +25,14 @@ public class InitialTest {
 
 	@Before
 	public void setUp() throws Exception {
-		session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session = HibernateUtil.getSessionFactory().openSession();
 		factory = DAOFactory.instance(DAOFactory.HIBERNATE);
 	}
 
 	@After
-	public void tearDown() throws Exception {}
+	public void tearDown() throws Exception {
+		session.close();
+	}
 
 	@Test
 	public void storeDatabases() {
@@ -109,7 +111,7 @@ public class InitialTest {
 		transact.commit();
 	}
 
-	@Test
+	//@Test
 	public void dropHSSP() {
 		Transaction transact = session.beginTransaction();
 		DatabankDAO dbdao = factory.getDatabankDAO();

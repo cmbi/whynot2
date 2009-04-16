@@ -21,8 +21,7 @@ public abstract class AbstractCrawler {
 	 * <br/><br/>
 	 * Extracts the PDBID from the filename/line using regular expression group matching:
 	 * the PDBID should be enclosed in parentheses () and be the explicitly matching group 1
-	 * @param dirpath
-	 * @return set&lt;EntryFile&gt;
+	 * @param path
 	 */
 	public abstract int addEntriesIn(String path) throws IOException;
 

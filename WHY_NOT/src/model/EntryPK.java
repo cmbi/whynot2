@@ -15,6 +15,11 @@ public class EntryPK implements Serializable {
 	String		pdbid		= null;
 
 	@Override
+	public String toString() {
+		return (databank != null ? databank.getName() : null) + "," + pdbid;
+	}
+
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;

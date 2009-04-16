@@ -1,0 +1,6 @@
+AUTHOR: Tim te Beek
+COMMENT: My new example comment
+PDB,100J
+PDB,100Q
+DSSP,100J
+DSSP,100q 

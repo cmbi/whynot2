@@ -18,18 +18,15 @@ public class Crawler {
 		if (args.length == 2)
 			Crawler.crawl(args[0], args[1]);
 		else
-			;//throw new IllegalArgumentException("Usage: crawler DATABASE DIRECTORY/FILE");
-		Crawler.crawl("PDB", "/home/tbeek/Desktop/raw/");
-		Crawler.crawl("DSSP", "/home/tbeek/Desktop/raw/");
-		//Crawler.crawl("HSSP", "/home/tbeek/Desktop/raw/");
-		//Crawler.crawl("PDBFINDER", "/home/tbeek/Desktop/raw/pdbfinder/PDBFIND.TXT");
+			throw new IllegalArgumentException("Usage: crawler DATABASE DIRECTORY/FILE");
 	}
 
-	private static void crawl(String dbname, String path) throws IOException {
+	public static boolean crawl(String dbname, String path) throws IOException {
 		//TODO: Supply the Session after calling getXXXDAO()?
 		HibernateUtil.getSessionFactory().getCurrentSession();
 		DatabankDAO dbdao = Crawler.factory.getDatabaseDAO();
 		Transaction transact = null;
+		boolean succes = false;
 		try {
 			transact = Crawler.factory.getCurrentSession().beginTransaction(); //Plain JDBC
 
@@ -51,16 +48,21 @@ public class Crawler {
 			Logger.getLogger(Crawler.class).info(dbname + ": Removing " + removed + ", Adding " + added);
 
 			transact.commit(); //Plain JDBC
-
-			Logger.getLogger(Crawler.class).info("Succes: " + db.getFiles().size());
+			succes = true;
 		}
 		catch (RuntimeException e) {
-			transact.rollback();
-			Logger.getLogger(Crawler.class).error("Failure");
+			if (transact != null)
+				transact.rollback();
+			succes = false;
 			throw e;
 		}
 		finally {
+			if (succes)
+				Logger.getLogger(Crawler.class).info("Succes");
+			else
+				Logger.getLogger(Crawler.class).error("Failure");
 			//Close session if using anything other than current session
 		}
+		return succes;
 	}
 }

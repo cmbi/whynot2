@@ -5,14 +5,13 @@ import java.io.IOException;
 import model.Databank;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import dao.hibernate.DAOFactory;
-import dao.hibernate.HibernateUtil;
 import dao.interfaces.DatabankDAO;
 
 public class Crawler {
-	private static DAOFactory	factory	= DAOFactory.instance(DAOFactory.HIBERNATE);
 
 	public static void main(String[] args) throws IOException {
 		if (args.length == 2)
@@ -22,13 +21,17 @@ public class Crawler {
 	}
 
 	public static boolean crawl(String dbname, String path) throws IOException {
-		//TODO: Supply the Session after calling getXXXDAO()?
-		HibernateUtil.getSessionFactory().getCurrentSession();
-		DatabankDAO dbdao = Crawler.factory.getDatabankDAO();
+		DAOFactory factory;
+		Session session;
 		Transaction transact = null;
+		//TODO: Supply the Session after calling getXXXDAO()?
 		boolean succes = false;
 		try {
-			transact = Crawler.factory.getCurrentSession().beginTransaction(); //Plain JDBC
+			factory = DAOFactory.instance(DAOFactory.HIBERNATE);
+			session = factory.getCurrentSession();
+			transact = session.beginTransaction(); //Plain JDBC
+
+			DatabankDAO dbdao = factory.getDatabankDAO();
 
 			Databank db = dbdao.findById(dbname, true);
 			AbstractCrawler fc;

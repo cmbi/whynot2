@@ -18,7 +18,7 @@ public class EntryPK implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (databank == null ? 0 : databank.name.hashCode());
+		result = prime * result + (databank == null ? 0 : databank.getName().hashCode());
 		result = prime * result + (pdbid == null ? 0 : pdbid.hashCode());
 		return result;
 	}
@@ -37,7 +37,7 @@ public class EntryPK implements Serializable {
 				return false;
 		}
 		else
-			if (!databank.name.equals(other.databank.name))
+			if (!databank.getName().equals(other.databank.getName()))
 				return false;
 		if (pdbid == null) {
 			if (other.pdbid != null)

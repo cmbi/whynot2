@@ -12,14 +12,14 @@ import org.hibernate.validator.NotNull;
 @IdClass(EntryPK.class)
 public class File {
 	@Id
-	protected Databank	databank;
+	private Databank	databank;
 	@Id
 	@Length(max = 10)
-	protected String	pdbid;
+	private String		pdbid;
 
 	@NotEmpty
 	@Length(max = 200)
-	protected String	path;
+	private String		path;
 	@NotNull
 	private Long		time;
 
@@ -49,7 +49,8 @@ public class File {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (path == null ? 0 : path.hashCode());
+		result = prime * result + (databank == null ? 0 : databank.getName().hashCode());
+		result = prime * result + (pdbid == null ? 0 : pdbid.hashCode());
 		return result;
 	}
 
@@ -62,12 +63,19 @@ public class File {
 		if (getClass() != obj.getClass())
 			return false;
 		File other = (File) obj;
-		if (path == null) {
-			if (other.path != null)
+		if (databank == null) {
+			if (other.databank != null)
 				return false;
 		}
 		else
-			if (!path.equals(other.path))
+			if (!databank.getName().equals(other.databank.getName()))
+				return false;
+		if (pdbid == null) {
+			if (other.pdbid != null)
+				return false;
+		}
+		else
+			if (!pdbid.equals(other.pdbid))
 				return false;
 		return true;
 	}

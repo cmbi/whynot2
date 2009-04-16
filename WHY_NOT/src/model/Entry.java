@@ -7,7 +7,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
-import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.validator.Length;
@@ -16,12 +16,12 @@ import org.hibernate.validator.Length;
 @IdClass(EntryPK.class)
 public class Entry {
 	@Id
-	protected Databank		databank;
+	private Databank		databank;
 	@Id
 	@Length(max = 10)
-	protected String		pdbid;
+	private String			pdbid;
 
-	@ManyToMany(mappedBy = "entries", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "entry", cascade = CascadeType.ALL)
 	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
 	private Set<Annotation>	annotations	= new HashSet<Annotation>();
 
@@ -32,8 +32,47 @@ public class Entry {
 		this.pdbid = pdbid.toUpperCase();
 	}
 
+	public Set<Annotation> getAnnotations() {
+		return annotations;
+	}
+
 	@Override
 	public String toString() {
-		return databank.name + "," + pdbid;
+		return databank.getName() + "," + pdbid;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (databank == null ? 0 : databank.getName().hashCode());
+		result = prime * result + (pdbid == null ? 0 : pdbid.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Entry other = (Entry) obj;
+		if (databank == null) {
+			if (other.databank != null)
+				return false;
+		}
+		else
+			if (!databank.getName().equals(other.databank.getName()))
+				return false;
+		if (pdbid == null) {
+			if (other.pdbid != null)
+				return false;
+		}
+		else
+			if (!pdbid.equals(other.pdbid))
+				return false;
+		return true;
 	}
 }

@@ -12,14 +12,15 @@ import model.Annotation;
 import model.Author;
 import model.Comment;
 import model.Databank;
+import model.Entry;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Transaction;
 
 import dao.hibernate.DAOFactory;
 import dao.hibernate.HibernateUtil;
-import dao.interfaces.AnnotationDAO;
 import dao.interfaces.DatabankDAO;
+import dao.interfaces.EntryDAO;
 
 public class Commenter {
 	private static DAOFactory			factory			= DAOFactory.instance(DAOFactory.HIBERNATE);
@@ -54,8 +55,8 @@ public class Commenter {
 	public static boolean comment(String path) throws Exception {
 		boolean succes = false;
 		HibernateUtil.getSessionFactory().getCurrentSession();
-		AnnotationDAO anndao = Commenter.factory.getAnnotationDAO();
 		DatabankDAO dbdao = Commenter.factory.getDatabankDAO();
+		EntryDAO entdao = Commenter.factory.getEntryDAO();
 		Transaction transact = null;
 		try {
 			transact = Commenter.factory.getCurrentSession().beginTransaction(); //Plain JDBC
@@ -77,22 +78,21 @@ public class Commenter {
 			else
 				throw new IllegalArgumentException("Expected: " + m.pattern().pattern() + ", but got: " + line);
 
-			Annotation ann = new Annotation(author, comment);
-
 			while ((line = bf.readLine()) != null) {
 				m = Commenter.patternEntry.matcher(line);
 				if (m.matches()) {
 					String db = m.group(1);
 					String id = m.group(2);
 					Databank databank = dbdao.findById(db, false);
-					//ann.getEntries().add(new Entry(databank, id));
+					Entry entry = new Entry(databank, id);
+					Annotation ann = new Annotation(author, comment, entry);
+					entdao.makePersistent(entry);
 				}
 				else
 					throw new IllegalArgumentException("Expected: " + m.pattern().pattern() + ", but got: " + line);
 			}
 			new File(path).renameTo(new File(path + "~"));
 
-			anndao.makePersistent(ann);
 			transact.commit(); //Plain JDBC
 
 			succes = true;

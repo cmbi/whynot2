@@ -17,7 +17,7 @@ public class Comment {
 	@Id
 	@NotEmpty
 	@Length(max = 200)
-	protected String		text;
+	private String			text;
 
 	@OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
 	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
@@ -27,6 +27,10 @@ public class Comment {
 
 	public Comment(String text) {
 		this.text = text;
+	}
+
+	public String getText() {
+		return text;
 	}
 
 	@Override

@@ -12,22 +12,23 @@ import org.hibernate.annotations.CascadeType;
 public class AnnotationPK implements Serializable {
 	@ManyToOne
 	@Cascade(value = { CascadeType.SAVE_UPDATE })
-	Author	author;
+	Comment	comment;
+
 	@ManyToOne
 	@Cascade(value = { CascadeType.SAVE_UPDATE })
-	Comment	comment;
+	Entry	entry;
 
 	@Override
 	public String toString() {
-		return author + "," + comment;
+		return comment + "," + entry;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (author == null ? 0 : author.name.hashCode());
-		result = prime * result + (comment == null ? 0 : comment.text.hashCode());
+		result = prime * result + (comment == null ? 0 : comment.getText().hashCode());
+		result = prime * result + (entry == null ? 0 : entry.hashCode());
 		return result;
 	}
 
@@ -40,20 +41,21 @@ public class AnnotationPK implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		AnnotationPK other = (AnnotationPK) obj;
-		if (author == null) {
-			if (other.author != null)
-				return false;
-		}
-		else
-			if (!author.name.equals(other.author.name))
-				return false;
 		if (comment == null) {
 			if (other.comment != null)
 				return false;
 		}
 		else
-			if (!comment.text.equals(other.comment.text))
+			if (!comment.getText().equals(other.comment.getText()))
+				return false;
+		if (entry == null) {
+			if (other.entry != null)
+				return false;
+		}
+		else
+			if (!entry.equals(other.entry))
 				return false;
 		return true;
 	}
+
 }

@@ -2,6 +2,8 @@ package dao.hibernate;
 
 import model.Author;
 import model.Comment;
+import model.Entry;
+import model.EntryPK;
 
 import org.hibernate.Session;
 
@@ -12,6 +14,7 @@ import dao.interfaces.AnnotationDAO;
 import dao.interfaces.AuthorDAO;
 import dao.interfaces.CommentDAO;
 import dao.interfaces.DatabankDAO;
+import dao.interfaces.EntryDAO;
 
 public class HibernateDAOFactory extends DAOFactory {
 	@Override
@@ -32,6 +35,11 @@ public class HibernateDAOFactory extends DAOFactory {
 	@Override
 	public DatabankDAO getDatabankDAO() {
 		return (DatabankDAO) instantiateDAO(DatabankHibernateDAO.class);
+	}
+
+	@Override
+	public EntryDAO getEntryDAO() {
+		return (EntryDAO) instantiateDAO(EntryHibernateDAO.class);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -57,4 +65,6 @@ public class HibernateDAOFactory extends DAOFactory {
 	public static class AuthorHibernateDAO extends GenericHibernateDAO<Author, String> implements AuthorDAO {}
 
 	public static class CommentHibernateDAO extends GenericHibernateDAO<Comment, String> implements CommentDAO {}
+
+	public static class EntryHibernateDAO extends GenericHibernateDAO<Entry, EntryPK> implements EntryDAO {}
 }

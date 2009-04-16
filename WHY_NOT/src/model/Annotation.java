@@ -1,12 +1,9 @@
 package model;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
-import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -14,30 +11,33 @@ import org.hibernate.annotations.CascadeType;
 @Entity
 @IdClass(AnnotationPK.class)
 public class Annotation {
-	@Id
-	protected Author	author;
-	@Id
-	protected Comment	comment;
-
-	private long		timestamp	= System.currentTimeMillis();
-
-	@ManyToMany
+	@ManyToOne
 	@Cascade(value = { CascadeType.SAVE_UPDATE })
-	private Set<Entry>	entries		= new HashSet<Entry>();
+	private Author	author;
+
+	@Id
+	private Comment	comment;
+	@Id
+	private Entry	entry;
+
+	private long	timestamp	= System.currentTimeMillis();
 
 	protected Annotation() {}
 
-	public Annotation(Author author, Comment comment) {
+	public Annotation(Author author, Comment comment, Entry entry) {
 		this.author = author;
 		this.comment = comment;
+		this.entry = entry;
+		entry.getAnnotations().add(this);
 	}
 
-	public Set<Entry> getEntries() {
-		return entries;
+	public Annotation(Author author, Comment comment, Entry entry, long timestamp) {
+		this(author, comment, entry);
+		this.timestamp = timestamp;
 	}
 
 	@Override
 	public String toString() {
-		return author + "," + comment + "," + timestamp;
+		return author + "," + comment + "," + entry + "," + timestamp;
 	}
 }

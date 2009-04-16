@@ -25,7 +25,7 @@ public class Databank {
 	@Id
 	@NotEmpty
 	@Length(max = 50)
-	protected String	name;
+	private String		name;
 
 	@NotEmpty
 	@Length(max = 200)
@@ -58,6 +58,10 @@ public class Databank {
 		this.parent = parent;
 		this.regex = regex;
 		this.crawltype = crawltype;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	public Databank getParent() {

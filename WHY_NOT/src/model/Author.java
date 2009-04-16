@@ -17,7 +17,7 @@ public class Author {
 	@Id
 	@NotEmpty
 	@Length(max = 50)
-	protected String		name;
+	private String			name;
 
 	@OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
 	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)

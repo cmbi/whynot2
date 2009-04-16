@@ -2,20 +2,11 @@ package test;
 
 import junit.framework.Assert;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import crawl.Crawler;
 
 public class CrawlerTest {
-
-	@Before
-	public void setUp() throws Exception {}
-
-	@After
-	public void tearDown() throws Exception {}
-
 	@Test
 	public void crawlPDB() throws Exception {
 		crawl("PDB", "/home/tbeek/Desktop/raw/");

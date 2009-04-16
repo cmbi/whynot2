@@ -10,12 +10,10 @@ import model.Databank.CrawlType;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import dao.hibernate.DAOFactory;
-import dao.hibernate.HibernateUtil;
 import dao.interfaces.AnnotationDAO;
 import dao.interfaces.DatabankDAO;
 
@@ -25,13 +23,8 @@ public class InitialTest {
 
 	@Before
 	public void setUp() throws Exception {
-		session = HibernateUtil.getSessionFactory().openSession();
 		factory = DAOFactory.instance(DAOFactory.HIBERNATE);
-	}
-
-	@After
-	public void tearDown() throws Exception {
-		session.close();
+		session = factory.getCurrentSession();
 	}
 
 	@Test
@@ -48,7 +41,7 @@ public class InitialTest {
 		transact.commit();
 	}
 
-	@Test
+	//@Test
 	public void storeFiles() {
 		Transaction transact = session.beginTransaction();
 		DatabankDAO dbdao = factory.getDatabankDAO();

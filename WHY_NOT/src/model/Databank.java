@@ -49,6 +49,10 @@ public class Databank {
 	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
 	private Set<File>	files	= new HashSet<File>();
 
+	@OneToMany(mappedBy = "databank", cascade = CascadeType.ALL)
+	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
+	private Set<Entry>	entries	= new HashSet<Entry>();
+
 	protected Databank() {}
 
 	public Databank(String name, String reference, String filelink, Databank parent, String regex, CrawlType crawltype) {

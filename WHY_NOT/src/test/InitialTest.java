@@ -1,7 +1,5 @@
 package test;
 
-import java.util.List;
-
 import model.Annotation;
 import model.Author;
 import model.Comment;
@@ -10,7 +8,6 @@ import model.Entry;
 import model.File;
 import model.Databank.CrawlType;
 
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.junit.After;
@@ -53,16 +50,21 @@ public class InitialTest {
 	public void storeFiles() {
 		Transaction transact = session.beginTransaction();
 		DatabankDAO dbdao = factory.getDatabankDAO();
-		Databank pdb = dbdao.findById("PDB", false);
-		Databank dssp = dbdao.findById("DSSP", false);
+		Databank pdb = dbdao.findById("PDB", true);
+		Databank dssp = dbdao.findById("DSSP", true);
+		Databank hssp = dbdao.findById("HSSP", true);
 
 		new File(pdb, "0TIM", "/home/tbeek/Desktop/raw/stats", System.currentTimeMillis());
 		new File(pdb, "1TIM", "/home/tbeek/Desktop/raw/stats", System.currentTimeMillis());
 		new File(pdb, "100J", "/home/tbeek/Desktop/raw/stats", System.currentTimeMillis());
 		new File(pdb, "100Q", "/home/tbeek/Desktop/raw/stats", System.currentTimeMillis());
+
 		new File(dssp, "0TIM", "/home/tbeek/Desktop/raw/stats", System.currentTimeMillis());
 		new File(dssp, "1TIM", "/home/tbeek/Desktop/raw/stats", System.currentTimeMillis());
 		new File(dssp, "100J", "/home/tbeek/Desktop/raw/stats", System.currentTimeMillis());
+
+		new File(hssp, "0TIM", "/home/tbeek/Desktop/raw/stats", System.currentTimeMillis());
+		new File(hssp, "1TIM", "/home/tbeek/Desktop/raw/stats", System.currentTimeMillis());
 
 		transact.commit();
 	}
@@ -77,28 +79,42 @@ public class InitialTest {
 		Comment comment = new Comment("Example comment stored in InitialTest.java#storeAnnotations");
 		Databank pdb = dbdao.findById("PDB", false);
 		Databank dssp = dbdao.findById("DSSP", false);
+		Databank hssp = dbdao.findById("HSSP", false);
 
-		Entry p0TIM;
-		anndao.makePersistent(new Annotation(author, comment, p0TIM = new Entry(pdb, "0TIM")));
+		anndao.makePersistent(new Annotation(author, comment, new Entry(pdb, "0TIM")));
 		anndao.makePersistent(new Annotation(author, comment, new Entry(pdb, "1TIM")));
 		anndao.makePersistent(new Annotation(author, comment, new Entry(pdb, "100J")));
 		anndao.makePersistent(new Annotation(author, comment, new Entry(pdb, "100Q")));
+
 		anndao.makePersistent(new Annotation(author, comment, new Entry(dssp, "0TIM")));
 		anndao.makePersistent(new Annotation(author, comment, new Entry(dssp, "1TIM")));
 		anndao.makePersistent(new Annotation(author, comment, new Entry(dssp, "100J")));
 		anndao.makePersistent(new Annotation(author, comment, new Entry(dssp, "100Q")));
 
+		anndao.makePersistent(new Annotation(author, comment, new Entry(hssp, "0TIM")));
+		anndao.makePersistent(new Annotation(author, comment, new Entry(hssp, "1TIM")));
+		anndao.makePersistent(new Annotation(author, comment, new Entry(hssp, "100J")));
+		anndao.makePersistent(new Annotation(author, comment, new Entry(hssp, "100Q")));
+
 		transact.commit();
-		System.out.println(p0TIM.getAnnotations().size());
 	}
 
 	@Test
-	public void listFiles() {
+	public void listPDBFiles() {
 		Transaction transact = session.beginTransaction();
 		DatabankDAO dbdao = factory.getDatabankDAO();
 		Databank pdb = dbdao.findById("PDB", false);
 		for (File file : pdb.getFiles())
 			System.out.println(file);
+		transact.commit();
+	}
+
+	@Test
+	public void dropHSSP() {
+		Transaction transact = session.beginTransaction();
+		DatabankDAO dbdao = factory.getDatabankDAO();
+		Databank hssp = dbdao.findById("HSSP", true);
+		dbdao.makeTransient(hssp);
 		transact.commit();
 	}
 
@@ -126,28 +142,5 @@ public class InitialTest {
 		//
 		//		newTransaction.commit();
 		//		newSession.close();
-	}
-
-	private void listEntries() {
-		Session newSession = HibernateUtil.getSessionFactory().openSession();
-		Transaction newTransaction = newSession.beginTransaction();
-		List<Entry> messages = newSession.createQuery("from EntryFile m where m.entry.database='PDB' order by m.entry.pdbid asc").list();
-
-		System.out.println(messages.size() + " entryfile(s) found:");
-		for (Entry ef : messages)
-			System.out.println(ef.toString());
-		newTransaction.commit();
-		newSession.close();
-	}
-
-	private void deleteHSSPDB() {
-		Session newSession = HibernateUtil.getSessionFactory().openSession();
-		Transaction someTransaction = newSession.beginTransaction();
-		Query query = newSession.createQuery("from Database m where m.name IS :dbname");
-		query.setParameter("dbname", "HSSP");
-		Databank db = (Databank) query.uniqueResult();
-		newSession.delete(db);
-		someTransaction.commit();
-		newSession.close();
 	}
 }

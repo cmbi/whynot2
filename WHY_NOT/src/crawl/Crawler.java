@@ -24,7 +24,7 @@ public class Crawler {
 	public static boolean crawl(String dbname, String path) throws IOException {
 		//TODO: Supply the Session after calling getXXXDAO()?
 		HibernateUtil.getSessionFactory().getCurrentSession();
-		DatabankDAO dbdao = Crawler.factory.getDatabaseDAO();
+		DatabankDAO dbdao = Crawler.factory.getDatabankDAO();
 		Transaction transact = null;
 		boolean succes = false;
 		try {
@@ -57,11 +57,11 @@ public class Crawler {
 			throw e;
 		}
 		finally {
+			//Close session if using anything other than current session
 			if (succes)
 				Logger.getLogger(Crawler.class).info("Succes");
 			else
 				Logger.getLogger(Crawler.class).error("Failure");
-			//Close session if using anything other than current session
 		}
 		return succes;
 	}

@@ -5,12 +5,22 @@ import java.io.Serializable;
 import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 @Embeddable
 public class AnnotationPK implements Serializable {
 	@ManyToOne
+	@Cascade(value = { CascadeType.SAVE_UPDATE })
 	Author	author;
 	@ManyToOne
+	@Cascade(value = { CascadeType.SAVE_UPDATE })
 	Comment	comment;
+
+	@Override
+	public String toString() {
+		return author + "," + comment;
+	}
 
 	@Override
 	public int hashCode() {

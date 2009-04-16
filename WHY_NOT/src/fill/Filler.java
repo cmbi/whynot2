@@ -39,7 +39,7 @@ public class Filler {
 
 	private void unrelatedTest() {
 		DAOFactory factory = DAOFactory.instance(DAOFactory.HIBERNATE);
-		DatabankDAO dbdao = factory.getDatabaseDAO();
+		DatabankDAO dbdao = factory.getDatabankDAO();
 		AnnotationDAO anndao = factory.getAnnotationDAO();
 
 		factory.getCurrentSession().beginTransaction(); //Plain JDBC

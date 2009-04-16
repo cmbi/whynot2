@@ -29,7 +29,7 @@ public class Entry {
 
 	public Entry(Databank databank, String pdbid) {
 		this.databank = databank;
-		this.pdbid = pdbid;
+		this.pdbid = pdbid.toUpperCase();
 	}
 
 	@Override

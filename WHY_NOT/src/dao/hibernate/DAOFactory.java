@@ -42,5 +42,5 @@ public abstract class DAOFactory {
 
 	public abstract CommentDAO getCommentDAO();
 
-	public abstract DatabankDAO getDatabaseDAO();
+	public abstract DatabankDAO getDatabankDAO();
 }

@@ -3,13 +3,14 @@ package dao.implementations;
 import java.util.List;
 
 import model.Annotation;
+import model.AnnotationPK;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
 
 import dao.interfaces.AnnotationDAO;
 
-public class AnnotationHibernateDAO extends GenericHibernateDAO<Annotation, Integer> implements AnnotationDAO {
+public class AnnotationHibernateDAO extends GenericHibernateDAO<Annotation, AnnotationPK> implements AnnotationDAO {
 	private static final String	ANNOTATED	= // + ( ... )!
 											"from Annotation ann" + //
 											"where ann.entry IN ";

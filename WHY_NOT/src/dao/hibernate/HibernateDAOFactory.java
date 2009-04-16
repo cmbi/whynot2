@@ -30,7 +30,7 @@ public class HibernateDAOFactory extends DAOFactory {
 	}
 
 	@Override
-	public DatabankDAO getDatabaseDAO() {
+	public DatabankDAO getDatabankDAO() {
 		return (DatabankDAO) instantiateDAO(DatabankHibernateDAO.class);
 	}
 

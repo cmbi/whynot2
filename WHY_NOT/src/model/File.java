@@ -30,6 +30,7 @@ public class File {
 		pdbid = id;
 		this.path = path;
 		this.time = time;
+		databank.getFiles().add(this);
 	}
 
 	public String getPath() {

@@ -50,6 +50,19 @@ public class InitialTest {
 	}
 
 	@Test
+	public void storeFiles() {
+		Transaction transact = session.beginTransaction();
+		DatabankDAO dbdao = factory.getDatabankDAO();
+		Databank pdb = dbdao.findById("PDB", false);
+		Databank dssp = dbdao.findById("DSSP", false);
+
+		File p0TIM;
+		p0TIM = new File(pdb, "0TIM", "/home/tbeek/Desktop/raw/stats", System.currentTimeMillis());
+
+		transact.commit();
+	}
+
+	@Test
 	public void storeAnnotations() {
 		Transaction transact = session.beginTransaction();
 		AnnotationDAO anndao = factory.getAnnotationDAO();

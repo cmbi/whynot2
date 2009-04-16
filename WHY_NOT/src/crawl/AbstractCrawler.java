@@ -2,7 +2,8 @@ package crawl;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import model.Databank;
@@ -30,10 +31,25 @@ public abstract class AbstractCrawler {
 	 * and if the timestamp on the file is the same as the timestamp on the entry
 	 */
 	public int removeInvalidEntries() {
+		Set<model.File> tbr = new HashSet<model.File>();
+		for (model.File ef : database.getFiles()) {
+			File file = new File(ef.getPath());
+			if (!file.exists() || file.lastModified() != ef.getTime().longValue())
+				tbr.add(ef);
+		}
+
 		int count = 0;
-		model.File ef;
+		for (model.File ef : tbr)
+			if (database.getFiles().remove(ef))
+				count++;
+		return count;
+	}
+
+	/*
+	 	public int removeInvalidEntries() {
+		int count = 0;
 		for (Iterator<model.File> entritr = database.getFiles().iterator(); entritr.hasNext();) {
-			ef = entritr.next();
+			model.File ef = entritr.next();
 			File file = new File(ef.getPath());
 			if (!file.exists() || file.lastModified() != ef.getTime().longValue()) {
 				entritr.remove();
@@ -41,5 +57,6 @@ public abstract class AbstractCrawler {
 			}
 		}
 		return count;
-	}
+	} 
+	 */
 }

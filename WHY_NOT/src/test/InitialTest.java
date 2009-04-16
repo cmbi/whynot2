@@ -1,5 +1,7 @@
 package test;
 
+import java.util.Iterator;
+
 import model.Annotation;
 import model.Author;
 import model.Comment;
@@ -41,7 +43,7 @@ public class InitialTest {
 		transact.commit();
 	}
 
-	//@Test
+	@Test
 	public void storeFiles() {
 		Transaction transact = session.beginTransaction();
 		DatabankDAO dbdao = factory.getDatabankDAO();
@@ -101,6 +103,20 @@ public class InitialTest {
 		Databank pdb = dbdao.findById("PDB", false);
 		for (File file : pdb.getFiles())
 			System.out.println(file);
+		transact.commit();
+	}
+
+	@Test
+	public void dropFile() {
+		Transaction transact = session.beginTransaction();
+		DatabankDAO dbdao = factory.getDatabankDAO();
+		Databank pdb = dbdao.findById("PDB", true);
+
+		Iterator<File> itr = pdb.getFiles().iterator();
+		File fl = itr.next();
+		System.out.println(fl);
+		itr.remove();
+
 		transact.commit();
 	}
 

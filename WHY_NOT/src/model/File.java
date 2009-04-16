@@ -43,7 +43,7 @@ public class File {
 
 	@Override
 	public String toString() {
-		return databank + "," + pdbid + "," + path + "," + time;
+		return (databank != null ? databank.getName() : null) + "," + pdbid + "," + path + "," + time;
 	}
 
 	@Override

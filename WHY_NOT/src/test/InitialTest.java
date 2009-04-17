@@ -21,7 +21,6 @@ import dao.hibernate.DAOFactory;
 import dao.hibernate.HibernateUtil;
 import dao.interfaces.AnnotationDAO;
 import dao.interfaces.DatabankDAO;
-import dao.interfaces.EntryDAO;
 
 public class InitialTest {
 	DAOFactory	factory;
@@ -84,35 +83,32 @@ public class InitialTest {
 	@Test
 	public void storeAnnotations() {
 		Transaction transact = session.beginTransaction();
-		AnnotationDAO anndao = factory.getAnnotationDAO();
 		DatabankDAO dbdao = factory.getDatabankDAO();
-		EntryDAO entdao = factory.getEntryDAO();
 
 		Author author = new Author("Tim te Beek");
 		Comment comment = new Comment("Example comment stored in InitialTest.java");
 		Databank test = dbdao.findById("TEST", true);
 		Entry entry = new Entry(test, "0001");
+		new Annotation(author, comment, entry, 1L);
 
-		new Annotation(author, comment, entry);
-		/*		
 		Databank pdb = dbdao.findById("PDB", true);
 		Databank dssp = dbdao.findById("DSSP", true);
 		Databank hssp = dbdao.findById("HSSP", true);
 
-		anndao.makePersistent(new Annotation(author, comment, new Entry(pdb, "1TIM")));
-		anndao.makePersistent(new Annotation(author, comment, new Entry(pdb, "100J")));
-		anndao.makePersistent(new Annotation(author, comment, new Entry(pdb, "100Q")));
+		new Annotation(author, comment, new Entry(pdb, "0TIM"));
+		new Annotation(author, comment, new Entry(pdb, "1TIM"));
+		new Annotation(author, comment, new Entry(pdb, "100J"));
+		new Annotation(author, comment, new Entry(pdb, "100Q"));
 
-		anndao.makePersistent(new Annotation(author, comment, new Entry(dssp, "0TIM")));
-		anndao.makePersistent(new Annotation(author, comment, new Entry(dssp, "1TIM")));
-		anndao.makePersistent(new Annotation(author, comment, new Entry(dssp, "100J")));
-		anndao.makePersistent(new Annotation(author, comment, new Entry(dssp, "100Q")));
+		new Annotation(author, comment, new Entry(dssp, "0TIM"));
+		new Annotation(author, comment, new Entry(dssp, "1TIM"));
+		new Annotation(author, comment, new Entry(dssp, "100J"));
+		new Annotation(author, comment, new Entry(dssp, "100Q"));
 
-		anndao.makePersistent(new Annotation(author, comment, new Entry(hssp, "0TIM")));
-		anndao.makePersistent(new Annotation(author, comment, new Entry(hssp, "1TIM")));
-		anndao.makePersistent(new Annotation(author, comment, new Entry(hssp, "100J")));
-		anndao.makePersistent(new Annotation(author, comment, new Entry(hssp, "100Q")));
-		*/
+		new Annotation(author, comment, new Entry(hssp, "0TIM"));
+		new Annotation(author, comment, new Entry(hssp, "1TIM"));
+		new Annotation(author, comment, new Entry(hssp, "100J"));
+		new Annotation(author, comment, new Entry(hssp, "100Q"));
 
 		transact.commit();
 	}

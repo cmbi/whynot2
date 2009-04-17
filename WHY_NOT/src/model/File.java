@@ -25,17 +25,12 @@ public class File {
 
 	protected File() {}
 
-	public File(Databank db, String id) {
-		databank = db;
-		pdbid = id;
-	}
-
 	public File(Databank db, String id, String path, Long time) {
 		databank = db;
 		pdbid = id;
 		this.path = path;
 		this.time = time;
-		databank.getFiles().add(this);//TODO: remove?
+		databank.getFiles().add(this);
 	}
 
 	public String getPath() {

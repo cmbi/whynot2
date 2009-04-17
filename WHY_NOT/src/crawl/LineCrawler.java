@@ -29,16 +29,15 @@ public class LineCrawler extends AbstractCrawler {
 		for (String line = ""; (line = bf.readLine()) != null;) {
 			Matcher m = pattern.matcher(line);
 			if (m.matches()) {
-				model.File ef = null;
-				if (database.getFiles().contains(new model.File(database, m.group(1))))
-					ef = fldao.findById(new EntryPK(database, m.group(1)), true);
+				model.File ef = fldao.findById(new EntryPK(database, m.group(1)), true);
+				if (ef != null) {
+					ef.setPath(filepath);
+					ef.setTime(lastmodified);
+				}
 				else {
-					ef = new model.File(database, m.group(1));
-					database.getFiles().add(ef);
+					ef = new model.File(database, m.group(1), filepath, lastmodified);
 					count++;
 				}
-				ef.setPath(filepath);
-				ef.setTime(lastmodified);
 			}
 		}
 		bf.close();

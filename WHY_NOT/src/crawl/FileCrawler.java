@@ -41,16 +41,15 @@ public class FileCrawler extends AbstractCrawler {
 			for (File file : dir.listFiles(entryfilter)) {
 				Matcher m = pattern.matcher(file.getAbsolutePath());
 				if (m.matches()) {
-					model.File ef = null;
-					if (database.getFiles().contains(new model.File(database, m.group(1))))
-						ef = fldao.findById(new EntryPK(database, m.group(1)), true);
+					model.File ef = fldao.findById(new EntryPK(database, m.group(1)), true);
+					if (ef != null) {
+						ef.setPath(file.getAbsolutePath());
+						ef.setTime(file.lastModified());
+					}
 					else {
-						ef = new model.File(database, m.group(1));
-						database.getFiles().add(ef);
+						ef = new model.File(database, m.group(1), file.getAbsolutePath(), file.lastModified());
 						count++;
 					}
-					ef.setPath(file.getAbsolutePath());
-					ef.setTime(file.lastModified());
 				}
 			}
 		return count;

@@ -29,6 +29,10 @@ public class Author {
 		this.name = name;
 	}
 
+	public Set<Annotation> getAnnotations() {
+		return annotations;
+	}
+
 	@Override
 	public String toString() {
 		return name;

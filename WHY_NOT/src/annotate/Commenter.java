@@ -111,10 +111,10 @@ public class Commenter {
 					throw new IllegalArgumentException("Expected: " + m.pattern().pattern() + ", but got: " + line);
 			}
 
-			//Rename file to prevent rerunning
-			new File(path).renameTo(new File(path + "~"));
-
 			transact.commit(); //Plain JDBC
+
+			//Rename file to prevent rerunning
+			new File(path).renameTo(new File(path.concat(".done")));
 
 			succes = true;
 		}
@@ -194,10 +194,10 @@ public class Commenter {
 					throw new IllegalArgumentException("Expected: " + m.pattern().pattern() + ", but got: " + line);
 			}
 
-			//Rename file to prevent rerunning
-			new File(path).renameTo(new File(path + "~"));
-
 			transact.commit(); //Plain JDBC
+
+			//Rename file to prevent rerunning
+			new File(path).renameTo(new File(path.concat(".done")));
 
 			succes = true;
 		}

@@ -19,8 +19,8 @@ public class CommenterTest {
 
 	@After
 	public void tearDown() throws Exception {
-		new File(comfile + "~").renameTo(new File(comfile));
-		new File(uncomfile + "~").renameTo(new File(uncomfile));
+		new File(comfile + ".done").renameTo(new File(comfile));
+		new File(uncomfile + ".done").renameTo(new File(uncomfile));
 	}
 
 	//@Test

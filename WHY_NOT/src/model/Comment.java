@@ -33,6 +33,10 @@ public class Comment {
 		return text;
 	}
 
+	public Set<Annotation> getAnnotations() {
+		return annotations;
+	}
+
 	@Override
 	public String toString() {
 		return text;

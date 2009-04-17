@@ -33,6 +33,10 @@ public class Entry {
 		databank.getEntries().add(this);
 	}
 
+	public Databank getDatabank() {
+		return databank;
+	}
+
 	public Set<Annotation> getAnnotations() {
 		return annotations;
 	}

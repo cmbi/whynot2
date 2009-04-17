@@ -8,7 +8,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import annotate.Commenter;
+import comment.Commenter;
+
 
 public class CommenterTest {
 	String	comfile		= "comment/com1.txt";

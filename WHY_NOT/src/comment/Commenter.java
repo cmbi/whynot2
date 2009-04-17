@@ -1,4 +1,4 @@
-package annotate;
+package comment;
 
 import java.io.BufferedReader;
 import java.io.File;

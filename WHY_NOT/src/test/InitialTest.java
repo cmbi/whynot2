@@ -58,6 +58,10 @@ public class InitialTest {
 	public void storeFiles() {
 		Transaction transact = session.beginTransaction();
 		DatabankDAO dbdao = factory.getDatabankDAO();
+		Databank test = dbdao.findById("TEST", true);
+		new File(test, "0001", "/home/tbeek/Desktop/raw/stats", System.currentTimeMillis());
+		new File(test, "0002", "/home/tbeek/Desktop/raw/stats", System.currentTimeMillis());
+
 		Databank pdb = dbdao.findById("PDB", true);
 		Databank dssp = dbdao.findById("DSSP", true);
 		Databank hssp = dbdao.findById("HSSP", true);
@@ -127,7 +131,7 @@ public class InitialTest {
 	public void dropFile() {
 		Transaction transact = session.beginTransaction();
 		DatabankDAO dbdao = factory.getDatabankDAO();
-		Databank pdb = dbdao.findById("PDB", true);
+		Databank pdb = dbdao.findById("TEST", true);
 
 		Iterator<File> itr = pdb.getFiles().iterator();
 		File fl = itr.next();

@@ -3,7 +3,6 @@ package model;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -12,6 +11,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotEmpty;
 import org.hibernate.validator.NotNull;
@@ -45,12 +45,12 @@ public class Databank {
 	@Enumerated(EnumType.STRING)
 	private CrawlType	crawltype;
 
-	@OneToMany(mappedBy = "databank", cascade = CascadeType.ALL)
-	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
+	@OneToMany(mappedBy = "databank", cascade = javax.persistence.CascadeType.ALL)
+	@Cascade(value = { CascadeType.DELETE_ORPHAN })
 	private Set<Entry>	entries	= new HashSet<Entry>();
 
-	@OneToMany(mappedBy = "databank", cascade = CascadeType.ALL)
-	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
+	@OneToMany(mappedBy = "databank", cascade = javax.persistence.CascadeType.ALL)
+	@Cascade(value = { CascadeType.DELETE_ORPHAN })
 	private Set<File>	files	= new HashSet<File>();
 
 	protected Databank() {}

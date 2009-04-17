@@ -27,9 +27,10 @@ public class Entry {
 
 	protected Entry() {}
 
-	public Entry(Databank databank, String pdbid) {
-		this.databank = databank;
-		this.pdbid = pdbid.toUpperCase();
+	public Entry(Databank db, String id) {
+		databank = db;
+		pdbid = id.toUpperCase();
+		databank.getEntries().add(this);
 	}
 
 	public Set<Annotation> getAnnotations() {

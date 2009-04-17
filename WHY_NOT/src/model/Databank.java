@@ -88,6 +88,10 @@ public class Databank {
 		return crawltype;
 	}
 
+	public Set<Entry> getEntries() {
+		return entries;
+	}
+
 	public Set<File> getFiles() {
 		return files;
 	}

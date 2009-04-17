@@ -63,52 +63,35 @@ public class Commenter {
 			transact = Commenter.factory.getSession().beginTransaction(); //Plain JDBC
 
 			//Initialize DAO's
-			AuthorDAO authdao = Commenter.factory.getAuthorDAO();
-			CommentDAO comdao = Commenter.factory.getCommentDAO();
 			DatabankDAO dbdao = Commenter.factory.getDatabankDAO();
-			EntryDAO entdao = Commenter.factory.getEntryDAO();
 
 			BufferedReader bf = new BufferedReader(new FileReader(path));
 			Matcher m;
 			String line;
-			Author author;
-			Comment comment;
 
 			//Get Author
 			m = Commenter.patternAuthor.matcher(line = bf.readLine());
-			if (m.matches()) {
-				author = authdao.findById(m.group(1), true);
-				if (author == null)
-					author = new Author(m.group(1));
-			}
-			else
-				throw new IllegalArgumentException("Expected: " + m.pattern().pattern() + ", but got: " + line);
+			if (!m.matches())
+				throw new IllegalArgumentException("Expected: " + m.pattern() + ", but got: " + line);
+			Author author = new Author(m.group(1));
 
 			//Get Comment
 			m = Commenter.patternComment.matcher(line = bf.readLine());
-			if (m.matches()) {
-				comment = comdao.findById(m.group(1), true);
-				if (comment == null)
-					comment = new Comment(m.group(1));
-			}
-			else
-				throw new IllegalArgumentException("Expected: " + m.pattern().pattern() + ", but got: " + line);
+			if (!m.matches())
+				throw new IllegalArgumentException("Expected: " + m.pattern() + ", but got: " + line);
+			Comment comment = new Comment(m.group(1));
 
 			//Loop Entries
 			long thetime = System.currentTimeMillis();
 			while ((line = bf.readLine()) != null) {
 				m = Commenter.patternEntry.matcher(line);
-				if (m.matches()) {
-					String db = m.group(1);
-					String id = m.group(2).toUpperCase();
-					Databank databank = dbdao.findById(db, false);
-					Entry entry = entdao.findById(new EntryPK(databank, id), true);
-					if (entry == null)
-						entry = new Entry(databank, id);
-					new Annotation(author, comment, entry, thetime);
-				}
-				else
-					throw new IllegalArgumentException("Expected: " + m.pattern().pattern() + ", but got: " + line);
+				if (!m.matches())
+					throw new IllegalArgumentException("Expected: " + m.pattern() + ", but got: " + line);
+				String db = m.group(1);
+				String id = m.group(2).toUpperCase();
+				Databank databank = dbdao.findById(db, true);
+				Entry entry = new Entry(databank, id);
+				new Annotation(author, comment, entry, thetime);
 			}
 
 			transact.commit(); //Plain JDBC
@@ -151,47 +134,43 @@ public class Commenter {
 			BufferedReader bf = new BufferedReader(new FileReader(path));
 			Matcher m;
 			String line;
-			Author author;
-			Comment comment;
 
 			//Get Author
 			m = Commenter.patternAuthor.matcher(line = bf.readLine());
-			if (m.matches()) {
-				author = authdao.findById(m.group(1), true);
-				if (author == null)
-					throw new IllegalArgumentException("Author not found");
-			}
-			else
-				throw new IllegalArgumentException("Expected: " + m.pattern().pattern() + ", but got: " + line);
+			if (!m.matches())
+				throw new IllegalArgumentException("Expected: " + m.pattern() + ", but got: " + line);
+			Author author = authdao.findById(m.group(1), true);
+			if (author == null)
+				throw new IllegalArgumentException("Author not found");
 
 			//Get Comment
 			m = Commenter.patternComment.matcher(line = bf.readLine());
-			if (m.matches()) {
-				comment = comdao.findById(m.group(1), true);
-				if (comment == null)
-					throw new IllegalArgumentException("Comment not found");
-			}
-			else
-				throw new IllegalArgumentException("Expected: " + m.pattern().pattern() + ", but got: " + line);
+			if (!m.matches())
+				throw new IllegalArgumentException("Expected: " + m.pattern() + ", but got: " + line);
+			Comment comment = comdao.findById(m.group(1), true);
+			if (comment == null)
+				throw new IllegalArgumentException("Comment not found");
 
 			//Loop Entries
 			while ((line = bf.readLine()) != null) {
 				m = Commenter.patternEntry.matcher(line);
-				if (m.matches()) {
-					String db = m.group(1);
-					String id = m.group(2).toUpperCase();
-					Databank databank = dbdao.findById(db, false);
-					if (databank == null)
-						throw new IllegalArgumentException("Databank '" + db + "' not found");
-					Entry entry = entdao.findById(new EntryPK(databank, id), true);
-					if (entry == null)
-						throw new IllegalArgumentException("Entry '" + db + "/" + id + "' not found");
-					Annotation annotation = anndao.findById(new AnnotationPK(comment, entry), true);
-					if (annotation != null)
-						anndao.makeTransient(annotation);
-				}
-				else
-					throw new IllegalArgumentException("Expected: " + m.pattern().pattern() + ", but got: " + line);
+				if (!m.matches())
+					throw new IllegalArgumentException("Expected: " + m.pattern() + ", but got: " + line);
+
+				String db = m.group(1);
+				String id = m.group(2).toUpperCase();
+
+				Databank databank = dbdao.findById(db, true);
+				if (databank == null)
+					throw new IllegalArgumentException("Databank '" + db + "' not found");
+
+				Entry entry = entdao.findById(new EntryPK(databank, id), true);
+				if (entry == null)
+					throw new IllegalArgumentException("Entry '" + db + "/" + id + "' not found");
+
+				Annotation annotation = anndao.findById(new AnnotationPK(comment, entry), true);
+				if (annotation != null)
+					anndao.makeTransient(annotation);
 			}
 
 			transact.commit(); //Plain JDBC

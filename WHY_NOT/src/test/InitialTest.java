@@ -8,7 +8,6 @@ import model.Author;
 import model.Comment;
 import model.Databank;
 import model.Entry;
-import model.EntryPK;
 import model.File;
 import model.Databank.CrawlType;
 
@@ -46,11 +45,12 @@ public class InitialTest {
 		DatabankDAO dbdao = factory.getDatabankDAO();
 
 		Databank pdb, dssp;
+		dbdao.makePersistent(new Databank("TEST", "ref", "link", null, "regex", CrawlType.FILE));
 		dbdao.makePersistent(pdb = new Databank("PDB", "pdb.org", "google.com/?q=", null, ".*/pdb([\\d\\w]{4})\\.ent(\\.gz)?", CrawlType.FILE));
 		dbdao.makePersistent(dssp = new Databank("DSSP", "dssp.org", "google.com/?q=", pdb, ".*/([\\d\\w]{4})\\.dssp", CrawlType.FILE));
 		dbdao.makePersistent(new Databank("HSSP", "hssp.org", "google.com/?q=", dssp, ".*/([\\d\\w]{4})\\.hssp", CrawlType.FILE));
 		dbdao.makePersistent(new Databank("PDBFINDER", "pdbfinder.org", "google.com/?q=", pdb, "ID           : ([\\d\\w]{4})", CrawlType.LINE));
-		Assert.assertEquals(dbdao.findAll().size(), 4);
+		Assert.assertEquals(dbdao.findAll().size(), 5);
 
 		transact.commit();
 	}
@@ -90,16 +90,15 @@ public class InitialTest {
 
 		Author author = new Author("Tim te Beek");
 		Comment comment = new Comment("Example comment stored in InitialTest.java");
-		Databank pdb = dbdao.findById("PDB", false);
-		Databank dssp = dbdao.findById("DSSP", false);
-		Databank hssp = dbdao.findById("HSSP", false);
+		Databank test = dbdao.findById("TEST", true);
+		Entry entry = new Entry(test, "0001");
 
-		Entry p0TIM = entdao.findById(new EntryPK(pdb, "0TIM"), true);
-		if (p0TIM == null)
-			p0TIM = new Entry(pdb, "0TIM");
-
-		new Annotation(author, comment, p0TIM);
+		new Annotation(author, comment, entry);
 		/*		
+		Databank pdb = dbdao.findById("PDB", true);
+		Databank dssp = dbdao.findById("DSSP", true);
+		Databank hssp = dbdao.findById("HSSP", true);
+
 		anndao.makePersistent(new Annotation(author, comment, new Entry(pdb, "1TIM")));
 		anndao.makePersistent(new Annotation(author, comment, new Entry(pdb, "100J")));
 		anndao.makePersistent(new Annotation(author, comment, new Entry(pdb, "100Q")));

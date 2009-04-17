@@ -15,7 +15,7 @@ public class AnnotationPK implements Serializable {
 	Comment	comment;
 
 	@ManyToOne
-	@Cascade(value = { CascadeType.SAVE_UPDATE })
+	@Cascade(value = { CascadeType.MERGE, CascadeType.SAVE_UPDATE })
 	Entry	entry;
 
 	protected AnnotationPK() {}

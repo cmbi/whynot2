@@ -12,7 +12,7 @@ import org.hibernate.annotations.CascadeType;
 @IdClass(AnnotationPK.class)
 public class Annotation {
 	@ManyToOne
-	@Cascade(value = { CascadeType.SAVE_UPDATE })
+	@Cascade(value = { CascadeType.MERGE, CascadeType.SAVE_UPDATE })
 	private Author	author;
 
 	@Id

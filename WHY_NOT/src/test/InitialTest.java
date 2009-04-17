@@ -8,6 +8,7 @@ import model.Author;
 import model.Comment;
 import model.Databank;
 import model.Entry;
+import model.EntryPK;
 import model.File;
 import model.Databank.CrawlType;
 
@@ -21,6 +22,7 @@ import dao.hibernate.DAOFactory;
 import dao.hibernate.HibernateUtil;
 import dao.interfaces.AnnotationDAO;
 import dao.interfaces.DatabankDAO;
+import dao.interfaces.EntryDAO;
 
 public class InitialTest {
 	DAOFactory	factory;
@@ -84,14 +86,20 @@ public class InitialTest {
 		Transaction transact = session.beginTransaction();
 		AnnotationDAO anndao = factory.getAnnotationDAO();
 		DatabankDAO dbdao = factory.getDatabankDAO();
+		EntryDAO entdao = factory.getEntryDAO();
 
 		Author author = new Author("Tim te Beek");
-		Comment comment = new Comment("Example comment stored in InitialTest.java#storeAnnotations");
+		Comment comment = new Comment("Example comment stored in InitialTest.java");
 		Databank pdb = dbdao.findById("PDB", false);
 		Databank dssp = dbdao.findById("DSSP", false);
 		Databank hssp = dbdao.findById("HSSP", false);
 
-		anndao.makePersistent(new Annotation(author, comment, new Entry(pdb, "0TIM")));
+		Entry p0TIM = entdao.findById(new EntryPK(pdb, "0TIM"), true);
+		if (p0TIM == null)
+			p0TIM = new Entry(pdb, "0TIM");
+
+		new Annotation(author, comment, p0TIM);
+		/*		
 		anndao.makePersistent(new Annotation(author, comment, new Entry(pdb, "1TIM")));
 		anndao.makePersistent(new Annotation(author, comment, new Entry(pdb, "100J")));
 		anndao.makePersistent(new Annotation(author, comment, new Entry(pdb, "100Q")));
@@ -105,6 +113,7 @@ public class InitialTest {
 		anndao.makePersistent(new Annotation(author, comment, new Entry(hssp, "1TIM")));
 		anndao.makePersistent(new Annotation(author, comment, new Entry(hssp, "100J")));
 		anndao.makePersistent(new Annotation(author, comment, new Entry(hssp, "100Q")));
+		*/
 
 		transact.commit();
 	}

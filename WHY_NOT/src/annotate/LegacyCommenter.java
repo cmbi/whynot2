@@ -26,7 +26,7 @@ import dao.interfaces.CommentDAO;
 import dao.interfaces.DatabankDAO;
 import dao.interfaces.EntryDAO;
 
-public class LegacyCommenter {
+public class LegacyCommenter {//TODO: implement
 	private static DAOFactory			factory			= DAOFactory.instance(DAOFactory.HIBERNATE);
 
 	private static final String			COMMENTDIR		= "comment/";

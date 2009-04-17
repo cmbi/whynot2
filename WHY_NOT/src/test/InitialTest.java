@@ -13,21 +13,29 @@ import model.Databank.CrawlType;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import dao.hibernate.DAOFactory;
+import dao.hibernate.HibernateUtil;
 import dao.interfaces.AnnotationDAO;
 import dao.interfaces.DatabankDAO;
 
 public class InitialTest {
-	Session		session;
 	DAOFactory	factory;
+	Session		session;
 
 	@Before
 	public void setUp() throws Exception {
 		factory = DAOFactory.instance(DAOFactory.HIBERNATE);
-		session = factory.getCurrentSession();
+		factory.setSession(HibernateUtil.getSessionFactory().openSession());
+		session = factory.getSession();
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		session.close();
 	}
 
 	@Test
@@ -139,7 +147,7 @@ public class InitialTest {
 		DatabankDAO dbdao = factory.getDatabankDAO();
 		AnnotationDAO anndao = factory.getAnnotationDAO();
 
-		factory.getCurrentSession().beginTransaction(); //Plain JDBC
+		factory.getSession().beginTransaction(); //Plain JDBC
 		Databank db = dbdao.findById("DSSP", false);
 
 		System.out.println(dbdao.getValidCount(db));
@@ -147,7 +155,7 @@ public class InitialTest {
 		System.out.println(dbdao.getObsoleteCount(db));
 		System.out.println(anndao.getRecent().size());
 
-		factory.getCurrentSession().getTransaction().commit(); //Plain JDBC
+		factory.getSession().getTransaction().commit(); //Plain JDBC
 
 		//		Session newSession = HibernateUtil.getSessionFactory().openSession();
 		//		Transaction newTransaction = newSession.beginTransaction();

@@ -22,7 +22,7 @@ public class Crawler {
 		boolean succes = false;
 		Transaction transact = null;
 		try {
-			transact = Crawler.factory.getCurrentSession().beginTransaction(); //Plain JDBC
+			transact = Crawler.factory.getSession().beginTransaction(); //Plain JDBC
 
 			DatabankDAO dbdao = Crawler.factory.getDatabankDAO();
 

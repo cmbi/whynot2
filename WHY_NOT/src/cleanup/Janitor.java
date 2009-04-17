@@ -23,7 +23,7 @@ public class Janitor {
 		DAOFactory factory = DAOFactory.instance(DAOFactory.HIBERNATE);
 		Transaction transact = null;
 		try {
-			transact = factory.getCurrentSession().beginTransaction(); //Plain JDBC
+			transact = factory.getSession().beginTransaction(); //Plain JDBC
 
 			//AnnotationDAO anndao = factory.getAnnotationDAO();
 

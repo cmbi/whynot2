@@ -53,7 +53,7 @@ public class HibernateDAOFactory extends DAOFactory {
 	private GenericHibernateDAO instantiateDAO(Class daoClass) {
 		try {
 			GenericHibernateDAO dao = (GenericHibernateDAO) daoClass.newInstance();
-			dao.setSession(getCurrentSession());//TODO Session really here?
+			dao.setSession(getSession());
 			return dao;
 		}
 		catch (Exception ex) {
@@ -61,10 +61,19 @@ public class HibernateDAOFactory extends DAOFactory {
 		}
 	}
 
+	private Session	session	= null;
+
 	// You could override this if you don't want HibernateUtil for lookup
 	@Override
-	public Session getCurrentSession() {
-		return HibernateUtil.getSessionFactory().getCurrentSession();
+	public Session getSession() {
+		if (session == null)
+			session = HibernateUtil.getSessionFactory().getCurrentSession();
+		return session;
+	}
+
+	@Override
+	public void setSession(Session session) {
+		this.session = session;
 	}
 
 	// Inline concrete DAO implementations with no business-related data access methods.

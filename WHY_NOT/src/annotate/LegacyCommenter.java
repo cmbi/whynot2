@@ -26,7 +26,7 @@ import dao.interfaces.CommentDAO;
 import dao.interfaces.DatabankDAO;
 import dao.interfaces.EntryDAO;
 
-public class Commenter {
+public class LegacyCommenter {
 	private static DAOFactory			factory			= DAOFactory.instance(DAOFactory.HIBERNATE);
 
 	private static final String			COMMENTDIR		= "comment/";
@@ -43,30 +43,30 @@ public class Commenter {
 	private static final Pattern		patternEntry	= Pattern.compile("(.+),(.+)");
 
 	public static void main(String[] args) throws Exception {
-		if (!new File(Commenter.COMMENTDIR).isDirectory())
-			if (!new File(Commenter.COMMENTDIR).mkdir())
-				throw new FileNotFoundException(Commenter.COMMENTDIR);
-		for (String path : new File(Commenter.COMMENTDIR).list(Commenter.txtfilter))
-			Commenter.comment(Commenter.COMMENTDIR + path);
+		if (!new File(LegacyCommenter.COMMENTDIR).isDirectory())
+			if (!new File(LegacyCommenter.COMMENTDIR).mkdir())
+				throw new FileNotFoundException(LegacyCommenter.COMMENTDIR);
+		for (String path : new File(LegacyCommenter.COMMENTDIR).list(LegacyCommenter.txtfilter))
+			LegacyCommenter.comment(LegacyCommenter.COMMENTDIR + path);
 
-		if (!new File(Commenter.UNCOMMENTDIR).isDirectory())
-			if (!new File(Commenter.UNCOMMENTDIR).mkdir())
-				throw new FileNotFoundException(Commenter.UNCOMMENTDIR);
-		for (String path : new File(Commenter.UNCOMMENTDIR).list(Commenter.txtfilter))
-			Commenter.uncomment(Commenter.UNCOMMENTDIR + path);
+		if (!new File(LegacyCommenter.UNCOMMENTDIR).isDirectory())
+			if (!new File(LegacyCommenter.UNCOMMENTDIR).mkdir())
+				throw new FileNotFoundException(LegacyCommenter.UNCOMMENTDIR);
+		for (String path : new File(LegacyCommenter.UNCOMMENTDIR).list(LegacyCommenter.txtfilter))
+			LegacyCommenter.uncomment(LegacyCommenter.UNCOMMENTDIR + path);
 	}
 
 	public static boolean comment(String path) throws Exception {
 		boolean succes = false;
 		Transaction transact = null;
 		try {
-			transact = Commenter.factory.getSession().beginTransaction(); //Plain JDBC
+			transact = LegacyCommenter.factory.getSession().beginTransaction(); //Plain JDBC
 
 			//Initialize DAO's
-			AuthorDAO authdao = Commenter.factory.getAuthorDAO();
-			CommentDAO comdao = Commenter.factory.getCommentDAO();
-			DatabankDAO dbdao = Commenter.factory.getDatabankDAO();
-			EntryDAO entdao = Commenter.factory.getEntryDAO();
+			AuthorDAO authdao = LegacyCommenter.factory.getAuthorDAO();
+			CommentDAO comdao = LegacyCommenter.factory.getCommentDAO();
+			DatabankDAO dbdao = LegacyCommenter.factory.getDatabankDAO();
+			EntryDAO entdao = LegacyCommenter.factory.getEntryDAO();
 
 			BufferedReader bf = new BufferedReader(new FileReader(path));
 			Matcher m;
@@ -75,7 +75,7 @@ public class Commenter {
 			Comment comment;
 
 			//Get Author
-			m = Commenter.patternAuthor.matcher(line = bf.readLine());
+			m = LegacyCommenter.patternAuthor.matcher(line = bf.readLine());
 			if (m.matches()) {
 				author = authdao.findById(m.group(1), true);
 				if (author == null)
@@ -85,7 +85,7 @@ public class Commenter {
 				throw new IllegalArgumentException("Expected: " + m.pattern().pattern() + ", but got: " + line);
 
 			//Get Comment
-			m = Commenter.patternComment.matcher(line = bf.readLine());
+			m = LegacyCommenter.patternComment.matcher(line = bf.readLine());
 			if (m.matches()) {
 				comment = comdao.findById(m.group(1), true);
 				if (comment == null)
@@ -97,7 +97,7 @@ public class Commenter {
 			//Loop Entries
 			long thetime = System.currentTimeMillis();
 			while ((line = bf.readLine()) != null) {
-				m = Commenter.patternEntry.matcher(line);
+				m = LegacyCommenter.patternEntry.matcher(line);
 				if (m.matches()) {
 					String db = m.group(1);
 					String id = m.group(2).toUpperCase();
@@ -128,9 +128,9 @@ public class Commenter {
 		finally {
 			//Close session if using anything other than current session
 			if (succes)
-				Logger.getLogger(Commenter.class).info(path + ": Succes");
+				Logger.getLogger(LegacyCommenter.class).info(path + ": Succes");
 			else
-				Logger.getLogger(Commenter.class).error(path + ": Failure");
+				Logger.getLogger(LegacyCommenter.class).error(path + ": Failure");
 		}
 		return succes;
 	}
@@ -139,14 +139,14 @@ public class Commenter {
 		boolean succes = false;
 		Transaction transact = null;
 		try {
-			transact = Commenter.factory.getSession().beginTransaction(); //Plain JDBC
+			transact = LegacyCommenter.factory.getSession().beginTransaction(); //Plain JDBC
 
 			//Initialize DAO's
-			AnnotationDAO anndao = Commenter.factory.getAnnotationDAO();
-			AuthorDAO authdao = Commenter.factory.getAuthorDAO();
-			CommentDAO comdao = Commenter.factory.getCommentDAO();
-			DatabankDAO dbdao = Commenter.factory.getDatabankDAO();
-			EntryDAO entdao = Commenter.factory.getEntryDAO();
+			AnnotationDAO anndao = LegacyCommenter.factory.getAnnotationDAO();
+			AuthorDAO authdao = LegacyCommenter.factory.getAuthorDAO();
+			CommentDAO comdao = LegacyCommenter.factory.getCommentDAO();
+			DatabankDAO dbdao = LegacyCommenter.factory.getDatabankDAO();
+			EntryDAO entdao = LegacyCommenter.factory.getEntryDAO();
 
 			BufferedReader bf = new BufferedReader(new FileReader(path));
 			Matcher m;
@@ -155,7 +155,7 @@ public class Commenter {
 			Comment comment;
 
 			//Get Author
-			m = Commenter.patternAuthor.matcher(line = bf.readLine());
+			m = LegacyCommenter.patternAuthor.matcher(line = bf.readLine());
 			if (m.matches()) {
 				author = authdao.findById(m.group(1), true);
 				if (author == null)
@@ -165,7 +165,7 @@ public class Commenter {
 				throw new IllegalArgumentException("Expected: " + m.pattern().pattern() + ", but got: " + line);
 
 			//Get Comment
-			m = Commenter.patternComment.matcher(line = bf.readLine());
+			m = LegacyCommenter.patternComment.matcher(line = bf.readLine());
 			if (m.matches()) {
 				comment = comdao.findById(m.group(1), true);
 				if (comment == null)
@@ -176,7 +176,7 @@ public class Commenter {
 
 			//Loop Entries
 			while ((line = bf.readLine()) != null) {
-				m = Commenter.patternEntry.matcher(line);
+				m = LegacyCommenter.patternEntry.matcher(line);
 				if (m.matches()) {
 					String db = m.group(1);
 					String id = m.group(2).toUpperCase();
@@ -211,9 +211,9 @@ public class Commenter {
 		finally {
 			//Close session if using anything other than current session
 			if (succes)
-				Logger.getLogger(Commenter.class).info(path + ": Succes");
+				Logger.getLogger(LegacyCommenter.class).info(path + ": Succes");
 			else
-				Logger.getLogger(Commenter.class).error(path + ": Failure");
+				Logger.getLogger(LegacyCommenter.class).error(path + ": Failure");
 		}
 		return succes;
 	}

@@ -18,6 +18,13 @@ public class AnnotationPK implements Serializable {
 	@Cascade(value = { CascadeType.SAVE_UPDATE })
 	Entry	entry;
 
+	protected AnnotationPK() {}
+
+	public AnnotationPK(Comment comment, Entry entry) {
+		this.comment = comment;
+		this.entry = entry;
+	}
+
 	@Override
 	public String toString() {
 		return comment + "," + entry;

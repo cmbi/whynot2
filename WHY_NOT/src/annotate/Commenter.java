@@ -9,6 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import model.Annotation;
+import model.AnnotationPK;
 import model.Author;
 import model.Comment;
 import model.Databank;
@@ -19,6 +20,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Transaction;
 
 import dao.hibernate.DAOFactory;
+import dao.interfaces.AnnotationDAO;
 import dao.interfaces.AuthorDAO;
 import dao.interfaces.CommentDAO;
 import dao.interfaces.DatabankDAO;
@@ -98,7 +100,7 @@ public class Commenter {
 				m = Commenter.patternEntry.matcher(line);
 				if (m.matches()) {
 					String db = m.group(1);
-					String id = m.group(2);
+					String id = m.group(2).toUpperCase();
 					Databank databank = dbdao.findById(db, false);
 					Entry entry = entdao.findById(new EntryPK(databank, id), true);
 					if (entry == null)
@@ -133,8 +135,86 @@ public class Commenter {
 		return succes;
 	}
 
-	private static void uncomment(String path) {
-	// TODO Auto-generated method stub
+	public static boolean uncomment(String path) throws Exception {
+		boolean succes = false;
+		Transaction transact = null;
+		try {
+			transact = Commenter.factory.getCurrentSession().beginTransaction(); //Plain JDBC
 
+			//Initialize DAO's
+			AnnotationDAO anndao = Commenter.factory.getAnnotationDAO();
+			AuthorDAO authdao = Commenter.factory.getAuthorDAO();
+			CommentDAO comdao = Commenter.factory.getCommentDAO();
+			DatabankDAO dbdao = Commenter.factory.getDatabankDAO();
+			EntryDAO entdao = Commenter.factory.getEntryDAO();
+
+			BufferedReader bf = new BufferedReader(new FileReader(path));
+			Matcher m;
+			String line;
+			Author author;
+			Comment comment;
+
+			//Get Author
+			m = Commenter.patternAuthor.matcher(line = bf.readLine());
+			if (m.matches()) {
+				author = authdao.findById(m.group(1), true);
+				if (author == null)
+					throw new IllegalArgumentException("Author not found");
+			}
+			else
+				throw new IllegalArgumentException("Expected: " + m.pattern().pattern() + ", but got: " + line);
+
+			//Get Comment
+			m = Commenter.patternComment.matcher(line = bf.readLine());
+			if (m.matches()) {
+				comment = comdao.findById(m.group(1), true);
+				if (comment == null)
+					throw new IllegalArgumentException("Comment not found");
+			}
+			else
+				throw new IllegalArgumentException("Expected: " + m.pattern().pattern() + ", but got: " + line);
+
+			//Loop Entries
+			while ((line = bf.readLine()) != null) {
+				m = Commenter.patternEntry.matcher(line);
+				if (m.matches()) {
+					String db = m.group(1);
+					String id = m.group(2).toUpperCase();
+					Databank databank = dbdao.findById(db, false);
+					if (databank == null)
+						throw new IllegalArgumentException("Databank '" + db + "' not found");
+					Entry entry = entdao.findById(new EntryPK(databank, id), true);
+					if (entry == null)
+						throw new IllegalArgumentException("Entry '" + db + "/" + id + "' not found");
+					Annotation annotation = anndao.findById(new AnnotationPK(comment, entry), true);
+					if (annotation != null)
+						anndao.makeTransient(annotation);
+				}
+				else
+					throw new IllegalArgumentException("Expected: " + m.pattern().pattern() + ", but got: " + line);
+			}
+
+			//Rename file to prevent rerunning
+			new File(path).renameTo(new File(path + "~"));
+
+			transact.commit(); //Plain JDBC
+
+			succes = true;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			if (transact != null)
+				transact.rollback();
+			succes = false;
+			throw e;
+		}
+		finally {
+			//Close session if using anything other than current session
+			if (succes)
+				Logger.getLogger(Commenter.class).info(path + ": Succes");
+			else
+				Logger.getLogger(Commenter.class).error(path + ": Failure");
+		}
+		return succes;
 	}
 }

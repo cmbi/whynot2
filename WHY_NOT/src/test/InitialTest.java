@@ -43,7 +43,7 @@ public class InitialTest {
 		transact.commit();
 	}
 
-	@Test
+	//@Test
 	public void storeFiles() {
 		Transaction transact = session.beginTransaction();
 		DatabankDAO dbdao = factory.getDatabankDAO();
@@ -106,7 +106,7 @@ public class InitialTest {
 		transact.commit();
 	}
 
-	@Test
+	//@Test
 	public void dropFile() {
 		Transaction transact = session.beginTransaction();
 		DatabankDAO dbdao = factory.getDatabankDAO();

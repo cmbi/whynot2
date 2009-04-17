@@ -9,17 +9,17 @@ import crawl.Crawler;
 public class CrawlerTest {
 	@Test
 	public void crawlPDB() throws Exception {
-		crawl("PDB", "/home/tbeek/Desktop/raw/");
+		crawl("PDB", "/home/tbeek/Desktop/raw/pdb/");
 	}
 
 	@Test
 	public void crawlDSSP() throws Exception {
-		crawl("DSSP", "/home/tbeek/Desktop/raw/");
+		crawl("DSSP", "/home/tbeek/Desktop/raw/dssp/");
 	}
 
 	@Test
 	public void crawlHSSP() throws Exception {
-		crawl("HSSP", "/home/tbeek/Desktop/raw/");
+		crawl("HSSP", "/home/tbeek/Desktop/raw/hssp/");
 	}
 
 	@Test

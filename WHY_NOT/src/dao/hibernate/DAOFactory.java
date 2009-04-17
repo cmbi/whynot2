@@ -7,6 +7,7 @@ import dao.interfaces.AuthorDAO;
 import dao.interfaces.CommentDAO;
 import dao.interfaces.DatabankDAO;
 import dao.interfaces.EntryDAO;
+import dao.interfaces.FileDAO;
 
 public abstract class DAOFactory {
 
@@ -45,4 +46,6 @@ public abstract class DAOFactory {
 	public abstract DatabankDAO getDatabankDAO();
 
 	public abstract EntryDAO getEntryDAO();
+
+	public abstract FileDAO getFileDAO();
 }

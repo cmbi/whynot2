@@ -14,6 +14,13 @@ public class EntryPK implements Serializable {
 	@Length(max = 10)
 	String		pdbid		= null;
 
+	protected EntryPK() {}
+
+	public EntryPK(Databank databank, String pdbid) {
+		this.databank = databank;
+		this.pdbid = pdbid;
+	}
+
 	@Override
 	public String toString() {
 		return (databank != null ? databank.getName() : null) + "," + pdbid;

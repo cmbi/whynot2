@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 
 import model.Databank;
+import model.EntryPK;
+import dao.interfaces.FileDAO;
 
 public class LineCrawler extends AbstractCrawler {
 	/**
@@ -19,14 +21,27 @@ public class LineCrawler extends AbstractCrawler {
 
 	@Override
 	public int addEntriesIn(String filepath) throws IOException {
+		FileDAO fldao = Crawler.factory.getFileDAO();
+
+		int count = 0;
 		long lastmodified = new File(filepath).lastModified();
 		BufferedReader bf = new BufferedReader(new FileReader(filepath));
 		for (String line = ""; (line = bf.readLine()) != null;) {
 			Matcher m = pattern.matcher(line);
-			if (m.matches())
-				new model.File(database, m.group(1), filepath, lastmodified);
+			if (m.matches()) {
+				model.File ef = null;
+				if (database.getFiles().contains(new model.File(database, m.group(1))))
+					ef = fldao.findById(new EntryPK(database, m.group(1)), true);
+				else {
+					ef = new model.File(database, m.group(1));
+					database.getFiles().add(ef);
+					count++;
+				}
+				ef.setPath(filepath);
+				ef.setTime(lastmodified);
+			}
 		}
 		bf.close();
-		return database.getFiles().size();
+		return count;
 	}
 }

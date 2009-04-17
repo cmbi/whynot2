@@ -4,6 +4,7 @@ import model.Author;
 import model.Comment;
 import model.Entry;
 import model.EntryPK;
+import model.File;
 
 import org.hibernate.Session;
 
@@ -15,6 +16,7 @@ import dao.interfaces.AuthorDAO;
 import dao.interfaces.CommentDAO;
 import dao.interfaces.DatabankDAO;
 import dao.interfaces.EntryDAO;
+import dao.interfaces.FileDAO;
 
 public class HibernateDAOFactory extends DAOFactory {
 	@Override
@@ -42,6 +44,11 @@ public class HibernateDAOFactory extends DAOFactory {
 		return (EntryDAO) instantiateDAO(EntryHibernateDAO.class);
 	}
 
+	@Override
+	public FileDAO getFileDAO() {
+		return (FileDAO) instantiateDAO(FileHibernateDAO.class);
+	}
+
 	@SuppressWarnings("unchecked")
 	private GenericHibernateDAO instantiateDAO(Class daoClass) {
 		try {
@@ -67,4 +74,6 @@ public class HibernateDAOFactory extends DAOFactory {
 	public static class CommentHibernateDAO extends GenericHibernateDAO<Comment, String> implements CommentDAO {}
 
 	public static class EntryHibernateDAO extends GenericHibernateDAO<Entry, EntryPK> implements EntryDAO {}
+
+	public static class FileHibernateDAO extends GenericHibernateDAO<File, EntryPK> implements FileDAO {}
 }

@@ -12,6 +12,7 @@ import dao.hibernate.DAOFactory;
 import dao.interfaces.DatabankDAO;
 
 public class Crawler {
+	protected static DAOFactory	factory	= DAOFactory.instance(DAOFactory.HIBERNATE);
 
 	public static void main(String[] args) throws IOException {
 		if (args.length == 2)
@@ -21,17 +22,13 @@ public class Crawler {
 	}
 
 	public static boolean crawl(String dbname, String path) throws IOException {
-		DAOFactory factory;
-		Session session;
 		Transaction transact = null;
-		//TODO: Supply the Session after calling getXXXDAO()?
 		boolean succes = false;
 		try {
-			factory = DAOFactory.instance(DAOFactory.HIBERNATE);
-			session = factory.getCurrentSession();
+			Session session = Crawler.factory.getCurrentSession();
 			transact = session.beginTransaction(); //Plain JDBC
 
-			DatabankDAO dbdao = factory.getDatabankDAO();
+			DatabankDAO dbdao = Crawler.factory.getDatabankDAO();
 
 			Databank db = dbdao.findById(dbname, true);
 			AbstractCrawler fc;
@@ -45,10 +42,10 @@ public class Crawler {
 			default:
 				throw new IllegalArgumentException("Invalid CrawlType");
 			}
+			int added = fc.addEntriesIn(path);
 			int removed = fc.removeInvalidEntries();
-			int newtotal = fc.addEntriesIn(path);
 
-			Logger.getLogger(Crawler.class).info(dbname + ": Removing " + removed + ", New total " + newtotal);
+			Logger.getLogger(Crawler.class).info(dbname + ": Adding " + added + ", Removing " + removed);
 
 			transact.commit(); //Plain JDBC
 			succes = true;

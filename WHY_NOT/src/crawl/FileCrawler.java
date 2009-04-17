@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 
 import model.Databank;
+import model.EntryPK;
+import dao.interfaces.FileDAO;
 
 public class FileCrawler extends AbstractCrawler {
 	private FileFilter	entryfilter, directoryfilter;
@@ -32,13 +34,26 @@ public class FileCrawler extends AbstractCrawler {
 
 	@Override
 	public int addEntriesIn(String path) {
+		FileDAO fldao = Crawler.factory.getFileDAO();
+
+		int count = 0;
 		for (File dir : dirAndAllSubdirs(new File(path)))
 			for (File file : dir.listFiles(entryfilter)) {
 				Matcher m = pattern.matcher(file.getAbsolutePath());
-				if (m.matches())
-					new model.File(database, m.group(1), file.getAbsolutePath(), file.lastModified());
+				if (m.matches()) {
+					model.File ef = null;
+					if (database.getFiles().contains(new model.File(database, m.group(1))))
+						ef = fldao.findById(new EntryPK(database, m.group(1)), true);
+					else {
+						ef = new model.File(database, m.group(1));
+						database.getFiles().add(ef);
+						count++;
+					}
+					ef.setPath(file.getAbsolutePath());
+					ef.setTime(file.lastModified());
+				}
 			}
-		return database.getFiles().size();
+		return count;
 	}
 
 	/**

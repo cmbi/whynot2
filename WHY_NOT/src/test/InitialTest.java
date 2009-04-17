@@ -2,6 +2,7 @@ package test;
 
 import java.util.Iterator;
 
+import junit.framework.Assert;
 import model.Annotation;
 import model.Author;
 import model.Comment;
@@ -39,6 +40,7 @@ public class InitialTest {
 		dbdao.makePersistent(dssp = new Databank("DSSP", "dssp.org", "google.com/?q=", pdb, ".*/([\\d\\w]{4})\\.dssp", CrawlType.FILE));
 		dbdao.makePersistent(new Databank("HSSP", "hssp.org", "google.com/?q=", dssp, ".*/([\\d\\w]{4})\\.hssp", CrawlType.FILE));
 		dbdao.makePersistent(new Databank("PDBFINDER", "pdbfinder.org", "google.com/?q=", pdb, "ID           : ([\\d\\w]{4})", CrawlType.LINE));
+		Assert.assertEquals(dbdao.findAll().size(), 4);
 
 		transact.commit();
 	}
@@ -55,13 +57,16 @@ public class InitialTest {
 		new File(pdb, "1TIM", "/home/tbeek/Desktop/raw/stats", System.currentTimeMillis());
 		new File(pdb, "100J", "/home/tbeek/Desktop/raw/stats", System.currentTimeMillis());
 		new File(pdb, "100Q", "/home/tbeek/Desktop/raw/stats", System.currentTimeMillis());
+		Assert.assertEquals(pdb.getFiles().size(), 4);
 
 		new File(dssp, "0TIM", "/home/tbeek/Desktop/raw/stats", System.currentTimeMillis());
 		new File(dssp, "1TIM", "/home/tbeek/Desktop/raw/stats", System.currentTimeMillis());
 		new File(dssp, "100J", "/home/tbeek/Desktop/raw/stats", System.currentTimeMillis());
+		Assert.assertEquals(dssp.getFiles().size(), 3);
 
 		new File(hssp, "0TIM", "/home/tbeek/Desktop/raw/stats", System.currentTimeMillis());
 		new File(hssp, "1TIM", "/home/tbeek/Desktop/raw/stats", System.currentTimeMillis());
+		Assert.assertEquals(hssp.getFiles().size(), 2);
 
 		transact.commit();
 	}

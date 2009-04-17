@@ -1,5 +1,5 @@
-AUTHOR: Tim2
-COMMENT: My new example comment2
+AUTHOR: Tim te Beek
+COMMENT: Another new example comment
 PDB,100J
 PDB,100Q
 PDB,2TIM

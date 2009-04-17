@@ -11,7 +11,6 @@ import org.junit.Test;
 import annotate.Commenter;
 
 public class CommenterTest {
-
 	String	comfile		= "comment/com1.txt";
 	String	uncomfile	= "uncomment/uncom1.txt";
 
@@ -24,7 +23,7 @@ public class CommenterTest {
 		new File(uncomfile + "~").renameTo(new File(uncomfile));
 	}
 
-	@Test
+	//@Test
 	public void comment() throws Exception {
 		Assert.assertTrue(Commenter.comment(comfile));
 	}

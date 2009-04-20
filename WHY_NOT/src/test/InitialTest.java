@@ -18,7 +18,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import dao.hibernate.DAOFactory;
-import dao.hibernate.HibernateUtil;
 import dao.interfaces.AnnotationDAO;
 import dao.interfaces.DatabankDAO;
 
@@ -29,14 +28,11 @@ public class InitialTest {
 	@Before
 	public void setUp() throws Exception {
 		factory = DAOFactory.instance(DAOFactory.HIBERNATE);
-		factory.setSession(HibernateUtil.getSessionFactory().openSession());
 		session = factory.getSession();
 	}
 
 	@After
-	public void tearDown() throws Exception {
-		session.close();
-	}
+	public void tearDown() throws Exception {}
 
 	@Test
 	public void storeDatabases() {

@@ -13,7 +13,6 @@ import org.junit.Test;
 import comment.Commenter;
 
 import dao.hibernate.DAOFactory;
-import dao.hibernate.HibernateUtil;
 
 public class CommenterTest {
 	DAOFactory	factory;
@@ -22,7 +21,7 @@ public class CommenterTest {
 	@Before
 	public void setUp() throws Exception {
 		factory = DAOFactory.instance(DAOFactory.HIBERNATE);
-		factory.setSession(HibernateUtil.getSessionFactory().openSession());
+		//factory.setSession(HibernateUtil.getSessionFactory().openSession());
 		session = factory.getSession();
 	}
 

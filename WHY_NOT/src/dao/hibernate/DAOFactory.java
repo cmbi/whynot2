@@ -36,8 +36,6 @@ public abstract class DAOFactory {
 
 	public abstract Session getSession();
 
-	public abstract void setSession(Session session);
-
 	// Add your DAO interfaces here
 	public abstract AnnotationDAO getAnnotationDAO();
 

@@ -4,7 +4,6 @@ import java.util.Set;
 
 import model.Databank;
 import model.Entry;
-import dao.hibernate.GenericDAO;
 
 public interface DatabankDAO extends GenericDAO<Databank, String> {
 	long getValidCount(Databank db);

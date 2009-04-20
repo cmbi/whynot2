@@ -10,7 +10,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Example;
 
-import dao.hibernate.GenericDAO;
+import dao.interfaces.GenericDAO;
 
 public abstract class GenericHibernateDAO<T, ID extends Serializable> implements GenericDAO<T, ID> {
 

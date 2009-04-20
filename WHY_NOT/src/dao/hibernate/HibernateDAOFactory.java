@@ -66,14 +66,7 @@ public class HibernateDAOFactory extends DAOFactory {
 	// You could override this if you don't want HibernateUtil for lookup
 	@Override
 	public Session getSession() {
-		if (session == null)
-			session = HibernateUtil.getSessionFactory().getCurrentSession();
-		return session;
-	}
-
-	@Override
-	public void setSession(Session session) {
-		this.session = session;
+		return HibernateUtil.getSessionFactory().getCurrentSession();
 	}
 
 	// Inline concrete DAO implementations with no business-related data access methods.

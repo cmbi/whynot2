@@ -36,6 +36,22 @@ public class Annotation {
 		this.timestamp = timestamp;
 	}
 
+	public Author getAuthor() {
+		return author;
+	}
+
+	public Comment getComment() {
+		return comment;
+	}
+
+	public Entry getEntry() {
+		return entry;
+	}
+
+	public long getTimestamp() {
+		return timestamp;
+	}
+
 	@Override
 	public String toString() {
 		return author + "," + comment + "," + entry + "," + timestamp;

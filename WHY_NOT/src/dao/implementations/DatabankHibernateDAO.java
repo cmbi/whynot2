@@ -12,21 +12,23 @@ import dao.interfaces.DatabankDAO;
 
 public class DatabankHibernateDAO extends GenericHibernateDAO<Databank, String> implements DatabankDAO {
 	private static final String	VALID		= //
-											"from DBFile par, DBFile chi " + //
-											"where chi.databank = :child and " + //
-											"par.entry = ( chi.databank.parent, chi.pdbid )";
+											"from File par, File chi " + //
+											"where chi.databank = :child " + //
+											"and par.databank = chi.databank.parent " + //
+											"and par.pdbid = chi.pdbid ";
 
 	private static final String	MISSING		= //
-											"from DBFile par " + //
+											"from File par " + //
 											"where par.databank = :parent and " + //
-											"(select chi.path from DBFile chi " + //
+											"(select chi.path from File chi " + //
 											"where chi.databank = :child and chi.pdbid = par.pdbid ) is null";
 
 	private static final String	OBSOLETE	= //
-											"from DBFile chi " + //
+											"from File chi " + //
 											"where chi.databank = :child and " + //
-											"(select par.path from DBFile par " + //
-											"where par.entry = ( chi.databank.parent, chi.pdbid )) is null";
+											"(select par.path from File par " + //
+											"where par.databank = chi.databank.parent " + //
+											"and par.pdbid = chi.pdbid ) is null";
 
 	public long getValidCount(Databank db) {
 		Query q = getSession().createQuery("select count(*) " + DatabankHibernateDAO.VALID).setParameter("child", db);

@@ -35,7 +35,7 @@ public class LineCrawler extends AbstractCrawler {
 					ef.setTime(lastmodified);
 				}
 				else {
-					ef = new model.File(database, m.group(1), filepath, lastmodified);
+					new model.File(database, m.group(1), filepath, lastmodified);
 					count++;
 				}
 			}

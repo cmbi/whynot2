@@ -47,7 +47,7 @@ public class FileCrawler extends AbstractCrawler {
 						ef.setTime(file.lastModified());
 					}
 					else {
-						ef = new model.File(database, m.group(1), file.getAbsolutePath(), file.lastModified());
+						new model.File(database, m.group(1), file.getAbsolutePath(), file.lastModified());
 						count++;
 					}
 				}

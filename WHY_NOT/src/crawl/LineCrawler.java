@@ -32,7 +32,7 @@ public class LineCrawler extends AbstractCrawler {
 				model.File ef = fldao.findById(new EntryPK(database, m.group(1)), true);
 				if (ef != null) {
 					ef.setPath(filepath);
-					ef.setTime(lastmodified);
+					ef.setTimestamp(lastmodified);
 				}
 				else {
 					new model.File(database, m.group(1), filepath, lastmodified);

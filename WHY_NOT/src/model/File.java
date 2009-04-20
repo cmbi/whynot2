@@ -21,7 +21,7 @@ public class File {
 	@Length(max = 200)
 	private String		path;
 	@NotNull
-	private Long		time;
+	private long		timestamp;
 
 	protected File() {}
 
@@ -29,7 +29,7 @@ public class File {
 		databank = db;
 		pdbid = id;
 		this.path = path;
-		this.time = time;
+		timestamp = time;
 		databank.getFiles().add(this);
 	}
 
@@ -41,17 +41,17 @@ public class File {
 		this.path = path;
 	}
 
-	public Long getTime() {
-		return time;
+	public Long getTimestamp() {
+		return timestamp;
 	}
 
-	public void setTime(Long time) {
-		this.time = time;
+	public void setTimestamp(Long time) {
+		timestamp = time;
 	}
 
 	@Override
 	public String toString() {
-		return (databank != null ? databank.getName() : null) + "," + pdbid + "," + path + "," + time;
+		return (databank != null ? databank.getName() : null) + "," + pdbid + "," + path + "," + timestamp;
 	}
 
 	@Override

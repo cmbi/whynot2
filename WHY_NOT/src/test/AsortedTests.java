@@ -38,6 +38,22 @@ public class AsortedTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
+	public void criteria2() {
+		String valid = //VALID
+		"from File par, File chi " + //
+		"where chi.databank = :child " + //
+		"and par.databank = chi.databank.parent " + //
+		"and par.pdbid = chi.pdbid ";
+
+		Transaction transact = session.beginTransaction();
+		Criteria crit = session.createCriteria(File.class).setMaxResults(100);
+		for (File file : (List<File>) crit.list())
+			System.out.println(file.getTimestamp());
+		transact.commit();
+	}
+
+	//@Test
+	@SuppressWarnings("unchecked")
 	public void criteria() {
 		Transaction transact = session.beginTransaction();
 		Criteria crit = session.createCriteria(Annotation.class);

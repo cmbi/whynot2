@@ -34,7 +34,7 @@ public abstract class AbstractCrawler {
 		for (Iterator<model.File> entritr = database.getFiles().iterator(); entritr.hasNext();) {
 			model.File ef = entritr.next();
 			File file = new File(ef.getPath());
-			if (!file.exists() || file.lastModified() != ef.getTime().longValue()) {
+			if (!file.exists() || file.lastModified() != ef.getTimestamp().longValue()) {
 				entritr.remove();
 				count++;
 			}

@@ -1,3 +1,5 @@
+package test;
+
 import java.util.List;
 import java.util.TreeSet;
 
@@ -37,6 +39,13 @@ public class AsortedTests {
 	public void tearDown() throws Exception {}
 
 	@Test
+	public void buildNumber() {
+		Package p = getClass().getPackage();
+		String version = p.getImplementationVersion();
+		System.out.println(version);
+	}
+
+	//@Test
 	public void criteria2() {
 		Transaction transact = session.beginTransaction();
 		String VALID = //

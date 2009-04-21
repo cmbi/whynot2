@@ -1,7 +1,7 @@
 package model;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -12,6 +12,10 @@ import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.LazyToOne;
+import org.hibernate.annotations.LazyToOneOption;
+import org.hibernate.annotations.Sort;
+import org.hibernate.annotations.SortType;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotEmpty;
 import org.hibernate.validator.NotNull;
@@ -25,33 +29,36 @@ public class Databank {
 	@Id
 	@NotEmpty
 	@Length(max = 50)
-	private String		name;
+	private String				name;
 
 	@NotEmpty
 	@Length(max = 200)
-	private String		reference;
+	private String				reference;
 	@NotEmpty
 	@Length(max = 200)
-	private String		filelink;
+	private String				filelink;
 
 	@OneToOne
-	private Databank	parent;
+	@LazyToOne(LazyToOneOption.PROXY)
+	private Databank			parent;
 
 	@NotEmpty
 	@Length(max = 50)
-	private String		regex;
+	private String				regex;
 
 	@NotNull
 	@Enumerated(EnumType.STRING)
-	private CrawlType	crawltype;
+	private CrawlType			crawltype;
 
 	@OneToMany(mappedBy = "databank", cascade = javax.persistence.CascadeType.ALL)
 	@Cascade(value = { CascadeType.DELETE_ORPHAN })
-	private Set<Entry>	entries	= new HashSet<Entry>();
+	@Sort(type = SortType.NATURAL)
+	private SortedSet<Entry>	entries	= new TreeSet<Entry>();
 
 	@OneToMany(mappedBy = "databank", cascade = javax.persistence.CascadeType.ALL)
 	@Cascade(value = { CascadeType.DELETE_ORPHAN })
-	private Set<File>	files	= new HashSet<File>();
+	@Sort(type = SortType.NATURAL)
+	private SortedSet<File>		files	= new TreeSet<File>();
 
 	protected Databank() {}
 
@@ -88,11 +95,11 @@ public class Databank {
 		return crawltype;
 	}
 
-	public Set<Entry> getEntries() {
+	public SortedSet<Entry> getEntries() {
 		return entries;
 	}
 
-	public Set<File> getFiles() {
+	public SortedSet<File> getFiles() {
 		return files;
 	}
 

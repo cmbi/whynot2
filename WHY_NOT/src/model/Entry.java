@@ -1,7 +1,7 @@
 package model;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -10,20 +10,23 @@ import javax.persistence.IdClass;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Sort;
+import org.hibernate.annotations.SortType;
 import org.hibernate.validator.Length;
 
 @Entity
 @IdClass(EntryPK.class)
-public class Entry {
+public class Entry implements Comparable<Entry> {
 	@Id
-	private Databank		databank;
+	private Databank				databank;
 	@Id
 	@Length(max = 10)
-	private String			pdbid;
+	private String					pdbid;
 
 	@OneToMany(mappedBy = "entry", cascade = CascadeType.ALL)
 	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
-	private Set<Annotation>	annotations	= new HashSet<Annotation>();
+	@Sort(type = SortType.NATURAL)
+	private SortedSet<Annotation>	annotations	= new TreeSet<Annotation>();
 
 	protected Entry() {}
 
@@ -37,7 +40,11 @@ public class Entry {
 		return databank;
 	}
 
-	public Set<Annotation> getAnnotations() {
+	public String getPdbid() {
+		return pdbid;
+	}
+
+	public SortedSet<Annotation> getAnnotations() {
 		return annotations;
 	}
 
@@ -79,5 +86,12 @@ public class Entry {
 			if (!pdbid.equals(other.pdbid))
 				return false;
 		return true;
+	}
+
+	public int compareTo(Entry o) {
+		int db = getDatabank().getName().compareTo(o.getDatabank().getName());
+		if (db != 0)
+			return db;
+		return getPdbid().compareTo(o.getPdbid());
 	}
 }

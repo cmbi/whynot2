@@ -10,7 +10,7 @@ import org.hibernate.validator.NotNull;
 
 @Entity
 @IdClass(EntryPK.class)
-public class File {
+public class File implements Comparable<File> {
 	@Id
 	private Databank	databank;
 	@Id
@@ -31,6 +31,14 @@ public class File {
 		this.path = path;
 		timestamp = time;
 		databank.getFiles().add(this);
+	}
+
+	public Databank getDatabank() {
+		return databank;
+	}
+
+	public String getPdbid() {
+		return pdbid;
 	}
 
 	public String getPath() {
@@ -87,5 +95,12 @@ public class File {
 			if (!pdbid.equals(other.pdbid))
 				return false;
 		return true;
+	}
+
+	public int compareTo(File o) {
+		int db = getDatabank().getName().compareTo(o.getDatabank().getName());
+		if (db != 0)
+			return db;
+		return getPdbid().compareTo(o.getPdbid());
 	}
 }

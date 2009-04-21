@@ -2,8 +2,8 @@ package crawl;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 
 import model.Databank;
@@ -59,8 +59,8 @@ public class FileCrawler extends AbstractCrawler {
 	 * Creates set of directories containing argument and all recursive
 	 * subdirectories in argument, excluding directories that match entryfilter
 	 */
-	private Set<File> dirAndAllSubdirs(File directory) {
-		Set<File> directories = new HashSet<File>();
+	private SortedSet<File> dirAndAllSubdirs(File directory) {
+		SortedSet<File> directories = new TreeSet<File>();
 		directories.add(directory); // Add this
 		for (File subdir : directory.listFiles(directoryfilter))
 			directories.addAll(dirAndAllSubdirs(subdir)); // Add recursive subdirs

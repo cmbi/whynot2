@@ -10,7 +10,7 @@ import org.hibernate.annotations.CascadeType;
 
 @Entity
 @IdClass(AnnotationPK.class)
-public class Annotation {
+public class Annotation implements Comparable<Annotation> {
 	@ManyToOne
 	@Cascade(value = { CascadeType.MERGE, CascadeType.SAVE_UPDATE })
 	private Author	author;
@@ -90,6 +90,13 @@ public class Annotation {
 			if (!entry.equals(other.entry))
 				return false;
 		return true;
+	}
+
+	public int compareTo(Annotation o) {
+		int r = getComment().compareTo(o.getComment());
+		if (r != 0)
+			return r;
+		return getEntry().compareTo(o.getEntry());
 	}
 
 }

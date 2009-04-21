@@ -1,7 +1,6 @@
 package test;
 
 import java.util.Iterator;
-import java.util.List;
 
 import junit.framework.Assert;
 import model.Annotation;
@@ -12,17 +11,14 @@ import model.Entry;
 import model.File;
 import model.Databank.CrawlType;
 
-import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.criterion.Order;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import dao.hibernate.DAOFactory;
-import dao.interfaces.AnnotationDAO;
 import dao.interfaces.DatabankDAO;
 
 public class SetupDBTest {

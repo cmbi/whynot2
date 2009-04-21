@@ -15,12 +15,12 @@ public class CommenterTest {
 
 	@Test
 	public void comment() throws Exception {
-		Assert.assertTrue(Commenter.comment(CommenterTest.comfile));
+		Assert.assertTrue(new Commenter().comment(CommenterTest.comfile));
 	}
 
 	@Test
 	public void uncomment() throws Exception {
-		Assert.assertTrue(Commenter.uncomment(CommenterTest.uncomfile));
+		Assert.assertTrue(new Commenter().uncomment(CommenterTest.uncomfile));
 	}
 
 	@AfterClass

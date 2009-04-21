@@ -61,8 +61,6 @@ public class HibernateDAOFactory extends DAOFactory {
 		}
 	}
 
-	private Session	session	= null;
-
 	// You could override this if you don't want HibernateUtil for lookup
 	@Override
 	public Session getSession() {

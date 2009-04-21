@@ -1,12 +1,15 @@
 package test;
 
 import java.util.List;
+import java.util.TreeSet;
 
 import model.Annotation;
 import model.Databank;
+import model.Entry;
 import model.File;
 
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
@@ -37,18 +40,26 @@ public class AsortedTests {
 	public void tearDown() throws Exception {}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void criteria2() {
-		String valid = //VALID
+		Transaction transact = session.beginTransaction();
+		String VALID = //
 		"from File par, File chi " + //
 		"where chi.databank = :child " + //
 		"and par.databank = chi.databank.parent " + //
 		"and par.pdbid = chi.pdbid ";
+		String ANNOTATED = // + ( ... )!
+		"from Annotation ann" + //
+		"where ann.entry IN ";
+		String UNANNOTATED = // + ( ... )!
+		"from Annotation ann" + //
+		"where ann.entry NOT IN ";
 
-		Transaction transact = session.beginTransaction();
-		Criteria crit = session.createCriteria(File.class).setMaxResults(100);
-		for (File file : (List<File>) crit.list())
-			System.out.println(file.getTimestamp());
+		DatabankDAO dbdao = AsortedTests.factory.getDatabankDAO();
+		Databank db = dbdao.findById("DSSP", false);
+
+		Query q = session.createQuery(VALID).setParameter("child", db);
+		for (Entry ent : new TreeSet<Entry>(q.list()))
+			System.out.println(ent);
 		transact.commit();
 	}
 

@@ -28,6 +28,6 @@ public class CrawlerTest {
 	}
 
 	private void crawl(String db, String pth) throws Exception {
-		Assert.assertTrue(Crawler.crawl(db, pth));
+		Assert.assertTrue(new Crawler().crawl(db, pth));
 	}
 }

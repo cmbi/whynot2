@@ -11,13 +11,6 @@ import org.hibernate.criterion.Order;
 import dao.interfaces.AnnotationDAO;
 
 public class AnnotationHibernateDAO extends GenericHibernateDAO<Annotation, AnnotationPK> implements AnnotationDAO {
-	private static final String	ANNOTATED	= // + ( ... )!
-											"from Annotation ann" + //
-											"where ann.entry IN ";
-	private static final String	UNANNOTATED	= // + ( ... )!
-											"from Annotation ann" + //
-											"where ann.entry NOT IN ";
-
 	@SuppressWarnings("unchecked")
 	public List<Annotation> getRecent() {
 		Criteria crit = getSession().createCriteria(Annotation.class);

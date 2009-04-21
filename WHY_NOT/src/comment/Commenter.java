@@ -27,64 +27,68 @@ import dao.interfaces.DatabankDAO;
 import dao.interfaces.EntryDAO;
 
 public class Commenter {
-	private static DAOFactory			factory			= DAOFactory.instance(DAOFactory.HIBERNATE);
+	private DAOFactory		factory;
 
-	private static final String			COMMENTDIR		= "comment/";
-	private static final String			UNCOMMENTDIR	= "uncomment/";
+	private FilenameFilter	txtfilter		= new FilenameFilter() {
+												public boolean accept(File dir, String name) {
+													return name.endsWith(".txt");
+												}
+											};
 
-	private static final FilenameFilter	txtfilter		= new FilenameFilter() {
-															public boolean accept(File dir, String name) {
-																return name.endsWith(".txt");
-															}
-														};
-
-	private static final Pattern		patternAuthor	= Pattern.compile("AUTHOR: (.+)");
-	private static final Pattern		patternComment	= Pattern.compile("COMMENT: (.+)");
-	private static final Pattern		patternEntry	= Pattern.compile("(.+),(.+)");
+	private Pattern			patternAuthor	= Pattern.compile("AUTHOR: (.+)");
+	private Pattern			patternComment	= Pattern.compile("COMMENT: (.+)");
+	private Pattern			patternEntry	= Pattern.compile("(.+),(.+)");
 
 	public static void main(String[] args) throws Exception {
-		if (!new File(Commenter.COMMENTDIR).isDirectory())
-			if (!new File(Commenter.COMMENTDIR).mkdir())
-				throw new FileNotFoundException(Commenter.COMMENTDIR);
-		for (String path : new File(Commenter.COMMENTDIR).list(Commenter.txtfilter))
-			Commenter.comment(Commenter.COMMENTDIR + path);
-
-		if (!new File(Commenter.UNCOMMENTDIR).isDirectory())
-			if (!new File(Commenter.UNCOMMENTDIR).mkdir())
-				throw new FileNotFoundException(Commenter.UNCOMMENTDIR);
-		for (String path : new File(Commenter.UNCOMMENTDIR).list(Commenter.txtfilter))
-			Commenter.uncomment(Commenter.UNCOMMENTDIR + path);
+		Commenter commenter = new Commenter();
+		commenter.commentAll();
+		commenter.uncommentAll();
 	}
 
-	public static boolean comment(String path) throws Exception {
+	public Commenter() {
+		factory = DAOFactory.instance(DAOFactory.HIBERNATE);
+	}
+
+	private void commentAll() throws Exception {
+		String COMMENTDIR = "comment/";
+		for (String path : getDir(COMMENTDIR).list(txtfilter))
+			comment(COMMENTDIR + path);
+	}
+
+	private void uncommentAll() throws Exception {
+		String UNCOMMENTDIR = "uncomment/";
+		for (String path : getDir(UNCOMMENTDIR).list(txtfilter))
+			uncomment(UNCOMMENTDIR + path);
+	}
+
+	public boolean comment(String path) throws Exception {
 		boolean succes = false;
 		Transaction transact = null;
+		BufferedReader bf = null;
 		try {
-			transact = Commenter.factory.getSession().beginTransaction(); //Plain JDBC
+			transact = factory.getSession().beginTransaction(); //Plain JDBC
+			bf = new BufferedReader(new FileReader(path));
 
-			//Initialize DAO's
-			DatabankDAO dbdao = Commenter.factory.getDatabankDAO();
-
-			BufferedReader bf = new BufferedReader(new FileReader(path));
 			Matcher m;
 			String line;
 
 			//Get Author
-			m = Commenter.patternAuthor.matcher(line = bf.readLine());
+			m = patternAuthor.matcher(line = bf.readLine());
 			if (!m.matches())
 				throw new IllegalArgumentException("Expected: " + m.pattern() + ", but got: " + line);
 			Author author = new Author(m.group(1));
 
 			//Get Comment
-			m = Commenter.patternComment.matcher(line = bf.readLine());
+			m = patternComment.matcher(line = bf.readLine());
 			if (!m.matches())
 				throw new IllegalArgumentException("Expected: " + m.pattern() + ", but got: " + line);
 			Comment comment = new Comment(m.group(1));
 
 			//Loop Entries
+			DatabankDAO dbdao = factory.getDatabankDAO();
 			long thetime = System.currentTimeMillis();
 			while ((line = bf.readLine()) != null) {
-				m = Commenter.patternEntry.matcher(line);
+				m = patternEntry.matcher(line);
 				if (!m.matches())
 					throw new IllegalArgumentException("Expected: " + m.pattern() + ", but got: " + line);
 				String db = m.group(1);
@@ -109,6 +113,9 @@ public class Commenter {
 			throw e;
 		}
 		finally {
+			if (bf != null)
+				bf.close();
+
 			//Close session if using anything other than current session
 			if (succes)
 				Logger.getLogger(Commenter.class).info(path + ": Succes");
@@ -118,25 +125,26 @@ public class Commenter {
 		return succes;
 	}
 
-	public static boolean uncomment(String path) throws Exception {
+	public boolean uncomment(String path) throws Exception {
 		boolean succes = false;
 		Transaction transact = null;
+		BufferedReader bf = null;
 		try {
-			transact = Commenter.factory.getSession().beginTransaction(); //Plain JDBC
+			transact = factory.getSession().beginTransaction(); //Plain JDBC
 
 			//Initialize DAO's
-			AnnotationDAO anndao = Commenter.factory.getAnnotationDAO();
-			AuthorDAO authdao = Commenter.factory.getAuthorDAO();
-			CommentDAO comdao = Commenter.factory.getCommentDAO();
-			DatabankDAO dbdao = Commenter.factory.getDatabankDAO();
-			EntryDAO entdao = Commenter.factory.getEntryDAO();
+			AnnotationDAO anndao = factory.getAnnotationDAO();
+			AuthorDAO authdao = factory.getAuthorDAO();
+			CommentDAO comdao = factory.getCommentDAO();
+			DatabankDAO dbdao = factory.getDatabankDAO();
+			EntryDAO entdao = factory.getEntryDAO();
 
-			BufferedReader bf = new BufferedReader(new FileReader(path));
+			bf = new BufferedReader(new FileReader(path));
 			Matcher m;
 			String line;
 
 			//Get Author
-			m = Commenter.patternAuthor.matcher(line = bf.readLine());
+			m = patternAuthor.matcher(line = bf.readLine());
 			if (!m.matches())
 				throw new IllegalArgumentException("Expected: " + m.pattern() + ", but got: " + line);
 			Author author = authdao.findById(m.group(1), true);
@@ -144,7 +152,7 @@ public class Commenter {
 				throw new IllegalArgumentException("Author not found");
 
 			//Get Comment
-			m = Commenter.patternComment.matcher(line = bf.readLine());
+			m = patternComment.matcher(line = bf.readLine());
 			if (!m.matches())
 				throw new IllegalArgumentException("Expected: " + m.pattern() + ", but got: " + line);
 			Comment comment = comdao.findById(m.group(1), true);
@@ -153,7 +161,7 @@ public class Commenter {
 
 			//Loop Entries
 			while ((line = bf.readLine()) != null) {
-				m = Commenter.patternEntry.matcher(line);
+				m = patternEntry.matcher(line);
 				if (!m.matches())
 					throw new IllegalArgumentException("Expected: " + m.pattern() + ", but got: " + line);
 
@@ -188,6 +196,8 @@ public class Commenter {
 			throw e;
 		}
 		finally {
+			if (bf != null)
+				bf.close();
 			//Close session if using anything other than current session
 			if (succes)
 				Logger.getLogger(Commenter.class).info(path + ": Succes");
@@ -195,5 +205,12 @@ public class Commenter {
 				Logger.getLogger(Commenter.class).error(path + ": Failure");
 		}
 		return succes;
+	}
+
+	private File getDir(String path) throws FileNotFoundException {
+		File dir = new File(path);
+		if (!dir.isDirectory() && !dir.mkdir())
+			throw new FileNotFoundException(path);
+		return dir;
 	}
 }

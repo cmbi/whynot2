@@ -9,16 +9,20 @@ import dao.hibernate.DAOFactory;
 import dao.interfaces.DatabankDAO;
 
 public class Crawler {
-	protected static DAOFactory	factory	= DAOFactory.instance(DAOFactory.HIBERNATE);
-
 	public static void main(String[] args) throws Exception {
 		if (args.length == 2)
-			Crawler.crawl(args[0], args[1]);
+			new Crawler().crawl(args[0], args[1]);
 		else
 			throw new IllegalArgumentException("Usage: crawler DATABASE DIRECTORY/FILE");
 	}
 
-	public static boolean crawl(String dbname, String path) throws Exception {
+	protected static DAOFactory	factory;
+
+	public Crawler() {
+		Crawler.factory = DAOFactory.instance(DAOFactory.HIBERNATE);
+	}
+
+	public boolean crawl(String dbname, String path) throws Exception {
 		boolean succes = false;
 		Transaction transact = null;
 		try {

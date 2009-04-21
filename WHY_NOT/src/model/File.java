@@ -98,7 +98,7 @@ public class File implements Comparable<File> {
 	}
 
 	public int compareTo(File o) {
-		int db = getDatabank().getName().compareTo(o.getDatabank().getName());
+		int db = getDatabank().compareTo(o.getDatabank());
 		if (db != 0)
 			return db;
 		return getPdbid().compareTo(o.getPdbid());

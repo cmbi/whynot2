@@ -1,11 +1,8 @@
-
-
 import java.util.List;
 import java.util.TreeSet;
 
 import model.Annotation;
 import model.Databank;
-import model.Entry;
 import model.File;
 
 import org.hibernate.Criteria;
@@ -57,8 +54,8 @@ public class AsortedTests {
 		DatabankDAO dbdao = AsortedTests.factory.getDatabankDAO();
 		Databank db = dbdao.findById("DSSP", false);
 
-		Query q = session.createQuery(VALID).setParameter("child", db);
-		for (Entry ent : new TreeSet<Entry>(q.list()))
+		Query q = session.createQuery("select chi " + VALID).setParameter("child", db);
+		for (File ent : new TreeSet<File>(q.list()))
 			System.out.println(ent);
 		transact.commit();
 	}

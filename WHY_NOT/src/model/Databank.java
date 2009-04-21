@@ -21,7 +21,7 @@ import org.hibernate.validator.NotEmpty;
 import org.hibernate.validator.NotNull;
 
 @Entity
-public class Databank {
+public class Databank implements Comparable<Databank> {
 	public enum CrawlType {
 		FILE, LINE
 	};
@@ -133,5 +133,9 @@ public class Databank {
 			if (!name.equals(other.name))
 				return false;
 		return true;
+	}
+
+	public int compareTo(Databank o) {
+		return getName().compareTo(o.getName());
 	}
 }

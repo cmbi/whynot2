@@ -2,7 +2,6 @@ package test;
 
 import java.util.Iterator;
 
-import junit.framework.Assert;
 import model.Annotation;
 import model.Author;
 import model.Comment;
@@ -30,7 +29,7 @@ public class SetupDBTest {
 	@BeforeClass
 	public static void setUpClass() {
 		AnnotationConfiguration cfg = new AnnotationConfiguration().configure();
-		new SchemaExport(cfg).create(true, true);
+		new SchemaExport(cfg).drop(true, true);
 		new SchemaExport(cfg).create(true, true);
 		SetupDBTest.factory = DAOFactory.instance(DAOFactory.HIBERNATE);
 	}
@@ -44,17 +43,11 @@ public class SetupDBTest {
 	public void tearDown() throws Exception {}
 
 	@Test
-	public void storeDatabases() {
+	public void storeDatabaseTest() {
 		Transaction transact = session.beginTransaction();
 		DatabankDAO dbdao = SetupDBTest.factory.getDatabankDAO();
 
-		Databank pdb, dssp;
 		dbdao.makePersistent(new Databank("TEST", "ref", "link", null, "regex", CrawlType.FILE));
-		dbdao.makePersistent(pdb = new Databank("PDB", "pdb.org", "google.com/?q=", null, ".*/pdb([\\d\\w]{4})\\.ent(\\.gz)?", CrawlType.FILE));
-		dbdao.makePersistent(dssp = new Databank("DSSP", "dssp.org", "google.com/?q=", pdb, ".*/([\\d\\w]{4})\\.dssp", CrawlType.FILE));
-		dbdao.makePersistent(new Databank("HSSP", "hssp.org", "google.com/?q=", dssp, ".*/([\\d\\w]{4})\\.hssp", CrawlType.FILE));
-		dbdao.makePersistent(new Databank("PDBFINDER", "pdbfinder.org", "google.com/?q=", pdb, "ID           : ([\\d\\w]{4})", CrawlType.LINE));
-		Assert.assertEquals(dbdao.findAll().size(), 5);
 
 		transact.commit();
 	}

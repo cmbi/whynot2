@@ -46,6 +46,7 @@ public class AsortedTests {
 	}
 
 	//@Test
+	@SuppressWarnings("unchecked")
 	public void criteria2() {
 		Transaction transact = session.beginTransaction();
 		String VALID = //
@@ -53,6 +54,9 @@ public class AsortedTests {
 		"where chi.databank = :child " + //
 		"and par.databank = chi.databank.parent " + //
 		"and par.pdbid = chi.pdbid ";
+		String ann = //
+		"join Annotation ann on ";
+
 		String ANNOTATED = // + ( ... )!
 		"from Annotation ann" + //
 		"where ann.entry IN ";

@@ -13,6 +13,8 @@ import model.Databank.CrawlType;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.cfg.AnnotationConfiguration;
+import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -27,6 +29,9 @@ public class SetupDBTest {
 
 	@BeforeClass
 	public static void setUpClass() {
+		AnnotationConfiguration cfg = new AnnotationConfiguration().configure();
+		new SchemaExport(cfg).create(true, true);
+		new SchemaExport(cfg).create(true, true);
 		SetupDBTest.factory = DAOFactory.instance(DAOFactory.HIBERNATE);
 	}
 

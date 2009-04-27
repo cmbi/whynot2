@@ -32,7 +32,7 @@ public class Entry implements Comparable<Entry> {
 
 	public Entry(Databank db, String id) {
 		databank = db;
-		pdbid = id.toUpperCase();
+		pdbid = id.toLowerCase();
 		databank.getEntries().add(this);
 	}
 

@@ -92,7 +92,7 @@ public class Commenter {
 				if (!m.matches())
 					throw new IllegalArgumentException("Expected: " + m.pattern() + ", but got: " + line);
 				String db = m.group(1);
-				String id = m.group(2).toUpperCase();
+				String id = m.group(2).toLowerCase();
 				Databank databank = dbdao.findById(db, true);
 				Entry entry = new Entry(databank, id);
 				new Annotation(author, comment, entry, thetime);
@@ -166,7 +166,7 @@ public class Commenter {
 					throw new IllegalArgumentException("Expected: " + m.pattern() + ", but got: " + line);
 
 				String db = m.group(1);
-				String id = m.group(2).toUpperCase();
+				String id = m.group(2).toLowerCase();
 
 				Databank databank = dbdao.findById(db, true);
 				if (databank == null)

@@ -1,17 +1,13 @@
 package test;
 
-import java.util.List;
 import java.util.TreeSet;
 
-import model.Annotation;
 import model.Databank;
 import model.File;
 
-import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.criterion.Order;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -39,21 +35,15 @@ public class AsortedTests {
 	public void tearDown() throws Exception {}
 
 	@Test
-	public void buildNumber() {
-		Package p = getClass().getPackage();
-		String version = p.getImplementationVersion();
-		System.out.println(version);
-	}
-
-	//@Test
 	@SuppressWarnings("unchecked")
 	public void criteria2() {
 		Transaction transact = session.beginTransaction();
 		String VALID = //
-		"from File par, File chi " + //
+		"from File as par, File as chi " + //
 		"where chi.databank = :child " + //
-		"and par.databank = chi.databank.parent " + //
-		"and par.pdbid = chi.pdbid ";
+		"and par.pdbid = chi.pdbid " + //
+		"and par.databank = chi.databank.parent ";
+
 		String ann = //
 		"join Annotation ann on ";
 
@@ -67,22 +57,9 @@ public class AsortedTests {
 		DatabankDAO dbdao = AsortedTests.factory.getDatabankDAO();
 		Databank db = dbdao.findById("DSSP", false);
 
-		Query q = session.createQuery("select chi " + VALID).setParameter("child", db);
+		Query q = session.createQuery(VALID).setParameter("child", db);
 		for (File ent : new TreeSet<File>(q.list()))
 			System.out.println(ent);
-		transact.commit();
-	}
-
-	//@Test
-	@SuppressWarnings("unchecked")
-	public void criteria() {
-		Transaction transact = session.beginTransaction();
-		Criteria crit = session.createCriteria(Annotation.class);
-		crit.addOrder(Order.desc("timestamp"));
-		crit.setMaxResults(10);
-
-		for (Annotation ann : (List<Annotation>) crit.list())
-			System.out.println(ann.getTimestamp());
 		transact.commit();
 	}
 

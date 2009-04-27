@@ -3,7 +3,6 @@ package test;
 import model.Databank;
 import model.File;
 
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.junit.After;
@@ -14,6 +13,7 @@ import org.junit.Test;
 import dao.hibernate.DAOFactory;
 import dao.interfaces.AnnotationDAO;
 import dao.interfaces.DatabankDAO;
+import dao.interfaces.DatabankDAO.AnnotationType;
 
 public class AsortedTests {
 	static DAOFactory	factory;
@@ -31,46 +31,6 @@ public class AsortedTests {
 
 	@After
 	public void tearDown() throws Exception {}
-
-	@Test
-	@SuppressWarnings("unchecked")
-	public void criteria2() {
-		Transaction transact = session.beginTransaction();
-
-		String VALID = //
-		"from File par, File chi " + //
-		"where chi.databank = :child " + //
-		"and par.databank = chi.databank.parent " + //
-		"and par.pdbid = chi.pdbid ";
-
-		String MISSING = //
-		"from File par " + //
-		"where par.databank = :parent " + //
-		"and (select chi.path from File chi " + //
-		"where chi.databank = :child and chi.pdbid = par.pdbid ) is null ";
-
-		String OBSOLETE = //
-		"from File chi " + //
-		"where chi.databank = :child " + //
-		"and (select par.path from File par " + //
-		"where par.databank = chi.databank.parent " + //
-		"and par.pdbid = chi.pdbid ) is null ";
-
-		String ANNCOUNT = "select count(*) from Annotation ann where chi.pdbid=ann.entry.pdbid";
-
-		String WITH = "and (" + ANNCOUNT + ") > 0 ";
-
-		String WITHOUT = "and (" + ANNCOUNT + ") = 0 ";
-
-		DatabankDAO dbdao = AsortedTests.factory.getDatabankDAO();
-		Databank db = dbdao.findById("DSSP", false);
-
-		Query q = session.createQuery(OBSOLETE + WITH).setParameter("child", db);
-		System.out.println(q.list().size());
-		//for (File ent : new TreeSet<File>(q.list()))
-		//	System.out.println(ent);
-		transact.commit();
-	}
 
 	//@Test
 	public void listPDBFiles() {
@@ -91,7 +51,7 @@ public class AsortedTests {
 		transact.commit();
 	}
 
-	//@Test
+	@Test
 	public void printCounts() {
 		Transaction transact = session.beginTransaction();//Plain JDBC
 		DatabankDAO dbdao = AsortedTests.factory.getDatabankDAO();
@@ -99,12 +59,9 @@ public class AsortedTests {
 
 		Databank db = dbdao.findById("DSSP", false);
 
-		//System.out.println(dbdao.getValidEntries(db).size());
-		//System.out.println(dbdao.getMissingEntries(db).size());
-		//System.out.println(dbdao.getObsoleteEntries(db).size());
-
-		System.out.println(dbdao.getValidEntriesWith(db).size());
-		//System.out.println(anndao.getRecent().size());
+		System.out.println(dbdao.getValidEntries(AnnotationType.ALL, db).size());
+		System.out.println(dbdao.getValidEntries(AnnotationType.WITH, db).size());
+		System.out.println(dbdao.getValidEntries(AnnotationType.WITHOUT, db).size());
 
 		transact.commit(); //Plain JDBC
 	}

@@ -68,7 +68,7 @@ public class SetupDBTest {
 		DatabankDAO dbdao = SetupDBTest.factory.getDatabankDAO();
 
 		Author author = new Author("Tim te Beek");
-		Comment comment = new Comment("Example comment stored in InitialTest.java");
+		Comment comment = new Comment("Example comment stored in SetupDBTest.java");
 		Databank test = dbdao.findById("TEST", true);
 		Entry entry = new Entry(test, "0001");
 		new Annotation(author, comment, entry, 1L);

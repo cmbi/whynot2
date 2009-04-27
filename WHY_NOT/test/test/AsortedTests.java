@@ -1,7 +1,5 @@
 package test;
 
-import java.util.TreeSet;
-
 import model.Databank;
 import model.File;
 
@@ -38,28 +36,39 @@ public class AsortedTests {
 	@SuppressWarnings("unchecked")
 	public void criteria2() {
 		Transaction transact = session.beginTransaction();
+
 		String VALID = //
-		"from File as par, File as chi " + //
+		"from File par, File chi " + //
 		"where chi.databank = :child " + //
-		"and par.pdbid = chi.pdbid " + //
-		"and par.databank = chi.databank.parent ";
+		"and par.databank = chi.databank.parent " + //
+		"and par.pdbid = chi.pdbid ";
 
-		String ann = //
-		"join Annotation ann on ";
+		String MISSING = //
+		"from File par " + //
+		"where par.databank = :parent " + //
+		"and (select chi.path from File chi " + //
+		"where chi.databank = :child and chi.pdbid = par.pdbid ) is null ";
 
-		String ANNOTATED = // + ( ... )!
-		"from Annotation ann" + //
-		"where ann.entry IN ";
-		String UNANNOTATED = // + ( ... )!
-		"from Annotation ann" + //
-		"where ann.entry NOT IN ";
+		String OBSOLETE = //
+		"from File chi " + //
+		"where chi.databank = :child " + //
+		"and (select par.path from File par " + //
+		"where par.databank = chi.databank.parent " + //
+		"and par.pdbid = chi.pdbid ) is null ";
+
+		String ANNCOUNT = "select count(*) from Annotation ann where chi.pdbid=ann.entry.pdbid";
+
+		String WITH = "and (" + ANNCOUNT + ") > 0 ";
+
+		String WITHOUT = "and (" + ANNCOUNT + ") = 0 ";
 
 		DatabankDAO dbdao = AsortedTests.factory.getDatabankDAO();
 		Databank db = dbdao.findById("DSSP", false);
 
-		Query q = session.createQuery(VALID).setParameter("child", db);
-		for (File ent : new TreeSet<File>(q.list()))
-			System.out.println(ent);
+		Query q = session.createQuery(OBSOLETE + WITH).setParameter("child", db);
+		System.out.println(q.list().size());
+		//for (File ent : new TreeSet<File>(q.list()))
+		//	System.out.println(ent);
 		transact.commit();
 	}
 
@@ -90,10 +99,12 @@ public class AsortedTests {
 
 		Databank db = dbdao.findById("DSSP", false);
 
-		System.out.println(dbdao.getValidCount(db));
-		System.out.println(dbdao.getMissingCount(db));
-		System.out.println(dbdao.getObsoleteCount(db));
-		System.out.println(anndao.getRecent().size());
+		//System.out.println(dbdao.getValidEntries(db).size());
+		//System.out.println(dbdao.getMissingEntries(db).size());
+		//System.out.println(dbdao.getObsoleteEntries(db).size());
+
+		System.out.println(dbdao.getValidEntriesWith(db).size());
+		//System.out.println(anndao.getRecent().size());
 
 		transact.commit(); //Plain JDBC
 	}

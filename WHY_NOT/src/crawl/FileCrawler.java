@@ -41,13 +41,14 @@ public class FileCrawler extends AbstractCrawler {
 			for (File file : dir.listFiles(entryfilter)) {
 				Matcher m = pattern.matcher(file.getAbsolutePath());
 				if (m.matches()) {
-					model.File ef = fldao.findById(new EntryPK(database, m.group(1)), true);
+					String id = m.group(1).toLowerCase();
+					model.File ef = fldao.findById(new EntryPK(database, id), true);
 					if (ef != null) {
 						ef.setPath(file.getAbsolutePath());
 						ef.setTimestamp(file.lastModified());
 					}
 					else {
-						new model.File(database, m.group(1), file.getAbsolutePath(), file.lastModified());
+						new model.File(database, id, file.getAbsolutePath(), file.lastModified());
 						count++;
 					}
 				}

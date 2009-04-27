@@ -1,28 +1,32 @@
 package dao.interfaces;
 
-import java.util.Set;
+import java.util.SortedSet;
 
 import model.Databank;
 import model.File;
 
 public interface DatabankDAO extends GenericDAO<Databank, String> {
+	public enum CollectionType {
+		ALL, VALID, MISSING, OBSOLETE
+	};
+
 	public enum AnnotationType {
 		ALL, WITH, WITHOUT
 	};
 
-	long getCount(AnnotationType at, Databank db);
+	long getCount(Databank db, AnnotationType at);
 
-	long getValidCount(AnnotationType at, Databank db);
+	long getValidCount(Databank db, AnnotationType at);
 
-	long getMissingCount(AnnotationType at, Databank db);
+	long getMissingCount(Databank db, AnnotationType at);
 
-	long getObsoleteCount(AnnotationType at, Databank db);
+	long getObsoleteCount(Databank db, AnnotationType at);
 
-	Set<File> getEntries(AnnotationType all, Databank db);
+	SortedSet<File> getEntries(Databank db, AnnotationType all);
 
-	Set<File> getValidEntries(AnnotationType at, Databank db);
+	SortedSet<File> getValidEntries(Databank db, AnnotationType at);
 
-	Set<File> getMissingEntries(AnnotationType at, Databank db);
+	SortedSet<File> getMissingEntries(Databank db, AnnotationType at);
 
-	Set<File> getObsoleteEntries(AnnotationType at, Databank db);
+	SortedSet<File> getObsoleteEntries(Databank db, AnnotationType at);
 }

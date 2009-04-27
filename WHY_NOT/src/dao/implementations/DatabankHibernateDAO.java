@@ -1,6 +1,6 @@
 package dao.implementations;
 
-import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import model.Databank;
@@ -49,53 +49,53 @@ public class DatabankHibernateDAO extends GenericHibernateDAO<Databank, String> 
 	}
 
 	@Override
-	public long getCount(AnnotationType at, Databank db) {
+	public long getCount(Databank db, AnnotationType at) {
 		Query q = getSession().createQuery("select count(*) " + ALL + selectAnnotationType(at)).setParameter("child", db);
 		return (Long) q.uniqueResult();
 	}
 
 	@Override
-	public long getValidCount(AnnotationType at, Databank db) {
+	public long getValidCount(Databank db, AnnotationType at) {
 		Query q = getSession().createQuery("select count(*) " + VALID + selectAnnotationType(at)).setParameter("child", db);
 		return (Long) q.uniqueResult();
 	}
 
 	@Override
-	public long getMissingCount(AnnotationType at, Databank db) {
+	public long getMissingCount(Databank db, AnnotationType at) {
 		Query q = getSession().createQuery("select count(*) " + MISSING + selectAnnotationType(at)).setParameter("child", db).setParameter("parent", db.getParent());
 		return (Long) q.uniqueResult();
 	}
 
 	@Override
-	public long getObsoleteCount(AnnotationType at, Databank db) {
+	public long getObsoleteCount(Databank db, AnnotationType at) {
 		Query q = getSession().createQuery("select count(*) " + OBSOLETE + selectAnnotationType(at)).setParameter("child", db);
 		return (Long) q.uniqueResult();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Set<File> getEntries(AnnotationType at, Databank db) {
+	public SortedSet<File> getEntries(Databank db, AnnotationType at) {
 		Query q = getSession().createQuery("select target " + ALL + selectAnnotationType(at)).setParameter("child", db);
 		return new TreeSet<File>(q.list());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Set<File> getValidEntries(AnnotationType at, Databank db) {
+	public SortedSet<File> getValidEntries(Databank db, AnnotationType at) {
 		Query q = getSession().createQuery("select target " + VALID + selectAnnotationType(at)).setParameter("child", db);
 		return new TreeSet<File>(q.list());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Set<File> getMissingEntries(AnnotationType at, Databank db) {
+	public SortedSet<File> getMissingEntries(Databank db, AnnotationType at) {
 		Query q = getSession().createQuery("select target " + MISSING + selectAnnotationType(at)).setParameter("child", db).setParameter("parent", db.getParent());
 		return new TreeSet<File>(q.list());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Set<File> getObsoleteEntries(AnnotationType at, Databank db) {
+	public SortedSet<File> getObsoleteEntries(Databank db, AnnotationType at) {
 		Query q = getSession().createQuery("select target " + OBSOLETE + selectAnnotationType(at)).setParameter("child", db);
 		return new TreeSet<File>(q.list());
 	}

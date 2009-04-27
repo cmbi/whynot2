@@ -11,7 +11,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import dao.hibernate.DAOFactory;
-import dao.interfaces.AnnotationDAO;
 import dao.interfaces.DatabankDAO;
 import dao.interfaces.DatabankDAO.AnnotationType;
 
@@ -55,16 +54,13 @@ public class AsortedTests {
 	public void printCounts() {
 		Transaction transact = session.beginTransaction();//Plain JDBC
 		DatabankDAO dbdao = AsortedTests.factory.getDatabankDAO();
-		AnnotationDAO anndao = AsortedTests.factory.getAnnotationDAO();
 
 		Databank db = dbdao.findById("DSSP", false);
 
-		System.out.println(dbdao.getEntries(AnnotationType.ALL, db).size());
-		System.out.println(dbdao.getValidEntries(AnnotationType.ALL, db).size());
-		System.out.println(dbdao.getMissingEntries(AnnotationType.ALL, db).size());
-		System.out.println(dbdao.getObsoleteEntries(AnnotationType.ALL, db).size());
-		//System.out.println(dbdao.getValidEntries(AnnotationType.WITH, db).size());
-		//System.out.println(dbdao.getValidEntries(AnnotationType.WITHOUT, db).size());
+		System.out.println(dbdao.getEntries(db, AnnotationType.ALL).size());
+		System.out.println(dbdao.getValidEntries(db, AnnotationType.ALL).size());
+		System.out.println(dbdao.getMissingEntries(db, AnnotationType.ALL).size());
+		System.out.println(dbdao.getObsoleteEntries(db, AnnotationType.ALL).size());
 
 		transact.commit(); //Plain JDBC
 	}

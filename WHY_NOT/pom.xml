@@ -8,6 +8,11 @@
 	<version>2.0.1-PRE</version>
 	<name>WHY_NOT</name>
 	<description></description>
+	<organization>
+		<name>CMBI</name>
+		<url>www.cmbi.ru.nl</url>
+	</organization>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.hibernate</groupId>

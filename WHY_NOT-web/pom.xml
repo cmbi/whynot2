@@ -17,6 +17,12 @@
 	</organization>
 
 	<dependencies>
+		<dependency>
+			<groupId>nl.ru.cmbi.why_not</groupId>
+			<artifactId>WHY_NOT</artifactId>
+			<version>2.0.1-PRE</version>
+		</dependency>
+	
 		<!--  WICKET DEPENDENCIES -->
 
 		<dependency>

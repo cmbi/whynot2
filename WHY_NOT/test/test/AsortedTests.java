@@ -59,9 +59,12 @@ public class AsortedTests {
 
 		Databank db = dbdao.findById("DSSP", false);
 
+		System.out.println(dbdao.getEntries(AnnotationType.ALL, db).size());
 		System.out.println(dbdao.getValidEntries(AnnotationType.ALL, db).size());
-		System.out.println(dbdao.getValidEntries(AnnotationType.WITH, db).size());
-		System.out.println(dbdao.getValidEntries(AnnotationType.WITHOUT, db).size());
+		System.out.println(dbdao.getMissingEntries(AnnotationType.ALL, db).size());
+		System.out.println(dbdao.getObsoleteEntries(AnnotationType.ALL, db).size());
+		//System.out.println(dbdao.getValidEntries(AnnotationType.WITH, db).size());
+		//System.out.println(dbdao.getValidEntries(AnnotationType.WITHOUT, db).size());
 
 		transact.commit(); //Plain JDBC
 	}

@@ -10,11 +10,15 @@ public interface DatabankDAO extends GenericDAO<Databank, String> {
 		ALL, WITH, WITHOUT
 	};
 
+	long getCount(AnnotationType at, Databank db);
+
 	long getValidCount(AnnotationType at, Databank db);
 
 	long getMissingCount(AnnotationType at, Databank db);
 
 	long getObsoleteCount(AnnotationType at, Databank db);
+
+	Set<File> getEntries(AnnotationType all, Databank db);
 
 	Set<File> getValidEntries(AnnotationType at, Databank db);
 

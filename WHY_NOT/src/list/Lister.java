@@ -20,7 +20,7 @@ public class Lister {
 					if (args[2].equals("WITHOUT"))
 						new Lister().list(args[0], args[1], false);
 					else
-						throw new IllegalArgumentException("Usage: list DATABASE COLLECTION [WITH[OUT]]");
+						throw new IllegalArgumentException("Usage: list DATABASE [VALID | MISSING | OBSOLETE] [WITH | WITHOUT]");
 		new Lister();
 	}
 

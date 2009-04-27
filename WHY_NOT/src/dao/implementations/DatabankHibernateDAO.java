@@ -11,6 +11,10 @@ import org.hibernate.Query;
 import dao.interfaces.DatabankDAO;
 
 public class DatabankHibernateDAO extends GenericHibernateDAO<Databank, String> implements DatabankDAO {
+	private final String	ALL			= //
+										"from File target " + //
+										"where target.databank = :child";
+
 	private final String	VALID		= //
 										"from File par, File target " + //
 										"where target.databank = :child " + //
@@ -45,6 +49,12 @@ public class DatabankHibernateDAO extends GenericHibernateDAO<Databank, String> 
 	}
 
 	@Override
+	public long getCount(AnnotationType at, Databank db) {
+		Query q = getSession().createQuery("select count(*) " + ALL + selectAnnotationType(at)).setParameter("child", db);
+		return (Long) q.uniqueResult();
+	}
+
+	@Override
 	public long getValidCount(AnnotationType at, Databank db) {
 		Query q = getSession().createQuery("select count(*) " + VALID + selectAnnotationType(at)).setParameter("child", db);
 		return (Long) q.uniqueResult();
@@ -64,6 +74,13 @@ public class DatabankHibernateDAO extends GenericHibernateDAO<Databank, String> 
 
 	@SuppressWarnings("unchecked")
 	@Override
+	public Set<File> getEntries(AnnotationType at, Databank db) {
+		Query q = getSession().createQuery("select target " + ALL + selectAnnotationType(at)).setParameter("child", db);
+		return new TreeSet<File>(q.list());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
 	public Set<File> getValidEntries(AnnotationType at, Databank db) {
 		Query q = getSession().createQuery("select target " + VALID + selectAnnotationType(at)).setParameter("child", db);
 		return new TreeSet<File>(q.list());
@@ -79,7 +96,7 @@ public class DatabankHibernateDAO extends GenericHibernateDAO<Databank, String> 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Set<File> getObsoleteEntries(AnnotationType at, Databank db) {
-		Query q = getSession().createQuery("select target " + VALID + selectAnnotationType(at)).setParameter("child", db);
+		Query q = getSession().createQuery("select target " + OBSOLETE + selectAnnotationType(at)).setParameter("child", db);
 		return new TreeSet<File>(q.list());
 	}
 }

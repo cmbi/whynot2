@@ -26,42 +26,42 @@ import org.hibernate.validator.NotNull;
 public class Databank implements Comparable<Databank> {
 	public enum CrawlType {
 		FILE, LINE
-	};
+	}
 
 	@Id
 	@GeneratedValue
-	Long						id;
+	public Long				id;
 
 	@NaturalId
 	@NotEmpty
 	@Length(max = 50)
-	private String				name;
+	public String			name;
 
 	@NotEmpty
 	@Length(max = 200)
-	private String				reference;
+	public String			reference;
 	@NotEmpty
 	@Length(max = 200)
-	private String				filelink;
+	public String			filelink;
 
 	@OneToOne
 	@LazyToOne(LazyToOneOption.PROXY)
-	private Databank			parent;
+	public Databank			parent;
 
 	@NotEmpty
 	@Length(max = 50)
-	private String				regex;
+	public String			regex;
 
 	@NotNull
 	@Enumerated(EnumType.STRING)
-	private CrawlType			crawltype;
+	public CrawlType		crawltype;
 
 	@OneToMany(mappedBy = "databank", cascade = javax.persistence.CascadeType.ALL)
 	@Cascade(value = { CascadeType.DELETE_ORPHAN })
 	@Sort(type = SortType.NATURAL)
-	private SortedSet<Entry>	entries	= new TreeSet<Entry>();
+	public SortedSet<Entry>	entries	= new TreeSet<Entry>();
 
-	protected Databank() {
+	public Databank() {
 	}
 
 	public Databank(String name, String reference, String filelink, Databank parent, String regex, CrawlType crawltype) {

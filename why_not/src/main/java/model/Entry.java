@@ -16,6 +16,7 @@ import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 import org.hibernate.validator.Length;
+import org.hibernate.validator.NotNull;
 
 @Entity
 public class Entry implements Comparable<Entry> {
@@ -25,9 +26,11 @@ public class Entry implements Comparable<Entry> {
 
 	@NaturalId
 	@ManyToOne
+	@NotNull
 	private Databank				databank;
 	@NaturalId
 	@Length(max = 10)
+	@NotNull
 	private String					pdbid;
 
 	@OneToOne

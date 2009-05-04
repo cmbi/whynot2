@@ -1,6 +1,0 @@
-AUTHOR: Tim te Beek
-COMMENT: Another new example comment
-PDB,100J
-PDB,100Q
-PDB,2TIM
-HSSP,3TIM

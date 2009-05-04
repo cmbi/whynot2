@@ -1,8 +1,0 @@
-AUTHOR: Tim te Beek
-COMMENT: Another new example comment from com1.txt
-PDB,100J
-PDB,100Q
-PDB,2TIM
-HSSP,3TIM
-DSSP,100J
-DSSP,100q

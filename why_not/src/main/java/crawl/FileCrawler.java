@@ -65,6 +65,8 @@ public class FileCrawler extends AbstractCrawler {
 							stored.setTimestamp(found.getTimestamp());
 						}
 				}
+				if (count % 100 == 1)
+					System.out.println(count);
 			}
 		return count;
 	}

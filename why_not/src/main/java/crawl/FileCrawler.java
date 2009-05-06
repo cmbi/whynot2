@@ -7,8 +7,11 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 
 import model.Databank;
-import model.EntryPK;
-import dao.interfaces.FileDAO;
+import model.Entry;
+
+import org.hibernate.criterion.Restrictions;
+
+import dao.interfaces.EntryDAO;
 
 public class FileCrawler extends AbstractCrawler {
 	private FileFilter	entryfilter, directoryfilter;
@@ -34,7 +37,7 @@ public class FileCrawler extends AbstractCrawler {
 
 	@Override
 	public int addEntriesIn(String path) {
-		FileDAO fldao = Crawler.factory.getFileDAO();
+		EntryDAO entdao = Crawler.factory.getEntryDAO();
 
 		int count = 0;
 		for (File dir : dirAndAllSubdirs(new File(path)))
@@ -42,15 +45,25 @@ public class FileCrawler extends AbstractCrawler {
 				Matcher m = pattern.matcher(file.getAbsolutePath());
 				if (m.matches()) {
 					String id = m.group(1).toLowerCase();
-					model.File ef = fldao.findById(new EntryPK(database, id), true);
-					if (ef != null) {
-						ef.setPath(file.getAbsolutePath());
-						ef.setTimestamp(file.lastModified());
-					}
-					else {
-						new model.File(database, id, file.getAbsolutePath(), file.lastModified());
+
+					//Find or create entry
+					Entry entry = entdao.findByNaturalId(Restrictions.naturalId().set("databank", database).set("pdbid", id));
+					if (entry == null)
+						entry = new Entry(database, id);
+
+					model.File stored = entry.getFile();
+					model.File found = new model.File(file);
+
+					//Create or correct file
+					if (stored == null) {
+						entry.setFile(found);
 						count++;
 					}
+					else
+						if (!stored.equals(found)) {
+							stored.setPath(found.getPath());
+							stored.setTimestamp(found.getTimestamp());
+						}
 				}
 			}
 		return count;

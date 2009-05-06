@@ -27,9 +27,9 @@ public class File implements Comparable<File> {
 	protected File() {
 	}
 
-	public File(String path, Long time) {
-		this.path = path;
-		timestamp = time;
+	public File(java.io.File file) {
+		path = file.getAbsolutePath();
+		timestamp = file.lastModified();
 	}
 
 	public String getPath() {

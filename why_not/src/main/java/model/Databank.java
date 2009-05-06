@@ -136,4 +136,9 @@ public class Databank implements Comparable<Databank> {
 				return false;
 		return true;
 	}
+
+	public Databank setName(String dbname) {
+		name = dbname;
+		return this;
+	}
 }

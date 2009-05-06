@@ -9,6 +9,7 @@ import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Example;
+import org.hibernate.criterion.NaturalIdentifier;
 
 import dao.interfaces.GenericDAO;
 
@@ -45,6 +46,12 @@ public abstract class GenericHibernateDAO<T, ID extends Serializable> implements
 			entity = (T) getSession().get(getPersistentClass(), id);
 
 		return entity;
+	}
+
+	@SuppressWarnings("unchecked")
+	public T findByNaturalId(NaturalIdentifier id) {
+		Criteria crit = getSession().createCriteria(getPersistentClass()).add(id);
+		return (T) crit.uniqueResult();
 	}
 
 	public List<T> findAll() {

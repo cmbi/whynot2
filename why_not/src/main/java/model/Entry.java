@@ -33,7 +33,7 @@ public class Entry implements Comparable<Entry> {
 	@NotNull
 	private String					pdbid;
 
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL)
 	private File					file;
 
 	@OneToMany(mappedBy = "entry", cascade = CascadeType.ALL)
@@ -112,5 +112,9 @@ public class Entry implements Comparable<Entry> {
 			if (!pdbid.equals(other.pdbid))
 				return false;
 		return true;
+	}
+
+	public void setFile(File file) {
+		this.file = file;
 	}
 }

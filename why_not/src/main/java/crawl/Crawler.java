@@ -4,6 +4,7 @@ import model.Databank;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Restrictions;
 
 import dao.hibernate.DAOFactory;
 import dao.interfaces.DatabankDAO;
@@ -30,7 +31,8 @@ public class Crawler {
 
 			DatabankDAO dbdao = Crawler.factory.getDatabankDAO();
 
-			Databank db = dbdao.findById(dbname, true);
+			Databank db = dbdao.findByNaturalId(Restrictions.naturalId().set("name", dbname));
+
 			AbstractCrawler fc;
 			switch (db.getCrawltype()) {
 			case FILE:

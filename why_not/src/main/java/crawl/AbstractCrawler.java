@@ -1,11 +1,12 @@
 package crawl;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.regex.Pattern;
 
 import model.Databank;
+import model.Entry;
+import model.File;
+import dao.interfaces.FileDAO;
 
 public abstract class AbstractCrawler {
 	protected Databank	database;
@@ -18,7 +19,7 @@ public abstract class AbstractCrawler {
 
 	/**
 	 * Adds all FileEntries in the given file or directory and subdirectories to database
-	 * <br/><br/>
+	 * 
 	 * Extracts the PDBID from the filename/line using regular expression group matching:
 	 * the PDBID should be enclosed in parentheses () and be the explicitly matching group 1
 	 * @param path
@@ -30,12 +31,17 @@ public abstract class AbstractCrawler {
 	 * and if the timestamp on the file is the same as the timestamp on the entry
 	 */
 	public int removeInvalidEntries() {
+		FileDAO fldao = Crawler.factory.getFileDAO();
+
 		int count = 0;
-		for (Iterator<model.File> entritr = database.getFiles().iterator(); entritr.hasNext();) {
-			model.File ef = entritr.next();
-			File file = new File(ef.getPath());
-			if (!file.exists() || file.lastModified() != ef.getTimestamp().longValue()) {
-				entritr.remove();
+		for (Entry entry : database.getEntries()) {
+			File stored = entry.getFile();
+			if (stored == null)//TODO Replace null check with proper filter
+				continue;
+			java.io.File reference = new java.io.File(stored.getPath());
+			if (!reference.exists() || reference.lastModified() != stored.getTimestamp()) {
+				fldao.makeTransient(entry.getFile());
+				entry.setFile(null);
 				count++;
 			}
 		}

@@ -1,20 +1,12 @@
 package test;
 
-import java.io.IOException;
-
 import junit.framework.Assert;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import crawl.Crawler;
 
 public class CrawlerTest {
-	@Before
-	public void pause() throws IOException {
-		;//new BufferedReader(new InputStreamReader(System.in)).readLine();
-	}
-
 	@Test
 	public void crawlPDB() throws Exception {
 		crawl("PDB", "/home/tbeek/Desktop/raw/pdb/");

@@ -30,7 +30,6 @@ public class Crawler {
 			transact = Crawler.factory.getSession().beginTransaction(); //Plain JDBC
 
 			DatabankDAO dbdao = Crawler.factory.getDatabankDAO();
-
 			Databank db = dbdao.findByNaturalId(Restrictions.naturalId().set("name", dbname));
 
 			AbstractCrawler fc;

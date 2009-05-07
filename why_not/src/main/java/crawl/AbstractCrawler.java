@@ -38,12 +38,12 @@ public abstract class AbstractCrawler {
 
 		int checked = 0, removed = 0;
 		for (Entry entry : databank.getEntries()) {
-			checked++;
 			File stored = entry.getFile();
 			if (stored == null)//TODO Replace null check with proper selection filter
 				continue;
-			java.io.File reference = new java.io.File(stored.getPath());
-			if (!reference.exists() || reference.lastModified() != stored.getTimestamp()) {
+			checked++;
+			java.io.File found = new java.io.File(stored.getPath());
+			if (!found.exists() || found.lastModified() != stored.getTimestamp()) {
 				fldao.makeTransient(entry.getFile());
 				entry.setFile(null);
 				removed++;

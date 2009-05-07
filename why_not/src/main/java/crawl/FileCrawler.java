@@ -44,7 +44,7 @@ public class FileCrawler extends AbstractCrawler {
 		List<Entry> oldEntries = new ArrayList<Entry>(databank.getEntries());
 		List<Entry> newEntries = new ArrayList<Entry>();
 
-		int crawled = 0, updated = 0, added = 0;
+		int crawled = 0, updated = 0, added = 0, index;
 		for (File dir : dirAndAllSubdirs(new File(path)))
 			for (File file : dir.listFiles(entryfilter)) {
 				Matcher m = pattern.matcher(file.getAbsolutePath());
@@ -55,8 +55,8 @@ public class FileCrawler extends AbstractCrawler {
 
 					//Find or create entry
 					Entry entry = new Entry(databank, id);
-					if (oldEntries.contains(entry))
-						entry = oldEntries.get(oldEntries.indexOf(entry));
+					if (0 <= (index = oldEntries.indexOf(entry)))
+						entry = oldEntries.get(index);
 					else
 						newEntries.add(entry);
 

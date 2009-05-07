@@ -34,7 +34,7 @@ public class LineCrawler extends AbstractCrawler {
 		BufferedReader bf = new BufferedReader(new FileReader(file));
 
 		model.File found = new model.File(file);
-		int crawled = 0, updated = 0, added = 0;
+		int crawled = 0, updated = 0, added = 0, index;
 		for (String line = ""; (line = bf.readLine()) != null;) {
 			Matcher m = pattern.matcher(line);
 			if (m.matches()) {
@@ -43,8 +43,9 @@ public class LineCrawler extends AbstractCrawler {
 				String id = m.group(1).toLowerCase();
 				//Find or create entry
 				Entry entry = new Entry(databank, id);
-				if (oldEntries.contains(entry))
-					entry = oldEntries.get(oldEntries.indexOf(entry));
+
+				if (0 <= (index = oldEntries.indexOf(entry)))
+					entry = oldEntries.get(index);
 				else
 					newEntries.add(entry);
 

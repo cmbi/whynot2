@@ -9,7 +9,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.NaturalId;
@@ -33,7 +32,7 @@ public class Entry implements Comparable<Entry> {
 	@NotNull
 	private String					pdbid;
 
-	@OneToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = CascadeType.ALL)
 	private File					file;
 
 	@OneToMany(mappedBy = "entry", cascade = CascadeType.ALL)
@@ -47,7 +46,6 @@ public class Entry implements Comparable<Entry> {
 	public Entry(Databank db, String id) {
 		databank = db;
 		pdbid = id.toLowerCase();
-		databank.getEntries().add(this);
 	}
 
 	public Databank getDatabank() {

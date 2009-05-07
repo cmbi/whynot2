@@ -2,6 +2,8 @@ package crawl;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
@@ -9,9 +11,9 @@ import java.util.regex.Matcher;
 import model.Databank;
 import model.Entry;
 
-import org.hibernate.criterion.Restrictions;
+import org.apache.log4j.Logger;
 
-import dao.interfaces.EntryDAO;
+import dao.interfaces.FileDAO;
 
 public class FileCrawler extends AbstractCrawler {
 	private FileFilter	entryfilter, directoryfilter;
@@ -36,20 +38,27 @@ public class FileCrawler extends AbstractCrawler {
 	}
 
 	@Override
-	public int addEntriesIn(String path) {
-		EntryDAO entdao = Crawler.factory.getEntryDAO();
+	public void addEntriesIn(String path) {
+		FileDAO fldao = Crawler.factory.getFileDAO();
 
-		int count = 0;
+		List<Entry> oldEntries = new ArrayList<Entry>(databank.getEntries());
+		List<Entry> newEntries = new ArrayList<Entry>();
+
+		int crawled = 0, updated = 0, added = 0;
 		for (File dir : dirAndAllSubdirs(new File(path)))
 			for (File file : dir.listFiles(entryfilter)) {
 				Matcher m = pattern.matcher(file.getAbsolutePath());
 				if (m.matches()) {
+					crawled++;
+
 					String id = m.group(1).toLowerCase();
 
 					//Find or create entry
-					Entry entry = entdao.findByNaturalId(Restrictions.naturalId().set("databank", database).set("pdbid", id));
-					if (entry == null)
-						entry = new Entry(database, id);
+					Entry entry = new Entry(databank, id);
+					if (oldEntries.contains(entry))
+						entry = oldEntries.get(oldEntries.indexOf(entry));
+					else
+						newEntries.add(entry);
 
 					model.File stored = entry.getFile();
 					model.File found = new model.File(file);
@@ -57,18 +66,19 @@ public class FileCrawler extends AbstractCrawler {
 					//Create or correct file
 					if (stored == null) {
 						entry.setFile(found);
-						count++;
+						added++;
 					}
 					else
 						if (!stored.equals(found)) {
-							stored.setPath(found.getPath());
-							stored.setTimestamp(found.getTimestamp());
+							fldao.makeTransient(entry.getFile());
+							entry.setFile(found);
+							updated++;
 						}
 				}
-				if (count % 100 == 1)
-					System.out.println(count);
 			}
-		return count;
+		databank.getEntries().addAll(newEntries);
+
+		Logger.getLogger(FileCrawler.class).info(databank.getName() + ": Crawled " + crawled + ", Updated " + updated + ", Added " + added);
 	}
 
 	/**

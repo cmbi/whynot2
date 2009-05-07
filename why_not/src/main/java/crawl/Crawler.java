@@ -44,10 +44,8 @@ public class Crawler {
 			default:
 				throw new IllegalArgumentException("Invalid CrawlType");
 			}
-			int added = fc.addEntriesIn(path);
-			int removed = fc.removeInvalidEntries();
-
-			Logger.getLogger(Crawler.class).info(dbname + ": Adding " + added + ", Removing " + removed);
+			fc.addEntriesIn(path);
+			fc.removeInvalidEntries();
 
 			transact.commit(); //Plain JDBC
 			succes = true;

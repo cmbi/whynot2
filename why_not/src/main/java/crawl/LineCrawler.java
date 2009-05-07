@@ -1,13 +1,17 @@
 package crawl;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 
 import model.Databank;
-import model.EntryPK;
+import model.Entry;
+
+import org.apache.log4j.Logger;
+
 import dao.interfaces.FileDAO;
 
 public class LineCrawler extends AbstractCrawler {
@@ -20,28 +24,48 @@ public class LineCrawler extends AbstractCrawler {
 	}
 
 	@Override
-	public int addEntriesIn(String filepath) throws IOException {
+	public void addEntriesIn(String path) throws IOException {
 		FileDAO fldao = Crawler.factory.getFileDAO();
 
-		int count = 0;
-		long lastmodified = new File(filepath).lastModified();
-		BufferedReader bf = new BufferedReader(new FileReader(filepath));
+		List<Entry> oldEntries = new ArrayList<Entry>(databank.getEntries());
+		List<Entry> newEntries = new ArrayList<Entry>();
+
+		java.io.File file = new java.io.File(path);
+		BufferedReader bf = new BufferedReader(new FileReader(file));
+
+		model.File found = new model.File(file);
+		int crawled = 0, updated = 0, added = 0;
 		for (String line = ""; (line = bf.readLine()) != null;) {
 			Matcher m = pattern.matcher(line);
 			if (m.matches()) {
+				crawled++;
+
 				String id = m.group(1).toLowerCase();
-				model.File ef = fldao.findById(new EntryPK(database, id), true);
-				if (ef != null) {
-					ef.setPath(filepath);
-					ef.setTimestamp(lastmodified);
+				//Find or create entry
+				Entry entry = new Entry(databank, id);
+				if (oldEntries.contains(entry))
+					entry = oldEntries.get(oldEntries.indexOf(entry));
+				else
+					newEntries.add(entry);
+
+				model.File stored = entry.getFile();
+
+				//Create or correct file
+				if (stored == null) {
+					entry.setFile(found);
+					added++;
 				}
-				else {
-					new model.File(database, id, filepath, lastmodified);
-					count++;
-				}
+				else
+					if (!stored.equals(found)) {
+						fldao.makeTransient(entry.getFile());
+						entry.setFile(found);
+						updated++;
+					}
 			}
 		}
 		bf.close();
-		return count;
+		databank.getEntries().addAll(newEntries);
+
+		Logger.getLogger(LineCrawler.class).info(databank.getName() + ": Crawled " + crawled + ", Updated " + updated + ", Added " + added);
 	}
 }

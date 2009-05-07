@@ -1,19 +1,26 @@
 package test;
 
+import java.io.IOException;
 
 import junit.framework.Assert;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import crawl.Crawler;
 
 public class CrawlerTest {
+	@Before
+	public void pause() throws IOException {
+		;//new BufferedReader(new InputStreamReader(System.in)).readLine();
+	}
+
 	@Test
 	public void crawlPDB() throws Exception {
 		crawl("PDB", "/home/tbeek/Desktop/raw/pdb/");
 	}
 
-	@Test
+	//@Test
 	public void crawlDSSP() throws Exception {
 		crawl("DSSP", "/home/tbeek/Desktop/raw/dssp/");
 	}
@@ -23,7 +30,7 @@ public class CrawlerTest {
 		crawl("HSSP", "/home/tbeek/Desktop/raw/hssp/");
 	}
 
-	//@Test
+	@Test
 	public void crawlPDBFINDER() throws Exception {
 		crawl("PDBFINDER", "/home/tbeek/Desktop/raw/pdbfinder/PDBFIND.TXT");
 	}

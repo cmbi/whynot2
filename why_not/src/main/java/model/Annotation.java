@@ -16,19 +16,14 @@ public class Annotation implements Comparable<Annotation> {
 	@GeneratedValue
 	Long			id;
 
-	@ManyToOne
-	@Cascade(value = { CascadeType.MERGE, CascadeType.SAVE_UPDATE })
-	@NotNull
-	private Author	author;
-
 	@NaturalId
 	@ManyToOne
-	@Cascade(value = { CascadeType.MERGE, CascadeType.SAVE_UPDATE })
+	@Cascade(value = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE })
 	@NotNull
 	private Comment	comment;
 	@NaturalId
 	@ManyToOne
-	@Cascade(value = { CascadeType.MERGE, CascadeType.SAVE_UPDATE })
+	@Cascade(value = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE })
 	@NotNull
 	private Entry	entry;
 
@@ -37,20 +32,15 @@ public class Annotation implements Comparable<Annotation> {
 	protected Annotation() {
 	}
 
-	public Annotation(Author author, Comment comment, Entry entry) {
-		this.author = author;
+	public Annotation(Comment comment, Entry entry) {
 		this.comment = comment;
 		this.entry = entry;
-		entry.getAnnotations().add(this);
+		//entry.getAnnotations().add(this);
 	}
 
-	public Annotation(Author author, Comment comment, Entry entry, long timestamp) {
-		this(author, comment, entry);
+	public Annotation(Comment comment, Entry entry, long timestamp) {
+		this(comment, entry);
 		this.timestamp = timestamp;
-	}
-
-	public Author getAuthor() {
-		return author;
 	}
 
 	public Comment getComment() {
@@ -67,7 +57,7 @@ public class Annotation implements Comparable<Annotation> {
 
 	@Override
 	public String toString() {
-		return author + "," + comment + "," + entry + "," + timestamp;
+		return comment + "," + entry + "," + timestamp;
 	}
 
 	public int compareTo(Annotation o) {

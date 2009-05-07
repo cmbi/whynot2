@@ -13,8 +13,6 @@ import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-import org.hibernate.annotations.LazyToOne;
-import org.hibernate.annotations.LazyToOneOption;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
@@ -45,7 +43,6 @@ public class Databank implements Comparable<Databank> {
 	public String			filelink;
 
 	@OneToOne
-	@LazyToOne(LazyToOneOption.PROXY)
 	public Databank			parent;
 
 	@NotEmpty

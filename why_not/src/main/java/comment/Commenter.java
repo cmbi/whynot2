@@ -5,16 +5,16 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FilenameFilter;
+import java.io.LineNumberReader;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import model.Annotation;
-import model.AnnotationPK;
 import model.Author;
 import model.Comment;
 import model.Databank;
 import model.Entry;
-import model.EntryPK;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Transaction;
@@ -64,30 +64,32 @@ public class Commenter {
 	public boolean comment(String path) throws Exception {
 		boolean succes = false;
 		Transaction transact = null;
-		BufferedReader bf = null;
+		LineNumberReader lnr = null;
 		try {
 			transact = factory.getSession().beginTransaction(); //Plain JDBC
-			bf = new BufferedReader(new FileReader(path));
+			lnr = new LineNumberReader(new FileReader(path));
 
 			Matcher m;
 			String line;
 
 			//Get Author
-			m = patternAuthor.matcher(line = bf.readLine());
+			m = patternAuthor.matcher(line = lnr.readLine());
 			if (!m.matches())
 				throw new IllegalArgumentException("Expected: " + m.pattern() + ", but got: " + line);
 			Author author = new Author(m.group(1));
 
 			//Get Comment
-			m = patternComment.matcher(line = bf.readLine());
+			m = patternComment.matcher(line = lnr.readLine());
 			if (!m.matches())
 				throw new IllegalArgumentException("Expected: " + m.pattern() + ", but got: " + line);
 			Comment comment = new Comment(m.group(1));
 
 			//Loop Entries
 			DatabankDAO dbdao = factory.getDatabankDAO();
+			List<Databank> databanks = dbdao.findAll();
+
 			long thetime = System.currentTimeMillis();
-			while ((line = bf.readLine()) != null) {
+			while ((line = lnr.readLine()) != null) {
 				m = patternEntry.matcher(line);
 				if (!m.matches())
 					throw new IllegalArgumentException("Expected: " + m.pattern() + ", but got: " + line);
@@ -113,8 +115,8 @@ public class Commenter {
 			throw e;
 		}
 		finally {
-			if (bf != null)
-				bf.close();
+			if (lnr != null)
+				lnr.close();
 
 			//Close session if using anything other than current session
 			if (succes)

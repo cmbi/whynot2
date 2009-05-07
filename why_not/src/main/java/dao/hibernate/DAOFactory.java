@@ -3,7 +3,6 @@ package dao.hibernate;
 import org.hibernate.Session;
 
 import dao.interfaces.AnnotationDAO;
-import dao.interfaces.AuthorDAO;
 import dao.interfaces.CommentDAO;
 import dao.interfaces.DatabankDAO;
 import dao.interfaces.EntryDAO;
@@ -38,8 +37,6 @@ public abstract class DAOFactory {
 
 	// Add your DAO interfaces here
 	public abstract AnnotationDAO getAnnotationDAO();
-
-	public abstract AuthorDAO getAuthorDAO();
 
 	public abstract CommentDAO getCommentDAO();
 

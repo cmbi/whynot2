@@ -20,12 +20,12 @@ public class AsortedTests {
 	public void printCounts() {
 		Transaction transact = factory.getSession().beginTransaction();//Plain JDBC
 
-		//factory.getSession().enableFilter("withFile");
-		//factory.getSession().enableFilter("withoutFile");
-		factory.getSession().enableFilter("withParentFile");
-		//factory.getSession().enableFilter("withoutParentFile");
+		factory.getSession().enableFilter("inDatabank").setParameter("name", "DSSP");
 
-		factory.getSession().enableFilter("inDatabank").setParameter("name", "PDB");
+		//factory.getSession().enableFilter("withFile");
+		factory.getSession().enableFilter("withoutFile");
+		//factory.getSession().enableFilter("withParentFile");
+		factory.getSession().enableFilter("withoutParentFile");
 
 		//DatabankDAO dbdao = factory.getDatabankDAO();
 		//Databank pdb = dbdao.findByNaturalId(Restrictions.naturalId().set("name", "PDBFINDER"));

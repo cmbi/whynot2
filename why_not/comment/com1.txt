@@ -1,4 +1,3 @@
-AUTHOR: Tim te Beek
 COMMENT: Another new example comment from com1.txt
 PDB,100J
 PDB,100Q

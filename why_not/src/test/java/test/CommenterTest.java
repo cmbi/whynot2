@@ -1,29 +1,29 @@
 package test;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
 
-import org.junit.AfterClass;
+import org.junit.After;
 import org.junit.Test;
 
 import comment.Commenter;
 
 public class CommenterTest {
-	private static FilenameFilter	doneFilter	= new FilenameFilter() {
-													public boolean accept(File dir, String name) {
-														return !name.contains(append);
-													}
-												};
-	private static String			append		= ".done";
+	private FileFilter	doneFilter	= new FileFilter() {
+										public boolean accept(File pathname) {
+											return pathname.isFile() && pathname.getName().contains(append);
+										}
+									};
+	private String		append		= ".done";
 
 	@Test
 	public void comment() throws Exception {
 		new Commenter();
 	}
 
-	@AfterClass
-	public static void resetfiles() throws Exception {
+	@After
+	public void resetfiles() throws Exception {
 		File dirComments = new File("comment/");
 		File dirUncomments = new File("uncomment/");
 

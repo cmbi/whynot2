@@ -1,9 +1,9 @@
 package comment;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FilenameFilter;
 import java.io.LineNumberReader;
 import java.text.ParseException;
 import java.util.regex.Matcher;
@@ -14,6 +14,7 @@ import model.Comment;
 import model.Databank;
 import model.Entry;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 
@@ -23,19 +24,26 @@ import dao.interfaces.DatabankDAO;
 import dao.interfaces.EntryDAO;
 
 public class Commenter {
-	private DAOFactory				factory;
+	private DAOFactory	factory;
 
-	private static FilenameFilter	commentFilter	= new FilenameFilter() {
-														public boolean accept(File dir, String name) {
-															return !name.contains(append);
-														}
-													};
-	private static String			append			= ".done";
+	private FileFilter	commentFilter	= new FileFilter() {
+											@Override
+											public boolean accept(File pathname) {
+												return pathname.isFile() && !pathname.getName().contains(append);
+											}
+										};
+	private String		append			= ".done";
 
-	private Pattern					patternComment	= Pattern.compile("COMMENT: (.+)");
-	private Pattern					patternEntry	= Pattern.compile("(.+),(.+)");
+	private Pattern		patternComment	= Pattern.compile("COMMENT: (.+)");
+	private Pattern		patternEntry	= Pattern.compile("(.+),(.+)");
 
 	public static void main(String[] args) throws Exception {
+		Commenter commenter = new Commenter();
+	}
+
+	public Commenter() throws Exception {
+		factory = DAOFactory.instance(DAOFactory.HIBERNATE);
+
 		File dirComments = new File("comment/");
 		File dirUncomments = new File("uncomment/");
 
@@ -46,15 +54,10 @@ public class Commenter {
 			throw new FileNotFoundException(dirUncomments.getAbsolutePath());
 
 		//Comment / Uncomment all files in directories
-		Commenter commenter = new Commenter();
 		for (File file : dirComments.listFiles(commentFilter))
-			commenter.comment(file);
+			comment(file);
 		for (File file : dirUncomments.listFiles(commentFilter))
 			;//commenter.uncomment(file);
-	}
-
-	public Commenter() {
-		factory = DAOFactory.instance(DAOFactory.HIBERNATE);
 	}
 
 	public void comment(File file) throws Exception {
@@ -71,7 +74,7 @@ public class Commenter {
 			String line = lnr.readLine();
 			Matcher matcher = patternComment.matcher(line);
 			if (!matcher.matches())
-				throw new ParseException("Expected: " + patternComment.pattern(), lnr.getLineNumber());
+				throw new ParseException("Expected: " + patternComment.pattern() + " at line " + lnr.getLineNumber(), lnr.getLineNumber());
 
 			//Find / create comment
 			Comment comment = new Comment(matcher.group(1));
@@ -92,7 +95,7 @@ public class Commenter {
 					String name = matcher.group(1);
 					if (databank == null || !databank.getName().equals(name))
 						if ((databank = dbdao.findByNaturalId(Restrictions.naturalId().set("name", name))) == null)
-							throw new ParseException("No databank with name " + name + " found.", lnr.getLineNumber());
+							throw new ParseException("No databank with name " + name + " found." + " at line " + lnr.getLineNumber(), lnr.getLineNumber());
 
 					//Find / create entry
 					String pdbid = matcher.group(2).toLowerCase();
@@ -117,17 +120,20 @@ public class Commenter {
 							comment = strdCom;
 					}
 					else
-						throw new ParseException("Expected: " + patternComment.pattern() + " OR " + patternEntry.pattern(), lnr.getLineNumber());
+						throw new ParseException("Expected: " + patternComment.pattern() + " OR " + patternEntry.pattern() + " at line " + lnr.getLineNumber(), lnr.getLineNumber());
 			lnr.close();
 
 			transact.commit();
 
 			//Rename file to prevent rerunning
 			file.renameTo(new File(file.getAbsolutePath() + append));
+
+			Logger.getLogger(Commenter.class).info("Completed file" + file.getAbsolutePath());
 		}
 		catch (Exception e) {
 			if (transact != null)
 				transact.rollback();
+			Logger.getLogger(Commenter.class).info("Failed on file" + file.getAbsolutePath());
 			throw e;
 		}
 	}

@@ -58,7 +58,12 @@ public class Databank implements Comparable<Databank> {
 	@OneToMany(mappedBy = "databank", cascade = javax.persistence.CascadeType.ALL)
 	@Cascade(value = { CascadeType.DELETE_ORPHAN })
 	@Sort(type = SortType.NATURAL)
-	@Filters( { @Filter(name = "withFile"), @Filter(name = "withoutFile") })
+	@Filters( { //
+	@Filter(name = "inDatabank"),//
+	@Filter(name = "withFile"), @Filter(name = "withoutFile"),//
+	@Filter(name = "withParentFile"), @Filter(name = "withoutParentFile"),//	
+	@Filter(name = "withComment"), @Filter(name = "withoutComment"), @Filter(name = "withOlderComment"),//	
+	})
 	public SortedSet<Entry>	entries	= new TreeSet<Entry>();
 
 	public Databank() {

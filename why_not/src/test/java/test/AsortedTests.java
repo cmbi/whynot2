@@ -25,9 +25,10 @@ public class AsortedTests {
 		factory.getSession().enableFilter("inDatabank").setParameter("name", "DSSP");
 
 		//factory.getSession().enableFilter("withFile");
-		factory.getSession().enableFilter("withoutFile");
+		//factory.getSession().enableFilter("withoutFile");
 		//factory.getSession().enableFilter("withParentFile");
-		factory.getSession().enableFilter("withoutParentFile");
+		//factory.getSession().enableFilter("withoutParentFile");
+		factory.getSession().enableFilter("withOlderComment");
 
 		//DatabankDAO dbdao = factory.getDatabankDAO();
 		//Databank pdb = dbdao.findByNaturalId(Restrictions.naturalId().set("name", "PDBFINDER"));

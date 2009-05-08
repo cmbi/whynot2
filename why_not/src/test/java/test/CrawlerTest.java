@@ -7,7 +7,7 @@ import org.junit.Test;
 import crawl.Crawler;
 
 public class CrawlerTest {
-	//@Test
+	@Test
 	public void crawlPDB() throws Exception {
 		crawl("PDB", "/home/tbeek/Desktop/raw/pdb/");
 	}
@@ -17,12 +17,12 @@ public class CrawlerTest {
 		crawl("DSSP", "/home/tbeek/Desktop/raw/dssp/");
 	}
 
-	//@Test
+	@Test
 	public void crawlHSSP() throws Exception {
 		crawl("HSSP", "/home/tbeek/Desktop/raw/hssp/");
 	}
 
-	//@Test
+	@Test
 	public void crawlPDBFINDER() throws Exception {
 		crawl("PDBFINDER", "/home/tbeek/Desktop/raw/pdbfinder/PDBFIND.TXT");
 	}

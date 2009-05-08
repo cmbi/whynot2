@@ -55,8 +55,10 @@ public class FileCrawler extends AbstractCrawler {
 
 					//Find or create entry
 					Entry entry = new Entry(databank, id);
-					if (0 <= (index = oldEntries.indexOf(entry)))
+					if (0 <= (index = oldEntries.indexOf(entry))) {
 						entry = oldEntries.get(index);
+						entry.getAnnotations().clear();
+					}
 					else
 						newEntries.add(entry);
 

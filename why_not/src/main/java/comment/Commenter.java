@@ -19,6 +19,7 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 
 import dao.hibernate.DAOFactory;
+import dao.interfaces.AnnotationDAO;
 import dao.interfaces.CommentDAO;
 import dao.interfaces.DatabankDAO;
 import dao.interfaces.EntryDAO;
@@ -38,7 +39,7 @@ public class Commenter {
 	private Pattern		patternEntry	= Pattern.compile("(.+),(.+)");
 
 	public static void main(String[] args) throws Exception {
-		Commenter commenter = new Commenter();
+		new Commenter();
 	}
 
 	public Commenter() throws Exception {
@@ -57,7 +58,27 @@ public class Commenter {
 		for (File file : dirComments.listFiles(commentFilter))
 			comment(file);
 		for (File file : dirUncomments.listFiles(commentFilter))
-			;//commenter.uncomment(file);
+			uncomment(file);
+
+		//Cleanup unused Comments
+		cleanup();
+	}
+
+	public void cleanup() throws Exception {
+		Transaction transact = null;
+		try {
+			transact = factory.getSession().beginTransaction(); //Plain JDBC
+			CommentDAO comdao = factory.getCommentDAO();
+			for (Comment comment : comdao.findAll())
+				if (comment.getAnnotations().isEmpty())
+					comdao.makeTransient(comment);
+			transact.commit();
+		}
+		catch (Exception e) {
+			if (transact != null)
+				transact.rollback();
+			throw e;
+		}
 	}
 
 	public void comment(File file) throws Exception {
@@ -95,7 +116,7 @@ public class Commenter {
 					String name = matcher.group(1);
 					if (databank == null || !databank.getName().equals(name))
 						if ((databank = dbdao.findByNaturalId(Restrictions.naturalId().set("name", name))) == null)
-							throw new ParseException("No databank with name " + name + " found." + " at line " + lnr.getLineNumber(), lnr.getLineNumber());
+							throw new ParseException("No databank with name " + name + " found" + " at line " + lnr.getLineNumber(), lnr.getLineNumber());
 
 					//Find / create entry
 					String pdbid = matcher.group(2).toLowerCase();
@@ -108,6 +129,7 @@ public class Commenter {
 
 					//Create & store annotation
 					Annotation ann = new Annotation(comment, entry, time);
+					comment.getAnnotations().add(ann);
 					entry.getAnnotations().add(ann);
 				}
 				else
@@ -118,6 +140,81 @@ public class Commenter {
 						strdCom = comdao.findByNaturalId(Restrictions.naturalId().set("text", comment.getText()));
 						if (strdCom != null)
 							comment = strdCom;
+					}
+					else
+						throw new ParseException("Expected: " + patternComment.pattern() + " OR " + patternEntry.pattern() + " at line " + lnr.getLineNumber(), lnr.getLineNumber());
+			lnr.close();
+
+			transact.commit();
+
+			//Rename file to prevent rerunning
+			file.renameTo(new File(file.getAbsolutePath() + append));
+
+			Logger.getLogger(Commenter.class).info("Completed file" + file.getAbsolutePath());
+		}
+		catch (Exception e) {
+			if (transact != null)
+				transact.rollback();
+			Logger.getLogger(Commenter.class).info("Failed on file" + file.getAbsolutePath());
+			throw e;
+		}
+	}
+
+	public void uncomment(File file) throws Exception {
+		Transaction transact = null;
+		LineNumberReader lnr = null;
+		try {
+			transact = factory.getSession().beginTransaction(); //Plain JDBC
+			AnnotationDAO anndao = factory.getAnnotationDAO();
+			CommentDAO comdao = factory.getCommentDAO();
+			DatabankDAO dbdao = factory.getDatabankDAO();
+			EntryDAO entdao = factory.getEntryDAO();
+
+			//Read first line (starting comment)
+			lnr = new LineNumberReader(new FileReader(file));
+			String line = lnr.readLine();
+			Matcher matcher = patternComment.matcher(line);
+			if (!matcher.matches())
+				throw new ParseException("Expected: " + patternComment.pattern() + " at line " + lnr.getLineNumber(), lnr.getLineNumber());
+
+			//Find comment
+			Comment comment = comdao.findByNaturalId(Restrictions.naturalId().set("text", matcher.group(1)));
+			if (comment == null)
+				throw new ParseException("No comment with text " + matcher.group(1) + " found" + " at line " + lnr.getLineNumber(), lnr.getLineNumber());
+
+			//Previous databank available as simple caching mechanism
+			Databank databank = null;
+
+			//Read rest of file
+			while ((line = lnr.readLine()) != null)
+				if ((matcher = patternEntry.matcher(line)).matches()) {
+					//Find databank
+					String name = matcher.group(1);
+					if (databank == null || !databank.getName().equals(name))
+						if ((databank = dbdao.findByNaturalId(Restrictions.naturalId().set("name", name))) == null)
+							throw new ParseException("No databank with name " + name + " found" + " at line " + lnr.getLineNumber(), lnr.getLineNumber());
+
+					//Find entry
+					String pdbid = matcher.group(2).toLowerCase();
+					Entry entry = entdao.findByNaturalId(Restrictions.naturalId().set("databank", databank).set("pdbid", pdbid));
+					if (entry == null)
+						continue;
+
+					//Create & store annotation
+					Annotation ann = anndao.findByNaturalId(Restrictions.naturalId().set("comment", comment).set("entry", entry));
+					if (ann != null) {
+						comment.getAnnotations().remove(ann);
+						entry.getAnnotations().remove(ann);
+						anndao.makeTransient(ann);
+					}
+				}
+				else
+					//Maybe its a new comment
+					if ((matcher = patternComment.matcher(line)).matches()) {
+						//Find comment
+						comment = comdao.findByNaturalId(Restrictions.naturalId().set("text", matcher.group(1)));
+						if (comment == null)
+							throw new ParseException("No comment with text " + matcher.group(1) + " found" + " at line " + lnr.getLineNumber(), lnr.getLineNumber());
 					}
 					else
 						throw new ParseException("Expected: " + patternComment.pattern() + " OR " + patternEntry.pattern() + " at line " + lnr.getLineNumber(), lnr.getLineNumber());

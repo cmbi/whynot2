@@ -36,11 +36,13 @@ public abstract class AbstractCrawler {
 	public void removeInvalidEntries() {
 		FileDAO fldao = Crawler.factory.getFileDAO();
 
+		Crawler.factory.getSession().enableFilter("withFile");
+
 		int checked = 0, removed = 0;
 		for (Entry entry : databank.getEntries()) {
 			File stored = entry.getFile();
-			if (stored == null)//TODO Replace null check with proper selection filter
-				continue;
+			if (stored == null)//Should not happen because of above filter
+				continue;//But to be safe, we'll skip just like we used to
 			checked++;
 			java.io.File found = new java.io.File(stored.getPath());
 			if (!found.exists() || found.lastModified() != stored.getTimestamp()) {
@@ -49,6 +51,9 @@ public abstract class AbstractCrawler {
 				removed++;
 			}
 		}
+
+		Crawler.factory.getSession().disableFilter("withFile");
+
 		Logger.getLogger(AbstractCrawler.class).info(databank.getName() + ": Checked " + checked + ", Removed " + removed);
 	}
 }

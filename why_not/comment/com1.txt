@@ -5,3 +5,6 @@ PDB,2TIM
 HSSP,3TIM
 DSSP,100J
 DSSP,100q
+COMMENT: A completely removed example comment
+DSSP,100J
+DSSP,100q

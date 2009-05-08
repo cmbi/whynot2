@@ -39,12 +39,12 @@ public class AnnotationTest extends DAOTest {
 		if (strdEnt != null)
 			entry = strdEnt;
 		else
-			entdao.makePersistent(entry);
+			db.getEntries().add(entry);
 
 		Annotation ann = new Annotation(comment, entry);
 		Annotation strdAnn = anndao.findByNaturalId(Restrictions.naturalId().set("comment", comment).set("entry", entry));
 		if (strdAnn == null)
-			anndao.makePersistent(ann);
+			entry.getAnnotations().add(ann);
 
 		transaction.commit();
 	}

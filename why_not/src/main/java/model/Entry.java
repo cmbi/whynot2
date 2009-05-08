@@ -11,13 +11,31 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.FilterDefs;
+import org.hibernate.annotations.Filters;
 import org.hibernate.annotations.NaturalId;
+import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 
 @Entity
+@FilterDefs( {//
+@FilterDef(name = "inDatabank", defaultCondition = "databank_id = (select db.id from Databank db where db.name = :name)", parameters = @ParamDef(name = "name", type = "string")), //
+
+@FilterDef(name = "withFile", defaultCondition = "file_id is not null"), //
+@FilterDef(name = "withoutFile", defaultCondition = "file_id is null"), //
+@FilterDef(name = "withParentFile", defaultCondition = "file_id is not null"), //
+@FilterDef(name = "withoutParentFile", defaultCondition = "file_id is null") //
+})
+@Filters( { //
+@Filter(name = "inDatabank"),//
+@Filter(name = "withFile"), @Filter(name = "withoutFile"),//
+@Filter(name = "withParentFile"), @Filter(name = "withoutParentFile"),//	
+})
 public class Entry implements Comparable<Entry> {
 	@Id
 	@GeneratedValue

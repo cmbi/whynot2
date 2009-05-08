@@ -65,6 +65,7 @@ public class LineCrawler extends AbstractCrawler {
 			}
 		}
 		bf.close();
+		//Add new entries to databank
 		databank.getEntries().addAll(newEntries);
 
 		Logger.getLogger(LineCrawler.class).info(databank.getName() + ": Crawled " + crawled + ", Updated " + updated + ", Added " + added);

@@ -13,6 +13,8 @@ import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.Filters;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
@@ -56,6 +58,7 @@ public class Databank implements Comparable<Databank> {
 	@OneToMany(mappedBy = "databank", cascade = javax.persistence.CascadeType.ALL)
 	@Cascade(value = { CascadeType.DELETE_ORPHAN })
 	@Sort(type = SortType.NATURAL)
+	@Filters( { @Filter(name = "withFile"), @Filter(name = "withoutFile") })
 	public SortedSet<Entry>	entries	= new TreeSet<Entry>();
 
 	public Databank() {

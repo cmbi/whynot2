@@ -1,67 +1,37 @@
 package test;
 
-import model.Databank;
-import model.File;
-
-import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import dao.hibernate.DAOFactory;
-import dao.interfaces.DatabankDAO;
-import dao.interfaces.DatabankDAO.AnnotationType;
+import dao.interfaces.EntryDAO;
 
 public class AsortedTests {
 	static DAOFactory	factory;
-	Session				session;
 
 	@BeforeClass
 	public static void setUpClass() {
-		AsortedTests.factory = DAOFactory.instance(DAOFactory.HIBERNATE);
-	}
-
-	@Before
-	public void setUp() throws Exception {
-		session = AsortedTests.factory.getSession();
-	}
-
-	@After
-	public void tearDown() throws Exception {}
-
-	//@Test
-	public void listPDBFiles() {
-		Transaction transact = session.beginTransaction();
-		DatabankDAO dbdao = AsortedTests.factory.getDatabankDAO();
-		Databank pdb = dbdao.findById("PDB", false);
-		for (File file : pdb.getFiles())
-			System.out.println(file);
-		transact.commit();
-	}
-
-	//@Test
-	public void dropHSSP() {
-		Transaction transact = session.beginTransaction();
-		DatabankDAO dbdao = AsortedTests.factory.getDatabankDAO();
-		Databank hssp = dbdao.findById("HSSP", true);
-		dbdao.makeTransient(hssp);
-		transact.commit();
+		factory = DAOFactory.instance(DAOFactory.HIBERNATE);
 	}
 
 	@Test
 	public void printCounts() {
-		Transaction transact = session.beginTransaction();//Plain JDBC
-		DatabankDAO dbdao = AsortedTests.factory.getDatabankDAO();
+		Transaction transact = factory.getSession().beginTransaction();//Plain JDBC
 
-		Databank db = dbdao.findById("DSSP", false);
+		//factory.getSession().enableFilter("withFile");
+		factory.getSession().enableFilter("withFile");
 
-		System.out.println(dbdao.getEntries(db, AnnotationType.ALL).size());
-		System.out.println(dbdao.getValidEntries(db, AnnotationType.ALL).size());
-		System.out.println(dbdao.getMissingEntries(db, AnnotationType.ALL).size());
-		System.out.println(dbdao.getObsoleteEntries(db, AnnotationType.ALL).size());
+		factory.getSession().enableFilter("inDatabank").setParameter("name", "PDBFINDER");
 
+		//DatabankDAO dbdao = factory.getDatabankDAO();
+		//Databank pdb = dbdao.findByNaturalId(Restrictions.naturalId().set("name", "PDBFINDER"));
+		//System.out.println(pdb.getEntries().size());
+
+		EntryDAO entdao = factory.getEntryDAO();
+		System.out.println(entdao.count());
+
+		//System.out.println(dbdao.getEntries(db, AnnotationType.ALL).size());
 		transact.commit(); //Plain JDBC
 	}
 }

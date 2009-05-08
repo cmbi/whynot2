@@ -37,6 +37,10 @@ public abstract class GenericHibernateDAO<T, ID extends Serializable> implements
 		return persistentClass;
 	}
 
+	public long count() {
+		return (Long) getSession().createQuery("select count(*) from " + persistentClass.getName()).uniqueResult();
+	}
+
 	@SuppressWarnings("unchecked")
 	public T findById(ID id, boolean lock) {
 		T entity;

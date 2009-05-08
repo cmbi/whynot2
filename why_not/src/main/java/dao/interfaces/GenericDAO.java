@@ -6,6 +6,7 @@ import java.util.List;
 import org.hibernate.criterion.NaturalIdentifier;
 
 public interface GenericDAO<T, ID extends Serializable> {
+	long count();
 
 	T findById(ID id, boolean lock);
 

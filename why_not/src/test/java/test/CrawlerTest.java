@@ -7,7 +7,7 @@ import org.junit.Test;
 import crawl.Crawler;
 
 public class CrawlerTest {
-	@Test
+	//@Test
 	public void crawlPDB() throws Exception {
 		crawl("PDB", "/home/tbeek/Desktop/raw/pdb/");
 	}

@@ -1,218 +1,134 @@
 package comment;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.LineNumberReader;
-import java.util.List;
+import java.text.ParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import model.Annotation;
-import model.Author;
 import model.Comment;
 import model.Databank;
 import model.Entry;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Restrictions;
 
 import dao.hibernate.DAOFactory;
-import dao.interfaces.AnnotationDAO;
-import dao.interfaces.AuthorDAO;
 import dao.interfaces.CommentDAO;
 import dao.interfaces.DatabankDAO;
 import dao.interfaces.EntryDAO;
 
 public class Commenter {
-	private DAOFactory		factory;
+	private DAOFactory				factory;
 
-	private FilenameFilter	txtfilter		= new FilenameFilter() {
-												public boolean accept(File dir, String name) {
-													return name.endsWith(".txt");
-												}
-											};
+	private static FilenameFilter	commentFilter	= new FilenameFilter() {
+														public boolean accept(File dir, String name) {
+															return !name.contains(append);
+														}
+													};
+	private static String			append			= ".done";
 
-	private Pattern			patternAuthor	= Pattern.compile("AUTHOR: (.+)");
-	private Pattern			patternComment	= Pattern.compile("COMMENT: (.+)");
-	private Pattern			patternEntry	= Pattern.compile("(.+),(.+)");
+	private Pattern					patternComment	= Pattern.compile("COMMENT: (.+)");
+	private Pattern					patternEntry	= Pattern.compile("(.+),(.+)");
 
 	public static void main(String[] args) throws Exception {
+		File dirComments = new File("comment/");
+		File dirUncomments = new File("uncomment/");
+
+		//Make sure comment directories exist
+		if (!dirComments.isDirectory() && !dirComments.mkdir())
+			throw new FileNotFoundException(dirComments.getAbsolutePath());
+		if (!dirUncomments.isDirectory() && !dirUncomments.mkdir())
+			throw new FileNotFoundException(dirUncomments.getAbsolutePath());
+
+		//Comment / Uncomment all files in directories
 		Commenter commenter = new Commenter();
-		commenter.commentAll();
-		commenter.uncommentAll();
+		for (File file : dirComments.listFiles(commentFilter))
+			commenter.comment(file);
+		for (File file : dirUncomments.listFiles(commentFilter))
+			;//commenter.uncomment(file);
 	}
 
 	public Commenter() {
 		factory = DAOFactory.instance(DAOFactory.HIBERNATE);
 	}
 
-	private void commentAll() throws Exception {
-		String COMMENTDIR = "comment/";
-		for (String path : getDir(COMMENTDIR).list(txtfilter))
-			comment(COMMENTDIR + path);
-	}
-
-	private void uncommentAll() throws Exception {
-		String UNCOMMENTDIR = "uncomment/";
-		for (String path : getDir(UNCOMMENTDIR).list(txtfilter))
-			uncomment(UNCOMMENTDIR + path);
-	}
-
-	public boolean comment(String path) throws Exception {
-		boolean succes = false;
+	public void comment(File file) throws Exception {
 		Transaction transact = null;
 		LineNumberReader lnr = null;
 		try {
 			transact = factory.getSession().beginTransaction(); //Plain JDBC
-			lnr = new LineNumberReader(new FileReader(path));
-
-			Matcher m;
-			String line;
-
-			//Get Author
-			m = patternAuthor.matcher(line = lnr.readLine());
-			if (!m.matches())
-				throw new IllegalArgumentException("Expected: " + m.pattern() + ", but got: " + line);
-			Author author = new Author(m.group(1));
-
-			//Get Comment
-			m = patternComment.matcher(line = lnr.readLine());
-			if (!m.matches())
-				throw new IllegalArgumentException("Expected: " + m.pattern() + ", but got: " + line);
-			Comment comment = new Comment(m.group(1));
-
-			//Loop Entries
-			DatabankDAO dbdao = factory.getDatabankDAO();
-			List<Databank> databanks = dbdao.findAll();
-
-			long thetime = System.currentTimeMillis();
-			while ((line = lnr.readLine()) != null) {
-				m = patternEntry.matcher(line);
-				if (!m.matches())
-					throw new IllegalArgumentException("Expected: " + m.pattern() + ", but got: " + line);
-				String db = m.group(1);
-				String id = m.group(2).toLowerCase();
-				Databank databank = dbdao.findById(db, true);
-				Entry entry = new Entry(databank, id);
-				new Annotation(author, comment, entry, thetime);
-			}
-
-			transact.commit(); //Plain JDBC
-
-			//Rename file to prevent rerunning
-			new File(path).renameTo(new File(path.concat(".done")));
-
-			succes = true;
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			if (transact != null)
-				transact.rollback();
-			succes = false;
-			throw e;
-		}
-		finally {
-			if (lnr != null)
-				lnr.close();
-
-			//Close session if using anything other than current session
-			if (succes)
-				Logger.getLogger(Commenter.class).info(path + ": Succes");
-			else
-				Logger.getLogger(Commenter.class).error(path + ": Failure");
-		}
-		return succes;
-	}
-
-	public boolean uncomment(String path) throws Exception {
-		boolean succes = false;
-		Transaction transact = null;
-		BufferedReader bf = null;
-		try {
-			transact = factory.getSession().beginTransaction(); //Plain JDBC
-
-			//Initialize DAO's
-			AnnotationDAO anndao = factory.getAnnotationDAO();
-			AuthorDAO authdao = factory.getAuthorDAO();
 			CommentDAO comdao = factory.getCommentDAO();
 			DatabankDAO dbdao = factory.getDatabankDAO();
 			EntryDAO entdao = factory.getEntryDAO();
 
-			bf = new BufferedReader(new FileReader(path));
-			Matcher m;
-			String line;
+			//Read first line (starting comment)
+			lnr = new LineNumberReader(new FileReader(file));
+			String line = lnr.readLine();
+			Matcher matcher = patternComment.matcher(line);
+			if (!matcher.matches())
+				throw new ParseException("Expected: " + patternComment.pattern(), lnr.getLineNumber());
 
-			//Get Author
-			m = patternAuthor.matcher(line = bf.readLine());
-			if (!m.matches())
-				throw new IllegalArgumentException("Expected: " + m.pattern() + ", but got: " + line);
-			Author author = authdao.findById(m.group(1), true);
-			if (author == null)
-				throw new IllegalArgumentException("Author not found");
+			//Find / create comment
+			Comment comment = new Comment(matcher.group(1));
+			Comment strdCom = comdao.findByNaturalId(Restrictions.naturalId().set("text", comment.getText()));
+			if (strdCom != null)
+				comment = strdCom;
 
-			//Get Comment
-			m = patternComment.matcher(line = bf.readLine());
-			if (!m.matches())
-				throw new IllegalArgumentException("Expected: " + m.pattern() + ", but got: " + line);
-			Comment comment = comdao.findById(m.group(1), true);
-			if (comment == null)
-				throw new IllegalArgumentException("Comment not found");
+			//Previous databank available as simple caching mechanism
+			Databank databank = null;
 
-			//Loop Entries
-			while ((line = bf.readLine()) != null) {
-				m = patternEntry.matcher(line);
-				if (!m.matches())
-					throw new IllegalArgumentException("Expected: " + m.pattern() + ", but got: " + line);
+			//Assign this time to all annotations
+			long time = System.currentTimeMillis();
 
-				String db = m.group(1);
-				String id = m.group(2).toLowerCase();
+			//Read rest of file
+			while ((line = lnr.readLine()) != null)
+				if ((matcher = patternEntry.matcher(line)).matches()) {
+					//Find databank
+					String name = matcher.group(1);
+					if (databank == null || !databank.getName().equals(name))
+						if ((databank = dbdao.findByNaturalId(Restrictions.naturalId().set("name", name))) == null)
+							throw new ParseException("No databank with name " + name + " found.", lnr.getLineNumber());
 
-				Databank databank = dbdao.findById(db, true);
-				if (databank == null)
-					throw new IllegalArgumentException("Databank '" + db + "' not found");
+					//Find / create entry
+					String pdbid = matcher.group(2).toLowerCase();
+					Entry entry = new Entry(databank, pdbid);
+					Entry strdEnt = entdao.findByNaturalId(Restrictions.naturalId().set("databank", entry.getDatabank()).set("pdbid", entry.getPdbid()));
+					if (strdEnt != null)
+						entry = strdEnt;
+					else
+						entdao.makePersistent(entry);
 
-				Entry entry = entdao.findById(new EntryPK(databank, id), true);
-				if (entry == null)
-					throw new IllegalArgumentException("Entry '" + db + "/" + id + "' not found");
+					//Create & store annotation
+					Annotation ann = new Annotation(comment, entry, time);
+					entry.getAnnotations().add(ann);
+				}
+				else
+					//Maybe its a new comment
+					if ((matcher = patternComment.matcher(line)).matches()) {
+						//Find / create comment
+						comment = new Comment(matcher.group(1));
+						strdCom = comdao.findByNaturalId(Restrictions.naturalId().set("text", comment.getText()));
+						if (strdCom != null)
+							comment = strdCom;
+					}
+					else
+						throw new ParseException("Expected: " + patternComment.pattern() + " OR " + patternEntry.pattern(), lnr.getLineNumber());
+			lnr.close();
 
-				Annotation annotation = anndao.findById(new AnnotationPK(comment, entry), true);
-				if (annotation != null)
-					anndao.makeTransient(annotation);
-			}
-
-			transact.commit(); //Plain JDBC
+			transact.commit();
 
 			//Rename file to prevent rerunning
-			new File(path).renameTo(new File(path.concat(".done")));
-
-			succes = true;
+			file.renameTo(new File(file.getAbsolutePath() + append));
 		}
 		catch (Exception e) {
-			e.printStackTrace();
 			if (transact != null)
 				transact.rollback();
-			succes = false;
 			throw e;
 		}
-		finally {
-			if (bf != null)
-				bf.close();
-			//Close session if using anything other than current session
-			if (succes)
-				Logger.getLogger(Commenter.class).info(path + ": Succes");
-			else
-				Logger.getLogger(Commenter.class).error(path + ": Failure");
-		}
-		return succes;
-	}
-
-	private File getDir(String path) throws FileNotFoundException {
-		File dir = new File(path);
-		if (!dir.isDirectory() && !dir.mkdir())
-			throw new FileNotFoundException(path);
-		return dir;
 	}
 }

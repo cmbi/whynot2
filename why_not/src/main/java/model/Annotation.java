@@ -27,19 +27,14 @@ public class Annotation implements Comparable<Annotation> {
 	@NotNull
 	private Entry	entry;
 
-	private long	timestamp	= System.currentTimeMillis();
+	private long	timestamp;
 
 	protected Annotation() {
 	}
 
-	public Annotation(Comment comment, Entry entry) {
+	public Annotation(Comment comment, Entry entry, long timestamp) {
 		this.comment = comment;
 		this.entry = entry;
-		//entry.getAnnotations().add(this);
-	}
-
-	public Annotation(Comment comment, Entry entry, long timestamp) {
-		this(comment, entry);
 		this.timestamp = timestamp;
 	}
 

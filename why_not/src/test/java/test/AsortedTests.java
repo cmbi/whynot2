@@ -1,5 +1,7 @@
 package test;
 
+import model.Entry;
+
 import org.apache.log4j.Logger;
 import org.hibernate.Transaction;
 import org.junit.BeforeClass;
@@ -34,6 +36,8 @@ public class AsortedTests {
 		EntryDAO entdao = factory.getEntryDAO();
 		Logger.getLogger(AsortedTests.class).info("Before");
 		Logger.getLogger(AsortedTests.class).info(entdao.count());
+		for (Entry entry : entdao.findAll())
+			Logger.getLogger(AsortedTests.class).info(entry);
 
 		//System.out.println(dbdao.getEntries(db, AnnotationType.ALL).size());
 		transact.commit(); //Plain JDBC

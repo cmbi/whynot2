@@ -8,7 +8,6 @@ import model.Entry;
 import org.hibernate.criterion.Restrictions;
 import org.junit.Test;
 
-import dao.interfaces.AnnotationDAO;
 import dao.interfaces.CommentDAO;
 import dao.interfaces.DatabankDAO;
 import dao.interfaces.EntryDAO;
@@ -18,22 +17,22 @@ public class AnnotationTest extends DAOTest {
 	public void storeAnnotation() throws Exception {
 		transaction = factory.getSession().beginTransaction();
 
-		AnnotationDAO anndao = factory.getAnnotationDAO();
 		CommentDAO comdao = factory.getCommentDAO();
 		DatabankDAO dbdao = factory.getDatabankDAO();
 		EntryDAO entdao = factory.getEntryDAO();
 
+		//Find / create comment
 		Comment comment = new Comment("Dit is mijn comment");
 		Comment strdCom = comdao.findByNaturalId(Restrictions.naturalId().set("text", comment.getText()));
 		if (strdCom != null)
 			comment = strdCom;
-		else
-			comdao.makePersistent(comment);
 
+		//Find databank
 		Databank db = dbdao.findByNaturalId(Restrictions.naturalId().set("name", "PDB"));
 		if (db == null)
 			throw new Exception("DB NOT FOUND");
 
+		//Find / create & store entry
 		Entry entry = new Entry(db, "xTim");
 		Entry strdEnt = entdao.findByNaturalId(Restrictions.naturalId().set("databank", db).set("pdbid", entry.getPdbid()));
 		if (strdEnt != null)
@@ -41,10 +40,9 @@ public class AnnotationTest extends DAOTest {
 		else
 			db.getEntries().add(entry);
 
-		Annotation ann = new Annotation(comment, entry);
-		Annotation strdAnn = anndao.findByNaturalId(Restrictions.naturalId().set("comment", comment).set("entry", entry));
-		if (strdAnn == null)
-			entry.getAnnotations().add(ann);
+		//Create & store annotation
+		Annotation ann = new Annotation(comment, entry, System.currentTimeMillis());
+		entry.getAnnotations().add(ann);
 
 		transaction.commit();
 	}

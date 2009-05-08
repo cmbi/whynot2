@@ -1,5 +1,6 @@
 package test;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Transaction;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -20,16 +21,19 @@ public class AsortedTests {
 		Transaction transact = factory.getSession().beginTransaction();//Plain JDBC
 
 		//factory.getSession().enableFilter("withFile");
-		factory.getSession().enableFilter("withFile");
+		//factory.getSession().enableFilter("withoutFile");
+		factory.getSession().enableFilter("withParentFile");
+		//factory.getSession().enableFilter("withoutParentFile");
 
-		factory.getSession().enableFilter("inDatabank").setParameter("name", "PDBFINDER");
+		factory.getSession().enableFilter("inDatabank").setParameter("name", "PDB");
 
 		//DatabankDAO dbdao = factory.getDatabankDAO();
 		//Databank pdb = dbdao.findByNaturalId(Restrictions.naturalId().set("name", "PDBFINDER"));
 		//System.out.println(pdb.getEntries().size());
 
 		EntryDAO entdao = factory.getEntryDAO();
-		System.out.println(entdao.count());
+		Logger.getLogger(AsortedTests.class).info("Before");
+		Logger.getLogger(AsortedTests.class).info(entdao.count());
 
 		//System.out.println(dbdao.getEntries(db, AnnotationType.ALL).size());
 		transact.commit(); //Plain JDBC

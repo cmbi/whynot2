@@ -64,6 +64,11 @@ public class Databank implements Comparable<Databank> {
 	public Databank() {
 	}
 
+	public Databank(String name, String reference, String filelink, String regex, CrawlType crawltype) {
+		this(name, reference, filelink, null, regex, crawltype);
+		parent = this;
+	}
+
 	public Databank(String name, String reference, String filelink, Databank parent, String regex, CrawlType crawltype) {
 		this.name = name;
 		this.reference = reference;

@@ -28,8 +28,9 @@ import org.hibernate.validator.NotNull;
 
 @FilterDef(name = "withFile", defaultCondition = "file_id is not null"), //
 @FilterDef(name = "withoutFile", defaultCondition = "file_id is null"), //
-@FilterDef(name = "withParentFile", defaultCondition = "file_id is not null"), //
-@FilterDef(name = "withoutParentFile", defaultCondition = "file_id is null") //
+
+@FilterDef(name = "withParentFile", defaultCondition = "(select par.file_id from Entry par where par.pdbid = pdbid and par.databank_id = (select db.parent_id from Databank db where db.id = databank_id)) is not null"), //
+@FilterDef(name = "withoutParentFile", defaultCondition = "(select par.file_id from Entry par where par.pdbid = pdbid and par.databank_id = (select db.parent_id from Databank db where db.id = databank_id)) is null"), //
 })
 @Filters( { //
 @Filter(name = "inDatabank"),//

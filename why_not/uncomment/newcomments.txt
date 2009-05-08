@@ -1,7 +1,5 @@
 COMMENT: Another new example comment from com1.txt
 PDB,100J
-PDB,100Q
-PDB,2TIM
 HSSP,3TIM
 COMMENT: A completely removed example comment
 DSSP,100J

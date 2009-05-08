@@ -19,7 +19,7 @@ public class CommenterTest {
 
 	@Test
 	public void comment() throws Exception {
-		new Commenter();
+		Commenter.main(new String[0]);
 	}
 
 	@After

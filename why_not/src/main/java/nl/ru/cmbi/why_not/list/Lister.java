@@ -1,6 +1,5 @@
 package nl.ru.cmbi.why_not.list;
 
-
 import java.util.SortedSet;
 
 import nl.ru.cmbi.why_not.hibernate.DAOFactory;
@@ -9,9 +8,15 @@ import nl.ru.cmbi.why_not.model.Databank;
 import nl.ru.cmbi.why_not.model.Entry;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.stereotype.Service;
 
+@Service
 public class Lister {
 	public static void main(String[] args) throws Exception {
 		String dbname = "DATABASE";
@@ -30,7 +35,10 @@ public class Lister {
 			else
 				comment = args[4];
 
-			new Lister().list(dbname, fileFilter, parentFilter, commentFilter, comment);
+			Lister lister;
+			ApplicationContext context = new ClassPathXmlApplicationContext(new String[] { "spring.xml" });
+			lister = (Lister) context.getBean("lister");
+			lister.list(dbname, fileFilter, parentFilter, commentFilter, comment);
 		}
 		else {
 			System.err.println("Usage: list DATABASE " + fileFilter + " " + parentFilter + " " + commentFilter + " " + comment);
@@ -38,25 +46,28 @@ public class Lister {
 		}
 	}
 
-	private static DAOFactory	factory;
+	@Autowired
+	private DAOFactory	DAOFactory;
 
 	public Lister() {
-		Lister.factory = DAOFactory.instance(DAOFactory.HIBERNATE);
+		//hibernateDAOFactory = (HibernateDAOFactory) DAOFactory.instance(DAOFactory.HIBERNATE);
 	}
 
-	private void list(String dbname, String fileFilter, String parentFilter, String commentFilter, String comment) throws Exception {
+	public void list(String dbname, String fileFilter, String parentFilter, String commentFilter, String comment) throws Exception {
 		Transaction transact = null;
 		try {
-			transact = Lister.factory.getSession().beginTransaction(); //Plain JDBC
+			System.out.println(DAOFactory);
+			Session session = DAOFactory.getSession();
+			transact = session.beginTransaction(); //Plain JDBC
 
-			DatabankDAO dbdao = Lister.factory.getDatabankDAO();
+			DatabankDAO dbdao = DAOFactory.getDatabankDAO();
 			Databank db = dbdao.findByNaturalId(Restrictions.naturalId().set("name", dbname));
 			if (db == null)
 				new IllegalArgumentException("Databank with name " + dbname + " not found.");
 
-			factory.getSession().enableFilter(fileFilter);
-			factory.getSession().enableFilter(parentFilter);
-			factory.getSession().enableFilter(commentFilter).setParameter("comment", comment);
+			DAOFactory.getSession().enableFilter(fileFilter);
+			DAOFactory.getSession().enableFilter(parentFilter);
+			DAOFactory.getSession().enableFilter(commentFilter).setParameter("comment", comment);
 
 			SortedSet<Entry> entries = db.getEntries();
 			System.out.println("#" + dbname + " " + fileFilter + " " + parentFilter + " " + commentFilter + ": " + entries.size() + " entries");

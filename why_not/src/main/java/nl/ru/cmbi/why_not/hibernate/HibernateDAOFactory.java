@@ -12,8 +12,9 @@ import nl.ru.cmbi.why_not.model.Entry;
 import nl.ru.cmbi.why_not.model.File;
 
 import org.hibernate.Session;
+import org.springframework.stereotype.Service;
 
-
+@Service
 public class HibernateDAOFactory extends DAOFactory {
 	@Override
 	public AnnotationDAO getAnnotationDAO() {

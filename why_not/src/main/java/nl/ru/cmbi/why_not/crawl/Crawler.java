@@ -8,7 +8,6 @@ import org.apache.log4j.Logger;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 
-
 public class Crawler {
 	public static void main(String[] args) throws Exception {
 		if (args.length == 2)

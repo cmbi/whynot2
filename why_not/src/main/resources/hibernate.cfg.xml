@@ -38,11 +38,11 @@
 		-->
 
 		<!-- Mappings -->
-		<mapping class="model.Annotation" />
-		<mapping class="model.Comment" />
-		<mapping class="model.Databank" />
-		<mapping class="model.Entry" />
-		<mapping class="model.File" />
+		<mapping class="nl.ru.cmbi.why_not.model.Annotation" />
+		<mapping class="nl.ru.cmbi.why_not.model.Comment" />
+		<mapping class="nl.ru.cmbi.why_not.model.Databank" />
+		<mapping class="nl.ru.cmbi.why_not.model.Entry" />
+		<mapping class="nl.ru.cmbi.why_not.model.File" />
 
 	</session-factory>
 </hibernate-configuration>

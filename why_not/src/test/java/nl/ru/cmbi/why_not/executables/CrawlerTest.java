@@ -4,7 +4,6 @@ import nl.ru.cmbi.why_not.crawl.Crawler;
 
 import org.junit.Test;
 
-
 public class CrawlerTest {
 	@Test
 	public void crawlPDB() throws Exception {

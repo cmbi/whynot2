@@ -36,9 +36,8 @@ public class Lister {
 		if (args.length == 5)
 			comment = args[4];
 
-		Lister lister;
 		ApplicationContext context = new ClassPathXmlApplicationContext(new String[] { "spring.xml" });
-		lister = (Lister) context.getBean("lister");
+		Lister lister = (Lister) context.getBean("lister");
 		lister.list(dbname, fileFilter, parentFilter, commentFilter, comment);
 	}
 
@@ -66,12 +65,12 @@ public class Lister {
 				System.out.println(entry + "," + (entry.getFile() != null ? entry.getFile().getTimestamp() : -1));
 
 			transact.commit(); //Plain JDBC
-			Logger.getLogger(Lister.class).debug("list DATABASE " + fileFilter + " " + parentFilter + " " + commentFilter + " " + comment + ": Succes");
+			Logger.getLogger(Lister.class).debug("list DATABASE " + fileFilter + " " + parentFilter + " " + commentFilter + " \"" + comment + "\": Succes");
 		}
 		catch (Exception e) {
 			if (transact != null)
 				transact.rollback();
-			Logger.getLogger(Lister.class).error("list DATABASE " + fileFilter + " " + parentFilter + " " + commentFilter + " " + comment + ": Failure");
+			Logger.getLogger(Lister.class).error("list DATABASE " + fileFilter + " " + parentFilter + " " + commentFilter + " \"" + comment + "\": Failure");
 			throw e;
 		}
 	}

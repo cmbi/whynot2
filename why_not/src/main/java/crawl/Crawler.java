@@ -7,7 +7,7 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 
 import dao.hibernate.DAOFactory;
-import dao.interfaces.DatabankDAO;
+import dao.interfaces.GenericDAO.DatabankDAO;
 
 public class Crawler {
 	public static void main(String[] args) throws Exception {

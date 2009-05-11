@@ -7,9 +7,9 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 import org.junit.Test;
 
-import dao.interfaces.DatabankDAO;
-import dao.interfaces.EntryDAO;
-import dao.interfaces.FileDAO;
+import dao.interfaces.GenericDAO.DatabankDAO;
+import dao.interfaces.GenericDAO.EntryDAO;
+import dao.interfaces.GenericDAO.FileDAO;
 
 public class DatabankTest {
 	//@Test

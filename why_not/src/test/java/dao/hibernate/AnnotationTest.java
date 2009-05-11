@@ -8,9 +8,9 @@ import model.Entry;
 import org.hibernate.criterion.Restrictions;
 import org.junit.Test;
 
-import dao.interfaces.CommentDAO;
-import dao.interfaces.DatabankDAO;
-import dao.interfaces.EntryDAO;
+import dao.interfaces.GenericDAO.CommentDAO;
+import dao.interfaces.GenericDAO.DatabankDAO;
+import dao.interfaces.GenericDAO.EntryDAO;
 
 public class AnnotationTest extends DAOTest {
 	@Test

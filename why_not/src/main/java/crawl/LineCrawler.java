@@ -12,7 +12,7 @@ import model.Entry;
 
 import org.apache.log4j.Logger;
 
-import dao.interfaces.FileDAO;
+import dao.interfaces.GenericDAO.FileDAO;
 
 public class LineCrawler extends AbstractCrawler {
 	/**

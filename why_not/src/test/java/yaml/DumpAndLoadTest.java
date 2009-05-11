@@ -59,6 +59,7 @@ public class DumpAndLoadTest {
 		lnr.close();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void loadDB() throws IOException {
 		FileReader fr = new FileReader(file);

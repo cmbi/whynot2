@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Transaction;
 
 import dao.hibernate.DAOFactory;
-import dao.interfaces.CommentDAO;
+import dao.interfaces.GenericDAO.CommentDAO;
 
 public class Commenter {
 	private static String		append			= ".done";

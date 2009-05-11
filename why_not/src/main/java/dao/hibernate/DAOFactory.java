@@ -2,11 +2,11 @@ package dao.hibernate;
 
 import org.hibernate.Session;
 
-import dao.interfaces.AnnotationDAO;
-import dao.interfaces.CommentDAO;
-import dao.interfaces.DatabankDAO;
-import dao.interfaces.EntryDAO;
-import dao.interfaces.FileDAO;
+import dao.interfaces.GenericDAO.AnnotationDAO;
+import dao.interfaces.GenericDAO.CommentDAO;
+import dao.interfaces.GenericDAO.DatabankDAO;
+import dao.interfaces.GenericDAO.EntryDAO;
+import dao.interfaces.GenericDAO.FileDAO;
 
 public abstract class DAOFactory {
 

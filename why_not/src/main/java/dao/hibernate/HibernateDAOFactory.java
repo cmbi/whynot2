@@ -1,19 +1,19 @@
 package dao.hibernate;
 
+import model.Annotation;
 import model.Comment;
+import model.Databank;
 import model.Entry;
 import model.File;
 
 import org.hibernate.Session;
 
-import dao.implementations.AnnotationHibernateDAO;
-import dao.implementations.DatabankHibernateDAO;
 import dao.implementations.GenericHibernateDAO;
-import dao.interfaces.AnnotationDAO;
-import dao.interfaces.CommentDAO;
-import dao.interfaces.DatabankDAO;
-import dao.interfaces.EntryDAO;
-import dao.interfaces.FileDAO;
+import dao.interfaces.GenericDAO.AnnotationDAO;
+import dao.interfaces.GenericDAO.CommentDAO;
+import dao.interfaces.GenericDAO.DatabankDAO;
+import dao.interfaces.GenericDAO.EntryDAO;
+import dao.interfaces.GenericDAO.FileDAO;
 
 public class HibernateDAOFactory extends DAOFactory {
 	@Override
@@ -61,7 +61,13 @@ public class HibernateDAOFactory extends DAOFactory {
 
 	// Inline concrete DAO implementations with no business-related data access methods.
 	// If we use public static nested classes, we can centralize all of them in one source file.
+	public static class AnnotationHibernateDAO extends GenericHibernateDAO<Annotation, Long> implements AnnotationDAO {
+	}
+
 	public static class CommentHibernateDAO extends GenericHibernateDAO<Comment, Long> implements CommentDAO {
+	}
+
+	public static class DatabankHibernateDAO extends GenericHibernateDAO<Databank, Long> implements DatabankDAO {
 	}
 
 	public static class EntryHibernateDAO extends GenericHibernateDAO<Entry, Long> implements EntryDAO {

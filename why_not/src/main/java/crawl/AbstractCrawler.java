@@ -9,7 +9,7 @@ import model.File;
 
 import org.apache.log4j.Logger;
 
-import dao.interfaces.FileDAO;
+import dao.interfaces.GenericDAO.FileDAO;
 
 public abstract class AbstractCrawler {
 	protected Databank	databank;

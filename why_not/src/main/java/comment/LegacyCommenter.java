@@ -14,10 +14,10 @@ import model.Entry;
 
 import org.hibernate.criterion.Restrictions;
 
-import dao.interfaces.AnnotationDAO;
-import dao.interfaces.CommentDAO;
-import dao.interfaces.DatabankDAO;
-import dao.interfaces.EntryDAO;
+import dao.interfaces.GenericDAO.AnnotationDAO;
+import dao.interfaces.GenericDAO.CommentDAO;
+import dao.interfaces.GenericDAO.DatabankDAO;
+import dao.interfaces.GenericDAO.EntryDAO;
 
 public class LegacyCommenter {//TODO Implement
 	private Pattern	patternPDBID	= Pattern.compile("PDBID        : (.+)");

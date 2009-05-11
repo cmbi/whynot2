@@ -8,7 +8,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import dao.hibernate.DAOFactory;
-import dao.interfaces.EntryDAO;
+import dao.interfaces.GenericDAO.EntryDAO;
 
 public class AsortedTests {
 	static DAOFactory	factory;

@@ -1,4 +1,4 @@
-package dao.hibernate;
+package hibernate;
 
 import hibernate.GenericDAO.CommentDAO;
 import hibernate.GenericDAO.DatabankDAO;

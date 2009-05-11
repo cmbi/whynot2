@@ -1,4 +1,4 @@
-package dao.hibernate;
+package hibernate;
 
 import hibernate.DAOFactory;
 import hibernate.GenericDAO.DatabankDAO;

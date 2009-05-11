@@ -11,4 +11,22 @@
 
 	<context:component-scan base-package="nl.ru.cmbi.why_not" />
 
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+	  <property name="dataSource" ref="dataSource" />
+		<property name="hibernateProperties">
+			<value>hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect</value>
+		</property>
+	</bean>
+	
+	<bean id="txManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+	  <property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="org.postgresql.Driver"/>
+		<property name="url" value="jdbc:postgresql://localhost/whynot"/>
+		<property name="username" value="whynotadmin"/>
+		<property name="password" value="pass"/>
+	</bean>
+
 </beans>

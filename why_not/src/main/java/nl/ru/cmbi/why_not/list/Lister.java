@@ -25,38 +25,29 @@ public class Lister {
 		String commentFilter = "withComment|withoutComment|withOlderComment";
 		String comment = "[\"Example comment\"]";
 
-		if ((args.length == 4 || args.length == 5) && args[1].matches(fileFilter) && args[2].matches(parentFilter) && args[3].matches(commentFilter)) {
-			dbname = args[0];
-			fileFilter = args[1];
-			parentFilter = args[2];
-			commentFilter = args[3];
-			if (args.length < 5)
-				comment = "%"; //Wildcard
-			else
-				comment = args[4];
+		if (args.length != 4 && args.length != 5 || !args[1].matches(fileFilter) || !args[2].matches(parentFilter) || !args[3].matches(commentFilter))
+			throw new IllegalArgumentException("Usage: list DATABASE " + fileFilter + " " + parentFilter + " " + commentFilter + " " + comment);
 
-			Lister lister;
-			ApplicationContext context = new ClassPathXmlApplicationContext(new String[] { "spring.xml" });
-			lister = (Lister) context.getBean("lister");
-			lister.list(dbname, fileFilter, parentFilter, commentFilter, comment);
-		}
-		else {
-			System.err.println("Usage: list DATABASE " + fileFilter + " " + parentFilter + " " + commentFilter + " " + comment);
-			System.exit(1);
-		}
+		dbname = args[0];
+		fileFilter = args[1];
+		parentFilter = args[2];
+		commentFilter = args[3];
+		comment = "%"; //Wildcard
+		if (args.length == 5)
+			comment = args[4];
+
+		Lister lister;
+		ApplicationContext context = new ClassPathXmlApplicationContext(new String[] { "spring.xml" });
+		lister = (Lister) context.getBean("lister");
+		lister.list(dbname, fileFilter, parentFilter, commentFilter, comment);
 	}
 
 	@Autowired
 	private DAOFactory	DAOFactory;
 
-	public Lister() {
-		//hibernateDAOFactory = (HibernateDAOFactory) DAOFactory.instance(DAOFactory.HIBERNATE);
-	}
-
 	public void list(String dbname, String fileFilter, String parentFilter, String commentFilter, String comment) throws Exception {
 		Transaction transact = null;
 		try {
-			System.out.println(DAOFactory);
 			Session session = DAOFactory.getSession();
 			transact = session.beginTransaction(); //Plain JDBC
 

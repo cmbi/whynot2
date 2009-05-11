@@ -1,12 +1,13 @@
-package dao.hibernate;
+package hibernate;
+
+import hibernate.GenericDAO.AnnotationDAO;
+import hibernate.GenericDAO.CommentDAO;
+import hibernate.GenericDAO.DatabankDAO;
+import hibernate.GenericDAO.EntryDAO;
+import hibernate.GenericDAO.FileDAO;
 
 import org.hibernate.Session;
 
-import dao.interfaces.GenericDAO.AnnotationDAO;
-import dao.interfaces.GenericDAO.CommentDAO;
-import dao.interfaces.GenericDAO.DatabankDAO;
-import dao.interfaces.GenericDAO.EntryDAO;
-import dao.interfaces.GenericDAO.FileDAO;
 
 public abstract class DAOFactory {
 

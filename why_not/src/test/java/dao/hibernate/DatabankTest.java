@@ -1,5 +1,9 @@
 package dao.hibernate;
 
+import hibernate.DAOFactory;
+import hibernate.GenericDAO.DatabankDAO;
+import hibernate.GenericDAO.EntryDAO;
+import hibernate.GenericDAO.FileDAO;
 import model.Databank;
 import model.Entry;
 
@@ -7,9 +11,6 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 import org.junit.Test;
 
-import dao.interfaces.GenericDAO.DatabankDAO;
-import dao.interfaces.GenericDAO.EntryDAO;
-import dao.interfaces.GenericDAO.FileDAO;
 
 public class DatabankTest {
 	//@Test

@@ -1,5 +1,8 @@
 package comment;
 
+import hibernate.DAOFactory;
+import hibernate.GenericDAO.CommentDAO;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
@@ -12,8 +15,6 @@ import model.Comment;
 import org.apache.log4j.Logger;
 import org.hibernate.Transaction;
 
-import dao.hibernate.DAOFactory;
-import dao.interfaces.GenericDAO.CommentDAO;
 
 public class Commenter {
 	private static String		append			= ".done";

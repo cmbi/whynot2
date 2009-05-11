@@ -1,5 +1,7 @@
 package install;
 
+import hibernate.DAOFactory;
+import hibernate.GenericDAO.DatabankDAO;
 import model.Databank;
 import model.Databank.CrawlType;
 
@@ -9,8 +11,6 @@ import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 
-import dao.hibernate.DAOFactory;
-import dao.interfaces.GenericDAO.DatabankDAO;
 
 public class Installer {
 	public static void main(String[] args) throws Exception {

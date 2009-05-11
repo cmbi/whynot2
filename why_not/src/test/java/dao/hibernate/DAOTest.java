@@ -1,5 +1,7 @@
 package dao.hibernate;
 
+import hibernate.DAOFactory;
+
 import org.hibernate.Transaction;
 import org.junit.BeforeClass;
 

@@ -1,5 +1,7 @@
 package crawl;
 
+import hibernate.GenericDAO.FileDAO;
+
 import java.io.IOException;
 import java.util.regex.Pattern;
 
@@ -9,7 +11,6 @@ import model.File;
 
 import org.apache.log4j.Logger;
 
-import dao.interfaces.GenericDAO.FileDAO;
 
 public abstract class AbstractCrawler {
 	protected Databank	databank;

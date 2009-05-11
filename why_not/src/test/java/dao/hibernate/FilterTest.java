@@ -1,5 +1,7 @@
 package dao.hibernate;
 
+import hibernate.DAOFactory;
+import hibernate.GenericDAO.EntryDAO;
 import model.Entry;
 
 import org.apache.log4j.Logger;
@@ -7,7 +9,6 @@ import org.hibernate.Transaction;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import dao.interfaces.GenericDAO.EntryDAO;
 
 public class FilterTest {
 	static DAOFactory	factory;

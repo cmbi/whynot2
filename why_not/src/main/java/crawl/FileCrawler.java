@@ -1,5 +1,7 @@
 package crawl;
 
+import hibernate.GenericDAO.FileDAO;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
@@ -13,7 +15,6 @@ import model.Entry;
 
 import org.apache.log4j.Logger;
 
-import dao.interfaces.GenericDAO.FileDAO;
 
 public class FileCrawler extends AbstractCrawler {
 	private FileFilter	entryfilter, directoryfilter;

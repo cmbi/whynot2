@@ -1,5 +1,10 @@
 package comment;
 
+import hibernate.GenericDAO.AnnotationDAO;
+import hibernate.GenericDAO.CommentDAO;
+import hibernate.GenericDAO.DatabankDAO;
+import hibernate.GenericDAO.EntryDAO;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.LineNumberReader;
@@ -14,10 +19,6 @@ import model.Entry;
 
 import org.hibernate.criterion.Restrictions;
 
-import dao.interfaces.GenericDAO.AnnotationDAO;
-import dao.interfaces.GenericDAO.CommentDAO;
-import dao.interfaces.GenericDAO.DatabankDAO;
-import dao.interfaces.GenericDAO.EntryDAO;
 
 public class LegacyCommenter {//TODO Implement
 	private Pattern	patternPDBID	= Pattern.compile("PDBID        : (.+)");

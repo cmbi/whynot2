@@ -1,4 +1,4 @@
-package dao.implementations;
+package hibernate;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
@@ -11,7 +11,6 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Example;
 import org.hibernate.criterion.NaturalIdentifier;
 
-import dao.interfaces.GenericDAO;
 
 public abstract class GenericHibernateDAO<T, ID extends Serializable> implements GenericDAO<T, ID> {
 

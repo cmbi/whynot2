@@ -1,5 +1,7 @@
 package crawl;
 
+import hibernate.GenericDAO.FileDAO;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -12,7 +14,6 @@ import model.Entry;
 
 import org.apache.log4j.Logger;
 
-import dao.interfaces.GenericDAO.FileDAO;
 
 public class LineCrawler extends AbstractCrawler {
 	/**

@@ -1,5 +1,8 @@
 package list;
 
+import hibernate.DAOFactory;
+import hibernate.GenericDAO.DatabankDAO;
+
 import java.util.SortedSet;
 
 import model.Databank;
@@ -9,8 +12,6 @@ import org.apache.log4j.Logger;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 
-import dao.hibernate.DAOFactory;
-import dao.interfaces.GenericDAO.DatabankDAO;
 
 public class Lister {
 	public static void main(String[] args) throws Exception {

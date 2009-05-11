@@ -1,5 +1,8 @@
 package dao.hibernate;
 
+import hibernate.GenericDAO.CommentDAO;
+import hibernate.GenericDAO.DatabankDAO;
+import hibernate.GenericDAO.EntryDAO;
 import model.Annotation;
 import model.Comment;
 import model.Databank;
@@ -8,9 +11,6 @@ import model.Entry;
 import org.hibernate.criterion.Restrictions;
 import org.junit.Test;
 
-import dao.interfaces.GenericDAO.CommentDAO;
-import dao.interfaces.GenericDAO.DatabankDAO;
-import dao.interfaces.GenericDAO.EntryDAO;
 
 public class AnnotationTest extends DAOTest {
 	@Test

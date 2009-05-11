@@ -1,6 +1,5 @@
 package hibernate;
 
-import hibernate.DAOFactory;
 import hibernate.GenericDAO.DatabankDAO;
 import hibernate.GenericDAO.EntryDAO;
 import hibernate.GenericDAO.FileDAO;
@@ -9,11 +8,12 @@ import model.Entry;
 
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
+import org.junit.Ignore;
 import org.junit.Test;
 
-
 public class DatabankTest {
-	//@Test
+	@Test
+	@Ignore
 	public void addEntry() throws Exception {
 		Transaction transact = null;
 		try {

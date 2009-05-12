@@ -1,39 +1,24 @@
 package nl.ru.cmbi.why_not.install;
 
 import nl.ru.cmbi.why_not.hibernate.DAOFactory;
-import nl.ru.cmbi.why_not.hibernate.HibernateDAOFactory;
+import nl.ru.cmbi.why_not.hibernate.SpringUtil;
 import nl.ru.cmbi.why_not.hibernate.GenericDAO.DatabankDAO;
 import nl.ru.cmbi.why_not.model.Databank;
 import nl.ru.cmbi.why_not.model.Databank.CrawlType;
 
 import org.hibernate.Transaction;
-import org.hibernate.cfg.AnnotationConfiguration;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.tool.hbm2ddl.SchemaExport;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class Installer {
 
 	public static void main(String[] args) throws Exception {
-		new Installer().drop().create().fill();
+		((Installer) SpringUtil.getContext().getBean("installer")).fill();
 	}
 
-	private Configuration	cfg;
-	private DAOFactory		factory;
-
-	public Installer() {
-		cfg = new AnnotationConfiguration().configure();
-		factory = new HibernateDAOFactory();
-	}
-
-	public Installer drop() {
-		new SchemaExport(cfg).drop(true, true);
-		return this;
-	}
-
-	public Installer create() {
-		new SchemaExport(cfg).create(true, true);
-		return this;
-	}
+	@Autowired
+	private DAOFactory	factory;
 
 	public Installer fill() throws Exception {
 		Transaction transact = null;

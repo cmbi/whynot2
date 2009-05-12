@@ -42,7 +42,8 @@
 	</bean>
 
 	<!-- Database Property -->
-	<bean id="hibernateproperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+	<bean id="hibernateproperties" 
+		class="org.springframework.beans.factory.config.PropertiesFactoryBean">
 		<property name="properties">
 			<props>
 				<prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>

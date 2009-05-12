@@ -8,6 +8,7 @@ import java.text.ParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import nl.ru.cmbi.why_not.comment.Commenter.ICommenter;
 import nl.ru.cmbi.why_not.hibernate.DAOFactory;
 import nl.ru.cmbi.why_not.hibernate.GenericDAO.AnnotationDAO;
 import nl.ru.cmbi.why_not.hibernate.GenericDAO.CommentDAO;
@@ -20,7 +21,7 @@ import nl.ru.cmbi.why_not.model.Entry;
 
 import org.hibernate.criterion.Restrictions;
 
-public class NewCommenter {
+public class NewCommenter implements ICommenter {
 	private Pattern		patternComment	= Pattern.compile("COMMENT: (.+)");
 	private Pattern		patternEntry	= Pattern.compile("(.+),(.+)");
 

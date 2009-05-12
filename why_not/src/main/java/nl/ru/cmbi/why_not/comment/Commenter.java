@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 import java.text.ParseException;
 
-import nl.ru.cmbi.why_not.hibernate.DAOFactory;
 import nl.ru.cmbi.why_not.hibernate.SpringUtil;
 import nl.ru.cmbi.why_not.hibernate.GenericDAO.CommentDAO;
 import nl.ru.cmbi.why_not.model.Comment;
@@ -51,7 +50,12 @@ public class Commenter {
 	}
 
 	@Autowired
-	private DAOFactory	factory;
+	private LegacyCommenter	legacyCommenter;
+	@Autowired
+	private NewCommenter	newCommenter;
+
+	@Autowired
+	private CommentDAO		commentDAO;
 
 	public void comment(File file) throws IOException, ParseException {
 		getCommenter(file).comment(file);
@@ -73,17 +77,16 @@ public class Commenter {
 		lnr.close();
 
 		if (line.startsWith("PDBID"))
-			return new LegacyCommenter(factory);
+			return legacyCommenter;
 		if (line.startsWith("COMMENT"))
-			return new NewCommenter(factory);
+			return newCommenter;
 		throw new ParseException("Could not determine Commenter file type: Expected PDBID or COMMENT on line 1", 1);
 	}
 
 	public void cleanup() {
-		CommentDAO comdao = factory.getCommentDAO();
-		for (Comment comment : comdao.findAll())
+		for (Comment comment : commentDAO.findAll())
 			if (comment.getAnnotations().isEmpty())
-				comdao.makeTransient(comment);
+				commentDAO.makeTransient(comment);
 	}
 
 	public interface ICommenter {

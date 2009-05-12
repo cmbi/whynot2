@@ -9,6 +9,7 @@ import nl.ru.cmbi.why_not.model.Databank;
 import nl.ru.cmbi.why_not.model.Entry;
 import nl.ru.cmbi.why_not.model.File;
 
+import org.hibernate.Session;
 import org.hibernate.criterion.NaturalIdentifier;
 
 public interface GenericDAO<T, ID extends Serializable> {
@@ -25,6 +26,8 @@ public interface GenericDAO<T, ID extends Serializable> {
 	T makePersistent(T entity);
 
 	void makeTransient(T entity);
+
+	Session getSession();
 
 	public interface AnnotationDAO extends GenericDAO<Annotation, Long> {
 	}

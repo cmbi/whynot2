@@ -9,7 +9,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import nl.ru.cmbi.why_not.comment.Commenter.ICommenter;
-import nl.ru.cmbi.why_not.hibernate.DAOFactory;
 import nl.ru.cmbi.why_not.hibernate.GenericDAO.AnnotationDAO;
 import nl.ru.cmbi.why_not.hibernate.GenericDAO.CommentDAO;
 import nl.ru.cmbi.why_not.hibernate.GenericDAO.DatabankDAO;
@@ -20,24 +19,26 @@ import nl.ru.cmbi.why_not.model.Databank;
 import nl.ru.cmbi.why_not.model.Entry;
 
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class LegacyCommenter implements ICommenter {
-	private Pattern		patternPDBID	= Pattern.compile("PDBID        : (.+)");
-	private Pattern		patternDatabase	= Pattern.compile("Database     : (.+)");
-	private Pattern		patternProperty	= Pattern.compile("Property     : (.+)");
-	private Pattern		patternComment	= Pattern.compile("Comment      : (.+)");
+	private Pattern			patternPDBID	= Pattern.compile("PDBID        : (.+)");
+	private Pattern			patternDatabase	= Pattern.compile("Database     : (.+)");
+	private Pattern			patternProperty	= Pattern.compile("Property     : (.+)");
+	private Pattern			patternComment	= Pattern.compile("Comment      : (.+)");
 
-	private DAOFactory	factory;
-
-	public LegacyCommenter(DAOFactory factory) {
-		this.factory = factory;
-	}
+	@Autowired
+	private AnnotationDAO	anndao;
+	@Autowired
+	private CommentDAO		comdao;
+	@Autowired
+	private DatabankDAO		dbdao;
+	@Autowired
+	private EntryDAO		entdao;
 
 	public void comment(File file) throws IOException, ParseException {
-		CommentDAO comdao = factory.getCommentDAO();
-		DatabankDAO dbdao = factory.getDatabankDAO();
-		EntryDAO entdao = factory.getEntryDAO();
-
 		LineNumberReader lnr = new LineNumberReader(new FileReader(file));
 		String line;
 		Matcher matcher;
@@ -92,11 +93,6 @@ public class LegacyCommenter implements ICommenter {
 	}
 
 	public void uncomment(File file) throws IOException, ParseException {
-		AnnotationDAO anndao = factory.getAnnotationDAO();
-		CommentDAO comdao = factory.getCommentDAO();
-		DatabankDAO dbdao = factory.getDatabankDAO();
-		EntryDAO entdao = factory.getEntryDAO();
-
 		LineNumberReader lnr = new LineNumberReader(new FileReader(file));
 		String line;
 		Matcher matcher;

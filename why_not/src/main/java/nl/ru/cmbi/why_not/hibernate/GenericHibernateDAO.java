@@ -7,29 +7,32 @@ import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Example;
 import org.hibernate.criterion.NaturalIdentifier;
 
-
-public abstract class GenericHibernateDAO<T, ID extends Serializable> implements GenericDAO<T, ID> {
-
-	private Class<T>	persistentClass;
-	private Session		session;
+public class GenericHibernateDAO<T, ID extends Serializable> implements GenericDAO<T, ID> {
+	private Class<T>		persistentClass;
+	private SessionFactory	sessionFactory;
 
 	@SuppressWarnings("unchecked")
 	public GenericHibernateDAO() {
-		this.persistentClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+		persistentClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 	}
 
-	public void setSession(Session s) {
-		this.session = s;
+	public GenericHibernateDAO(Class<T> type) {
+		persistentClass = type;
 	}
 
-	protected Session getSession() {
-		if (session == null)
-			throw new IllegalStateException("Session has not been set on DAO before usage");
-		return session;
+	public Session getSession() {
+		if (sessionFactory == null)
+			throw new IllegalStateException("SessionFactory has not been set on DAO before usage");
+		return sessionFactory.getCurrentSession();
+	}
+
+	public void setSessionFactory(SessionFactory s) {
+		sessionFactory = s;
 	}
 
 	public Class<T> getPersistentClass() {

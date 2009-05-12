@@ -7,47 +7,34 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import nl.ru.cmbi.why_not.hibernate.DAOFactory;
 import nl.ru.cmbi.why_not.hibernate.GenericDAO.FileDAO;
 import nl.ru.cmbi.why_not.model.Databank;
 import nl.ru.cmbi.why_not.model.Entry;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class FileCrawler extends AbstractCrawler {
-	private FileFilter	entryfilter, directoryfilter;
-
-	/**
-	 * Recursive directory crawler
-	 * @param db
-	 */
-	public FileCrawler(DAOFactory factory, Databank db) {
-		super(factory, db);
-		entryfilter = new FileFilter() {
-			public boolean accept(File pathname) {
-				return pattern.matcher(pathname.getAbsolutePath()).matches();
-			}
-		};
-		directoryfilter = new FileFilter() {
-			public boolean accept(File pathname) {
-				//Sometimes entries are directories: Do not crawl these directories
-				return !entryfilter.accept(pathname) && pathname.isDirectory();
-			}
-		};
-	}
+	@Autowired
+	private FileDAO	fldao;
 
 	@Override
-	public void addEntriesIn(String path) {
-		FileDAO fldao = factory.getFileDAO();
-
+	public void addEntriesIn(final Databank databank, String path) {
 		List<Entry> oldEntries = new ArrayList<Entry>(databank.getEntries());
 		List<Entry> newEntries = new ArrayList<Entry>();
 
 		int crawled = 0, updated = 0, added = 0, index;
-		for (File dir : dirAndAllSubdirs(new File(path)))
-			for (File file : dir.listFiles(entryfilter)) {
-				Matcher m = pattern.matcher(file.getAbsolutePath());
+		for (File dir : dirAndAllSubdirs(databank, new File(path)))
+			for (File file : dir.listFiles(new FileFilter() {
+				public boolean accept(File pathname) {
+					return Pattern.compile(databank.getRegex()).matcher(pathname.getAbsolutePath()).matches();
+				}
+			})) {
+				Matcher m = Pattern.compile(databank.getRegex()).matcher(file.getAbsolutePath());
 				if (m.matches()) {
 					crawled++;
 
@@ -88,11 +75,16 @@ public class FileCrawler extends AbstractCrawler {
 	 * Creates set of directories containing argument and all recursive
 	 * subdirectories in argument, excluding directories that match entryfilter
 	 */
-	private SortedSet<File> dirAndAllSubdirs(File directory) {
+	private SortedSet<File> dirAndAllSubdirs(final Databank databank, File directory) {
 		SortedSet<File> directories = new TreeSet<File>();
 		directories.add(directory); // Add this
-		for (File subdir : directory.listFiles(directoryfilter))
-			directories.addAll(dirAndAllSubdirs(subdir)); // Add recursive subdirs
+		for (File subdir : directory.listFiles(new FileFilter() {
+			public boolean accept(File pathname) {
+				//Sometimes entries are directories: Do not crawl these directories
+				return !Pattern.compile(databank.getRegex()).matcher(pathname.getAbsolutePath()).matches() && pathname.isDirectory();
+			}
+		}))
+			directories.addAll(dirAndAllSubdirs(databank, subdir)); // Add recursive subdirs
 		return directories;
 	}
 }

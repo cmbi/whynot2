@@ -13,12 +13,14 @@
 
 	<context:component-scan base-package="nl.ru.cmbi.why_not" />
 
+	<!-- Transaction Manager -->
 	<bean id="transactionManager"
 		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
 		<property name="sessionFactory" ref="sessionfactory" />
 	</bean>
 	<tx:annotation-driven />
 
+	<!-- Session Factory -->
 	<bean id="sessionfactory"
 		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
 		<property name="dataSource" ref="datasource" />
@@ -39,6 +41,7 @@
 		</property>
 	</bean>
 
+	<!-- Connection Properties -->
 	<bean id="datasource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="org.postgresql.Driver" />
@@ -47,7 +50,7 @@
 		<property name="password" value="pass" />
 	</bean>
 
-	<!-- Database Property -->
+	<!-- Hibernate Properties -->
 	<bean id="hibernateproperties"
 		class="org.springframework.beans.factory.config.PropertiesFactoryBean">
 		<property name="properties">
@@ -73,5 +76,23 @@
 			</props>
 		</property>
 	</bean>
+
+	<!-- Some DAOs -->
+	<bean id="AnnotationDAO" class="nl.ru.cmbi.why_not.hibernate.HibernateDAOFactory$AnnotationHibernateDAO">
+		<property name="sessionFactory"><ref bean="sessionfactory" /></property>
+	</bean>
+	<bean id="CommentDAO" class="nl.ru.cmbi.why_not.hibernate.HibernateDAOFactory$CommentHibernateDAO">
+		<property name="sessionFactory"><ref bean="sessionfactory" /></property>
+	</bean>
+	<bean id="DatabankDAO" class="nl.ru.cmbi.why_not.hibernate.HibernateDAOFactory$DatabankHibernateDAO">
+		<property name="sessionFactory"><ref bean="sessionfactory" /></property>
+	</bean>
+	<bean id="EntryDAO" class="nl.ru.cmbi.why_not.hibernate.HibernateDAOFactory$EntryHibernateDAO">
+		<property name="sessionFactory"><ref bean="sessionfactory" /></property>
+	</bean>
+	<bean id="FileDAO" class="nl.ru.cmbi.why_not.hibernate.HibernateDAOFactory$FileHibernateDAO">
+		<property name="sessionFactory"><ref bean="sessionfactory" /></property>
+	</bean>
+	
 
 </beans>

@@ -11,59 +11,10 @@ import nl.ru.cmbi.why_not.model.Databank;
 import nl.ru.cmbi.why_not.model.Entry;
 import nl.ru.cmbi.why_not.model.File;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class HibernateDAOFactory implements DAOFactory {
-	@Autowired
-	private SessionFactory	sessionFactory;
-
-	@Override
-	@Deprecated
-	public Session getSession() {
-		return sessionFactory.getCurrentSession();
-	}
-
-	@SuppressWarnings("unchecked")
-	private GenericHibernateDAO instantiateDAO(Class daoClass) {
-		try {
-			GenericHibernateDAO dao = (GenericHibernateDAO) daoClass.newInstance();
-			dao.setSession(getSession());
-			return dao;
-		}
-		catch (Exception ex) {
-			throw new RuntimeException("Can not instantiate DAO: " + daoClass, ex);
-		}
-	}
-
-	@Override
-	public AnnotationDAO getAnnotationDAO() {
-		return (AnnotationDAO) instantiateDAO(AnnotationHibernateDAO.class);
-	}
-
-	@Override
-	public CommentDAO getCommentDAO() {
-		return (CommentDAO) instantiateDAO(CommentHibernateDAO.class);
-	}
-
-	@Override
-	public DatabankDAO getDatabankDAO() {
-		return (DatabankDAO) instantiateDAO(DatabankHibernateDAO.class);
-	}
-
-	@Override
-	public EntryDAO getEntryDAO() {
-		return (EntryDAO) instantiateDAO(EntryHibernateDAO.class);
-	}
-
-	@Override
-	public FileDAO getFileDAO() {
-		return (FileDAO) instantiateDAO(FileHibernateDAO.class);
-	}
-
+public class HibernateDAOFactory {
 	// Inline concrete DAO implementations with no business-related data access methods.
 	// If we use public static nested classes, we can centralize all of them in one source file.
 	public static class AnnotationHibernateDAO extends GenericHibernateDAO<Annotation, Long> implements AnnotationDAO {

@@ -9,7 +9,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import nl.ru.cmbi.why_not.comment.Commenter.ICommenter;
-import nl.ru.cmbi.why_not.hibernate.DAOFactory;
 import nl.ru.cmbi.why_not.hibernate.GenericDAO.AnnotationDAO;
 import nl.ru.cmbi.why_not.hibernate.GenericDAO.CommentDAO;
 import nl.ru.cmbi.why_not.hibernate.GenericDAO.DatabankDAO;
@@ -20,22 +19,24 @@ import nl.ru.cmbi.why_not.model.Databank;
 import nl.ru.cmbi.why_not.model.Entry;
 
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class NewCommenter implements ICommenter {
-	private Pattern		patternComment	= Pattern.compile("COMMENT: (.+)");
-	private Pattern		patternEntry	= Pattern.compile("(.+),(.+)");
+	private Pattern			patternComment	= Pattern.compile("COMMENT: (.+)");
+	private Pattern			patternEntry	= Pattern.compile("(.+),(.+)");
 
-	private DAOFactory	factory;
-
-	public NewCommenter(DAOFactory factory) {
-		this.factory = factory;
-	}
+	@Autowired
+	private AnnotationDAO	anndao;
+	@Autowired
+	private CommentDAO		comdao;
+	@Autowired
+	private DatabankDAO		dbdao;
+	@Autowired
+	private EntryDAO		entdao;
 
 	public void comment(File file) throws IOException, ParseException {
-		CommentDAO comdao = factory.getCommentDAO();
-		DatabankDAO dbdao = factory.getDatabankDAO();
-		EntryDAO entdao = factory.getEntryDAO();
-
 		//Read first line (starting comment)
 		LineNumberReader lnr = new LineNumberReader(new FileReader(file));
 		String line = lnr.readLine();
@@ -91,11 +92,6 @@ public class NewCommenter implements ICommenter {
 	}
 
 	public void uncomment(File file) throws IOException, ParseException {
-		AnnotationDAO anndao = factory.getAnnotationDAO();
-		CommentDAO comdao = factory.getCommentDAO();
-		DatabankDAO dbdao = factory.getDatabankDAO();
-		EntryDAO entdao = factory.getEntryDAO();
-
 		//Read first line (starting comment)
 		LineNumberReader lnr = new LineNumberReader(new FileReader(file));
 		String line = lnr.readLine();

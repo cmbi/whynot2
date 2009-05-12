@@ -2,7 +2,6 @@ package nl.ru.cmbi.why_not.list;
 
 import java.util.SortedSet;
 
-import nl.ru.cmbi.why_not.hibernate.DAOFactory;
 import nl.ru.cmbi.why_not.hibernate.SpringUtil;
 import nl.ru.cmbi.why_not.hibernate.GenericDAO.DatabankDAO;
 import nl.ru.cmbi.why_not.model.Databank;
@@ -40,17 +39,16 @@ public class Lister {
 	}
 
 	@Autowired
-	private DAOFactory	DAOFactory;
+	private DatabankDAO	dbdao;
 
 	public void list(String dbname, String fileFilter, String parentFilter, String commentFilter, String comment) throws Exception {
-		DatabankDAO dbdao = DAOFactory.getDatabankDAO();
 		Databank db = dbdao.findByNaturalId(Restrictions.naturalId().set("name", dbname));
 		if (db == null)
 			new IllegalArgumentException("Databank with name " + dbname + " not found.");
 
-		DAOFactory.getSession().enableFilter(fileFilter);
-		DAOFactory.getSession().enableFilter(parentFilter);
-		DAOFactory.getSession().enableFilter(commentFilter).setParameter("comment", comment);
+		dbdao.getSession().enableFilter(fileFilter);
+		dbdao.getSession().enableFilter(parentFilter);
+		dbdao.getSession().enableFilter(commentFilter).setParameter("comment", comment);
 
 		SortedSet<Entry> entries = db.getEntries();
 		System.out.println("#" + dbname + " " + fileFilter + " " + parentFilter + " " + commentFilter + ": " + entries.size() + " entries");

@@ -2,7 +2,6 @@ package nl.ru.cmbi.why_not.crawl;
 
 import java.io.IOException;
 
-import nl.ru.cmbi.why_not.hibernate.DAOFactory;
 import nl.ru.cmbi.why_not.hibernate.SpringUtil;
 import nl.ru.cmbi.why_not.hibernate.GenericDAO.DatabankDAO;
 import nl.ru.cmbi.why_not.model.Databank;
@@ -24,25 +23,29 @@ public class Crawler {
 	}
 
 	@Autowired
-	private DAOFactory	factory;
+	private DatabankDAO	dbdao;
+
+	@Autowired
+	private FileCrawler	filecrawler;
+	@Autowired
+	private LineCrawler	linecrawler;
 
 	public void crawl(String dbname, String path) throws IOException {
-		DatabankDAO dbdao = factory.getDatabankDAO();
 		Databank db = dbdao.findByNaturalId(Restrictions.naturalId().set("name", dbname));
 
 		AbstractCrawler fc;
 		switch (db.getCrawltype()) {
 		case FILE:
-			fc = new FileCrawler(factory, db);
+			fc = filecrawler;
 			break;
 		case LINE:
-			fc = new LineCrawler(factory, db);
+			fc = linecrawler;
 			break;
 		default:
 			throw new IllegalArgumentException("Invalid CrawlType");
 		}
-		fc.addEntriesIn(path);
-		fc.removeInvalidEntries();
+		fc.addEntriesIn(db, path);
+		fc.removeInvalidEntries(db);
 
 		Logger.getLogger(Crawler.class).info(dbname + ": Succes");
 	}

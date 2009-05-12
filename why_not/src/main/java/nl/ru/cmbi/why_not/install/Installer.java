@@ -1,6 +1,5 @@
 package nl.ru.cmbi.why_not.install;
 
-import nl.ru.cmbi.why_not.hibernate.DAOFactory;
 import nl.ru.cmbi.why_not.hibernate.SpringUtil;
 import nl.ru.cmbi.why_not.hibernate.GenericDAO.DatabankDAO;
 import nl.ru.cmbi.why_not.model.Databank;
@@ -19,10 +18,9 @@ public class Installer {
 	}
 
 	@Autowired
-	private DAOFactory	factory;
+	private DatabankDAO	dbdao;
 
 	public void fill() {
-		DatabankDAO dbdao = factory.getDatabankDAO();
 		Databank pdb, dssp;
 		dbdao.makePersistent(pdb = new Databank("PDB", "http://www.pdb.org/", "http://www.pdb.org/pdb/download/downloadFile.do?fileFormat=pdb&compression=NO&structureId=", ".*/pdb([\\d\\w]{4})\\.ent(\\.gz)?", CrawlType.FILE));
 		dbdao.makePersistent(dssp = new Databank("DSSP", "http://swift.cmbi.ru.nl/gv/dssp/", "http://mrs.cmbi.ru.nl/mrs-3/entry.do?db=dssp&id=", pdb, ".*/([\\d\\w]{4})\\.dssp", CrawlType.FILE));

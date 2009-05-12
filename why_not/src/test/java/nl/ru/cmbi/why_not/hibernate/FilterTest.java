@@ -20,23 +20,21 @@ public class FilterTest {
 	}
 
 	@Autowired
-	private DAOFactory	factory;
+	private EntryDAO	entdao;
 
 	public void printCounts() {
-		//factory.getSession().enableFilter("inDatabank").setParameter("name", "DSSP");
+		//entdao.getSession().enableFilter("inDatabank").setParameter("name", "DSSP");
 
-		//factory.getSession().enableFilter("withFile");
-		//factory.getSession().enableFilter("withoutFile");
+		//entdao.getSession().enableFilter("withFile");
+		//entdao.getSession().enableFilter("withoutFile");
 
-		//factory.getSession().enableFilter("withParentFile");
-		//factory.getSession().enableFilter("withoutParentFile");
+		//entdao.getSession().enableFilter("withParentFile");
+		//entdao.getSession().enableFilter("withoutParentFile");
 
-		//factory.getSession().enableFilter("withComment");
-		//factory.getSession().enableFilter("withoutComment");
-		//factory.getSession().enableFilter("withOlderComment");
-		factory.getSession().enableFilter("withComment").setParameter("comment", "Another new example comment from com1.txt");
-
-		EntryDAO entdao = factory.getEntryDAO();
+		//entdao.getSession().enableFilter("withComment");
+		//entdao.getSession().enableFilter("withoutComment");
+		//entdao.getSession().enableFilter("withOlderComment");
+		entdao.getSession().enableFilter("withComment").setParameter("comment", "Another new example comment from com1.txt");
 		Logger.getLogger(FilterTest.class).info("Before");
 		Logger.getLogger(FilterTest.class).info(entdao.count());
 		for (Entry entry : entdao.findAll())

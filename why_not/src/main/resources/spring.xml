@@ -1,9 +1,6 @@
-<beans 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://www.springframework.org/schema/beans"
-	xmlns:aop="http://www.springframework.org/schema/aop"
-	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:tx="http://www.springframework.org/schema/tx"
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
 	xsi:schemaLocation="
 		http://www.springframework.org/schema/aop
 		http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
@@ -16,7 +13,8 @@
 
 	<context:component-scan base-package="nl.ru.cmbi.why_not" />
 
-	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
 		<property name="sessionFactory" ref="sessionfactory" />
 	</bean>
 	<tx:annotation-driven />
@@ -27,11 +25,16 @@
 		<property name="hibernateProperties" ref="hibernateproperties" />
 		<property name="annotatedClasses">
 			<list>
-				<value>nl.ru.cmbi.why_not.model.Annotation</value>
-				<value>nl.ru.cmbi.why_not.model.Comment</value>
-				<value>nl.ru.cmbi.why_not.model.Databank</value>
-				<value>nl.ru.cmbi.why_not.model.Entry</value>
-				<value>nl.ru.cmbi.why_not.model.File</value>
+				<value>nl.ru.cmbi.why_not.model.Annotation
+				</value>
+				<value>nl.ru.cmbi.why_not.model.Comment
+				</value>
+				<value>nl.ru.cmbi.why_not.model.Databank
+				</value>
+				<value>nl.ru.cmbi.why_not.model.Entry
+				</value>
+				<value>nl.ru.cmbi.why_not.model.File
+				</value>
 			</list>
 		</property>
 	</bean>
@@ -43,17 +46,19 @@
 		<property name="username" value="whynotadmin" />
 		<property name="password" value="pass" />
 	</bean>
-	
+
 	<!-- Database Property -->
-	<bean id="hibernateproperties" 
+	<bean id="hibernateproperties"
 		class="org.springframework.beans.factory.config.PropertiesFactoryBean">
 		<property name="properties">
 			<props>
-				<prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
-				
+				<prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect
+				</prop>
+
 				<prop key="hibernate.hbm2ddl.auto">update</prop>
-				
-				<prop key="cache.provider_class">org.hibernate.cache.NoCacheProvider</prop>
+
+				<prop key="cache.provider_class">org.hibernate.cache.NoCacheProvider
+				</prop>
 
 				<!-- Echo all executed SQL to stdout -->
 				<prop key="hibernate.show_sql">true</prop>

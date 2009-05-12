@@ -13,16 +13,17 @@ import nl.ru.cmbi.why_not.model.Databank;
 import nl.ru.cmbi.why_not.model.Entry;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-@Service
 public class LineCrawler extends AbstractCrawler {
-	@Autowired
-	private FileDAO	fldao;
+	private Pattern	pattern;
+
+	public LineCrawler(Databank databank, FileDAO filedao) {
+		super(databank, filedao);
+		pattern = Pattern.compile(databank.getRegex());
+	}
 
 	@Override
-	public void addEntriesIn(Databank databank, String path) throws IOException {
+	public void addEntriesIn(String path) throws IOException {
 		List<Entry> oldEntries = new ArrayList<Entry>(databank.getEntries());
 		List<Entry> newEntries = new ArrayList<Entry>();
 
@@ -32,7 +33,7 @@ public class LineCrawler extends AbstractCrawler {
 		nl.ru.cmbi.why_not.model.File found = new nl.ru.cmbi.why_not.model.File(file);
 		int crawled = 0, updated = 0, added = 0, index;
 		for (String line = ""; (line = bf.readLine()) != null;) {
-			Matcher m = Pattern.compile(databank.getRegex()).matcher(line);
+			Matcher m = pattern.matcher(line);
 			if (m.matches()) {
 				crawled++;
 

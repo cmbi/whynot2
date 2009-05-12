@@ -14,16 +14,17 @@ import nl.ru.cmbi.why_not.model.Databank;
 import nl.ru.cmbi.why_not.model.Entry;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-@Service
 public class FileCrawler extends AbstractCrawler {
-	@Autowired
-	private FileDAO	fldao;
+	private Pattern	pattern;
+
+	public FileCrawler(Databank databank, FileDAO filedao) {
+		super(databank, filedao);
+		pattern = Pattern.compile(databank.getRegex());
+	}
 
 	@Override
-	public void addEntriesIn(final Databank databank, String path) {
+	public void addEntriesIn(String path) {
 		List<Entry> oldEntries = new ArrayList<Entry>(databank.getEntries());
 		List<Entry> newEntries = new ArrayList<Entry>();
 
@@ -31,10 +32,10 @@ public class FileCrawler extends AbstractCrawler {
 		for (File dir : dirAndAllSubdirs(databank, new File(path)))
 			for (File file : dir.listFiles(new FileFilter() {
 				public boolean accept(File pathname) {
-					return Pattern.compile(databank.getRegex()).matcher(pathname.getAbsolutePath()).matches();
+					return pattern.matcher(pathname.getAbsolutePath()).matches();
 				}
 			})) {
-				Matcher m = Pattern.compile(databank.getRegex()).matcher(file.getAbsolutePath());
+				Matcher m = pattern.matcher(file.getAbsolutePath());
 				if (m.matches()) {
 					crawled++;
 
@@ -81,7 +82,7 @@ public class FileCrawler extends AbstractCrawler {
 		for (File subdir : directory.listFiles(new FileFilter() {
 			public boolean accept(File pathname) {
 				//Sometimes entries are directories: Do not crawl these directories
-				return !Pattern.compile(databank.getRegex()).matcher(pathname.getAbsolutePath()).matches() && pathname.isDirectory();
+				return !pattern.matcher(pathname.getAbsolutePath()).matches() && pathname.isDirectory();
 			}
 		}))
 			directories.addAll(dirAndAllSubdirs(databank, subdir)); // Add recursive subdirs

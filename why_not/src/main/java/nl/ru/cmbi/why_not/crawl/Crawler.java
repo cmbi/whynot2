@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import nl.ru.cmbi.why_not.hibernate.SpringUtil;
 import nl.ru.cmbi.why_not.hibernate.GenericDAO.DatabankDAO;
+import nl.ru.cmbi.why_not.hibernate.GenericDAO.FileDAO;
 import nl.ru.cmbi.why_not.model.Databank;
 
 import org.apache.log4j.Logger;
@@ -24,11 +25,8 @@ public class Crawler {
 
 	@Autowired
 	private DatabankDAO	dbdao;
-
 	@Autowired
-	private FileCrawler	filecrawler;
-	@Autowired
-	private LineCrawler	linecrawler;
+	private FileDAO		filedao;
 
 	public void crawl(String dbname, String path) throws IOException {
 		Databank db = dbdao.findByNaturalId(Restrictions.naturalId().set("name", dbname));
@@ -36,16 +34,16 @@ public class Crawler {
 		AbstractCrawler fc;
 		switch (db.getCrawltype()) {
 		case FILE:
-			fc = filecrawler;
+			fc = new FileCrawler(db, filedao);
 			break;
 		case LINE:
-			fc = linecrawler;
+			fc = new LineCrawler(db, filedao);
 			break;
 		default:
 			throw new IllegalArgumentException("Invalid CrawlType");
 		}
-		fc.addEntriesIn(db, path);
-		fc.removeInvalidEntries(db);
+		fc.addEntriesIn(path);
+		fc.removeInvalidEntries();
 
 		Logger.getLogger(Crawler.class).info(dbname + ": Succes");
 	}

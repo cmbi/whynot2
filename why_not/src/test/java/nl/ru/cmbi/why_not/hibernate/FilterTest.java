@@ -4,12 +4,13 @@ import nl.ru.cmbi.why_not.hibernate.GenericDAO.EntryDAO;
 import nl.ru.cmbi.why_not.model.Entry;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Transaction;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class FilterTest {
 
 	@Test
@@ -22,8 +23,6 @@ public class FilterTest {
 	private DAOFactory	factory;
 
 	public void printCounts() {
-		Transaction transact = factory.getSession().beginTransaction();//Plain JDBC
-
 		//factory.getSession().enableFilter("inDatabank").setParameter("name", "DSSP");
 
 		//factory.getSession().enableFilter("withFile");
@@ -44,6 +43,5 @@ public class FilterTest {
 			Logger.getLogger(FilterTest.class).info(entry);
 
 		//System.out.println(dbdao.getEntries(db, AnnotationType.ALL).size());
-		transact.commit(); //Plain JDBC
 	}
 }

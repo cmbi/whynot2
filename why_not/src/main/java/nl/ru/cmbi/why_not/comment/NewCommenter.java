@@ -2,6 +2,7 @@ package nl.ru.cmbi.why_not.comment;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.LineNumberReader;
 import java.text.ParseException;
 import java.util.regex.Matcher;
@@ -29,7 +30,7 @@ public class NewCommenter {
 		this.factory = factory;
 	}
 
-	public void comment(File file) throws Exception {
+	public void comment(File file) throws IOException, ParseException {
 		CommentDAO comdao = factory.getCommentDAO();
 		DatabankDAO dbdao = factory.getDatabankDAO();
 		EntryDAO entdao = factory.getEntryDAO();
@@ -88,7 +89,7 @@ public class NewCommenter {
 		lnr.close();
 	}
 
-	public void uncomment(File file) throws Exception {
+	public void uncomment(File file) throws IOException, ParseException {
 		AnnotationDAO anndao = factory.getAnnotationDAO();
 		CommentDAO comdao = factory.getCommentDAO();
 		DatabankDAO dbdao = factory.getDatabankDAO();

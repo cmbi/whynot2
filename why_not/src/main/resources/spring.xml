@@ -16,10 +16,10 @@
 
 	<context:component-scan base-package="nl.ru.cmbi.why_not" />
 
-	<bean id="txmanager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
 		<property name="sessionFactory" ref="sessionfactory" />
 	</bean>
-	<tx:annotation-driven transaction-manager="txmanager" />
+	<tx:annotation-driven />
 
 	<bean id="sessionfactory"
 		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
@@ -52,9 +52,6 @@
 				<prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
 				
 				<prop key="hibernate.hbm2ddl.auto">update</prop>
-				
-				<prop key="hibernate.current_session_context_class">thread</prop>
-				<!--<prop key="hibernate.current_session_context_class">org.hibernate.context.ManagedSessionContext</prop>-->
 				
 				<prop key="cache.provider_class">org.hibernate.cache.NoCacheProvider</prop>
 

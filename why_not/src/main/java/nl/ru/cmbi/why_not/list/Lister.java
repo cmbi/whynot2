@@ -9,13 +9,13 @@ import nl.ru.cmbi.why_not.model.Databank;
 import nl.ru.cmbi.why_not.model.Entry;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class Lister {
 	public static void main(String[] args) throws Exception {
 		String dbname = "DATABASE";
@@ -43,33 +43,20 @@ public class Lister {
 	private DAOFactory	DAOFactory;
 
 	public void list(String dbname, String fileFilter, String parentFilter, String commentFilter, String comment) throws Exception {
-		Transaction transact = null;
-		try {
-			Session session = DAOFactory.getSession();
-			transact = session.beginTransaction(); //Plain JDBC
+		DatabankDAO dbdao = DAOFactory.getDatabankDAO();
+		Databank db = dbdao.findByNaturalId(Restrictions.naturalId().set("name", dbname));
+		if (db == null)
+			new IllegalArgumentException("Databank with name " + dbname + " not found.");
 
-			DatabankDAO dbdao = DAOFactory.getDatabankDAO();
-			Databank db = dbdao.findByNaturalId(Restrictions.naturalId().set("name", dbname));
-			if (db == null)
-				new IllegalArgumentException("Databank with name " + dbname + " not found.");
+		DAOFactory.getSession().enableFilter(fileFilter);
+		DAOFactory.getSession().enableFilter(parentFilter);
+		DAOFactory.getSession().enableFilter(commentFilter).setParameter("comment", comment);
 
-			DAOFactory.getSession().enableFilter(fileFilter);
-			DAOFactory.getSession().enableFilter(parentFilter);
-			DAOFactory.getSession().enableFilter(commentFilter).setParameter("comment", comment);
+		SortedSet<Entry> entries = db.getEntries();
+		System.out.println("#" + dbname + " " + fileFilter + " " + parentFilter + " " + commentFilter + ": " + entries.size() + " entries");
+		for (Entry entry : entries)
+			System.out.println(entry + "," + (entry.getFile() != null ? entry.getFile().getTimestamp() : -1));
 
-			SortedSet<Entry> entries = db.getEntries();
-			System.out.println("#" + dbname + " " + fileFilter + " " + parentFilter + " " + commentFilter + ": " + entries.size() + " entries");
-			for (Entry entry : entries)
-				System.out.println(entry + "," + (entry.getFile() != null ? entry.getFile().getTimestamp() : -1));
-
-			transact.commit(); //Plain JDBC
-			Logger.getLogger(Lister.class).debug("list DATABASE " + fileFilter + " " + parentFilter + " " + commentFilter + " \"" + comment + "\": Succes");
-		}
-		catch (Exception e) {
-			if (transact != null)
-				transact.rollback();
-			Logger.getLogger(Lister.class).error("list DATABASE " + fileFilter + " " + parentFilter + " " + commentFilter + " \"" + comment + "\": Failure");
-			throw e;
-		}
+		Logger.getLogger(Lister.class).debug("list DATABASE " + fileFilter + " " + parentFilter + " " + commentFilter + " \"" + comment + "\": Succes");
 	}
 }

@@ -4,14 +4,8 @@ import nl.ru.cmbi.why_not.list.Lister;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.beans.BeansException;
 
 public class ListerTest {
-	@Test
-	public void injectionTest() throws BeansException, Exception {
-		Lister.main(new String[] { "STRUCTUREFACTORS", "withoutFile", "withoutParentFile", "withoutComment", "_refln.status column missing" });
-	}
-
 	@Test
 	@Ignore
 	public void DSSPWithWithoutWith() throws Exception {
@@ -25,7 +19,6 @@ public class ListerTest {
 	}
 
 	@Test
-	@Ignore
 	public void STRUCTUREFACTORSWithoutWithoutWithThisComment() throws Exception {
 		Lister.main(new String[] { "STRUCTUREFACTORS", "withoutFile", "withoutParentFile", "withoutComment", "_refln.status column missing" });
 	}

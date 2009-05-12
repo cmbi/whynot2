@@ -1,9 +1,9 @@
 package nl.ru.cmbi.why_not.crawl;
 
-
 import java.io.IOException;
 import java.util.regex.Pattern;
 
+import nl.ru.cmbi.why_not.hibernate.DAOFactory;
 import nl.ru.cmbi.why_not.hibernate.GenericDAO.FileDAO;
 import nl.ru.cmbi.why_not.model.Databank;
 import nl.ru.cmbi.why_not.model.Entry;
@@ -11,12 +11,13 @@ import nl.ru.cmbi.why_not.model.File;
 
 import org.apache.log4j.Logger;
 
-
 public abstract class AbstractCrawler {
-	protected Databank	databank;
-	protected Pattern	pattern;
+	protected DAOFactory	factory;
+	protected Databank		databank;
+	protected Pattern		pattern;
 
-	public AbstractCrawler(Databank database) {
+	public AbstractCrawler(DAOFactory factory, Databank database) {
+		this.factory = factory;
 		databank = database;
 		pattern = Pattern.compile(database.getRegex());
 	}
@@ -35,9 +36,9 @@ public abstract class AbstractCrawler {
 	 * and if the timestamp on the file is the same as the timestamp on the entry
 	 */
 	public void removeInvalidEntries() {
-		FileDAO fldao = Crawler.factory.getFileDAO();
+		FileDAO fldao = factory.getFileDAO();
 
-		Crawler.factory.getSession().enableFilter("withFile");
+		factory.getSession().enableFilter("withFile");
 
 		int checked = 0, removed = 0;
 		for (Entry entry : databank.getEntries()) {
@@ -53,7 +54,7 @@ public abstract class AbstractCrawler {
 			}
 		}
 
-		Crawler.factory.getSession().disableFilter("withFile");
+		factory.getSession().disableFilter("withFile");
 
 		Logger.getLogger(AbstractCrawler.class).info(databank.getName() + ": Checked " + checked + ", Removed " + removed);
 	}

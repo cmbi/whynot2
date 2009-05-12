@@ -1,6 +1,5 @@
 package nl.ru.cmbi.why_not.comment;
 
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
@@ -9,13 +8,16 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 
 import nl.ru.cmbi.why_not.hibernate.DAOFactory;
+import nl.ru.cmbi.why_not.hibernate.SpringUtil;
 import nl.ru.cmbi.why_not.hibernate.GenericDAO.CommentDAO;
 import nl.ru.cmbi.why_not.model.Comment;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Transaction;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-
+@Service
 public class Commenter {
 	private static String		append			= ".done";
 	private static FileFilter	commentFilter	= new FileFilter() {
@@ -26,8 +28,6 @@ public class Commenter {
 												};
 
 	public static void main(String[] args) throws Exception {
-		Commenter commenter = new Commenter();
-
 		File dirComments = new File("comment/");
 		File dirUncomments = new File("uncomment/");
 
@@ -37,6 +37,7 @@ public class Commenter {
 		if (!dirUncomments.isDirectory() && !dirUncomments.mkdir())
 			throw new FileNotFoundException(dirUncomments.getAbsolutePath());
 
+		Commenter commenter = (Commenter) SpringUtil.getContext().getBean("commenter");
 		//Comment / Uncomment all files in directories
 		for (File file : dirComments.listFiles(commentFilter))
 			commenter.comment(file);
@@ -47,23 +48,20 @@ public class Commenter {
 		commenter.cleanup();
 	}
 
-	protected static DAOFactory	factory;
-	private Transaction			transact;
-
-	public Commenter() throws Exception {
-		factory = DAOFactory.instance(DAOFactory.HIBERNATE);
-	}
+	@Autowired
+	private DAOFactory	factory;
+	private Transaction	transact;
 
 	public void comment(File file) throws Exception {
 		try {
-			transact = Commenter.factory.getSession().beginTransaction(); //Plain JDBC
+			transact = factory.getSession().beginTransaction(); //Plain JDBC
 			{
 				String line = readFirstLine(file);
 				if (line.startsWith("PDBID"))
-					new LegacyCommenter().comment(file);
+					new LegacyCommenter(factory).comment(file);
 				else
 					if (line.startsWith("COMMENT"))
-						new NewCommenter().comment(file);
+						new NewCommenter(factory).comment(file);
 
 				//Rename file to prevent rerunning
 				file.renameTo(new File(file.getAbsolutePath() + Commenter.append));
@@ -81,14 +79,14 @@ public class Commenter {
 
 	public void uncomment(File file) throws Exception {
 		try {
-			transact = Commenter.factory.getSession().beginTransaction(); //Plain JDBC
+			transact = factory.getSession().beginTransaction(); //Plain JDBC
 			{
 				String line = readFirstLine(file);
 				if (line.startsWith("PDBID"))
-					new LegacyCommenter().uncomment(file);
+					new LegacyCommenter(factory).uncomment(file);
 				else
 					if (line.startsWith("COMMENT"))
-						new NewCommenter().uncomment(file);
+						new NewCommenter(factory).uncomment(file);
 
 				//Rename file to prevent rerunning
 				file.renameTo(new File(file.getAbsolutePath() + Commenter.append));

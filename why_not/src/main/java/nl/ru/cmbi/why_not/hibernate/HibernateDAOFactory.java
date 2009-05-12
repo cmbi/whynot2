@@ -12,10 +12,33 @@ import nl.ru.cmbi.why_not.model.Entry;
 import nl.ru.cmbi.why_not.model.File;
 
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class HibernateDAOFactory extends DAOFactory {
+public class HibernateDAOFactory implements DAOFactory {
+	@Autowired
+	private SessionFactory	sessionFactory;
+
+	@Override
+	@Deprecated
+	public Session getSession() {
+		return sessionFactory.getCurrentSession();
+	}
+
+	@SuppressWarnings("unchecked")
+	private GenericHibernateDAO instantiateDAO(Class daoClass) {
+		try {
+			GenericHibernateDAO dao = (GenericHibernateDAO) daoClass.newInstance();
+			dao.setSession(getSession());
+			return dao;
+		}
+		catch (Exception ex) {
+			throw new RuntimeException("Can not instantiate DAO: " + daoClass, ex);
+		}
+	}
+
 	@Override
 	public AnnotationDAO getAnnotationDAO() {
 		return (AnnotationDAO) instantiateDAO(AnnotationHibernateDAO.class);
@@ -39,24 +62,6 @@ public class HibernateDAOFactory extends DAOFactory {
 	@Override
 	public FileDAO getFileDAO() {
 		return (FileDAO) instantiateDAO(FileHibernateDAO.class);
-	}
-
-	@SuppressWarnings("unchecked")
-	private GenericHibernateDAO instantiateDAO(Class daoClass) {
-		try {
-			GenericHibernateDAO dao = (GenericHibernateDAO) daoClass.newInstance();
-			dao.setSession(getSession());
-			return dao;
-		}
-		catch (Exception ex) {
-			throw new RuntimeException("Can not instantiate DAO: " + daoClass, ex);
-		}
-	}
-
-	// You could override this if you don't want HibernateUtil for lookup
-	@Override
-	public Session getSession() {
-		return HibernateUtil.getSessionFactory().getCurrentSession();
 	}
 
 	// Inline concrete DAO implementations with no business-related data access methods.

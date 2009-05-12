@@ -1,6 +1,5 @@
 package nl.ru.cmbi.why_not.comment;
 
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.LineNumberReader;
@@ -8,6 +7,7 @@ import java.text.ParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import nl.ru.cmbi.why_not.hibernate.DAOFactory;
 import nl.ru.cmbi.why_not.hibernate.GenericDAO.AnnotationDAO;
 import nl.ru.cmbi.why_not.hibernate.GenericDAO.CommentDAO;
 import nl.ru.cmbi.why_not.hibernate.GenericDAO.DatabankDAO;
@@ -19,17 +19,22 @@ import nl.ru.cmbi.why_not.model.Entry;
 
 import org.hibernate.criterion.Restrictions;
 
+public class LegacyCommenter {
+	private Pattern		patternPDBID	= Pattern.compile("PDBID        : (.+)");
+	private Pattern		patternDatabase	= Pattern.compile("Database     : (.+)");
+	private Pattern		patternProperty	= Pattern.compile("Property     : (.+)");
+	private Pattern		patternComment	= Pattern.compile("Comment      : (.+)");
 
-public class LegacyCommenter {//TODO Implement
-	private Pattern	patternPDBID	= Pattern.compile("PDBID        : (.+)");
-	private Pattern	patternDatabase	= Pattern.compile("Database     : (.+)");
-	private Pattern	patternProperty	= Pattern.compile("Property     : (.+)");
-	private Pattern	patternComment	= Pattern.compile("Comment      : (.+)");
+	private DAOFactory	factory;
+
+	public LegacyCommenter(DAOFactory factory) {
+		this.factory = factory;
+	}
 
 	public void comment(File file) throws Exception {
-		CommentDAO comdao = Commenter.factory.getCommentDAO();
-		DatabankDAO dbdao = Commenter.factory.getDatabankDAO();
-		EntryDAO entdao = Commenter.factory.getEntryDAO();
+		CommentDAO comdao = factory.getCommentDAO();
+		DatabankDAO dbdao = factory.getDatabankDAO();
+		EntryDAO entdao = factory.getEntryDAO();
 
 		LineNumberReader lnr = new LineNumberReader(new FileReader(file));
 		String line;
@@ -85,10 +90,10 @@ public class LegacyCommenter {//TODO Implement
 	}
 
 	public void uncomment(File file) throws Exception {
-		AnnotationDAO anndao = Commenter.factory.getAnnotationDAO();
-		CommentDAO comdao = Commenter.factory.getCommentDAO();
-		DatabankDAO dbdao = Commenter.factory.getDatabankDAO();
-		EntryDAO entdao = Commenter.factory.getEntryDAO();
+		AnnotationDAO anndao = factory.getAnnotationDAO();
+		CommentDAO comdao = factory.getCommentDAO();
+		DatabankDAO dbdao = factory.getDatabankDAO();
+		EntryDAO entdao = factory.getEntryDAO();
 
 		LineNumberReader lnr = new LineNumberReader(new FileReader(file));
 		String line;

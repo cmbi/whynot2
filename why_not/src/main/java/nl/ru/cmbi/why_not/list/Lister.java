@@ -3,6 +3,7 @@ package nl.ru.cmbi.why_not.list;
 import java.util.SortedSet;
 
 import nl.ru.cmbi.why_not.hibernate.DAOFactory;
+import nl.ru.cmbi.why_not.hibernate.SpringUtil;
 import nl.ru.cmbi.why_not.hibernate.GenericDAO.DatabankDAO;
 import nl.ru.cmbi.why_not.model.Databank;
 import nl.ru.cmbi.why_not.model.Entry;
@@ -12,8 +13,6 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,8 +36,7 @@ public class Lister {
 		if (args.length == 5)
 			comment = args[4];
 
-		ApplicationContext context = new ClassPathXmlApplicationContext(new String[] { "spring.xml" });
-		Lister lister = (Lister) context.getBean("lister");
+		Lister lister = (Lister) SpringUtil.getContext().getBean("lister");
 		lister.list(dbname, fileFilter, parentFilter, commentFilter, comment);
 	}
 

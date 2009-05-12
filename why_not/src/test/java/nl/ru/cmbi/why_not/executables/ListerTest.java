@@ -1,6 +1,5 @@
 package nl.ru.cmbi.why_not.executables;
 
-import static org.junit.Assert.fail;
 import nl.ru.cmbi.why_not.list.Lister;
 
 import org.junit.Ignore;
@@ -27,14 +26,7 @@ public class ListerTest {
 
 	@Test
 	@Ignore
-	public void STRUCTUREFACTORSWithoutWithoutWithThisComment() {
-		try {
-			Lister.main(new String[] { "STRUCTUREFACTORS", "withoutFile", "withoutParentFile", "withoutComment", "_refln.status column missing" });
-		}
-		catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			fail();
-		}
+	public void STRUCTUREFACTORSWithoutWithoutWithThisComment() throws Exception {
+		Lister.main(new String[] { "STRUCTUREFACTORS", "withoutFile", "withoutParentFile", "withoutComment", "_refln.status column missing" });
 	}
 }

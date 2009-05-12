@@ -1,30 +1,28 @@
 package nl.ru.cmbi.why_not.install;
 
 import nl.ru.cmbi.why_not.hibernate.DAOFactory;
+import nl.ru.cmbi.why_not.hibernate.HibernateDAOFactory;
 import nl.ru.cmbi.why_not.hibernate.GenericDAO.DatabankDAO;
 import nl.ru.cmbi.why_not.model.Databank;
 import nl.ru.cmbi.why_not.model.Databank.CrawlType;
 
-import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 
-
 public class Installer {
+
 	public static void main(String[] args) throws Exception {
 		new Installer().drop().create().fill();
 	}
 
-	Configuration	cfg;
-	DAOFactory		factory;
-	Session			session;
+	private Configuration	cfg;
+	private DAOFactory		factory;
 
 	public Installer() {
 		cfg = new AnnotationConfiguration().configure();
-		factory = DAOFactory.instance(DAOFactory.HIBERNATE);
-		session = factory.getSession();
+		factory = new HibernateDAOFactory();
 	}
 
 	public Installer drop() {
@@ -40,7 +38,7 @@ public class Installer {
 	public Installer fill() throws Exception {
 		Transaction transact = null;
 		try {
-			transact = session.beginTransaction();
+			transact = factory.getSession().beginTransaction();
 			DatabankDAO dbdao = factory.getDatabankDAO();
 
 			Databank pdb, dssp;

@@ -1,24 +1,26 @@
 package nl.ru.cmbi.why_not.hibernate;
 
-import nl.ru.cmbi.why_not.hibernate.DAOFactory;
 import nl.ru.cmbi.why_not.hibernate.GenericDAO.EntryDAO;
 import nl.ru.cmbi.why_not.model.Entry;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Transaction;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-
+@Service
 public class FilterTest {
-	static DAOFactory	factory;
-
-	@BeforeClass
-	public static void setUpClass() {
-		factory = DAOFactory.instance(DAOFactory.HIBERNATE);
-	}
 
 	@Test
+	public void doSomething() {
+		FilterTest test = (FilterTest) SpringUtil.getContext().getBean("filterTest");
+		test.printCounts();
+	}
+
+	@Autowired
+	private DAOFactory	factory;
+
 	public void printCounts() {
 		Transaction transact = factory.getSession().beginTransaction();//Plain JDBC
 
@@ -33,7 +35,7 @@ public class FilterTest {
 		//factory.getSession().enableFilter("withComment");
 		//factory.getSession().enableFilter("withoutComment");
 		//factory.getSession().enableFilter("withOlderComment");
-		factory.getSession().enableFilter("withComment:").setParameter("comment", "Another new example comment from com1.txt");
+		factory.getSession().enableFilter("withComment").setParameter("comment", "Another new example comment from com1.txt");
 
 		EntryDAO entdao = factory.getEntryDAO();
 		Logger.getLogger(FilterTest.class).info("Before");

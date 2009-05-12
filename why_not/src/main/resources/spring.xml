@@ -1,6 +1,5 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
            http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
@@ -10,23 +9,63 @@
            http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
 	<context:component-scan base-package="nl.ru.cmbi.why_not" />
+	
+	<!-- http://www.springframework.org/schema/tx
+	http://www.springframework.org/schema/tx/spring-tx.xsd
+	<tx:annotation-driven transaction-manager="transactionmanager" />-->
 
-	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
-	  <property name="dataSource" ref="dataSource" />
-		<property name="hibernateProperties">
-			<value>hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect</value>
+	<bean id="transactionmanager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionfactory" />
+	</bean>
+
+	<bean id="sessionfactory"
+		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<property name="dataSource" ref="datasource" />
+		<property name="hibernateProperties" ref="hibernateproperties" />
+		<property name="annotatedClasses">
+			<list>
+				<value>nl.ru.cmbi.why_not.model.Annotation</value>
+				<value>nl.ru.cmbi.why_not.model.Comment</value>
+				<value>nl.ru.cmbi.why_not.model.Databank</value>
+				<value>nl.ru.cmbi.why_not.model.Entry</value>
+				<value>nl.ru.cmbi.why_not.model.File</value>
+			</list>
 		</property>
 	</bean>
-	
-	<bean id="txManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
-	  <property name="sessionFactory" ref="sessionFactory" />
+
+	<bean id="datasource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="org.postgresql.Driver" />
+		<property name="url" value="jdbc:postgresql://localhost/whynot" />
+		<property name="username" value="whynotadmin" />
+		<property name="password" value="pass" />
 	</bean>
 
-	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-		<property name="driverClassName" value="org.postgresql.Driver"/>
-		<property name="url" value="jdbc:postgresql://localhost/whynot"/>
-		<property name="username" value="whynotadmin"/>
-		<property name="password" value="pass"/>
+	<!-- Database Property -->
+	<bean id="hibernateproperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="properties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
+				
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				
+				<prop key="hibernate.current_session_context_class">thread</prop>
+				<!--<prop key="hibernate.current_session_context_class">org.hibernate.context.ManagedSessionContext</prop>-->
+				
+				<prop key="cache.provider_class">org.hibernate.cache.NoCacheProvider</prop>
+
+				<!-- Echo all executed SQL to stdout -->
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.format_sql">true</prop>
+				<prop key="hibernate.use_sql_comments">false</prop>
+
+				<!-- Use the C3P0 connection pool provider -->
+				<prop key="hibernate.c3p0.minPoolSize">5</prop>
+				<prop key="hibernate.c3p0.maxPoolSize">20</prop>
+				<prop key="hibernate.c3p0.timeout">300</prop>
+				<prop key="hibernate.c3p0.max_statement">50</prop>
+			</props>
+		</property>
 	</bean>
 
 </beans>

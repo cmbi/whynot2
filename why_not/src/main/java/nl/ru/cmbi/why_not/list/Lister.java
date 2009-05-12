@@ -14,7 +14,6 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class Lister {
@@ -43,7 +42,6 @@ public class Lister {
 	@Autowired
 	private DAOFactory	DAOFactory;
 
-	@Transactional
 	public void list(String dbname, String fileFilter, String parentFilter, String commentFilter, String comment) throws Exception {
 		Transaction transact = null;
 		try {

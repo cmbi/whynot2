@@ -16,12 +16,12 @@
 	<!-- Transaction Manager -->
 	<bean id="transactionManager"
 		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
-		<property name="sessionFactory" ref="sessionfactory" />
+		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 	<tx:annotation-driven />
 
 	<!-- Session Factory -->
-	<bean id="sessionfactory"
+	<bean id="sessionFactory"
 		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
 		<property name="dataSource" ref="datasource" />
 		<property name="hibernateProperties" ref="hibernateproperties" />

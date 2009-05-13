@@ -7,8 +7,8 @@ import java.io.FileNotFoundException;
 import nl.ru.cmbi.why_not.comment.Commenter;
 
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
-
 
 public class CommenterTest {
 	private FileFilter	doneFilter	= new FileFilter() {
@@ -19,6 +19,7 @@ public class CommenterTest {
 	private String		append		= ".done";
 
 	@Test
+	@Ignore
 	public void comment() throws Exception {
 		Commenter.main(new String[0]);
 	}

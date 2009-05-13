@@ -7,6 +7,7 @@ import org.junit.Test;
 
 public class ListerTest {
 	@Test
+	@Ignore
 	public void DSSPWithWithoutWith() throws Exception {
 		Lister.main(new String[] { "DSSP", "withFile", "withoutParentFile", "withoutComment" });
 	}

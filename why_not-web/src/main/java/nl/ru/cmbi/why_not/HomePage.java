@@ -1,6 +1,5 @@
 package nl.ru.cmbi.why_not;
 
-import nl.ru.cmbi.why_not.Main.RandomNumberGenerator;
 import nl.ru.cmbi.why_not.hibernate.GenericDAO.EntryDAO;
 
 import org.apache.wicket.PageParameters;
@@ -14,15 +13,12 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
  */
 public class HomePage extends WebPage {
 
-	private static final long		serialVersionUID	= 1L;
+	private static final long	serialVersionUID	= 1L;
 
 	// TODO Add any page properties or variables here
 
 	@SpringBean
-	private EntryDAO				entrydao;
-
-	@SpringBean
-	private RandomNumberGenerator	rng;
+	private EntryDAO			entrydao;
 
 	/**
 	 * Constructor that is invoked when page is invoked without a session.
@@ -37,8 +33,7 @@ public class HomePage extends WebPage {
 		add(new Label("count", new Model<String>() {
 			@Override
 			public String getObject() {
-				//return "" + entrydao.countAll();
-				return "A completely random number: " + rng.getRandomNumber();
+				return "" + entrydao.countAll();
 			}
 		}));
 

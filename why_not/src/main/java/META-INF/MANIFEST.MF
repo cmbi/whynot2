@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-Class-Path: 
-Main-Class:nl.ru.cmbi.why_not.Main
-

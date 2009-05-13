@@ -1,5 +1,7 @@
 package nl.ru.cmbi.why_not;
 
+import org.springframework.stereotype.Service;
+
 public class Main {
 
 	/**
@@ -11,6 +13,15 @@ public class Main {
 		System.out.println("java crawl.Crawler -cp why_not.jar");
 		System.out.println("java comment.Commenter -cp why_not.jar");
 		System.out.println("java list.Lister -cp why_not.jar");
+	}
+
+	@Service
+	public static class RandomNumberGenerator {
+		public int getRandomNumber() {
+			//chosen by fair dice roll
+			//guaranteed to be random
+			return 4;
+		}
 	}
 
 }

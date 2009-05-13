@@ -1,5 +1,6 @@
 package nl.ru.cmbi.why_not;
 
+import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 
@@ -18,7 +19,8 @@ public class WicketApplication extends WebApplication {
 	 * @see org.apache.wicket.Application#getHomePage()
 	 */
 	@Override
-	public Class<HomePage> getHomePage() {
+	public Class<? extends WebPage> getHomePage() {
+		//return PieChartExamplePage.class;
 		return HomePage.class;
 	}
 

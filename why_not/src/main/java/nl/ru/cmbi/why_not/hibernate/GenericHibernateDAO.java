@@ -5,6 +5,7 @@ import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.Filter;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -24,24 +25,19 @@ public class GenericHibernateDAO<T, ID extends Serializable> implements GenericD
 		persistentClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 	}
 
-	public GenericHibernateDAO(Class<T> type) {
-		persistentClass = type;
-	}
-
-	public Session getSession() {
-		if (sessionFactory == null)
-			throw new IllegalStateException("SessionFactory has not been set on DAO before usage");
-		return sessionFactory.getCurrentSession();
-	}
-
-	public Class<T> getPersistentClass() {
+	private Class<T> getPersistentClass() {
 		return persistentClass;
+	}
+
+	private Session getSession() {
+		return sessionFactory.getCurrentSession();
 	}
 
 	public Long countAll() {
 		return (Long) getSession().createQuery("select count(*) from " + persistentClass.getName()).uniqueResult();
 	}
 
+	//Finders
 	@SuppressWarnings("unchecked")
 	public T findById(ID id, boolean lock) {
 		T entity;
@@ -73,23 +69,6 @@ public class GenericHibernateDAO<T, ID extends Serializable> implements GenericD
 		return crit.list();
 	}
 
-	public T makePersistent(T entity) {
-		getSession().saveOrUpdate(entity);
-		return entity;
-	}
-
-	public void makeTransient(T entity) {
-		getSession().delete(entity);
-	}
-
-	public void flush() {
-		getSession().flush();
-	}
-
-	public void clear() {
-		getSession().clear();
-	}
-
 	/**
 	* Use this inside subclasses as a convenience method.
 	*/
@@ -101,4 +80,30 @@ public class GenericHibernateDAO<T, ID extends Serializable> implements GenericD
 		return crit.list();
 	}
 
+	//Save / Delete
+	public T makePersistent(T entity) {
+		getSession().saveOrUpdate(entity);
+		return entity;
+	}
+
+	public void makeTransient(T entity) {
+		getSession().delete(entity);
+	}
+
+	//Filters
+	public void enableFilter(String filterName, String... params) {
+		Filter filter = getSession().enableFilter(filterName);
+		String key = null;
+		for (String par : params)
+			if (key == null)
+				key = par;
+			else {
+				filter.setParameter(key, par);
+				key = null;
+			}
+	}
+
+	public void disableFilter(String filterName) {
+		getSession().disableFilter(filterName);
+	}
 }

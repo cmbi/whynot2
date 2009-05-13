@@ -20,7 +20,7 @@ public class Lister {
 		String dbname = "DATABASE";
 		String fileFilter = "withFile|withoutFile";
 		String parentFilter = "withParentFile|withoutParentFile";
-		String commentFilter = "withComment|withoutComment|withOlderComment";
+		String commentFilter = "withComment|withoutComment";
 		String comment = "[\"Example comment\"]";
 
 		if (args.length != 4 && args.length != 5 || !args[1].matches(fileFilter) || !args[2].matches(parentFilter) || !args[3].matches(commentFilter))
@@ -46,9 +46,9 @@ public class Lister {
 		if (db == null)
 			new IllegalArgumentException("Databank with name " + dbname + " not found.");
 
-		dbdao.getSession().enableFilter(fileFilter);
-		dbdao.getSession().enableFilter(parentFilter);
-		dbdao.getSession().enableFilter(commentFilter).setParameter("comment", comment);
+		dbdao.enableFilter(fileFilter);
+		dbdao.enableFilter(parentFilter);
+		dbdao.enableFilter(commentFilter, "comment", comment);
 
 		SortedSet<Entry> entries = db.getEntries();
 		System.out.println("#" + dbname + " " + fileFilter + " " + parentFilter + " " + commentFilter + ": " + entries.size() + " entries");

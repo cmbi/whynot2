@@ -9,12 +9,13 @@ import nl.ru.cmbi.why_not.model.Databank;
 import nl.ru.cmbi.why_not.model.Entry;
 import nl.ru.cmbi.why_not.model.File;
 
-import org.hibernate.Session;
 import org.hibernate.criterion.NaturalIdentifier;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface GenericDAO<T, ID extends Serializable> {
 	Long countAll();
 
+	//Finders
 	T findById(ID id, boolean lock);
 
 	T findByNaturalId(NaturalIdentifier id);
@@ -23,12 +24,19 @@ public interface GenericDAO<T, ID extends Serializable> {
 
 	List<T> findByExample(T exampleInstance, String[] excludeProperty);
 
+	//Save / Delete
+	@Transactional
 	T makePersistent(T entity);
 
+	@Transactional
 	void makeTransient(T entity);
 
-	Session getSession();
+	//Filter
+	void enableFilter(String filterName, String... params);
 
+	void disableFilter(String filterName);
+
+	//Interfaces
 	public interface AnnotationDAO extends GenericDAO<Annotation, Long> {
 	}
 

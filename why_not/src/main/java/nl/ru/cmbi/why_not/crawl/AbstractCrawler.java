@@ -32,7 +32,7 @@ public abstract class AbstractCrawler {
 	 * and if the timestamp on the file is the same as the timestamp on the entry
 	 */
 	public void removeInvalidEntries() {
-		fldao.getSession().enableFilter("withFile");
+		fldao.enableFilter("withFile");
 
 		int checked = 0, removed = 0;
 		for (Entry entry : databank.getEntries()) {
@@ -48,7 +48,7 @@ public abstract class AbstractCrawler {
 			}
 		}
 
-		fldao.getSession().disableFilter("withFile");
+		fldao.disableFilter("withFile");
 
 		Logger.getLogger(AbstractCrawler.class).info(databank.getName() + ": Checked " + checked + ", Removed " + removed);
 	}

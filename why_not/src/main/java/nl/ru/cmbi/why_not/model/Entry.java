@@ -24,7 +24,7 @@ import org.hibernate.validator.NotNull;
 
 @Entity
 @FilterDefs( {//
-@FilterDef(name = "inDatabank", defaultCondition = "databank_id = (select db.id from Databank db where db.name = :name)", parameters = @ParamDef(name = "name", type = "string")), //
+@FilterDef(name = "inDatabank", defaultCondition = "databank_id = (select db.id from Databank db where db.name like :name)", parameters = @ParamDef(name = "name", type = "string")), //
 
 @FilterDef(name = "withFile", defaultCondition = "file_id is not null"), //
 @FilterDef(name = "withoutFile", defaultCondition = "file_id is null"), //
@@ -33,13 +33,12 @@ import org.hibernate.validator.NotNull;
 @FilterDef(name = "withoutParentFile", defaultCondition = "(select par.file_id from Entry par where par.pdbid = pdbid and par.databank_id = (select db.parent_id from Databank db where db.id = databank_id)) is null"), //
 
 @FilterDef(name = "withComment", defaultCondition = "(select ann.timestamp from Annotation ann where ann.entry_id = id and ann.comment_id in (select com.id from Comment com where com.text like :comment)) is not null", parameters = @ParamDef(name = "comment", type = "string")), //
-@FilterDef(name = "withoutComment", defaultCondition = "(select ann.timestamp from Annotation ann where ann.entry_id = id and ann.comment_id in (select com.id from Comment com where com.text like :comment)) is null", parameters = @ParamDef(name = "comment", type = "string")), //
-@FilterDef(name = "withOlderComment", defaultCondition = "(select min(ann.timestamp) from Annotation ann where ann.entry_id = id and ann.comment_id in (select com.id from Comment com where com.text like :comment)) < (select fl.timestamp from File fl where fl.id = file_id)", parameters = @ParamDef(name = "comment", type = "string")) })
+@FilterDef(name = "withoutComment", defaultCondition = "(select ann.timestamp from Annotation ann where ann.entry_id = id and ann.comment_id in (select com.id from Comment com where com.text like :comment)) is null", parameters = @ParamDef(name = "comment", type = "string")) })
 @Filters( { //
 @Filter(name = "inDatabank"),//
 @Filter(name = "withFile"), @Filter(name = "withoutFile"),//
 @Filter(name = "withParentFile"), @Filter(name = "withoutParentFile"),//	
-@Filter(name = "withComment"), @Filter(name = "withoutComment"), @Filter(name = "withOlderComment") //	
+@Filter(name = "withComment"), @Filter(name = "withoutComment") //	
 })
 public class Entry implements Comparable<Entry> {
 	@Id

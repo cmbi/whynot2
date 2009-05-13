@@ -33,8 +33,7 @@ public class FilterTest {
 
 		//entdao.getSession().enableFilter("withComment");
 		//entdao.getSession().enableFilter("withoutComment");
-		//entdao.getSession().enableFilter("withOlderComment");
-		entdao.getSession().enableFilter("withComment").setParameter("comment", "Another new example comment from com1.txt");
+		entdao.enableFilter("withComment", "comment", "Another new example comment from com1.txt");
 		Logger.getLogger(FilterTest.class).info("Before");
 		Logger.getLogger(FilterTest.class).info(entdao.countAll());
 		for (Entry entry : entdao.findAll())

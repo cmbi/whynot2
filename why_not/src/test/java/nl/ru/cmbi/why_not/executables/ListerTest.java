@@ -7,9 +7,8 @@ import org.junit.Test;
 
 public class ListerTest {
 	@Test
-	@Ignore
 	public void DSSPWithWithoutWith() throws Exception {
-		Lister.main(new String[] { "DSSP", "withFile", "withoutParentFile", "withComment" });
+		Lister.main(new String[] { "DSSP", "withFile", "withoutParentFile", "withoutComment" });
 	}
 
 	@Test
@@ -19,6 +18,7 @@ public class ListerTest {
 	}
 
 	@Test
+	@Ignore
 	public void STRUCTUREFACTORSWithoutWithoutWithThisComment() throws Exception {
 		Lister.main(new String[] { "STRUCTUREFACTORS", "withoutFile", "withoutParentFile", "withoutComment", "_refln.status column missing" });
 	}

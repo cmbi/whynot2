@@ -76,23 +76,4 @@
 			</props>
 		</property>
 	</bean>
-
-	<!-- Some DAOs -->
-	<bean id="AnnotationDAO" class="nl.ru.cmbi.why_not.hibernate.HibernateDAOFactory$AnnotationHibernateDAO">
-		<property name="sessionFactory"><ref bean="sessionfactory" /></property>
-	</bean>
-	<bean id="CommentDAO" class="nl.ru.cmbi.why_not.hibernate.HibernateDAOFactory$CommentHibernateDAO">
-		<property name="sessionFactory"><ref bean="sessionfactory" /></property>
-	</bean>
-	<bean id="DatabankDAO" class="nl.ru.cmbi.why_not.hibernate.HibernateDAOFactory$DatabankHibernateDAO">
-		<property name="sessionFactory"><ref bean="sessionfactory" /></property>
-	</bean>
-	<bean id="EntryDAO" class="nl.ru.cmbi.why_not.hibernate.HibernateDAOFactory$EntryHibernateDAO">
-		<property name="sessionFactory"><ref bean="sessionfactory" /></property>
-	</bean>
-	<bean id="FileDAO" class="nl.ru.cmbi.why_not.hibernate.HibernateDAOFactory$FileHibernateDAO">
-		<property name="sessionFactory"><ref bean="sessionfactory" /></property>
-	</bean>
-	
-
 </beans>

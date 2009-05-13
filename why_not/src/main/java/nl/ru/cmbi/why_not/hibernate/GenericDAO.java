@@ -13,7 +13,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.NaturalIdentifier;
 
 public interface GenericDAO<T, ID extends Serializable> {
-	long count();
+	Long countAll();
 
 	T findById(ID id, boolean lock);
 

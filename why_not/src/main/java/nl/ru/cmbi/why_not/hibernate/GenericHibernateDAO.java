@@ -11,9 +11,12 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Example;
 import org.hibernate.criterion.NaturalIdentifier;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class GenericHibernateDAO<T, ID extends Serializable> implements GenericDAO<T, ID> {
 	private Class<T>		persistentClass;
+
+	@Autowired
 	private SessionFactory	sessionFactory;
 
 	@SuppressWarnings("unchecked")
@@ -31,15 +34,11 @@ public class GenericHibernateDAO<T, ID extends Serializable> implements GenericD
 		return sessionFactory.getCurrentSession();
 	}
 
-	public void setSessionFactory(SessionFactory s) {
-		sessionFactory = s;
-	}
-
 	public Class<T> getPersistentClass() {
 		return persistentClass;
 	}
 
-	public long count() {
+	public Long countAll() {
 		return (Long) getSession().createQuery("select count(*) from " + persistentClass.getName()).uniqueResult();
 	}
 

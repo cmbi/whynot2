@@ -18,7 +18,6 @@ public class CommenterTest {
 	private String		append		= ".done";
 
 	@Test
-	//@Ignore
 	public void comment() throws Exception {
 		Commenter.main(new String[0]);
 	}

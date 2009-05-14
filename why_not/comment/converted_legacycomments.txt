@@ -1,0 +1,10 @@
+COMMENT: Nucleic acids only
+DSSP,100d
+COMMENT: Not an NMR entry.
+NRG-CING,1sum
+COMMENT: WHAT_CHECK: cannot validate structure
+PDB_REDO,1ur1
+COMMENT: _refln.status column missing
+STRUCTUREFACTORS,1meg
+COMMENT: _refln.status column has no information
+STRUCTUREFACTORS,2h9w

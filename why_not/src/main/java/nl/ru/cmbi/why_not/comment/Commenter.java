@@ -29,6 +29,16 @@ public class Commenter {
 												};
 
 	public static void main(String[] args) throws IOException, ParseException {
+		((Commenter) SpringUtil.getContext().getBean("commenter")).run();
+	}
+
+	@Autowired
+	private FileParser	fileParser;
+
+	@Autowired
+	private CommentDAO		commentDAO;
+
+	public void run() throws IOException, ParseException {
 		File dirComments = new File("comment/");
 		File dirUncomments = new File("uncomment/");
 
@@ -38,35 +48,24 @@ public class Commenter {
 		if (!dirUncomments.isDirectory() && !dirUncomments.mkdir())
 			throw new FileNotFoundException(dirUncomments.getAbsolutePath());
 
-		Commenter commenter = (Commenter) SpringUtil.getContext().getBean("commenter");
 		//Comment / Uncomment all files in directories
-		for (File file : dirComments.listFiles(commentFilter))
-			commenter.comment(getFile(file));
-		for (File file : dirUncomments.listFiles(commentFilter))
-			commenter.uncomment(getFile(file));
+		for (File file : dirComments.listFiles(commentFilter)) {
+			fileParser.comment(getFile(file));
+			//Rename file to prevent rerunning
+			file.renameTo(new File(file.getAbsolutePath() + Commenter.append));
+			Logger.getLogger(FileParser.class).info("Commented file" + file.getAbsolutePath());
+		}
+		for (File file : dirUncomments.listFiles(commentFilter)) {
+			fileParser.uncomment(getFile(file));
+			//Rename file to prevent rerunning
+			file.renameTo(new File(file.getAbsolutePath() + Commenter.append));
+			Logger.getLogger(FileParser.class).info("Uncommented file" + file.getAbsolutePath());
+		}
 
 		//Cleanup unused Comments
-		commenter.cleanup();
-	}
-
-	@Autowired
-	private NewCommenter	newCommenter;
-
-	@Autowired
-	private CommentDAO		commentDAO;
-
-	public void comment(File file) throws IOException, ParseException {
-		newCommenter.comment(file);
-		//Rename file to prevent rerunning
-		file.renameTo(new File(file.getAbsolutePath() + Commenter.append));
-		Logger.getLogger(NewCommenter.class).info("Commented file" + file.getAbsolutePath());
-	}
-
-	public void uncomment(File file) throws IOException, ParseException {
-		newCommenter.uncomment(file);
-		//Rename file to prevent rerunning
-		file.renameTo(new File(file.getAbsolutePath() + Commenter.append));
-		Logger.getLogger(NewCommenter.class).info("Uncommented file" + file.getAbsolutePath());
+		for (Comment comment : commentDAO.findAll())
+			if (comment.getAnnotations().isEmpty())
+				commentDAO.makeTransient(comment);
 	}
 
 	private static File getFile(File file) throws FileNotFoundException, IOException, ParseException {
@@ -78,12 +77,6 @@ public class Commenter {
 			return new Converter().convert(file);
 		if (line.startsWith("COMMENT"))
 			return file;
-		throw new ParseException("Could not determine Commenter file type: Expected PDBID or COMMENT on line 1", 1);
-	}
-
-	public void cleanup() {
-		for (Comment comment : commentDAO.findAll())
-			if (comment.getAnnotations().isEmpty())
-				commentDAO.makeTransient(comment);
+		throw new ParseException("Could not determine Comment file type: Expected PDBID or COMMENT on line 1", 1);
 	}
 }

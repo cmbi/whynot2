@@ -1,5 +1,6 @@
 package nl.ru.cmbi.why_not.model;
 
+import java.io.Serializable;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -40,7 +41,7 @@ import org.hibernate.validator.NotNull;
 @Filter(name = "withParentFile"), @Filter(name = "withoutParentFile"),//	
 @Filter(name = "withComment"), @Filter(name = "withoutComment") //	
 })
-public class Entry implements Comparable<Entry> {
+public class Entry implements Comparable<Entry>, Serializable {
 	@Id
 	@GeneratedValue
 	Long							id;

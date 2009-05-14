@@ -24,21 +24,8 @@
 	<bean id="sessionFactory"
 		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
 		<property name="dataSource" ref="datasource" />
-		<property name="hibernateProperties" ref="hibernateproperties" />
-		<property name="annotatedClasses">
-			<list>
-				<value>nl.ru.cmbi.why_not.model.Annotation
-				</value>
-				<value>nl.ru.cmbi.why_not.model.Comment
-				</value>
-				<value>nl.ru.cmbi.why_not.model.Databank
-				</value>
-				<value>nl.ru.cmbi.why_not.model.Entry
-				</value>
-				<value>nl.ru.cmbi.why_not.model.File
-				</value>
-			</list>
-		</property>
+		<property name="configLocation" value="hibernate.cfg.xml" />
+		<property name="packagesToScan" value="nl.ru.cmbi.why_not.model"/>
 	</bean>
 
 	<!-- Connection Properties -->
@@ -49,26 +36,21 @@
 		<property name="username" value="whynotadmin" />
 		<property name="password" value="pass" />
 	</bean>
-
-	<!-- Hibernate Properties -->
-	<bean id="hibernateproperties"
-		class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+	
+	<!-- 
+	<bean id="hibernateproperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
 		<property name="properties">
 			<props>
-				<prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect
-				</prop>
+				<prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
 
 				<prop key="hibernate.hbm2ddl.auto">update</prop>
+ 
+				<prop key="cache.provider_class">org.hibernate.cache.NoCacheProvider</prop>
 
-				<prop key="cache.provider_class">org.hibernate.cache.NoCacheProvider
-				</prop>
-
-				<!-- Echo all executed SQL to stdout -->
 				<prop key="hibernate.show_sql">true</prop>
 				<prop key="hibernate.format_sql">true</prop>
 				<prop key="hibernate.use_sql_comments">false</prop>
 
-				<!-- Use the C3P0 connection pool provider -->
 				<prop key="hibernate.c3p0.minPoolSize">5</prop>
 				<prop key="hibernate.c3p0.maxPoolSize">20</prop>
 				<prop key="hibernate.c3p0.timeout">300</prop>
@@ -76,4 +58,5 @@
 			</props>
 		</property>
 	</bean>
+	 -->
 </beans>

@@ -1,5 +1,6 @@
 package nl.ru.cmbi.why_not.model;
 
+import java.io.Serializable;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -23,7 +24,7 @@ import org.hibernate.validator.NotEmpty;
 import org.hibernate.validator.NotNull;
 
 @Entity
-public class Databank implements Comparable<Databank> {
+public class Databank implements Comparable<Databank>, Serializable {
 	public enum CrawlType {
 		FILE, LINE
 	}

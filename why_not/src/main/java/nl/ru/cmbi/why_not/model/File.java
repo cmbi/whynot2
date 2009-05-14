@@ -1,5 +1,7 @@
 package nl.ru.cmbi.why_not.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -10,7 +12,7 @@ import org.hibernate.validator.NotEmpty;
 import org.hibernate.validator.NotNull;
 
 @Entity
-public class File implements Comparable<File> {
+public class File implements Comparable<File>, Serializable {
 	@Id
 	@GeneratedValue
 	Long			id;

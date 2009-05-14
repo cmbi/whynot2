@@ -1,5 +1,7 @@
 package nl.ru.cmbi.why_not.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -11,7 +13,7 @@ import org.hibernate.annotations.NaturalId;
 import org.hibernate.validator.NotNull;
 
 @Entity
-public class Annotation implements Comparable<Annotation> {
+public class Annotation implements Comparable<Annotation>, Serializable {
 	@Id
 	@GeneratedValue
 	Long			id;

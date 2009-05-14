@@ -1,5 +1,6 @@
 package nl.ru.cmbi.why_not.model;
 
+import java.io.Serializable;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -17,7 +18,7 @@ import org.hibernate.validator.Length;
 import org.hibernate.validator.NotEmpty;
 
 @Entity
-public class Comment implements Comparable<Comment> {
+public class Comment implements Comparable<Comment>, Serializable {
 	@Id
 	@GeneratedValue
 	Long							id;

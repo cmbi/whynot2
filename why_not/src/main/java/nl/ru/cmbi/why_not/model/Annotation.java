@@ -9,13 +9,16 @@ import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.NaturalId;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.validator.NotNull;
 
 @Entity
 public class Annotation implements Comparable<Annotation>, Serializable {
 	@Id
-	@GeneratedValue
+	@GeneratedValue(generator = "hibseq")
+	@GenericGenerator(name = "hibseq", strategy = "seqhilo", parameters = { @Parameter(name = "max_lo", value = "50"), })
 	Long			id;
 
 	@NaturalId

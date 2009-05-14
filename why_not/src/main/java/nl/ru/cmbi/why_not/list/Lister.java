@@ -24,7 +24,7 @@ public class Lister {
 		String comment = "[\"Example comment\"]";
 
 		if (args.length != 4 && args.length != 5 || !args[1].matches(fileFilter) || !args[2].matches(parentFilter) || !args[3].matches(commentFilter))
-			throw new IllegalArgumentException("Usage: list DATABASE " + fileFilter + " " + parentFilter + " " + commentFilter + " " + comment);
+			throw new IllegalArgumentException("Usage: lister DATABASE " + fileFilter + " " + parentFilter + " " + commentFilter + " " + comment);
 
 		dbname = args[0];
 		fileFilter = args[1];

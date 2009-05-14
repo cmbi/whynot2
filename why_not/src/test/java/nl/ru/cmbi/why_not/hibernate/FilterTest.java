@@ -5,23 +5,20 @@ import nl.ru.cmbi.why_not.model.Entry;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath:/spring.xml" })
 @Transactional
 public class FilterTest {
-
-	@Test
-	public void doSomething() {
-		FilterTest test = (FilterTest) SpringUtil.getContext().getBean("filterTest");
-		test.printCounts();
-	}
-
 	@Autowired
 	private EntryDAO	entdao;
 
+	@Test
 	public void printCounts() {
 		//entdao.getSession().enableFilter("inDatabank").setParameter("name", "DSSP");
 

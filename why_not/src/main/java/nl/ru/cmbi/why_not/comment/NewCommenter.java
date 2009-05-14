@@ -8,7 +8,6 @@ import java.text.ParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import nl.ru.cmbi.why_not.comment.Commenter.ICommenter;
 import nl.ru.cmbi.why_not.hibernate.GenericDAO.AnnotationDAO;
 import nl.ru.cmbi.why_not.hibernate.GenericDAO.CommentDAO;
 import nl.ru.cmbi.why_not.hibernate.GenericDAO.DatabankDAO;
@@ -23,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class NewCommenter implements ICommenter {
+public class NewCommenter {
 	private Pattern			patternComment	= Pattern.compile("COMMENT: (.+)");
 	private Pattern			patternEntry	= Pattern.compile("(.+),(.+)");
 

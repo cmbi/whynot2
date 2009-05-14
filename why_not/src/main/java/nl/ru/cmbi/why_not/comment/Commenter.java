@@ -41,16 +41,14 @@ public class Commenter {
 		Commenter commenter = (Commenter) SpringUtil.getContext().getBean("commenter");
 		//Comment / Uncomment all files in directories
 		for (File file : dirComments.listFiles(commentFilter))
-			commenter.comment(file);
+			commenter.comment(getFile(file));
 		for (File file : dirUncomments.listFiles(commentFilter))
-			commenter.uncomment(file);
+			commenter.uncomment(getFile(file));
 
 		//Cleanup unused Comments
 		commenter.cleanup();
 	}
 
-	@Autowired
-	private LegacyCommenter	legacyCommenter;
 	@Autowired
 	private NewCommenter	newCommenter;
 
@@ -58,28 +56,28 @@ public class Commenter {
 	private CommentDAO		commentDAO;
 
 	public void comment(File file) throws IOException, ParseException {
-		getCommenter(file).comment(file);
+		newCommenter.comment(file);
 		//Rename file to prevent rerunning
 		file.renameTo(new File(file.getAbsolutePath() + Commenter.append));
 		Logger.getLogger(NewCommenter.class).info("Commented file" + file.getAbsolutePath());
 	}
 
 	public void uncomment(File file) throws IOException, ParseException {
-		getCommenter(file).uncomment(file);
+		newCommenter.uncomment(file);
 		//Rename file to prevent rerunning
 		file.renameTo(new File(file.getAbsolutePath() + Commenter.append));
 		Logger.getLogger(NewCommenter.class).info("Uncommented file" + file.getAbsolutePath());
 	}
 
-	private ICommenter getCommenter(File file) throws FileNotFoundException, IOException, ParseException {
+	private static File getFile(File file) throws FileNotFoundException, IOException, ParseException {
 		LineNumberReader lnr = new LineNumberReader(new FileReader(file));
 		String line = lnr.readLine();
 		lnr.close();
 
 		if (line.startsWith("PDBID"))
-			return legacyCommenter;
+			return new Converter().convert(file);
 		if (line.startsWith("COMMENT"))
-			return newCommenter;
+			return file;
 		throw new ParseException("Could not determine Commenter file type: Expected PDBID or COMMENT on line 1", 1);
 	}
 
@@ -87,11 +85,5 @@ public class Commenter {
 		for (Comment comment : commentDAO.findAll())
 			if (comment.getAnnotations().isEmpty())
 				commentDAO.makeTransient(comment);
-	}
-
-	public interface ICommenter {
-		public void comment(File file) throws IOException, ParseException;
-
-		public void uncomment(File file) throws IOException, ParseException;
 	}
 }

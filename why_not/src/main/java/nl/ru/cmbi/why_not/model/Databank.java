@@ -16,7 +16,9 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Filters;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.NaturalId;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 import org.hibernate.validator.Length;
@@ -30,31 +32,32 @@ public class Databank implements Comparable<Databank>, Serializable {
 	}
 
 	@Id
-	@GeneratedValue
-	public Long				id;
+	@GeneratedValue(generator = "hibseq")
+	@GenericGenerator(name = "hibseq", strategy = "seqhilo", parameters = { @Parameter(name = "max_lo", value = "50"), })
+	Long						id;
 
 	@NaturalId
 	@NotEmpty
 	@Length(max = 50)
-	public String			name;
+	private String				name;
 
 	@NotEmpty
 	@Length(max = 200)
-	public String			reference;
+	private String				reference;
 	@NotEmpty
 	@Length(max = 200)
-	public String			filelink;
+	private String				filelink;
 
 	@OneToOne
-	public Databank			parent;
+	private Databank			parent;
 
 	@NotEmpty
 	@Length(max = 50)
-	public String			regex;
+	private String				regex;
 
 	@NotNull
 	@Enumerated(EnumType.STRING)
-	public CrawlType		crawltype;
+	private CrawlType			crawltype;
 
 	@OneToMany(mappedBy = "databank", cascade = javax.persistence.CascadeType.ALL)
 	@Cascade(value = { CascadeType.DELETE_ORPHAN })
@@ -65,9 +68,9 @@ public class Databank implements Comparable<Databank>, Serializable {
 	@Filter(name = "withParentFile"), @Filter(name = "withoutParentFile"),//	
 	@Filter(name = "withComment"), @Filter(name = "withoutComment") //	
 	})
-	public SortedSet<Entry>	entries	= new TreeSet<Entry>();
+	private SortedSet<Entry>	entries	= new TreeSet<Entry>();
 
-	public Databank() {
+	protected Databank() {
 	}
 
 	public Databank(String name, String reference, String filelink, String regex, CrawlType crawltype) {
@@ -146,10 +149,5 @@ public class Databank implements Comparable<Databank>, Serializable {
 			if (!name.equals(other.name))
 				return false;
 		return true;
-	}
-
-	public Databank setName(String dbname) {
-		name = dbname;
-		return this;
 	}
 }

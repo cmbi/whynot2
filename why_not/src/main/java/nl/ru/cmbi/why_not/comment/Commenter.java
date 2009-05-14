@@ -33,7 +33,7 @@ public class Commenter {
 	}
 
 	@Autowired
-	private FileParser	fileParser;
+	private CommentFileParser	fileParser;
 
 	@Autowired
 	private CommentDAO		commentDAO;
@@ -53,13 +53,13 @@ public class Commenter {
 			fileParser.comment(getFile(file));
 			//Rename file to prevent rerunning
 			file.renameTo(new File(file.getAbsolutePath() + Commenter.append));
-			Logger.getLogger(FileParser.class).info("Commented file" + file.getAbsolutePath());
+			Logger.getLogger(CommentFileParser.class).info("Commented file" + file.getAbsolutePath());
 		}
 		for (File file : dirUncomments.listFiles(commentFilter)) {
 			fileParser.uncomment(getFile(file));
 			//Rename file to prevent rerunning
 			file.renameTo(new File(file.getAbsolutePath() + Commenter.append));
-			Logger.getLogger(FileParser.class).info("Uncommented file" + file.getAbsolutePath());
+			Logger.getLogger(CommentFileParser.class).info("Uncommented file" + file.getAbsolutePath());
 		}
 
 		//Cleanup unused Comments

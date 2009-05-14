@@ -1,4 +1,4 @@
-package nl.ru.cmbi.why_not.jfreechart.simple;
+package jfreechart.simple;
 
 import org.apache.wicket.markup.html.WebPage;
 import org.jfree.chart.ChartFactory;

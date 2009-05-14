@@ -1,4 +1,4 @@
-package nl.ru.cmbi.why_not.jfreechart.complex;
+package jfreechart.complex;
 
 import java.awt.image.BufferedImage;
 

@@ -1,4 +1,4 @@
-package nl.ru.cmbi.why_not.jfreechart.complex;
+package jfreechart.complex;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;

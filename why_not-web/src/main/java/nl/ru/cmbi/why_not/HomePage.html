@@ -1,26 +1,27 @@
 <html xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
 <head>
-<title>WHY_NOT</title>
-<link type="text/css" rel="Stylesheet" href="homepage.css" />
+<title>Why not?</title>
+<link type="text/css" rel="Stylesheet" href="style.css" />
 </head>
 <body>
-body
-<div id="container">
-	container
-	<div id="header">WHY_NOT</div>
-	<div id="content">
-		content
-		<div id="columna">
-			columna
-			<div id="a1">a1</div>
-			<div id="a2">a2</div>
-		</div>
-		<div id="columnb">
-			columnb
-			<div wicket:id="comments">b1</div>
-			<div id="b2">b2</div>
-		</div>
+<div id="header">
+	<a href="./">
+		<h1>Why <span>not?</span></h1>
+	</a>
+	<form>
+		<input type="text"/>
+	</form>
+</div>
+<div id="content">
+	<div class="column left">
+		<div wicket:id="comments">b1</div>
 	</div>
+	<div class="column right">
+		<div wicket:id="databanks">b1</div>
+	</div>
+</div>
+<div id="footer">
+	<p>footer</p>
 </div>
 </body>
 </html>

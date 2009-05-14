@@ -1,9 +1,14 @@
 <html xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
 <body>
 <wicket:panel>
-	<wicket:container wicket:id="list">
-		<span wicket:id="text">text</span>
-	</wicket:container>
+	<h1>Comments</h1>
+	<table>
+	<tr wicket:id="list">
+		<td wicket:id="text">text</td>
+		<td wicket:id="count">count</td>
+	</tr>
+	</table>
+	<div wicket:id="navigator"></div>
 </wicket:panel>
 </body>
 </html>

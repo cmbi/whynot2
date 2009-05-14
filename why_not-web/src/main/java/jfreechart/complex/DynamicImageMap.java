@@ -1,4 +1,4 @@
-package nl.ru.cmbi.why_not.jfreechart.complex;
+package jfreechart.complex;
 
 import org.apache.wicket.ajax.markup.html.IAjaxLink;
 import org.apache.wicket.markup.ComponentTag;

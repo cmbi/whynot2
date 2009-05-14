@@ -23,40 +23,7 @@
 	<!-- Session Factory -->
 	<bean id="sessionFactory"
 		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
-		<property name="dataSource" ref="datasource" />
 		<property name="configLocation" value="hibernate.cfg.xml" />
-		<property name="packagesToScan" value="nl.ru.cmbi.why_not.model"/>
+		<property name="packagesToScan" value="nl.ru.cmbi.why_not.model" />
 	</bean>
-
-	<!-- Connection Properties -->
-	<bean id="datasource"
-		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-		<property name="driverClassName" value="org.postgresql.Driver" />
-		<property name="url" value="jdbc:postgresql://localhost/whynot" />
-		<property name="username" value="whynotadmin" />
-		<property name="password" value="pass" />
-	</bean>
-	
-	<!-- 
-	<bean id="hibernateproperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
-		<property name="properties">
-			<props>
-				<prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
-
-				<prop key="hibernate.hbm2ddl.auto">update</prop>
- 
-				<prop key="cache.provider_class">org.hibernate.cache.NoCacheProvider</prop>
-
-				<prop key="hibernate.show_sql">true</prop>
-				<prop key="hibernate.format_sql">true</prop>
-				<prop key="hibernate.use_sql_comments">false</prop>
-
-				<prop key="hibernate.c3p0.minPoolSize">5</prop>
-				<prop key="hibernate.c3p0.maxPoolSize">20</prop>
-				<prop key="hibernate.c3p0.timeout">300</prop>
-				<prop key="hibernate.c3p0.max_statement">50</prop>
-			</props>
-		</property>
-	</bean>
-	 -->
 </beans>

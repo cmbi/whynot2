@@ -32,12 +32,12 @@ public class Annotation implements Comparable<Annotation>, Serializable {
 	@NotNull
 	private Entry	entry;
 
-	private long	timestamp;
+	private Long	timestamp;
 
 	protected Annotation() {
 	}
 
-	public Annotation(Comment comment, Entry entry, long timestamp) {
+	public Annotation(Comment comment, Entry entry, Long timestamp) {
 		this.comment = comment;
 		this.entry = entry;
 		this.timestamp = timestamp;
@@ -51,7 +51,7 @@ public class Annotation implements Comparable<Annotation>, Serializable {
 		return entry;
 	}
 
-	public long getTimestamp() {
+	public Long getTimestamp() {
 		return timestamp;
 	}
 
@@ -61,10 +61,10 @@ public class Annotation implements Comparable<Annotation>, Serializable {
 	}
 
 	public int compareTo(Annotation o) {
-		int value = getComment().compareTo(o.getComment());
+		int value = comment.compareTo(o.comment);
 		if (value != 0)
 			return value;
-		return getEntry().compareTo(o.getEntry());
+		return entry.compareTo(o.entry);
 	}
 
 	@Override

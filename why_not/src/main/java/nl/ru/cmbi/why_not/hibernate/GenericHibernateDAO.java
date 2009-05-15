@@ -4,17 +4,22 @@ import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
+import nl.ru.cmbi.why_not.model.Annotation;
+import nl.ru.cmbi.why_not.model.Comment;
+import nl.ru.cmbi.why_not.model.Databank;
+import nl.ru.cmbi.why_not.model.Entry;
+import nl.ru.cmbi.why_not.model.File;
+
 import org.hibernate.Criteria;
 import org.hibernate.Filter;
 import org.hibernate.LockMode;
-import org.hibernate.NonUniqueResultException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Example;
-import org.hibernate.criterion.NaturalIdentifier;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 public class GenericHibernateDAO<T, ID extends Serializable> implements GenericDAO<T, ID> {
 	private Class<T>		persistentClass;
@@ -27,11 +32,11 @@ public class GenericHibernateDAO<T, ID extends Serializable> implements GenericD
 		persistentClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 	}
 
-	private Class<T> getPersistentClass() {
+	protected Class<T> getPersistentClass() {
 		return persistentClass;
 	}
 
-	private Session getSession() {
+	protected Session getSession() {
 		return sessionFactory.getCurrentSession();
 	}
 
@@ -51,47 +56,25 @@ public class GenericHibernateDAO<T, ID extends Serializable> implements GenericD
 		return entity;
 	}
 
-	@SuppressWarnings("unchecked")
-	public T findByNaturalId(NaturalIdentifier id) {
-		Criteria crit = getSession().createCriteria(getPersistentClass()).add(id);
-		return (T) crit.uniqueResult();
-	}
-
-	@SuppressWarnings("unchecked")
-	public T findByPropertyValues(String... property_value) {
-		NaturalIdentifier natid = Restrictions.naturalId();
-		String property = null;
-		for (String pv : property_value)
-			if (property == null)
-				property = pv;
-			else {
-				natid.set(property, pv);
-				property = null;
-			}
-		return (T) getSession().createCriteria(getPersistentClass()).add(natid).uniqueResult();
-	}
-
 	public List<T> findAll() {
 		return findByCriteria();
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<T> findByExample(T exampleInstance, String... excludeProperty) {
+	public T findByExample(T exampleInstance, String... excludeProperty) {
 		Criteria crit = getSession().createCriteria(getPersistentClass());
 		Example example = Example.create(exampleInstance);
 		for (String exclude : excludeProperty)
 			example.excludeProperty(exclude);
 		crit.add(example);
-		return crit.list();
+		return (T) crit.uniqueResult();
 	}
 
 	public T findOrCreateByExample(T exampleInstance, String... excludeProperty) {
-		List<T> list = findByExample(exampleInstance, excludeProperty);
-		if (list.isEmpty())
+		T entity = findByExample(exampleInstance, excludeProperty);
+		if (entity == null)
 			return makePersistent(exampleInstance);
-		if (list.size() == 1)
-			return list.get(0);
-		throw new NonUniqueResultException(list.size());
+		return entity;
 	}
 
 	/**
@@ -131,4 +114,39 @@ public class GenericHibernateDAO<T, ID extends Serializable> implements GenericD
 	public void disableFilter(String filterName) {
 		getSession().disableFilter(filterName);
 	}
+
+	// Inline concrete DAO implementations with no business-related data access methods.
+	// If we use public static nested classes, we can centralize all of them in one source file.
+	@Service
+	public static class AnnotationHibernateDAO extends GenericHibernateDAO<Annotation, Long> implements AnnotationDAO {
+	}
+
+	@Service
+	public static class CommentHibernateDAO extends GenericHibernateDAO<Comment, Long> implements CommentDAO {
+	}
+
+	@Service
+	public static class DatabankHibernateDAO extends GenericHibernateDAO<Databank, Long> implements DatabankDAO {
+		@Override
+		public Databank findByName(String name) {
+			Criteria crit = getSession().createCriteria(getPersistentClass());
+			crit.add(Restrictions.naturalId().set("name", name));
+			return (Databank) crit.uniqueResult();
+		}
+	}
+
+	@Service
+	public static class EntryHibernateDAO extends GenericHibernateDAO<Entry, Long> implements EntryDAO {
+		@Override
+		public Entry findByDatabankAndPdbid(Databank databank, String pdbid) {
+			Criteria crit = getSession().createCriteria(getPersistentClass());
+			crit.add(Restrictions.naturalId().set("databank", databank).set("pdbid", pdbid));
+			return (Entry) crit.uniqueResult();
+		}
+	}
+
+	@Service
+	public static class FileHibernateDAO extends GenericHibernateDAO<File, Long> implements FileDAO {
+	}
+
 }

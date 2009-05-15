@@ -9,7 +9,6 @@ import nl.ru.cmbi.why_not.model.Databank;
 import nl.ru.cmbi.why_not.model.Entry;
 import nl.ru.cmbi.why_not.model.File;
 
-import org.hibernate.criterion.NaturalIdentifier;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface GenericDAO<T, ID extends Serializable> {
@@ -18,12 +17,9 @@ public interface GenericDAO<T, ID extends Serializable> {
 	//Finders
 	T findById(ID id, boolean lock);
 
-	@Deprecated
-	T findByNaturalId(NaturalIdentifier id);
-
 	List<T> findAll();
 
-	List<T> findByExample(T exampleInstance, String... excludeProperty);
+	T findByExample(T exampleInstance, String... excludeProperty);
 
 	T findOrCreateByExample(T exampleInstance, String... excludeProperty);
 
@@ -47,9 +43,11 @@ public interface GenericDAO<T, ID extends Serializable> {
 	}
 
 	public interface DatabankDAO extends GenericDAO<Databank, Long> {
+		Databank findByName(String name);
 	}
 
 	public interface EntryDAO extends GenericDAO<Entry, Long> {
+		Entry findByDatabankAndPdbid(Databank databank, String pdbid);
 	}
 
 	public interface FileDAO extends GenericDAO<File, Long> {

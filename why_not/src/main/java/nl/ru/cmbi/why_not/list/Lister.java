@@ -8,7 +8,6 @@ import nl.ru.cmbi.why_not.model.Databank;
 import nl.ru.cmbi.why_not.model.Entry;
 
 import org.apache.log4j.Logger;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +41,7 @@ public class Lister {
 	private DatabankDAO	dbdao;
 
 	public void list(String dbname, String fileFilter, String parentFilter, String commentFilter, String comment) throws Exception {
-		Databank db = dbdao.findByNaturalId(Restrictions.naturalId().set("name", dbname));
+		Databank db = dbdao.findByExample(new Databank(dbname), "id", "reference", "filelink", "parent", "regex", "crawltype", "entries");
 		if (db == null)
 			new IllegalArgumentException("Databank with name " + dbname + " not found.");
 
@@ -53,7 +52,7 @@ public class Lister {
 		SortedSet<Entry> entries = db.getEntries();
 		System.out.println("#" + dbname + " " + fileFilter + " " + parentFilter + " " + commentFilter + ": " + entries.size() + " entries");
 		for (Entry entry : entries)
-			System.out.println(entry + "," + (entry.getFile() != null ? entry.getFile().getTimestamp() : -1));
+			System.out.println(entry);
 
 		Logger.getLogger(Lister.class).debug("list DATABASE " + fileFilter + " " + parentFilter + " " + commentFilter + " \"" + comment + "\": Succes");
 	}

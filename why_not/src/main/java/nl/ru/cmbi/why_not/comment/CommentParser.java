@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.text.ParseException;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,14 +19,13 @@ import nl.ru.cmbi.why_not.model.Databank;
 import nl.ru.cmbi.why_not.model.Entry;
 
 import org.apache.log4j.Logger;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CommentParser {
-	private static String		append			= ".done";
+	public static final String	append			= ".done";
 	public static FileFilter	commentFilter	= new FileFilter() {
 													@Override
 													public boolean accept(File pathname) {
@@ -50,14 +48,17 @@ public class CommentParser {
 	@Transactional
 	public void comment(File file) throws IOException, ParseException {
 		//Current comment found or created
-		Comment currentComment = new Comment("No comment specified");
+		Comment comment = new Comment("No comment specified");
 
-		//Databanks & previous databank available as simple caching mechanism
-		List<Databank> databanks = dbdao.findAll();
-		Databank databank = databanks.get(0);
+		//Databank available as simple caching mechanism
+		Databank databank = new Databank("Unknown databank");
+
+		Entry entry;
 
 		//Assign this time to all annotations
 		long time = System.currentTimeMillis();
+
+		int added = 0, skipped = 0;
 
 		long start = time, dif;//TODO: Remove
 
@@ -75,24 +76,30 @@ public class CommentParser {
 
 			//Try reading comment line
 			if ((matcher = patternComment.matcher(line)).matches()) {
-				if (!currentComment.getText().equals(matcher.group(1)))
-					currentComment = comdao.findOrCreateByExample(new Comment(matcher.group(1)), "id", "annotations");
+				if (!comment.getText().equals(matcher.group(1)))
+					comment = comdao.findOrCreateByExample(new Comment(matcher.group(1)));
 			}
 			else
 				//Try reading entry line
 				if ((matcher = patternEntry.matcher(line)).matches()) {
 					if (!databank.getName().equals(matcher.group(1)))
-						//Find databank
-						if (databanks.contains(databank = new Databank(matcher.group(1))))
-							databank = databanks.get(databanks.indexOf(databank));
-						else
+						if (null == (databank = dbdao.findByName(matcher.group(1))))
 							throw new ParseException("No databank found for name " + matcher.group(1) + " at line " + lnr.getLineNumber(), lnr.getLineNumber());
 
 					//Find or create entry
-					Entry entry = entdao.findOrCreateByExample(new Entry(databank, matcher.group(2).toLowerCase()), "id", "file", "annotations");
+					if (null == (entry = entdao.findByDatabankAndPdbid(databank, matcher.group(2)))) {
+						entry = new Entry(databank, matcher.group(2).toLowerCase());
+						databank.getEntries().add(entry);
+					}
 
 					//Create & store annotation
-					entry.getAnnotations().add(new Annotation(currentComment, entry, time));
+					Annotation ann = new Annotation(comment, entry, time);
+					if (entry.getAnnotations().add(ann))
+						added++;
+					else {
+						Logger.getLogger(CommentParser.class).warn("Skipping: " + ann);
+						skipped++;
+					}
 				}
 				else
 					throw new ParseException("Expected: " + patternComment.pattern() + " OR " + patternEntry.pattern() + " at line " + lnr.getLineNumber(), lnr.getLineNumber());
@@ -100,63 +107,63 @@ public class CommentParser {
 		lnr.close();
 
 		file.renameTo(new File(file.getAbsolutePath() + CommentParser.append));
-		Logger.getLogger(CommentParser.class).info("Commented file" + file.getAbsolutePath());
+		Logger.getLogger(CommentParser.class).info("Added " + added + ", skipped " + skipped + " annotations from file: " + file.getAbsolutePath());
 	}
 
 	@Transactional
 	public void uncomment(File file) throws IOException, ParseException {
-		//Read first line (starting comment)
+		//Current comment found or created
+		Comment comment = new Comment("No comment specified");
+
+		//Databank available as simple caching mechanism
+		Databank databank = new Databank("Unknown databank");
+
+		Entry entry;
+
+		int removed = 0, skipped = 0;
+
+		//Read file
 		LineNumberReader lnr = new LineNumberReader(new FileReader(file));
-		String line = lnr.readLine();
-		Matcher matcher = patternComment.matcher(line);
-		if (!matcher.matches())
-			throw new ParseException("Expected: " + patternComment.pattern() + " at line " + lnr.getLineNumber(), lnr.getLineNumber());
-
-		//Find comment
-		Comment comment = comdao.findByNaturalId(Restrictions.naturalId().set("text", matcher.group(1)));
-		if (comment == null)
-			throw new ParseException("No comment with text " + matcher.group(1) + " found" + " at line " + lnr.getLineNumber(), lnr.getLineNumber());
-
-		//Previous databank available as simple caching mechanism
-		Databank databank = null;
-
-		//Read rest of file
+		String line;
+		Matcher matcher;
 		while ((line = lnr.readLine()) != null)
-			if ((matcher = patternEntry.matcher(line)).matches()) {
-				//Find databank
-				String name = matcher.group(1);
-				if (databank == null || !databank.getName().equals(name))
-					if ((databank = dbdao.findByNaturalId(Restrictions.naturalId().set("name", name))) == null)
-						throw new ParseException("No databank with name " + name + " found" + " at line " + lnr.getLineNumber(), lnr.getLineNumber());
+			//Try reading comment line
+			if ((matcher = patternComment.matcher(line)).matches()) {
+				if (!comment.getText().equals(matcher.group(1)))
+					comment = comdao.findOrCreateByExample(new Comment(matcher.group(1)));
+			}
+			else
+				//Try reading entry line
+				if ((matcher = patternEntry.matcher(line)).matches()) {
+					if (!databank.getName().equals(matcher.group(1)))
+						if (null == (databank = dbdao.findByName(matcher.group(1))))
+							throw new ParseException("No databank found for name " + matcher.group(1) + " at line " + lnr.getLineNumber(), lnr.getLineNumber());
 
-				//Find entry
-				String pdbid = matcher.group(2).toLowerCase();
-				Entry entry = entdao.findByNaturalId(Restrictions.naturalId().set("databank", databank).set("pdbid", pdbid));
-				if (entry == null)
-					continue;
+					//Find entry
+					if (null == (entry = entdao.findByDatabankAndPdbid(databank, matcher.group(2)))) {
+						skipped++;
+						continue;
+					}
 
-				//Find & remove annotation
-				Annotation ann = anndao.findByNaturalId(Restrictions.naturalId().set("comment", comment).set("entry", entry));
-				if (ann != null) {
+					//Find annotation
+					Annotation ann = new Annotation(comment, entry, 1L);
+					if (!entry.getAnnotations().contains(ann)) {
+						skipped++;
+						continue;
+					}
+
+					//Remove annotation
 					comment.getAnnotations().remove(ann);
 					entry.getAnnotations().remove(ann);
 					anndao.makeTransient(ann);
-				}
-			}
-			else
-				//Maybe its a new comment
-				if ((matcher = patternComment.matcher(line)).matches()) {
-					//Find comment
-					if (comment == null || !comment.getText().equals(matcher.group(1)))
-						if ((comment = comdao.findByNaturalId(Restrictions.naturalId().set("text", matcher.group(1)))) == null)
-							throw new ParseException("No comment with text " + matcher.group(1) + " found" + " at line " + lnr.getLineNumber(), lnr.getLineNumber());
+					removed++;
 				}
 				else
 					throw new ParseException("Expected: " + patternComment.pattern() + " OR " + patternEntry.pattern() + " at line " + lnr.getLineNumber(), lnr.getLineNumber());
 		lnr.close();
 
 		file.renameTo(new File(file.getAbsolutePath() + CommentParser.append));
-		Logger.getLogger(CommentParser.class).info("Uncommented file" + file.getAbsolutePath());
+		Logger.getLogger(CommentParser.class).info("Removed " + removed + ", skipped " + skipped + " annotations from file: " + file.getAbsolutePath());
 	}
 
 	/**
@@ -164,13 +171,16 @@ public class CommentParser {
 	 */
 	@Transactional
 	public void cleanUpComments() {
+		int count = 0;
 		for (Comment comment : comdao.findAll()) {
 			entdao.enableFilter("withComment", "comment", comment.getText());
-			if (entdao.countAll() == 0)
+			if (entdao.countAll() == 0) {
 				comdao.makeTransient(comment);
+				count++;
+			}
 			entdao.disableFilter("withComment");
 		}
-		Logger.getLogger(Commenter.class).info("Cleaned up unused comments");
+		Logger.getLogger(CommentParser.class).info("Cleaned up " + count + " unused comments");
 	}
 
 	/**
@@ -178,12 +188,15 @@ public class CommentParser {
 	 */
 	@Transactional
 	public void cleanUpEntries() {
+		int count = 0;
 		entdao.enableFilter("withoutFile");
-		entdao.enableFilter("withoutComment", "comment", "*");
-		for (Entry entry : entdao.findAll())
+		entdao.enableFilter("withoutComment", "comment", "%");
+		for (Entry entry : entdao.findAll()) {
 			entdao.makeTransient(entry);
+			count++;
+		}
 		entdao.disableFilter("withoutFile");
 		entdao.disableFilter("withoutComment");
-		Logger.getLogger(Commenter.class).info("Cleaned up unused entries");
+		Logger.getLogger(CommentParser.class).info("Cleaned up " + count + " unused entries");
 	}
 }

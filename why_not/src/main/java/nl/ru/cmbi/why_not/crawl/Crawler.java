@@ -8,7 +8,6 @@ import nl.ru.cmbi.why_not.hibernate.GenericDAO.FileDAO;
 import nl.ru.cmbi.why_not.model.Databank;
 
 import org.apache.log4j.Logger;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +28,7 @@ public class Crawler {
 	private FileDAO		filedao;
 
 	public void crawl(String dbname, String path) throws IOException {
-		Databank db = dbdao.findByNaturalId(Restrictions.naturalId().set("name", dbname));
+		Databank db = dbdao.findByExample(new Databank(dbname), "id", "reference", "filelink", "parent", "regex", "crawltype", "entries");
 
 		AbstractCrawler fc;
 		switch (db.getCrawltype()) {

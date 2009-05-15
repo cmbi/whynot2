@@ -30,8 +30,10 @@ public class FilterTest {
 
 		//entdao.getSession().enableFilter("withComment");
 		//entdao.getSession().enableFilter("withoutComment");
-		entdao.enableFilter("withComment", "comment", "Another new example comment from com1.txt");
-		Logger.getLogger(FilterTest.class).info("Before");
+		//entdao.enableFilter("withComment", "comment", "Nucleic acids only");
+		//entdao.enableFilter("inDatabank", "name", "DSSP");
+		entdao.enableFilter("withComment", "comment", "%");
+		Logger.getLogger(FilterTest.class).info("Here it comes: ");
 		Logger.getLogger(FilterTest.class).info(entdao.countAll());
 		for (Entry entry : entdao.findAll())
 			Logger.getLogger(FilterTest.class).info(entry);

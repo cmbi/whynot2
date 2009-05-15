@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
 
+import nl.ru.cmbi.why_not.comment.CommentParser;
 import nl.ru.cmbi.why_not.comment.Commenter;
 
 import org.junit.After;
@@ -12,10 +13,9 @@ import org.junit.Test;
 public class CommenterTest {
 	private FileFilter	doneFilter	= new FileFilter() {
 										public boolean accept(File pathname) {
-											return pathname.isFile() && pathname.getName().contains(append);
+											return pathname.isFile() && pathname.getName().contains(CommentParser.append);
 										}
 									};
-	private String		append		= ".done";
 
 	@Test
 	public void comment() throws Exception {
@@ -35,8 +35,8 @@ public class CommenterTest {
 
 		//Rename files
 		for (File file : dirComments.listFiles(doneFilter))
-			file.renameTo(new File(file.getAbsolutePath().replace(append, "")));
+			file.renameTo(new File(file.getAbsolutePath().replace(CommentParser.append, "")));
 		for (File file : dirUncomments.listFiles(doneFilter))
-			file.renameTo(new File(file.getAbsolutePath().replace(append, "")));
+			file.renameTo(new File(file.getAbsolutePath().replace(CommentParser.append, "")));
 	}
 }

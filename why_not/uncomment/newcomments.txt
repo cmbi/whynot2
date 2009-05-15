@@ -1,6 +1,0 @@
-COMMENT: Another new example comment from com1.txt
-PDB,100J
-HSSP,3TIM
-COMMENT: A completely removed example comment
-DSSP,100J
-DSSP,100q

@@ -18,11 +18,14 @@ public interface GenericDAO<T, ID extends Serializable> {
 	//Finders
 	T findById(ID id, boolean lock);
 
+	@Deprecated
 	T findByNaturalId(NaturalIdentifier id);
 
 	List<T> findAll();
 
-	List<T> findByExample(T exampleInstance, String[] excludeProperty);
+	List<T> findByExample(T exampleInstance, String... excludeProperty);
+
+	T findOrCreateByExample(T exampleInstance, String... excludeProperty);
 
 	//Save / Delete
 	@Transactional

@@ -1,0 +1,4 @@
+COMMENT: Nucleic acids only
+DSSP,100d
+COMMENT: Not an NMR entry.
+NRG-CING,1sum

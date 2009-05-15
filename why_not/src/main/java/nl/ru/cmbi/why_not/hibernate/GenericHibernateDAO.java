@@ -7,11 +7,13 @@ import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.Filter;
 import org.hibernate.LockMode;
+import org.hibernate.NonUniqueResultException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Example;
 import org.hibernate.criterion.NaturalIdentifier;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class GenericHibernateDAO<T, ID extends Serializable> implements GenericDAO<T, ID> {
@@ -55,18 +57,41 @@ public class GenericHibernateDAO<T, ID extends Serializable> implements GenericD
 		return (T) crit.uniqueResult();
 	}
 
+	@SuppressWarnings("unchecked")
+	public T findByPropertyValues(String... property_value) {
+		NaturalIdentifier natid = Restrictions.naturalId();
+		String property = null;
+		for (String pv : property_value)
+			if (property == null)
+				property = pv;
+			else {
+				natid.set(property, pv);
+				property = null;
+			}
+		return (T) getSession().createCriteria(getPersistentClass()).add(natid).uniqueResult();
+	}
+
 	public List<T> findAll() {
 		return findByCriteria();
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<T> findByExample(T exampleInstance, String[] excludeProperty) {
+	public List<T> findByExample(T exampleInstance, String... excludeProperty) {
 		Criteria crit = getSession().createCriteria(getPersistentClass());
 		Example example = Example.create(exampleInstance);
 		for (String exclude : excludeProperty)
 			example.excludeProperty(exclude);
 		crit.add(example);
 		return crit.list();
+	}
+
+	public T findOrCreateByExample(T exampleInstance, String... excludeProperty) {
+		List<T> list = findByExample(exampleInstance, excludeProperty);
+		if (list.isEmpty())
+			return makePersistent(exampleInstance);
+		if (list.size() == 1)
+			return list.get(0);
+		throw new NonUniqueResultException(list.size());
 	}
 
 	/**

@@ -8,8 +8,9 @@ import java.io.LineNumberReader;
 import java.io.PrintWriter;
 import java.text.ParseException;
 
-import nl.ru.cmbi.why_not.comment.CommentParser;
+import nl.ru.cmbi.why_not.comment.PhasedCommentParser;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,13 +21,14 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(locations = { "classpath:/spring.xml" })
 public class CommentParserTest {
 	@Autowired
-	private CommentParser	cp;
+	private PhasedCommentParser	cp;
 
 	@Test
 	public void copyFileToCommentAndComment() throws IOException, ParseException {
 		File dest = new File("comment/testcomments.txt");
 		PrintWriter pw = new PrintWriter(new FileWriter(dest));
-		File src = new File("src/test/resources/testcomments.txt");
+		//File src = new File("src/test/resources/testcomments.txt");
+		File src = new File("src/test/resources/converted_20090407_comments.txt");
 		LineNumberReader lnr = new LineNumberReader(new FileReader(src));
 
 		String line;
@@ -35,10 +37,12 @@ public class CommentParserTest {
 		lnr.close();
 		pw.close();
 
-		cp.comment(dest);
+		cp.storeComments(dest);
+		cp.storeEntries(dest);
 	}
 
 	@Test
+	@Ignore
 	public void copyFileToUncommentAndUncomment() throws IOException, ParseException {
 		File dest = new File("uncomment/testcomments.txt");
 		PrintWriter pw = new PrintWriter(new FileWriter(dest));
@@ -51,6 +55,6 @@ public class CommentParserTest {
 		lnr.close();
 		pw.close();
 
-		cp.uncomment(dest);
+		;//cp.uncomment(dest);
 	}
 }

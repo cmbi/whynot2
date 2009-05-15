@@ -87,8 +87,9 @@ public class CommentParser {
 							throw new ParseException("No databank found for name " + matcher.group(1) + " at line " + lnr.getLineNumber(), lnr.getLineNumber());
 
 					//Find or create entry
-					if (null == (entry = entdao.findByDatabankAndPdbid(databank, matcher.group(2)))) {
-						entry = new Entry(databank, matcher.group(2).toLowerCase());
+					String pdbid = matcher.group(2).toLowerCase();
+					if (null == (entry = entdao.findByDatabankAndPdbid(databank, pdbid))) {
+						entry = new Entry(databank, pdbid.toLowerCase());
 						databank.getEntries().add(entry);
 					}
 
@@ -97,7 +98,7 @@ public class CommentParser {
 					if (entry.getAnnotations().add(ann))
 						added++;
 					else {
-						Logger.getLogger(CommentParser.class).warn("Skipping: " + ann);
+						Logger.getLogger(CommentParser.class).warn("Annotation found, skipping: " + ann);
 						skipped++;
 					}
 				}
@@ -140,7 +141,9 @@ public class CommentParser {
 							throw new ParseException("No databank found for name " + matcher.group(1) + " at line " + lnr.getLineNumber(), lnr.getLineNumber());
 
 					//Find entry
-					if (null == (entry = entdao.findByDatabankAndPdbid(databank, matcher.group(2)))) {
+					String pdbid = matcher.group(2).toLowerCase();
+					if (null == (entry = entdao.findByDatabankAndPdbid(databank, pdbid))) {
+						Logger.getLogger(CommentParser.class).warn("Entry not found, skipping: " + comment + "," + line);
 						skipped++;
 						continue;
 					}
@@ -148,6 +151,7 @@ public class CommentParser {
 					//Find annotation
 					Annotation ann = new Annotation(comment, entry, 1L);
 					if (!entry.getAnnotations().contains(ann)) {
+						Logger.getLogger(CommentParser.class).warn("Annotation not found, skipping: " + ann);
 						skipped++;
 						continue;
 					}

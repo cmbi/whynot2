@@ -60,20 +60,11 @@ public class CommentParser {
 
 		int added = 0, skipped = 0;
 
-		long start = time, dif;//TODO: Remove
-
 		//Read file
 		LineNumberReader lnr = new LineNumberReader(new FileReader(file));
 		String line;
 		Matcher matcher;
-		while ((line = lnr.readLine()) != null) {
-			//TODO: Remove
-			if (lnr.getLineNumber() % 100 == 0) {
-				dif = System.currentTimeMillis() - start;
-				System.out.println(lnr.getLineNumber() + ": " + dif / 100.00);
-				start = System.currentTimeMillis();
-			}
-
+		while ((line = lnr.readLine()) != null)
 			//Try reading comment line
 			if ((matcher = patternComment.matcher(line)).matches()) {
 				if (!comment.getText().equals(matcher.group(1)))
@@ -89,7 +80,7 @@ public class CommentParser {
 					//Find or create entry
 					String pdbid = matcher.group(2).toLowerCase();
 					if (null == (entry = entdao.findByDatabankAndPdbid(databank, pdbid))) {
-						entry = new Entry(databank, pdbid.toLowerCase());
+						entry = new Entry(databank, pdbid);
 						databank.getEntries().add(entry);
 					}
 
@@ -104,7 +95,6 @@ public class CommentParser {
 				}
 				else
 					throw new ParseException("Expected: " + patternComment.pattern() + " OR " + patternEntry.pattern() + " at line " + lnr.getLineNumber(), lnr.getLineNumber());
-		}
 		lnr.close();
 
 		file.renameTo(new File(file.getAbsolutePath() + CommentParser.append));

@@ -40,6 +40,7 @@ public interface GenericDAO<T, ID extends Serializable> {
 	}
 
 	public interface CommentDAO extends GenericDAO<Comment, Long> {
+		Comment findByText(String text);
 	}
 
 	public interface DatabankDAO extends GenericDAO<Databank, Long> {

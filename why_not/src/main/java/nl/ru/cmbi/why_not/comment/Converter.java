@@ -7,6 +7,10 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.PrintWriter;
 import java.text.ParseException;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,10 +38,11 @@ public class Converter {
 	public static File convert(File file) throws IOException, ParseException {
 		LineNumberReader lnr = new LineNumberReader(new FileReader(file));
 		File convert = new File(file.getParent() + "/converted_" + file.getName());
-		PrintWriter fw = new PrintWriter(new FileWriter(convert));
 
-		String line, db, id, com = null;
+		String line, com = null, db, id;
 		Matcher m;
+
+		SortedMap<String, SortedSet<String>> mapje = new TreeMap<String, SortedSet<String>>();
 
 		while ((line = lnr.readLine()) != null) {
 			//PDBID
@@ -58,24 +63,28 @@ public class Converter {
 			//Comment
 			if (!(m = patternComment.matcher(lnr.readLine())).matches())
 				throw new ParseException("Expected " + patternComment.pattern() + " on line " + lnr.getLineNumber(), lnr.getLineNumber());
-			if (!m.group(1).equals(com)) {
-				//Write new comment line if different from previous
-				com = m.group(1);
-				fw.println("COMMENT: " + com);
-			}
+			com = m.group(1);
+			if (!mapje.containsKey(com))
+				mapje.put(com, new TreeSet<String>());
 
 			//
 			if (!lnr.readLine().matches("//"))
 				throw new ParseException("Expected \"//\" on line " + lnr.getLineNumber(), lnr.getLineNumber());
 
-			//Write new entry line
-			fw.println(db + "," + id);
+			//Add new entry line
+			mapje.get(com).add(db + "," + id);
 		}
 		lnr.close();
+
+		PrintWriter fw = new PrintWriter(new FileWriter(convert));
+		for (String comment : mapje.keySet()) {
+			fw.println("COMMENT: " + comment);
+			for (String entry : mapje.get(comment))
+				fw.println(entry);
+		}
 		fw.close();
 
 		file.delete();
 		return convert;
 	}
-
 }

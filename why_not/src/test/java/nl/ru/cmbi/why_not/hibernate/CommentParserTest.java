@@ -25,20 +25,10 @@ public class CommentParserTest {
 
 	@Test
 	public void copyFileToCommentAndComment() throws IOException, ParseException {
-		File dest = new File("comment/testcomments.txt");
-		PrintWriter pw = new PrintWriter(new FileWriter(dest));
-		//File src = new File("src/test/resources/testcomments.txt");
-		File src = new File("src/test/resources/converted_20090407_comments.txt");
-		LineNumberReader lnr = new LineNumberReader(new FileReader(src));
-
-		String line;
-		while ((line = lnr.readLine()) != null)
-			pw.println(line);
-		lnr.close();
-		pw.close();
-
+		File dest = new File("comment/converted_20090407.txt");
 		cp.storeComments(dest);
 		cp.storeEntries(dest);
+		cp.storeAnnotations(dest);
 	}
 
 	@Test

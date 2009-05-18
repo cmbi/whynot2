@@ -123,6 +123,12 @@ public class GenericHibernateDAO<T, ID extends Serializable> implements GenericD
 
 	@Service
 	public static class CommentHibernateDAO extends GenericHibernateDAO<Comment, Long> implements CommentDAO {
+		@Override
+		public Comment findByText(String text) {
+			Criteria crit = getSession().createCriteria(getPersistentClass());
+			crit.add(Restrictions.naturalId().set("text", text));
+			return (Comment) crit.uniqueResult();
+		}
 	}
 
 	@Service

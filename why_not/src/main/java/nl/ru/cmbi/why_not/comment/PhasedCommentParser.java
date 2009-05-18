@@ -6,6 +6,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -73,6 +75,43 @@ public class PhasedCommentParser {
 						skipped++;
 			System.err.println(added + " / " + skipped);
 		}
+	}
+
+	@Transactional
+	public void storeAnnotations(File file) throws IOException, ParseException {
+		LineNumberReader lnr = new LineNumberReader(new FileReader(file));
+		long time = System.currentTimeMillis();
+		int added = 0, skipped = 0;
+		String line;
+		Matcher matcher;
+		Comment comment = new Comment("Unspecified comment");
+		Databank databank = new Databank("Unspecified databank");
+		Entry entry = new Entry(databank, "Unspecified");
+		List<Annotation> annotations = new ArrayList<Annotation>();
+		while ((line = lnr.readLine()) != null)
+			if ((matcher = patternComment.matcher(line)).matches()) {
+				System.err.println(lnr.getLineNumber());
+				if (!comment.getText().equals(matcher.group(1))) {
+					comment.getAnnotations().addAll(annotations);
+					comment = comdao.findByText(matcher.group(1));
+				}
+			}
+			else
+				if ((matcher = patternEntry.matcher(line)).matches()) {
+					if (!databank.getName().equals(matcher.group(1)))
+						databank = dbdao.findByName(matcher.group(1));
+
+					entry = entdao.findByDatabankAndPdbid(databank, matcher.group(2));
+					annotations.add(new Annotation(comment, entry, time));
+				}
+				else
+					throw new ParseException("Expected: " + patternComment.pattern() + " OR " + patternEntry.pattern() + " at line " + lnr.getLineNumber(), lnr.getLineNumber());
+		comment.getAnnotations().addAll(annotations);
+
+		lnr.close();
+
+		file.renameTo(new File(file.getAbsolutePath() + PhasedCommentParser.append));
+		Logger.getLogger(PhasedCommentParser.class).info("Added " + added + ", skipped " + skipped + " annotations from file: " + file.getAbsolutePath());
 	}
 
 	@Transactional

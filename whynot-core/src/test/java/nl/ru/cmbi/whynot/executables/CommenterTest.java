@@ -8,6 +8,7 @@ import nl.ru.cmbi.whynot.comment.CommentParser;
 import nl.ru.cmbi.whynot.comment.Commenter;
 
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class CommenterTest {
@@ -18,6 +19,7 @@ public class CommenterTest {
 									};
 
 	@Test
+	@Ignore
 	public void comment() throws Exception {
 		Commenter.main(new String[0]);
 	}

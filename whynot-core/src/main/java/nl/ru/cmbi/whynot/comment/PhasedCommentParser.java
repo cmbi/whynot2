@@ -77,7 +77,8 @@ public class PhasedCommentParser {
 						added++;
 					else
 						skipped++;
-			//sf.getCurrentSession().
+			sf.getCurrentSession().flush();
+			System.gc();
 			System.err.println(added + " / " + skipped);
 		}
 	}

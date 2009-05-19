@@ -6,14 +6,18 @@ import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Databank.CrawlType;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class Installer {
-
 	public static void main(String[] args) throws Exception {
+		AnnotationSessionFactoryBean asfb = (AnnotationSessionFactoryBean) SpringUtil.getContext().getBean("&sessionFactory");
+		asfb.dropDatabaseSchema();
+		asfb.createDatabaseSchema();
+
 		((Installer) SpringUtil.getContext().getBean("installer")).fill();
 	}
 

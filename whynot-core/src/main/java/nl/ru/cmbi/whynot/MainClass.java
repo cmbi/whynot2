@@ -1,6 +1,6 @@
 package nl.ru.cmbi.whynot;
 
-public class Main {
+public class MainClass {
 	/**
 	 * @param args
 	 */

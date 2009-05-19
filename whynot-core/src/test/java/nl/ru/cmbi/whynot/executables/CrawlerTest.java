@@ -7,13 +7,13 @@ import org.junit.Test;
 
 public class CrawlerTest {
 	@Test
-	//@Ignore
+	@Ignore
 	public void crawlPDB() throws Exception {
 		Crawler.main(new String[] { "PDB", "/home/tbeek/Desktop/raw/pdb/" });
 	}
 
 	@Test
-	//@Ignore
+	@Ignore
 	public void crawlDSSP() throws Exception {
 		Crawler.main(new String[] { "DSSP", "/home/tbeek/Desktop/raw/dssp/" });
 	}

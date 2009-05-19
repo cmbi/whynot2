@@ -4,6 +4,7 @@ import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 import nl.ru.cmbi.whynot.model.Entry;
 
 import org.apache.log4j.Logger;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ public class FilterTest {
 	private EntryDAO	entdao;
 
 	@Test
+	@Ignore
 	public void printCounts() {
 		//entdao.getSession().enableFilter("inDatabank").setParameter("name", "DSSP");
 

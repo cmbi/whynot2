@@ -21,6 +21,7 @@ import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Entry;
 
 import org.apache.log4j.Logger;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +47,9 @@ public class PhasedCommentParser {
 	private DatabankDAO			dbdao;
 	@Autowired
 	private EntryDAO			entdao;
+
+	@Autowired
+	private SessionFactory		sf;
 
 	@Transactional
 	public void storeComments(File file) throws IOException, ParseException {
@@ -73,6 +77,7 @@ public class PhasedCommentParser {
 						added++;
 					else
 						skipped++;
+			//sf.getCurrentSession().
 			System.err.println(added + " / " + skipped);
 		}
 	}

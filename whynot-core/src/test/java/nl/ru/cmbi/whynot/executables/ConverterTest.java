@@ -16,10 +16,10 @@ public class ConverterTest {
 	@Test
 	public void copyFileAndConvert() throws IOException, ParseException {
 		//Read
-		File src = new File("src/test/resources/20090407_comments.txt");
+		File src = new File("src/test/resources/20090519.txt");
 		LineNumberReader lnr = new LineNumberReader(new FileReader(src));
 		//Write
-		File dest = new File("comment/20090407.txt");
+		File dest = new File("comment/20090519.txt");
 		PrintWriter pw = new PrintWriter(new FileWriter(dest));
 
 		String line;

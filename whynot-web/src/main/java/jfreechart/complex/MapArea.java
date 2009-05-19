@@ -33,7 +33,7 @@ public class MapArea extends WebMarkupContainer {
 	 * @param tooltipText The tooltip text, or null to not include it
 	 * @param linkCallback The link callback function called when the area is click, or null to have no link functionality
 	 */
-	public MapArea(String id, IModel model, String shape, String coords, String tooltipText, final IAjaxLink linkCallback) {
+	public MapArea(String id, IModel<Void> model, String shape, String coords, String tooltipText, final IAjaxLink linkCallback) {
 		super(id, model);
 		this.shape = shape;
 		this.coords = coords;

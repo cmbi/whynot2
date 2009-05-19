@@ -1,6 +1,7 @@
 package nl.ru.cmbi.why_not.crawl;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 import nl.ru.cmbi.why_not.hibernate.GenericDAO.FileDAO;
 import nl.ru.cmbi.why_not.model.Databank;
@@ -11,11 +12,13 @@ import org.apache.log4j.Logger;
 
 public abstract class AbstractCrawler {
 	protected Databank	databank;
-	protected FileDAO	fldao;
+	protected FileDAO	filedao;
+	protected Pattern	pattern;
 
-	public AbstractCrawler(Databank databank, FileDAO fldao) {
-		this.databank = databank;
-		this.fldao = fldao;
+	public AbstractCrawler(Databank db, FileDAO fldao) {
+		databank = db;
+		filedao = fldao;
+		pattern = Pattern.compile(db.getRegex());
 	}
 
 	/**
@@ -28,11 +31,12 @@ public abstract class AbstractCrawler {
 	public abstract void addEntriesIn(String path) throws IOException;
 
 	/**
-	 * Removes all the invalid FileEntries from database by checking if the file exists
-	 * and if the timestamp on the file is the same as the timestamp on the entry
+	 * Removes all the invalid FileEntries from database by checking if the file exists,
+	 * if the file matches the current regular expression (which might have changed) and
+	 * if the timestamp on the file is still the same as the timestamp on the entry
 	 */
 	public void removeInvalidEntries() {
-		fldao.enableFilter("withFile");
+		filedao.enableFilter("withFile");
 
 		int checked = 0, removed = 0;
 		for (Entry entry : databank.getEntries()) {
@@ -41,14 +45,14 @@ public abstract class AbstractCrawler {
 				continue;//But to be safe, we'll skip just like we used to
 			checked++;
 			java.io.File found = new java.io.File(stored.getPath());
-			if (!found.exists() || found.lastModified() != stored.getTimestamp()) {
-				fldao.makeTransient(entry.getFile());
+			if (!found.exists() || found.lastModified() != stored.getTimestamp() || !pattern.matcher(stored.getPath()).matches()) {
+				filedao.makeTransient(entry.getFile());
 				entry.setFile(null);
 				removed++;
 			}
 		}
 
-		fldao.disableFilter("withFile");
+		filedao.disableFilter("withFile");
 
 		Logger.getLogger(AbstractCrawler.class).info(databank.getName() + ": Checked " + checked + ", Removed " + removed);
 	}

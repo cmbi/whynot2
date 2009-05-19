@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import nl.ru.cmbi.why_not.hibernate.GenericDAO.FileDAO;
 import nl.ru.cmbi.why_not.model.Databank;
@@ -15,11 +14,8 @@ import nl.ru.cmbi.why_not.model.Entry;
 import org.apache.log4j.Logger;
 
 public class LineCrawler extends AbstractCrawler {
-	private Pattern	pattern;
-
 	public LineCrawler(Databank databank, FileDAO filedao) {
 		super(databank, filedao);
-		pattern = Pattern.compile(databank.getRegex());
 	}
 
 	@Override
@@ -57,7 +53,7 @@ public class LineCrawler extends AbstractCrawler {
 				}
 				else
 					if (!stored.equals(found)) {
-						fldao.makeTransient(entry.getFile());
+						filedao.makeTransient(entry.getFile());
 						entry.setFile(found);
 						updated++;
 					}

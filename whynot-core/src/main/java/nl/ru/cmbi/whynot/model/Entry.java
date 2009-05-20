@@ -17,6 +17,7 @@ import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.FilterDefs;
 import org.hibernate.annotations.Filters;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Index;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.Parameter;
@@ -56,10 +57,12 @@ public class Entry implements Comparable<Entry>, Serializable {
 	@NaturalId
 	@ManyToOne
 	@NotNull
+	@Index(name = "entry_databank_index")
 	private Databank				databank;
 	@NaturalId
 	@Length(max = 10)
 	@NotNull
+	@Index(name = "entry_pdbid_index")
 	private String					pdbid;
 
 	@ManyToOne(cascade = CascadeType.ALL)

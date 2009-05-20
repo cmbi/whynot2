@@ -41,6 +41,9 @@ public interface GenericDAO<T, ID extends Serializable> {
 
 	public interface CommentDAO extends GenericDAO<Comment, Long> {
 		Comment findByText(String text);
+
+		@Transactional
+		void cleanUp();
 	}
 
 	public interface DatabankDAO extends GenericDAO<Databank, Long> {
@@ -49,6 +52,9 @@ public interface GenericDAO<T, ID extends Serializable> {
 
 	public interface EntryDAO extends GenericDAO<Entry, Long> {
 		Entry findByDatabankAndPdbid(Databank databank, String pdbid);
+
+		@Transactional
+		void cleanUp();
 	}
 
 	public interface FileDAO extends GenericDAO<File, Long> {

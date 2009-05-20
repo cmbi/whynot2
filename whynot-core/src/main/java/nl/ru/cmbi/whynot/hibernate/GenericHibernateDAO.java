@@ -10,6 +10,7 @@ import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Entry;
 import nl.ru.cmbi.whynot.model.File;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Filter;
 import org.hibernate.LockMode;
@@ -123,17 +124,23 @@ public class GenericHibernateDAO<T, ID extends Serializable> implements GenericD
 
 	@Service
 	public static class CommentHibernateDAO extends GenericHibernateDAO<Comment, Long> implements CommentDAO {
-		@Override
 		public Comment findByText(String text) {
 			Criteria crit = getSession().createCriteria(getPersistentClass());
 			crit.add(Restrictions.naturalId().set("text", text));
 			return (Comment) crit.uniqueResult();
 		}
+
+		public void cleanUp() {
+			for (Comment comment : findAll())
+				if (comment.getAnnotations().size() == 0) {
+					makeTransient(comment);
+					Logger.getLogger(CommentHibernateDAO.class).info("Removed unused comment: " + comment);
+				}
+		}
 	}
 
 	@Service
 	public static class DatabankHibernateDAO extends GenericHibernateDAO<Databank, Long> implements DatabankDAO {
-		@Override
 		public Databank findByName(String name) {
 			Criteria crit = getSession().createCriteria(getPersistentClass());
 			crit.add(Restrictions.naturalId().set("name", name));
@@ -143,11 +150,14 @@ public class GenericHibernateDAO<T, ID extends Serializable> implements GenericD
 
 	@Service
 	public static class EntryHibernateDAO extends GenericHibernateDAO<Entry, Long> implements EntryDAO {
-		@Override
 		public Entry findByDatabankAndPdbid(Databank databank, String pdbid) {
 			Criteria crit = getSession().createCriteria(getPersistentClass());
 			crit.add(Restrictions.naturalId().set("databank", databank).set("pdbid", pdbid));
 			return (Entry) crit.uniqueResult();
+		}
+
+		public void cleanUp() {
+			getSession().createQuery("delete Entry where file is null and id not in (select distinct ann.entry.id from Annotation ann)").executeUpdate();
 		}
 	}
 

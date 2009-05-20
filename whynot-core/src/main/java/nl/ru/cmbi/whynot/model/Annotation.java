@@ -10,6 +10,7 @@ import javax.persistence.ManyToOne;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Index;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.validator.NotNull;
@@ -25,11 +26,13 @@ public class Annotation implements Comparable<Annotation>, Serializable {
 	@ManyToOne
 	@Cascade(value = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE })
 	@NotNull
+	@Index(name = "annotation_comment_index")
 	private Comment	comment;
 	@NaturalId
 	@ManyToOne
 	@Cascade(value = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE })
 	@NotNull
+	@Index(name = "annotation_entry_index")
 	private Entry	entry;
 
 	private Long	timestamp;

@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.text.ParseException;
 
 import nl.ru.cmbi.whynot.hibernate.SpringUtil;
+import nl.ru.cmbi.whynot.hibernate.GenericDAO.CommentDAO;
+import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 
 public class Commenter {
 	public static void main(String[] args) throws IOException, ParseException {
@@ -26,7 +28,7 @@ public class Commenter {
 			commentParser.uncomment(Converter.getFile(file));
 
 		//Cleanup unused comments & entries
-		commentParser.cleanUpComments();
-		commentParser.cleanUpEntries();
+		((CommentDAO) SpringUtil.getContext().getBean("commentDAO")).cleanUp();
+		((EntryDAO) SpringUtil.getContext().getBean("entryDAO")).cleanUp();
 	}
 }

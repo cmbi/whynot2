@@ -66,7 +66,8 @@ public class Databank implements Comparable<Databank>, Serializable {
 	@Filter(name = "inDatabank"),//
 	@Filter(name = "withFile"), @Filter(name = "withoutFile"),//
 	@Filter(name = "withParentFile"), @Filter(name = "withoutParentFile"),//	
-	@Filter(name = "withComment"), @Filter(name = "withoutComment") //	
+	@Filter(name = "withComment"), @Filter(name = "withoutComment"), //
+	@Filter(name = "withThisComment"), @Filter(name = "withoutThisComment") //
 	})
 	private SortedSet<Entry>	entries	= new TreeSet<Entry>();
 

@@ -10,12 +10,10 @@ import java.text.ParseException;
 
 import nl.ru.cmbi.whynot.comment.Converter;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class ConverterTest {
 	@Test
-	@Ignore
 	public void copyFileAndConvert() throws IOException, ParseException {
 		//Read
 		File src = new File("src/test/resources/20090519.txt");

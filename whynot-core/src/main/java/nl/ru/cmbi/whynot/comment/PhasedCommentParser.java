@@ -36,9 +36,6 @@ public class PhasedCommentParser {
 													}
 												};
 
-	private Pattern				patternComment	= Pattern.compile("COMMENT: (.+)");
-	private Pattern				patternEntry	= Pattern.compile("(.+),(.+)");
-
 	@Autowired
 	private AnnotationDAO		anndao;
 	@Autowired
@@ -53,38 +50,103 @@ public class PhasedCommentParser {
 
 	@Transactional
 	public void storeComments(File file) throws IOException, ParseException {
+		Logger.getLogger(PhasedCommentParser.class).info("Adding comments in " + file.getName());
 		LineNumberReader lnr = new LineNumberReader(new FileReader(file));
 		String line;
 		Matcher matcher;
-		Comment comment = new Comment("Unspecified comment");
+		Comment comment = new Comment("Empty comment");
 		while ((line = lnr.readLine()) != null)
-			if ((matcher = patternComment.matcher(line)).matches())
+			if ((matcher = Converter.patternCOMMENT.matcher(line)).matches())
 				if (!comment.getText().equals(matcher.group(1)))
 					comment = comdao.findOrCreateByExample(new Comment(matcher.group(1)));
 	}
 
 	@Transactional
-	public void storeEntries(File file) throws IOException, ParseException {
+	public void storeAnnotations(File file) throws IOException, ParseException {
+		Logger.getLogger(PhasedCommentParser.class).info("Adding annotations in " + file.getName());
+		int added = 0, skipped = 0;
+		long time = System.currentTimeMillis();
+
+		LineNumberReader lnr = new LineNumberReader(new FileReader(file));
+		String line;
+		Matcher matcher;
+
+		Databank db = new Databank("Empty databank");
+		Entry entry;
+		Comment comment = new Comment("Empty comment");
+		while ((line = lnr.readLine()) != null)
+			if ((matcher = Converter.patternEntry.matcher(line)).matches()) {
+				//Find DB
+				if (!db.getName().equals(matcher.group(1)))
+					db = dbdao.findByName(matcher.group(1));
+
+				//Add or Find Entry
+				if (!db.getEntries().add(entry = new Entry(db, matcher.group(2).toLowerCase())))
+					entry = entdao.findByDatabankAndPdbid(db, matcher.group(2));
+
+				//Add annotation
+				if (entry.getAnnotations().add(new Annotation(comment, entry, time)))
+					added++;
+				else
+					skipped++;
+			}
+			else
+				if ((matcher = Converter.patternCOMMENT.matcher(line)).matches()) {
+					Logger.getLogger(PhasedCommentParser.class).info("Added " + added + ", skipped " + skipped + " for comment: \"" + comment.getText() + "\"");
+					//Find comment
+					comment = comdao.findByText(matcher.group(1));
+					added = 0;
+					skipped = 0;
+
+					sf.getCurrentSession().flush();
+					System.gc();
+				}
+				else
+					throw new ParseException("Expected " + Converter.patternCOMMENT + " or " + Converter.patternEntry + "  on line " + lnr.getLineNumber(), lnr.getLineNumber());
+		Logger.getLogger(PhasedCommentParser.class).info("Added " + added + ", skipped " + skipped + " for comment: \"" + comment.getText() + "\"");
+		lnr.close();
+	}
+
+	@Transactional
+	@Deprecated
+	public void storeAnnotations1(File file) throws IOException, ParseException {
+		Logger.getLogger(PhasedCommentParser.class).info("Adding annotations in " + file.getName());
+		int added = 0, skipped = 0;
+		long time = System.currentTimeMillis();
 		for (Databank db : dbdao.findAll()) {
-			int skipped = 0, added = 0;
+
 			LineNumberReader lnr = new LineNumberReader(new FileReader(file));
 			String line;
 			Matcher matcher;
 			Pattern pattern = Pattern.compile(db.getName() + ",(.+)");
+
+			Entry entry;
+			Comment comment = new Comment("Empty comment");
 			while ((line = lnr.readLine()) != null)
-				if ((matcher = pattern.matcher(line)).matches())
-					if (db.getEntries().add(new Entry(db, matcher.group(1).toLowerCase())))
+				if ((matcher = pattern.matcher(line)).matches()) {
+					if (!db.getEntries().add(entry = new Entry(db, matcher.group(1).toLowerCase())))
+						entry = entdao.findByDatabankAndPdbid(db, matcher.group(1));
+					if (entry.getAnnotations().add(new Annotation(comment, entry, time)))
 						added++;
 					else
 						skipped++;
+				}
+				else
+					if ((matcher = Converter.patternCOMMENT.matcher(line)).matches()) {
+						Logger.getLogger(PhasedCommentParser.class).info(db.getName() + ": " + added + " added, " + skipped + " skipped for comment: \"" + comment.getText() + "\"");
+						comment = comdao.findByText(matcher.group(1));
+						added = 0;
+						skipped = 0;
+					}
+			lnr.close();
 			sf.getCurrentSession().flush();
 			System.gc();
-			System.err.println(added + " / " + skipped);
 		}
 	}
 
 	@Transactional
-	public void storeAnnotations(File file) throws IOException, ParseException {
+	@Deprecated
+	public void storeAnnotations2(File file) throws IOException, ParseException {
 		LineNumberReader lnr = new LineNumberReader(new FileReader(file));
 		long time = System.currentTimeMillis();
 		int added = 0, skipped = 0;
@@ -95,7 +157,7 @@ public class PhasedCommentParser {
 		Entry entry = new Entry(databank, "Unspecified");
 		List<Annotation> annotations = new ArrayList<Annotation>();
 		while ((line = lnr.readLine()) != null)
-			if ((matcher = patternComment.matcher(line)).matches()) {
+			if ((matcher = Converter.patternCOMMENT.matcher(line)).matches()) {
 				System.err.println(lnr.getLineNumber());
 				if (!comment.getText().equals(matcher.group(1))) {
 					comment.getAnnotations().addAll(annotations);
@@ -103,7 +165,7 @@ public class PhasedCommentParser {
 				}
 			}
 			else
-				if ((matcher = patternEntry.matcher(line)).matches()) {
+				if ((matcher = Converter.patternEntry.matcher(line)).matches()) {
 					if (!databank.getName().equals(matcher.group(1)))
 						databank = dbdao.findByName(matcher.group(1));
 
@@ -111,7 +173,7 @@ public class PhasedCommentParser {
 					annotations.add(new Annotation(comment, entry, time));
 				}
 				else
-					throw new ParseException("Expected: " + patternComment.pattern() + " OR " + patternEntry.pattern() + " at line " + lnr.getLineNumber(), lnr.getLineNumber());
+					throw new ParseException("Expected: " + Converter.patternCOMMENT.pattern() + " OR " + Converter.patternEntry.pattern() + " at line " + lnr.getLineNumber(), lnr.getLineNumber());
 		comment.getAnnotations().addAll(annotations);
 
 		lnr.close();
@@ -141,13 +203,13 @@ public class PhasedCommentParser {
 		Matcher matcher;
 		while ((line = lnr.readLine()) != null)
 			//Try reading comment line
-			if ((matcher = patternComment.matcher(line)).matches()) {
+			if ((matcher = Converter.patternCOMMENT.matcher(line)).matches()) {
 				if (!comment.getText().equals(matcher.group(1)))
 					comment = comdao.findOrCreateByExample(new Comment(matcher.group(1)));
 			}
 			else
 				//Try reading entry line
-				if ((matcher = patternEntry.matcher(line)).matches()) {
+				if ((matcher = Converter.patternEntry.matcher(line)).matches()) {
 					if (!databank.getName().equals(matcher.group(1)))
 						if (null == (databank = dbdao.findByName(matcher.group(1))))
 							throw new ParseException("No databank found for name " + matcher.group(1) + " at line " + lnr.getLineNumber(), lnr.getLineNumber());
@@ -169,7 +231,7 @@ public class PhasedCommentParser {
 					}
 				}
 				else
-					throw new ParseException("Expected: " + patternComment.pattern() + " OR " + patternEntry.pattern() + " at line " + lnr.getLineNumber(), lnr.getLineNumber());
+					throw new ParseException("Expected: " + Converter.patternCOMMENT.pattern() + " OR " + Converter.patternEntry.pattern() + " at line " + lnr.getLineNumber(), lnr.getLineNumber());
 		lnr.close();
 
 		file.renameTo(new File(file.getAbsolutePath() + PhasedCommentParser.append));
@@ -194,13 +256,13 @@ public class PhasedCommentParser {
 		Matcher matcher;
 		while ((line = lnr.readLine()) != null)
 			//Try reading comment line
-			if ((matcher = patternComment.matcher(line)).matches()) {
+			if ((matcher = Converter.patternCOMMENT.matcher(line)).matches()) {
 				if (!comment.getText().equals(matcher.group(1)))
 					comment = comdao.findOrCreateByExample(new Comment(matcher.group(1)));
 			}
 			else
 				//Try reading entry line
-				if ((matcher = patternEntry.matcher(line)).matches()) {
+				if ((matcher = Converter.patternEntry.matcher(line)).matches()) {
 					if (!databank.getName().equals(matcher.group(1)))
 						if (null == (databank = dbdao.findByName(matcher.group(1))))
 							throw new ParseException("No databank found for name " + matcher.group(1) + " at line " + lnr.getLineNumber(), lnr.getLineNumber());
@@ -228,7 +290,7 @@ public class PhasedCommentParser {
 					removed++;
 				}
 				else
-					throw new ParseException("Expected: " + patternComment.pattern() + " OR " + patternEntry.pattern() + " at line " + lnr.getLineNumber(), lnr.getLineNumber());
+					throw new ParseException("Expected: " + Converter.patternCOMMENT.pattern() + " OR " + Converter.patternEntry.pattern() + " at line " + lnr.getLineNumber(), lnr.getLineNumber());
 		lnr.close();
 
 		file.renameTo(new File(file.getAbsolutePath() + PhasedCommentParser.append));

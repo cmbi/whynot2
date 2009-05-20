@@ -19,10 +19,9 @@ public class CommentParserTest {
 	private PhasedCommentParser	cp;
 
 	@Test
-	public void copyFileToCommentAndComment() throws IOException, ParseException {
-		File dest = new File("comment/converted_20090519.txt");
+	public void storeCommentsAndAnnotations() throws IOException, ParseException {
+		File dest = new File("comment/20090519.txt.converted.optimized");
 		cp.storeComments(dest);
-		cp.storeEntries(dest);
-		//cp.storeAnnotations(dest);
+		cp.storeAnnotations(dest);
 	}
 }

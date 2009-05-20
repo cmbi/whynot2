@@ -30,8 +30,10 @@ public class Lister {
 		parentFilter = args[2];
 		commentFilter = args[3];
 		comment = "%"; //Wildcard
-		if (args.length == 5)
+		if (args.length == 5) {
+			commentFilter.replace("Comment", "ThisComment");
 			comment = args[4];
+		}
 
 		Lister lister = (Lister) SpringUtil.getContext().getBean("lister");
 		lister.list(dbname, fileFilter, parentFilter, commentFilter, comment);

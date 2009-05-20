@@ -17,6 +17,8 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Filters;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.LazyToOne;
+import org.hibernate.annotations.LazyToOneOption;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Sort;
@@ -49,6 +51,7 @@ public class Databank implements Comparable<Databank>, Serializable {
 	private String				filelink;
 
 	@OneToOne
+	@LazyToOne(LazyToOneOption.PROXY)
 	private Databank			parent;
 
 	@NotEmpty

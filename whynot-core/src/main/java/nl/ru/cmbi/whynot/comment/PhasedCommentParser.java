@@ -93,11 +93,13 @@ public class PhasedCommentParser {
 			else
 				if ((matcher = Converter.patternCOMMENT.matcher(line)).matches()) {
 					Logger.getLogger(PhasedCommentParser.class).info("Added " + added + ", skipped " + skipped + " for comment: \"" + comment.getText() + "\"");
-					//Find comment
-					comment = comdao.findByText(matcher.group(1));
 					added = 0;
 					skipped = 0;
 
+					//Find comment
+					comment = comdao.findByText(matcher.group(1));
+
+					//Flush & GC
 					sf.getCurrentSession().flush();
 					System.gc();
 				}

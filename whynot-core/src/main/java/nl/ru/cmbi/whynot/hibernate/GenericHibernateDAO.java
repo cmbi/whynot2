@@ -157,12 +157,12 @@ public class GenericHibernateDAO<T, ID extends Serializable> implements GenericD
 		}
 
 		public void cleanUp() {
-			int a = getSession().createSQLQuery(// 
+			int count = getSession().createSQLQuery(// 
 			"delete from entry where id in " + //
 			"(select e.id from entry e " + // 
 			"left outer join annotation a on e.id=a.entry_id " + //
 			"where a.entry_id is null and e.file_id is null)").executeUpdate();
-			System.err.println(a);
+			Logger.getLogger(EntryHibernateDAO.class).info("Removed " + count + " unused entries");
 		}
 	}
 

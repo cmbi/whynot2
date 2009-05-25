@@ -48,7 +48,7 @@ public class CommentParserTest {
 	private EntryDAO	entdao;
 
 	@Test
-	@Ignore
+	//@Ignore
 	public void cleanUpEntries() {
 		entdao.cleanUp();
 	}

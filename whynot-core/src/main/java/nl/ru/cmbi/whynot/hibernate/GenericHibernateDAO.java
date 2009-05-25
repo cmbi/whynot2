@@ -157,7 +157,12 @@ public class GenericHibernateDAO<T, ID extends Serializable> implements GenericD
 		}
 
 		public void cleanUp() {
-			getSession().createQuery("delete Entry where file is null and id not in (select distinct ann.entry.id from Annotation ann)").executeUpdate();
+			int a = getSession().createSQLQuery(// 
+			"delete from entry where id in " + //
+			"(select e.id from entry e " + // 
+			"left outer join annotation a on e.id=a.entry_id " + //
+			"where a.entry_id is null and e.file_id is null)").executeUpdate();
+			System.err.println(a);
 		}
 	}
 

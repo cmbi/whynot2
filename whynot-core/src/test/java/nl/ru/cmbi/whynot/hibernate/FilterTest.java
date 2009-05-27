@@ -31,11 +31,11 @@ public class FilterTest {
 		//entdao.enableFilter("withoutComment");
 		//entdao.enableFilter("withComment", "comment", "Nucleic acids only");
 
-		entdao.enableFilter("inDatabank", "name", "DSSP");
+		//entdao.enableFilter("inDatabank", "name", "DSSP");
 		entdao.enableFilter("withoutThisComment", "comment", "C-aplha only");
 
-		Logger.getLogger(FilterTest.class).info("Here it comes: ");
-		Logger.getLogger(FilterTest.class).info(entdao.countAll());
+		Logger.getLogger(getClass()).info("Here it comes: ");
+		Logger.getLogger(getClass()).info(entdao.findAll().size());
 
 		//System.out.println(dbdao.getEntries(db, AnnotationType.ALL).size());
 	}

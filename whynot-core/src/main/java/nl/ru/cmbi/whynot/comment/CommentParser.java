@@ -56,7 +56,7 @@ public class CommentParser {
 	}
 
 	public void storeComments(File file) throws IOException, ParseException {
-		Logger.getLogger(CommentParser.class).info("Adding comments in " + file.getName());
+		Logger.getLogger(getClass()).info("Adding comments in " + file.getName());
 		LineNumberReader lnr = new LineNumberReader(new FileReader(file));
 		String line;
 		Matcher matcher;
@@ -68,7 +68,7 @@ public class CommentParser {
 	}
 
 	public void storeAnnotations(File file) throws IOException, ParseException {
-		Logger.getLogger(CommentParser.class).info("Adding annotations in " + file.getName());
+		Logger.getLogger(getClass()).info("Adding annotations in " + file.getName());
 		int added = 0, skipped = 0;
 		long time = System.currentTimeMillis();
 
@@ -101,7 +101,7 @@ public class CommentParser {
 			}
 			else
 				if ((matcher = Converter.patternCOMMENT.matcher(line)).matches()) {
-					Logger.getLogger(CommentParser.class).info("Added " + added + ", skipped " + skipped + " for comment: \"" + comment.getText() + "\"");
+					Logger.getLogger(getClass()).info("Added " + added + ", skipped " + skipped + " for comment: \"" + comment.getText() + "\"");
 					added = 0;
 					skipped = 0;
 
@@ -115,12 +115,12 @@ public class CommentParser {
 				else
 					throw new ParseException("Expected " + Converter.patternCOMMENT + " or " + Converter.patternEntry + "  on line " + lnr.getLineNumber(), lnr.getLineNumber());
 		lnr.close();
-		Logger.getLogger(CommentParser.class).info("Added " + added + ", skipped " + skipped + " for comment: \"" + comment.getText() + "\"");
+		Logger.getLogger(getClass()).info("Added " + added + ", skipped " + skipped + " for comment: \"" + comment.getText() + "\"");
 		file.renameTo(new File(file.getAbsolutePath() + CommentParser.append));
 	}
 
 	public void removeAnnotations(File file) throws IOException, ParseException {
-		Logger.getLogger(CommentParser.class).info("Removing annotations in " + file.getName());
+		Logger.getLogger(getClass()).info("Removing annotations in " + file.getName());
 		int removed = 0, skipped = 0;
 
 		LineNumberReader lnr = new LineNumberReader(new FileReader(file));
@@ -141,7 +141,7 @@ public class CommentParser {
 
 				//Find Entry
 				if (!entries.contains(entry = new Entry(db, matcher.group(2).toLowerCase()))) {
-					Logger.getLogger(CommentParser.class).warn("Entry not found, skipping: " + comment + "," + line);
+					Logger.getLogger(getClass()).warn("Entry not found, skipping: " + comment + "," + line);
 					skipped++;
 					continue;
 				}
@@ -150,7 +150,7 @@ public class CommentParser {
 				//Find annotation
 				Annotation ann = new Annotation(comment, entry, 1L);
 				if (!entry.getAnnotations().contains(ann)) {
-					Logger.getLogger(CommentParser.class).warn("Annotation not found, skipping: " + ann);
+					Logger.getLogger(getClass()).warn("Annotation not found, skipping: " + ann);
 					skipped++;
 					continue;
 				}
@@ -163,7 +163,7 @@ public class CommentParser {
 			}
 			else
 				if ((matcher = Converter.patternCOMMENT.matcher(line)).matches()) {
-					Logger.getLogger(CommentParser.class).info("Removed " + removed + ", skipped " + skipped + " for comment: \"" + comment.getText() + "\"");
+					Logger.getLogger(getClass()).info("Removed " + removed + ", skipped " + skipped + " for comment: \"" + comment.getText() + "\"");
 					removed = 0;
 					skipped = 0;
 
@@ -177,7 +177,7 @@ public class CommentParser {
 				else
 					throw new ParseException("Expected " + Converter.patternCOMMENT + " or " + Converter.patternEntry + "  on line " + lnr.getLineNumber(), lnr.getLineNumber());
 		lnr.close();
-		Logger.getLogger(CommentParser.class).info("Removed " + removed + ", skipped " + skipped + " for comment: \"" + comment.getText() + "\"");
+		Logger.getLogger(getClass()).info("Removed " + removed + ", skipped " + skipped + " for comment: \"" + comment.getText() + "\"");
 		file.renameTo(new File(file.getAbsolutePath() + CommentParser.append));
 	}
 }

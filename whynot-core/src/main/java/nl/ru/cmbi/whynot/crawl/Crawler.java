@@ -44,6 +44,6 @@ public class Crawler {
 		fc.addEntriesIn(path);
 		fc.removeInvalidEntries();
 
-		Logger.getLogger(Crawler.class).info(dbname + ": Succes");
+		Logger.getLogger(getClass()).info(dbname + ": Succes");
 	}
 }

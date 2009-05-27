@@ -65,7 +65,7 @@ public class FileCrawler extends AbstractCrawler {
 		//Add new entries to databank
 		databank.getEntries().addAll(newEntries);
 
-		Logger.getLogger(FileCrawler.class).info(databank.getName() + ": Crawled " + crawled + ", Updated " + updated + ", Added " + added);
+		Logger.getLogger(getClass()).info(databank.getName() + ": Crawled " + crawled + ", Updated " + updated + ", Added " + added);
 	}
 
 	/**

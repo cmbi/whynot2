@@ -20,7 +20,6 @@ public class Installer {
 		asfb.createDatabaseSchema();
 
 		((Installer) SpringUtil.getContext().getBean("installer")).fill();
-		Logger.getLogger(Installer.class).info("Done.");
 	}
 
 	@Autowired
@@ -40,5 +39,6 @@ public class Installer {
 		dbdao.makePersistent(sf = new Databank("STRUCTUREFACTORS", "http://www.pdb.org/", "http://www.pdb.org/pdb/download/downloadFile.do?fileFormat=STRUCTFACT&compression=NO&structureId=", pdb, ".*/r([\\d\\w]{4})sf\\.ent", CrawlType.FILE));
 		dbdao.makePersistent(new Databank("PDB_REDO", "http://www.cmbi.ru.nl/pdb_redo/", "http://www.cmbi.ru.nl/pdb_redo/cgi-bin/redir2.pl?pdbCode=", sf, ".*/[\\d\\w]{2}/([\\d][\\d\\w]{3})", CrawlType.FILE));
 
+		Logger.getLogger(getClass()).info("Databanks stored.");
 	}
 }

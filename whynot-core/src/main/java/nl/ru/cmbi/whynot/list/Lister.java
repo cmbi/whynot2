@@ -56,6 +56,6 @@ public class Lister {
 		for (Entry entry : entries)
 			System.out.println(entry);
 
-		Logger.getLogger(Lister.class).debug("list DATABASE " + fileFilter + " " + parentFilter + " " + commentFilter + " \"" + comment + "\": Succes");
+		Logger.getLogger(getClass()).debug("list DATABASE " + fileFilter + " " + parentFilter + " " + commentFilter + " \"" + comment + "\": Succes");
 	}
 }

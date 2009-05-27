@@ -54,6 +54,6 @@ public abstract class AbstractCrawler {
 
 		filedao.disableFilter("withFile");
 
-		Logger.getLogger(AbstractCrawler.class).info(databank.getName() + ": Checked " + checked + ", Removed " + removed);
+		Logger.getLogger(getClass()).info(databank.getName() + ": Checked " + checked + ", Removed " + removed);
 	}
 }

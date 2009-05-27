@@ -134,7 +134,7 @@ public class GenericHibernateDAO<T, ID extends Serializable> implements GenericD
 			for (Comment comment : findAll())
 				if (comment.getAnnotations().size() == 0) {
 					makeTransient(comment);
-					Logger.getLogger(CommentHibernateDAO.class).info("Removed unused comment: " + comment);
+					Logger.getLogger(getClass()).info("Removed unused comment: " + comment);
 				}
 		}
 	}
@@ -162,7 +162,7 @@ public class GenericHibernateDAO<T, ID extends Serializable> implements GenericD
 			"(select e.id from entry e " + // 
 			"left outer join annotation a on e.id=a.entry_id " + //
 			"where a.entry_id is null and e.file_id is null)").executeUpdate();
-			Logger.getLogger(EntryHibernateDAO.class).info("Removed " + count + " unused entries");
+			Logger.getLogger(getClass()).info("Removed " + count + " unused entries");
 		}
 	}
 

@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.FileDAO;
 import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Entry;
+import nl.ru.cmbi.whynot.model.File;
 
 import org.apache.log4j.Logger;
 
@@ -25,7 +26,9 @@ public class LineCrawler extends AbstractCrawler {
 
 		BufferedReader bf = new BufferedReader(new FileReader(file));
 
-		nl.ru.cmbi.whynot.model.File found = new nl.ru.cmbi.whynot.model.File(file);
+		File found = filedao.findByPathAndTimestamp(file.getAbsolutePath(), file.lastModified());
+		if (found == null)
+			found = new File(file);
 		int crawled = 0, updated = 0, added = 0, index;
 		for (String line = ""; (line = bf.readLine()) != null;) {
 			Matcher m = pattern.matcher(line);
@@ -43,7 +46,7 @@ public class LineCrawler extends AbstractCrawler {
 				else
 					newEntries.add(entry);
 
-				nl.ru.cmbi.whynot.model.File stored = entry.getFile();
+				File stored = entry.getFile();
 
 				//Create or correct file
 				if (stored == null) {

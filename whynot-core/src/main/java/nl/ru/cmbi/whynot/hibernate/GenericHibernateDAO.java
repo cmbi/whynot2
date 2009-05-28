@@ -208,6 +208,11 @@ public class GenericHibernateDAO<T, ID extends Serializable> implements GenericD
 
 	@Service
 	public static class FileHibernateDAO extends GenericHibernateDAO<File, Long> implements FileDAO {
+		public File findByPathAndTimestamp(String path, Long timestamp) {
+			Criteria crit = getSession().createCriteria(getPersistentClass());
+			crit.add(Restrictions.naturalId().set("path", path).set("timestamp", timestamp));
+			return (File) crit.uniqueResult();
+		}
 	}
 
 }

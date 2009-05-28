@@ -32,11 +32,15 @@ public class File implements Comparable<File>, Serializable {
 	protected File() {
 	}
 
-	public File(java.io.File file) {
-		path = file.getAbsolutePath();
-		timestamp = file.lastModified();
+	public File(String path, Long timestamp) {
+		this.path = path;
+		this.timestamp = timestamp;
 	}
-	
+
+	public File(java.io.File file) {
+		this(file.getAbsolutePath(), file.lastModified());
+	}
+
 	public String getPath() {
 		return path;
 	}

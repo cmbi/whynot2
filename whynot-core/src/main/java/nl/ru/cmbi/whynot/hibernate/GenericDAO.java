@@ -68,5 +68,6 @@ public interface GenericDAO<T, ID extends Serializable> {
 	}
 
 	public interface FileDAO extends GenericDAO<File, Long> {
+		File findByPathAndTimestamp(String path, Long timestamp);
 	}
 }

@@ -7,6 +7,7 @@ import nl.ru.cmbi.whynot.hibernate.GenericDAO.FileDAO;
 import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Entry;
 import nl.ru.cmbi.whynot.model.File;
+import nl.ru.cmbi.whynot.model.Databank.CrawlType;
 
 import org.apache.log4j.Logger;
 
@@ -44,8 +45,20 @@ public abstract class AbstractCrawler {
 			if (stored == null)//Should not happen because of above filter
 				continue;//But to be safe, we'll skip just like we used to
 			checked++;
+
+			boolean isValid = true;
+
+			//Check if file still exists
 			java.io.File found = new java.io.File(stored.getPath());
-			if (!found.exists() || found.lastModified() != stored.getTimestamp() || !pattern.matcher(stored.getPath()).matches()) {
+			if (!found.exists() || found.lastModified() != stored.getTimestamp())
+				isValid = false;
+
+			//Check if file still matches regex
+			if (databank.getCrawltype() == CrawlType.FILE && !pattern.matcher(stored.getPath()).matches())
+				isValid = false;
+
+			//Remove invalid files
+			if (!isValid) {
 				filedao.makeTransient(entry.getFile());
 				entry.setFile(null);
 				removed++;

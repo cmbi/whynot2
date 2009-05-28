@@ -27,9 +27,9 @@ public abstract class AbstractCrawler {
 	 * 
 	 * Extracts the PDBID from the filename/line using regular expression group matching:
 	 * the PDBID should be enclosed in parentheses () and be the explicitly matching group 1
-	 * @param path
+	 * @param file
 	 */
-	public abstract void addEntriesIn(String path) throws IOException;
+	public abstract void addEntriesIn(java.io.File file) throws IOException;
 
 	/**
 	 * Removes all the invalid FileEntries from database by checking if the file exists,

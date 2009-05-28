@@ -20,12 +20,12 @@ public class FileCrawler extends AbstractCrawler {
 	}
 
 	@Override
-	public void addEntriesIn(String path) {
+	public void addEntriesIn(File path) {
 		List<Entry> oldEntries = new ArrayList<Entry>(databank.getEntries());
 		List<Entry> newEntries = new ArrayList<Entry>();
 
 		int crawled = 0, updated = 0, added = 0, index;
-		for (File dir : dirAndAllSubdirs(databank, new File(path)))
+		for (File dir : dirAndAllSubdirs(databank, path))
 			for (File file : dir.listFiles(new FileFilter() {
 				public boolean accept(File pathname) {
 					return pattern.matcher(pathname.getAbsolutePath()).matches();

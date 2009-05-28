@@ -29,4 +29,12 @@ public class CrawlerTest {
 	public void crawlPDBFINDER() throws Exception {
 		Crawler.main(new String[] { "PDBFINDER", "/home/tbeek/Desktop/raw/pdbfinder/PDBFIND.TXT" });
 	}
+
+	@Test
+	public void crawlNRGCING() throws Exception {
+		Crawler.main(new String[] { "NMR", "http://nmr.cmbi.ru.nl/NRG-CING/entry_list_nmr.csv" });
+		Crawler.main(new String[] { "NRG", "http://nmr.cmbi.ru.nl/NRG-CING/entry_list_nrg.csv" });
+		Crawler.main(new String[] { "NRG-DOCR", "http://nmr.cmbi.ru.nl/NRG-CING/entry_list_nrg_docr.csv" });
+		Crawler.main(new String[] { "NRG-CING", "http://nmr.cmbi.ru.nl/NRG-CING/entry_list_done.csv" });
+	}
 }

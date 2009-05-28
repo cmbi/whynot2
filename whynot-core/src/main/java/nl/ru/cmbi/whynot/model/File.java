@@ -36,7 +36,7 @@ public class File implements Comparable<File>, Serializable {
 		path = file.getAbsolutePath();
 		timestamp = file.lastModified();
 	}
-
+	
 	public String getPath() {
 		return path;
 	}

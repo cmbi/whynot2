@@ -19,11 +19,10 @@ public class LineCrawler extends AbstractCrawler {
 	}
 
 	@Override
-	public void addEntriesIn(String path) throws IOException {
+	public void addEntriesIn(java.io.File file) throws IOException {
 		List<Entry> oldEntries = new ArrayList<Entry>(databank.getEntries());
 		List<Entry> newEntries = new ArrayList<Entry>();
 
-		java.io.File file = new java.io.File(path);
 		BufferedReader bf = new BufferedReader(new FileReader(file));
 
 		nl.ru.cmbi.whynot.model.File found = new nl.ru.cmbi.whynot.model.File(file);

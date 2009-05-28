@@ -1,6 +1,15 @@
 package nl.ru.cmbi.whynot.crawl;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 
 import nl.ru.cmbi.whynot.hibernate.SpringUtil;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
@@ -29,7 +38,6 @@ public class Crawler {
 
 	public void crawl(String dbname, String path) throws IOException {
 		Databank db = dbdao.findByExample(new Databank(dbname), "id", "reference", "filelink", "parent", "regex", "crawltype", "entries");
-
 		AbstractCrawler fc;
 		switch (db.getCrawltype()) {
 		case FILE:
@@ -41,9 +49,35 @@ public class Crawler {
 		default:
 			throw new IllegalArgumentException("Invalid CrawlType");
 		}
-		fc.addEntriesIn(path);
+		fc.addEntriesIn(getFile(path));
 		fc.removeInvalidEntries();
 
 		Logger.getLogger(getClass()).info(dbname + ": Succes");
+	}
+
+	private static File getFile(String path) throws IOException, MalformedURLException {
+		if (path.startsWith("http://")) {
+			File dirDownload = new File("download/");
+			//Make sure download directory exist
+			if (!dirDownload.isDirectory() && !dirDownload.mkdir())
+				throw new FileNotFoundException(dirDownload.getAbsolutePath());
+
+			//Open URL
+			URLConnection con = new URL(path).openConnection();
+			File downloaded = new File("download/" + path.replaceAll("[^\\w]", ""));
+			if (!downloaded.exists() || downloaded.lastModified() != con.getLastModified()) {
+				//Overwrite file
+				BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
+				PrintWriter pw = new PrintWriter(new FileWriter(downloaded));
+				String line;
+				while ((line = bf.readLine()) != null)
+					pw.println(line);
+				pw.close();
+				downloaded.setLastModified(con.getLastModified());
+				Logger.getLogger(Crawler.class).info("Downloaded " + downloaded.getAbsolutePath());
+			}
+			path = downloaded.getAbsolutePath();
+		}
+		return new File(path);
 	}
 }

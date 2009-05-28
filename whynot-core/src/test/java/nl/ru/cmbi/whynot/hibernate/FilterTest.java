@@ -1,8 +1,11 @@
 package nl.ru.cmbi.whynot.hibernate;
 
+import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
+import nl.ru.cmbi.whynot.model.Databank;
 
 import org.apache.log4j.Logger;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +20,19 @@ public class FilterTest {
 	@Autowired
 	private EntryDAO	entdao;
 
+	@Autowired
+	private DatabankDAO	dbdao;
+
 	@Test
+	public void altprintCounts() {
+		Databank nrg = dbdao.findByName("NRG");
+		//System.err.println(entdao.getValid(nrg).size());
+		System.err.println(entdao.getMissingWithout(nrg).size());
+		System.err.println(entdao.getMissingWithout(nrg).get(0));
+	}
+
+	@Test
+	@Ignore
 	public void printCounts() {
 		//entdao.enableFilter("inDatabank").setParameter("name", "DSSP");
 
@@ -32,11 +47,13 @@ public class FilterTest {
 		//entdao.enableFilter("withComment", "comment", "Nucleic acids only");
 
 		//entdao.enableFilter("inDatabank", "name", "DSSP");
-		entdao.enableFilter("withoutThisComment", "comment", "C-aplha only");
+		//entdao.enableFilter("missing", "parent_id", "1");
+
+		//sesfac.getCurrentSession().enableFilter("missing").setParameter("parent_id", 7).setParameter("child_id", 8);
 
 		Logger.getLogger(getClass()).info("Here it comes: ");
-		Logger.getLogger(getClass()).info(entdao.findAll().size());
+		Logger.getLogger(getClass()).info(entdao.countAll());
+		//Logger.getLogger(getClass()).info(entdao.findAll().size());
 
-		//System.out.println(dbdao.getEntries(db, AnnotationType.ALL).size());
 	}
 }

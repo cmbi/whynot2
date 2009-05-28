@@ -55,6 +55,16 @@ public interface GenericDAO<T, ID extends Serializable> {
 
 		@Transactional
 		void cleanUp();
+
+		List<Entry> getValid(Databank child);
+
+		List<Entry> getObsolete(Databank child);
+
+		List<Entry> getMissing(Databank child);
+
+		List<Entry> getMissingWith(Databank child);
+
+		List<Entry> getMissingWithout(Databank child);
 	}
 
 	public interface FileDAO extends GenericDAO<File, Long> {

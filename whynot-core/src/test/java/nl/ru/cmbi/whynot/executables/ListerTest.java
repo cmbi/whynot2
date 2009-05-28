@@ -23,4 +23,12 @@ public class ListerTest {
 	public void STRUCTUREFACTORSWithoutWithoutWithoutThisComment() throws Exception {
 		Lister.main(new String[] { "STRUCTUREFACTORS", "withoutFile", "withoutParentFile", "withoutComment", "_refln.status column missing" });
 	}
+
+	@Test
+	public void nrgcing() throws Exception {
+		Lister.main(new String[] { "NMR", "withoutFile", "withParentFile", "withoutComment" });
+		Lister.main(new String[] { "NRG", "withoutFile", "withParentFile", "withoutComment" });
+		Lister.main(new String[] { "NRG-DOCR", "withoutFile", "withParentFile", "withoutComment" });
+		Lister.main(new String[] { "NRG-CING", "withoutFile", "withParentFile", "withoutComment" });
+	}
 }

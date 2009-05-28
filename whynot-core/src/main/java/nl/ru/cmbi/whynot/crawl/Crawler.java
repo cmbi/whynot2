@@ -55,6 +55,14 @@ public class Crawler {
 		Logger.getLogger(getClass()).info(dbname + ": Succes");
 	}
 
+	/**
+	 * Gets the file on the supplied path. If the path starts with http://
+	 * we first store a local copy with the same timestamp and return that.
+	 * @param path
+	 * @return
+	 * @throws IOException
+	 * @throws MalformedURLException
+	 */
 	private static File getFile(String path) throws IOException, MalformedURLException {
 		if (path.startsWith("http://")) {
 			File dirDownload = new File("download/");

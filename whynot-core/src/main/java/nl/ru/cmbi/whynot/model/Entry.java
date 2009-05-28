@@ -44,9 +44,9 @@ import org.hibernate.validator.NotNull;
 @Filters( { //
 @Filter(name = "inDatabank"),//
 @Filter(name = "withFile"), @Filter(name = "withoutFile"),//
-@Filter(name = "withParentFile"), @Filter(name = "withoutParentFile"),//	
-@Filter(name = "withComment"), @Filter(name = "withoutComment"),//	
-@Filter(name = "withThisComment"), @Filter(name = "withoutThisComment") //	
+@Filter(name = "withParentFile"), @Filter(name = "withoutParentFile"),//
+@Filter(name = "withComment"), @Filter(name = "withoutComment"),//
+@Filter(name = "withThisComment"), @Filter(name = "withoutThisComment"), //
 })
 public class Entry implements Comparable<Entry>, Serializable {
 	@Id

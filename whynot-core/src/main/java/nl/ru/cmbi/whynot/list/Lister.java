@@ -29,11 +29,9 @@ public class Lister {
 		fileFilter = args[1];
 		parentFilter = args[2];
 		commentFilter = args[3];
-		comment = "%"; //Wildcard
-		if (args.length == 5) {
-			commentFilter.replace("Comment", "ThisComment");
+		comment = null;
+		if (args.length == 5)
 			comment = args[4];
-		}
 
 		Lister lister = (Lister) SpringUtil.getContext().getBean("lister");
 		lister.list(dbname, fileFilter, parentFilter, commentFilter, comment);
@@ -49,7 +47,10 @@ public class Lister {
 
 		dbdao.enableFilter(fileFilter);
 		dbdao.enableFilter(parentFilter);
-		dbdao.enableFilter(commentFilter, "comment", comment);
+		if (comment == null)
+			dbdao.enableFilter(commentFilter);
+		else
+			dbdao.enableFilter(commentFilter.replace("Comment", "ThisComment"), "comment", comment);
 
 		SortedSet<Entry> entries = db.getEntries();
 		System.out.println("#" + dbname + " " + fileFilter + " " + parentFilter + " " + commentFilter + ": " + entries.size() + " entries");

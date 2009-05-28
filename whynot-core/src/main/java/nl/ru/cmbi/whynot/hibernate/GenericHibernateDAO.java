@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Filter;
 import org.hibernate.LockMode;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
@@ -154,6 +155,45 @@ public class GenericHibernateDAO<T, ID extends Serializable> implements GenericD
 			Criteria crit = getSession().createCriteria(getPersistentClass());
 			crit.add(Restrictions.naturalId().set("databank", databank).set("pdbid", pdbid));
 			return (Entry) crit.uniqueResult();
+		}
+
+		@SuppressWarnings("unchecked")
+		public List<Entry> getValid(Databank child) {//Child file present, parent file present
+			Query q = getSession().createQuery("from Entry child where file is not null and child.databank = :child_db and (select parent.file from Entry parent where parent.pdbid = child.pdbid and parent.databank = :parent_db) is not null");
+			q.setParameter("child_db", child);
+			q.setParameter("parent_db", child.getParent());
+			return q.list();
+		}
+
+		@SuppressWarnings("unchecked")
+		public List<Entry> getObsolete(Databank child) {//Child file present, no parent file
+			Query q = getSession().createQuery("from Entry child where file is not null and child.databank = :child_db and (select parent.file from Entry parent where parent.pdbid = child.pdbid and parent.databank = :parent_db) is null");
+			q.setParameter("child_db", child);
+			q.setParameter("parent_db", child.getParent());
+			return q.list();
+		}
+
+		@SuppressWarnings("unchecked")
+		public List<Entry> getMissing(Databank child) {//Parent file present, no child file
+			Query q = getSession().createQuery("from Entry parent where file is not null and parent.databank = :parent_db and (select child.file from Entry child where parent.pdbid = child.pdbid and child.databank = :child_db) is null");
+			q.setParameter("child_db", child);
+			q.setParameter("parent_db", child.getParent());
+			return q.list();
+		}
+
+		@SuppressWarnings("unchecked")
+		public List<Entry> getMissingWithout(Databank child) {//Parent file present, no child (because no file & no annotation => no child)
+			Query q = getSession().createQuery("from Entry parent where file is not null and parent.databank = :parent_db and (select child from Entry child where parent.pdbid = child.pdbid and child.databank = :child_db) is null");
+			q.setParameter("child_db", child);
+			q.setParameter("parent_db", child.getParent());
+			return q.list();
+		}
+
+		@SuppressWarnings("unchecked")
+		public List<Entry> getMissingWith(Databank child) {//No child file (annotations implicitly present or there wouldnt be a child)
+			Query q = getSession().createQuery("from Entry child where child.file is null and child.databank = :child_db");
+			q.setParameter("child_db", child);
+			return q.list();
 		}
 
 		public void cleanUp() {

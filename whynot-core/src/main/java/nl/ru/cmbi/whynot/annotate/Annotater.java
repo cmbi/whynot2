@@ -1,4 +1,4 @@
-package nl.ru.cmbi.whynot.comment;
+package nl.ru.cmbi.whynot.annotate;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -9,7 +9,7 @@ import nl.ru.cmbi.whynot.hibernate.SpringUtil;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.CommentDAO;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 
-public class Commenter {
+public class Annotater {
 	public static void main(String[] args) throws IOException, ParseException {
 		File dirComments = new File("comment/");
 		File dirUncomments = new File("uncomment/");

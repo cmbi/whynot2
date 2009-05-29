@@ -1,4 +1,4 @@
-package nl.ru.cmbi.whynot.comment;
+package nl.ru.cmbi.whynot.annotate;
 
 import java.io.File;
 import java.io.FileNotFoundException;

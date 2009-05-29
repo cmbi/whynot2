@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class Lister {
+public class Lister {//TODO Valid, Obsolete, Missing, With / Without
 	public static void main(String[] args) throws Exception {
 		String dbname = "DATABASE";
 		String fileFilter = "withFile|withoutFile";

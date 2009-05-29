@@ -8,7 +8,7 @@ import java.io.LineNumberReader;
 import java.io.PrintWriter;
 import java.text.ParseException;
 
-import nl.ru.cmbi.whynot.comment.Converter;
+import nl.ru.cmbi.whynot.annotate.Converter;
 
 import org.junit.Test;
 

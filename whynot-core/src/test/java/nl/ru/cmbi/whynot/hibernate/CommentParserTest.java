@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 
-import nl.ru.cmbi.whynot.comment.CommentParser;
+import nl.ru.cmbi.whynot.annotate.CommentParser;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.CommentDAO;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 

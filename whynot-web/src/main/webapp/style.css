@@ -40,13 +40,9 @@ body {
 	text-align:center;
 }
 #header h1 {
-	color:#fff;
 	display:block;
 	font:36px "Trebuchet MS",Verdana,sans-serif;
 	padding:15px 0 0 0;
-}
-#header h1 span {
-	color:#01a5ec;
 }
 #header input {
 	margin-top: 15px;

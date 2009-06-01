@@ -11,7 +11,7 @@ public class ListerTest {
 			Lister.main(new String[] { dbname, "VALID" });
 			Lister.main(new String[] { dbname, "OBSOLETE" });
 			Lister.main(new String[] { dbname, "MISSING" });
-			Lister.main(new String[] { dbname, "ANOOTATED" });
+			Lister.main(new String[] { dbname, "ANNOTATED" });
 			Lister.main(new String[] { dbname, "UNANNOTATED" });
 		}
 	}

@@ -1,5 +1,7 @@
 package nl.ru.cmbi.whynot.list;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.SortedSet;
 
 import nl.ru.cmbi.whynot.hibernate.SpringUtil;
@@ -23,29 +25,42 @@ public class Lister {
 	public static void main(String... args) {
 		String dbname = "DATABASE";
 		String selection = "VALID|OBSOLETE|MISSING|ANNOTATED|UNANNOTATED";
-		if (args.length != 2 || !args[0].matches(dbname) || !args[1].matches(selection))
+		if (args.length != 2 || !args[1].matches(selection))
 			throw new IllegalArgumentException("Usage: lister " + dbname + " " + selection);
 
 		Lister lister = (Lister) SpringUtil.getContext().getBean("lister");
-		lister.list(dbname, SelectionType.valueOf(selection));
+		lister.list(args[0], SelectionType.valueOf(args[1]));
 	}
 
 	@Autowired
-	EntryDAO	entdao;
+	private DatabankDAO	dbdao;
+
+	@Autowired
+	private EntryDAO	entdao;
 
 	private void list(String dbname, SelectionType selection) {
-		switch (selection) {//TODO
+		Databank db = dbdao.findByName(dbname);
+		List<Entry> entries = new ArrayList<Entry>();
+		switch (selection) {// TODO
 		case VALID:
-
+			entries = entdao.getValid(db);
+			break;
 		case OBSOLETE:
-
+			entries = entdao.getObsolete(db);
+			break;
 		case MISSING:
-
+			entries = entdao.getMissing(db);
+			break;
 		case ANNOTATED:
-
+			entries = entdao.getMissingWith(db);
+			break;
 		case UNANNOTATED:
-
+			entries = entdao.getMissingWithout(db);
+			break;
 		}
+		Logger.getLogger(getClass()).debug("#" + dbname + " " + selection + ": " + entries.size());
+		for (Entry ent : entries)
+			System.out.println(ent);
 	}
 
 	public static void main_old(String[] args) throws Exception {
@@ -69,9 +84,6 @@ public class Lister {
 		Lister lister = (Lister) SpringUtil.getContext().getBean("lister");
 		lister.list_old(dbname, fileFilter, parentFilter, commentFilter, comment);
 	}
-
-	@Autowired
-	private DatabankDAO	dbdao;
 
 	public void list_old(String dbname, String fileFilter, String parentFilter, String commentFilter, String comment) throws Exception {
 		Databank db = dbdao.findByExample(new Databank(dbname), "id", "reference", "filelink", "parent", "regex", "crawltype", "entries");

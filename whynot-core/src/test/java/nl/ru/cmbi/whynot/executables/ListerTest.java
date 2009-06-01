@@ -2,33 +2,17 @@ package nl.ru.cmbi.whynot.executables;
 
 import nl.ru.cmbi.whynot.list.Lister;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class ListerTest {
 	@Test
-	@Ignore
-	public void DSSPWithWithoutWith() throws Exception {
-		Lister.main(new String[] { "DSSP", "withFile", "withoutParentFile", "withComment" });
-	}
-
-	@Test
-	@Ignore
-	public void STRUCTUREFACTORSWithoutWithoutWith() throws Exception {
-		Lister.main(new String[] { "STRUCTUREFACTORS", "withoutFile", "withoutParentFile", "withComment" });
-	}
-
-	@Test
-	@Ignore
-	public void STRUCTUREFACTORSWithoutWithoutWithoutThisComment() throws Exception {
-		Lister.main(new String[] { "STRUCTUREFACTORS", "withoutFile", "withoutParentFile", "withoutComment", "_refln.status column missing" });
-	}
-
-	@Test
 	public void nrgcing() throws Exception {
-		Lister.main(new String[] { "NMR", "withoutFile", "withParentFile", "withoutComment" });
-		Lister.main(new String[] { "NRG", "withoutFile", "withParentFile", "withoutComment" });
-		Lister.main(new String[] { "NRG-DOCR", "withoutFile", "withParentFile", "withoutComment" });
-		Lister.main(new String[] { "NRG-CING", "withoutFile", "withParentFile", "withoutComment" });
+		for (String dbname : new String[] { "NMR", "NRG", "NRG-DOCR", "NRG-CING" }) {
+			Lister.main(new String[] { dbname, "VALID" });
+			Lister.main(new String[] { dbname, "OBSOLETE" });
+			Lister.main(new String[] { dbname, "MISSING" });
+			Lister.main(new String[] { dbname, "ANOOTATED" });
+			Lister.main(new String[] { dbname, "UNANNOTATED" });
+		}
 	}
 }

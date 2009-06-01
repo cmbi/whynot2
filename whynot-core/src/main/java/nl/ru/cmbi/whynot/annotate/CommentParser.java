@@ -93,9 +93,12 @@ public class CommentParser {
 					entry = entries.get(entries.indexOf(entry));
 				//	entry = entdao.findByDatabankAndPdbid(db, matcher.group(2));
 
-				//Add annotation
-				if (entry.getAnnotations().add(new Annotation(comment, entry, time)))
-					added++;
+				//Only annotate missing files
+				if (entry.getFile() == null) {
+					//Add annotation 
+					if (entry.getAnnotations().add(new Annotation(comment, entry, time)))
+						added++;
+				}
 				else
 					skipped++;
 			}

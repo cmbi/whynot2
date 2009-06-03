@@ -30,8 +30,8 @@ public class FilterTest {
 		System.err.println(entdao.getValid(nrg).size());
 		System.err.println(entdao.getObsolete(nrg).size());
 		System.err.println(entdao.getMissing(nrg).size());
-		System.err.println(entdao.getMissingWith(nrg).size());
-		System.err.println(entdao.getMissingWithout(nrg).size());
+		System.err.println(entdao.getAnnotated(nrg).size());
+		System.err.println(entdao.getUnannotated(nrg).size());
 	}
 
 	@Test

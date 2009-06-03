@@ -30,12 +30,12 @@ public class Installer {
 		dbdao.makePersistent(pdb = new Databank("PDB", "http://www.pdb.org/", "http://www.pdb.org/pdb/download/downloadFile.do?fileFormat=pdb&compression=NO&structureId=", ".*/pdb([\\w]{4})\\.ent(\\.gz)?", CrawlType.FILE));
 		dbdao.makePersistent(new Databank("PDBFINDER", "http://swift.cmbi.ru.nl/gv/pdbfinder/", "http://mrs.cmbi.ru.nl/mrs-3/entry.do?db=pdbfinder2&id=", pdb, "ID           : ([\\w]{4})", CrawlType.LINE));
 		dbdao.makePersistent(new Databank("PDBREPORT", "http://swift.cmbi.ru.nl/gv/pdbreport/", "http://www.cmbi.ru.nl/pdbreport/cgi-bin/nonotes?PDBID=", pdb, ".*pdbreport.*/([\\w]{4})", CrawlType.FILE));
-		dbdao.makePersistent(new Databank("RECOORD", "http://www.ebi.ac.uk/msd-srv/docs/NMR/recoord/main.html", "http://www.cmbi.ru.nl/whynot/recoord_trampoline/", pdb, ".*/([\\w]{4})_cns_w\\.pdb", CrawlType.FILE));
 
 		dbdao.makePersistent(dssp = new Databank("DSSP", "http://swift.cmbi.ru.nl/gv/dssp/", "http://mrs.cmbi.ru.nl/mrs-3/entry.do?db=dssp&id=", pdb, ".*/([\\w]{4})\\.dssp", CrawlType.FILE));
 		dbdao.makePersistent(new Databank("HSSP", "http://swift.cmbi.ru.nl/gv/hssp/", "http://mrs.cmbi.ru.nl/mrs-3/entry.do?db=hssp&id=", dssp, ".*/([\\w]{4})\\.hssp", CrawlType.FILE));
 
 		dbdao.makePersistent(nmr = new Databank("NMR", "http://www.bmrb.wisc.edu/", "link", pdb, "([\\w]{4})", CrawlType.LINE));
+		dbdao.makePersistent(new Databank("RECOORD", "http://www.ebi.ac.uk/msd-srv/docs/NMR/recoord/main.html", "http://www.cmbi.ru.nl/whynot/recoord_trampoline/", nmr, ".*/([\\w]{4})_cns_w\\.pdb", CrawlType.FILE));
 		dbdao.makePersistent(nrg = new Databank("NRG", "http://restraintsgrid.bmrb.wisc.edu/NRG/MRGridServlet", "link", nmr, "([\\w]{4})", CrawlType.LINE));
 		dbdao.makePersistent(nrg_docr = new Databank("NRG-DOCR", "http://restraintsgrid.bmrb.wisc.edu/NRG/MRGridServlet", "link", nrg, "([\\w]{4})", CrawlType.LINE));
 		dbdao.makePersistent(new Databank("NRG-CING", "http://nmr.cmbi.ru.nl/cing/", "link", nrg_docr, "([\\w]{4})", CrawlType.LINE));

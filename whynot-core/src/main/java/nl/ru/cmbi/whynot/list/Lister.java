@@ -54,10 +54,10 @@ public class Lister {
 			entries = entdao.getMissing(db);
 			break;
 		case ANNOTATED:
-			entries = entdao.getMissingWith(db);
+			entries = entdao.getAnnotated(db);
 			break;
 		case UNANNOTATED:
-			entries = entdao.getMissingWithout(db);
+			entries = entdao.getUnannotated(db);
 			break;
 		}
 		Logger.getLogger(getClass()).info("#" + dbname + " " + selection + ": " + entries.size());

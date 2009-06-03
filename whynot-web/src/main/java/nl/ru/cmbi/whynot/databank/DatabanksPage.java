@@ -8,12 +8,8 @@ import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 import nl.ru.cmbi.whynot.model.Databank;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.markup.html.panel.Fragment;
-import org.apache.wicket.markup.repeater.RepeatingView;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -25,9 +21,6 @@ public class DatabanksPage extends HomePage {
 	protected EntryDAO	entrydao;
 
 	public DatabanksPage() {
-		ChildFragment childfragment = new ChildFragment("hierarchy", databankdao.findByName("PDB"));
-		add(childfragment);
-
 		ListView<Databank> chartlist = new ListView<Databank>("chartlist", databankdao.findAll()) {
 			private static final long	serialVersionUID	= -5581168078571199303L;
 
@@ -56,16 +49,5 @@ public class DatabanksPage extends HomePage {
 			}
 		};
 		add(chartlist);
-	}
-
-	public class ChildFragment extends Fragment {
-		public ChildFragment(String id, final Databank db) {
-			super(id, "child", DatabanksPage.this, new Model<Databank>(db));
-			add(new Label("name", db.getName()));
-			RepeatingView children = new RepeatingView("children");
-			add(children);
-			for (Databank child : databankdao.getChildren(db))
-				children.add(new ChildFragment(children.newChildId(), child));
-		}
 	}
 }

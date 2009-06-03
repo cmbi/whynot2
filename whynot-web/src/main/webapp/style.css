@@ -96,6 +96,9 @@ body {
 	list-style:none;
 	margin:8px 0 0;
 }
+#sidebar li.hierarchy { 
+	padding-left:15px;
+}
 #sidebar input {
 	width:160px;
 	border:1px solid gray;

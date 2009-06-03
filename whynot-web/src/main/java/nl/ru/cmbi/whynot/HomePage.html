@@ -34,9 +34,13 @@
 			<h1>Search</h1>
 			<form><input type="text" maxlength="4"/></form>
 			<h1>Databanks</h1>
-			<ul wicket:id="databanklist">
-				<li><a href="#" wicket:id="databank"><span wicket:id="name"></span></a></li>
-			</ul>
+			<span wicket:id="hierarchy"></span>
+			<wicket:fragment wicket:id="child">
+				<a href="#" wicket:id="databank"><span wicket:id="name"></span></a>
+				<ul>
+					<li wicket:id="children" class="hierarchy"></li>
+				</ul>
+			</wicket:fragment>
 		</div>
 	</div>
 	<div id="footer">

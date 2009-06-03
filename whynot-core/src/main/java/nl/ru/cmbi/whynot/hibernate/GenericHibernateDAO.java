@@ -147,6 +147,14 @@ public class GenericHibernateDAO<T, ID extends Serializable> implements GenericD
 			crit.add(Restrictions.naturalId().set("name", name));
 			return (Databank) crit.uniqueResult();
 		}
+
+		@SuppressWarnings("unchecked")
+		public List<Databank> getChildren(Databank parent) {
+			Criteria crit = getSession().createCriteria(getPersistentClass());
+			crit.add(Restrictions.eq("parent", parent));
+			crit.add(Restrictions.ne("name", parent.getName()));
+			return crit.list();
+		}
 	}
 
 	@Service

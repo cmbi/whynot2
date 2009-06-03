@@ -1,4 +1,4 @@
-package nl.ru.cmbi.whynot.comments;
+package nl.ru.cmbi.whynot.comment;
 
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.CommentDAO;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;

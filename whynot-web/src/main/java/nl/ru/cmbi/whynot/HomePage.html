@@ -1,27 +1,46 @@
 <html xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
 <head>
-<title>Why not?</title>
-<link type="text/css" rel="Stylesheet" href="style.css" />
+	<title>Why Not?</title>
+	<!-- "Bright Blue" by Christopher Robinson: http://www.edg3.co.uk/ -->
+	<link rel="stylesheet" href="style.css" type="text/css" media="screen" />
 </head>
+
 <body>
-<div id="header">
-	<h1><a href="./">Why not?</a></h1>
-	
-	<form>
-		<input type="text" maxlength="4"/>
-	</form>
-</div>
-<div id="content">
-	<div class="column left">
-		<div wicket:id="comments">b1</div>
+	<div id="header">
+		<h1>Why <span>Not?</span></h1>
 	</div>
-	<div class="column right">
-		<div wicket:id="databanks">b1</div>
+	<div id="content">
+		<div id="main">
+<wicket:child>
+			<h1>Important</h1>
+			<p>Licensed under the <a href="http://creativecommons.org/licenses/by/2.5/">Creative Commons Attribution 2.5</a>. I have left the actual text design style very basic for you to add your own text / header / quotes / list etc. styles yourself.</p>
+			<h1>About</h1>
+			<p>Designed by Christopher Robinson of <a href="http://www.edg3.co.uk/">EDG3</a>.</p>
+			<p>This template would be great as a simple personal site which only needs little content and a few pages, you are free to use this design for whatever purpose you wish as long as you do <strong>NOT</strong> sell it or claim it as your own and you leave the link back to my site at the bottom of your pages.</p>
+			<h1>Filler Text</h1>
+			<p>Donec sodales tempor neque. Vivamus faucibus interdum ante. Suspendisse tincidunt nibh. Sed quis libero sit amet dui faucibus egestas. Quisque varius dapibus risus. Cras tincidunt malesuada velit. Vestibulum vel turpis eu sem vehicula eleifend. Sed tristique, lacus ut tempus lobortis, tellus lorem cursus nunc, vel convallis dui magna nec massa. Phasellus sed est. Phasellus purus sem, sodales sit amet, iaculis sed, lobortis eget, metus. Proin ut mi. Praesent accumsan commodo nisi. Aliquam erat volutpat. Vestibulum urna. Ut in quam sit amet dui pharetra pellentesque. Suspendisse id ipsum. Nulla urna leo, ultricies sit amet, posuere ut, elementum et, magna. Mauris tempus mi ut metus. </p>
+			<p>Phasellus viverra sapien non nunc. Integer est enim, nonummy eu, tempus convallis, mollis ut, lorem. Morbi ornare mattis nulla. Pellentesque in risus at ligula scelerisque malesuada. Morbi elementum nisl sit amet purus. Cras erat quam, suscipit id, tincidunt in, dignissim ac, risus. Aliquam nunc. Donec tristique, felis sit amet bibendum blandit, arcu libero congue nibh, in bibendum nisl arcu at enim. Quisque varius velit vel dolor. Curabitur arcu tortor, lacinia ac, consectetuer nec, imperdiet nec, quam. Sed sed magna. Integer eget sem. In rhoncus eleifend orci. Morbi pharetra, justo at cursus nonummy, metus lectus ullamcorper est, sit amet consequat justo mauris sit amet augue. Aenean vel libero. Proin vehicula. Integer sollicitudin. Duis varius consequat leo. Fusce ultricies purus eu est.</p>
+</wicket:child>
+		</div>
+		<div id="sidebar">
+			<ul class="navigation">
+				<wicket:link>
+				<li><a href="/" class="active">Home</a></li>
+				<li><a href="databank/DatabanksPage.html">Databanks</a></li>
+				<li><a href="comment/CommentsPage.html">Comments</a></li>
+				<li><a href="about/AboutPage.html">About</a></li>
+				</wicket:link>
+			</ul>
+			<h1>Search</h1>
+			<form><input type="text" maxlength="4"/></form>
+			<h1>Databanks</h1>
+			<ul wicket:id="databanklist">
+				<li><a href="#" wicket:id="databank"><span wicket:id="name"></span></a></li>
+			</ul>
+		</div>
 	</div>
-</div>
-<div id="footer">
-	<p>footer</p>
-</div>
+	<div id="footer">
+		<p>Contact <a href="mailto:t.tebeek@cmbi.ru.nl">Tim te Beek</a></p>
+	</div>
 </body>
 </html>
-

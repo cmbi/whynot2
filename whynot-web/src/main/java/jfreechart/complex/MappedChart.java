@@ -41,6 +41,7 @@ public abstract class MappedChart extends Panel {
 	*/
 	protected abstract void onClickCallback(AjaxRequestTarget target, ChartEntity entity);
 
+	@SuppressWarnings("serial")
 	private DynamicImageMap constructImageMap(ChartImage image, String mapName) {
 		DynamicImageMap imageMap = new DynamicImageMap("imageMap", mapName);
 		EntityCollection entities = image.getRenderingInfo().getEntityCollection();
@@ -49,8 +50,6 @@ public abstract class MappedChart extends Panel {
 			for (int i = count - 1; i >= 0; i--) {
 				final ChartEntity entity = entities.getEntity(i);
 				imageMap.addArea(entity.getShapeType(), entity.getShapeCoords(), entity.getToolTipText(), new AjaxLink<Void>("link") {
-					private static final long	serialVersionUID	= -7982198051678987986L;
-
 					@Override
 					public void onClick(AjaxRequestTarget target) {
 						onClickCallback(target, entity);

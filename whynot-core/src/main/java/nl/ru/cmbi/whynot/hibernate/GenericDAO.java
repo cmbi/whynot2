@@ -48,6 +48,8 @@ public interface GenericDAO<T, ID extends Serializable> {
 
 	public interface DatabankDAO extends GenericDAO<Databank, Long> {
 		Databank findByName(String name);
+
+		List<Databank> getChildren(Databank parent);
 	}
 
 	public interface EntryDAO extends GenericDAO<Entry, Long> {

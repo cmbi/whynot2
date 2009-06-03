@@ -1,0 +1,20 @@
+<html xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+<body>
+<wicket:extend>
+	<h1>Databanks</h1>
+
+	<p wicket:id="hierarchy"></p>
+	<wicket:fragment wicket:id="child">
+	<ul>
+		<wicket:container wicket:id="name"></wicket:container>
+		<li wicket:id="children"></li>
+	</ul>
+	</wicket:fragment>
+	
+	<p wicket:id="chartlist">
+		<span wicket:id="chart"></span>
+	</p>
+	
+</wicket:extend>
+</body>
+</html>

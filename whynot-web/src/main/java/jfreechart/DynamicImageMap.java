@@ -1,4 +1,4 @@
-package jfreechart.complex;
+package jfreechart;
 
 import org.apache.wicket.ajax.markup.html.IAjaxLink;
 import org.apache.wicket.markup.ComponentTag;
@@ -13,10 +13,9 @@ import org.apache.wicket.markup.repeater.RepeatingView;
  *
  */
 public class DynamicImageMap extends WebMarkupContainer {
-	private static final long	serialVersionUID	= 8859550289557897390L;
-	private String				mapName;
-	private RepeatingView		areas;
-	private int					areaCounter			= 0;
+	private String			mapName;
+	private RepeatingView	areas;
+	private int				areaCounter	= 0;
 
 	public DynamicImageMap(final String id, String mapName) {
 		super(id);

@@ -1,6 +1,6 @@
-package nl.ru.cmbi.whynot;
+package nl.ru.cmbi.whynot.home;
 
-import nl.ru.cmbi.whynot.databank.DatabanksPage;
+import nl.ru.cmbi.whynot.databank.DatabankPage;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
 import nl.ru.cmbi.whynot.model.Databank;
 
@@ -17,10 +17,6 @@ public class HomePage extends WebPage {
 	@SpringBean
 	protected DatabankDAO	databankdao;
 
-	public HomePage(PageParameters parameters) {
-		this();
-	}
-
 	public HomePage() {
 		ChildFragment childfragment = new ChildFragment("hierarchy", databankdao.findByName("PDB"));
 		add(childfragment);
@@ -34,7 +30,7 @@ public class HomePage extends WebPage {
 			//Link
 			Label lbl = new Label("name", db.getName());
 			PageParameters pp = new PageParameters("name=" + db.getName());
-			BookmarkablePageLink<WebPage> bpl = new BookmarkablePageLink<WebPage>("databank", DatabanksPage.class, pp);
+			BookmarkablePageLink<WebPage> bpl = new BookmarkablePageLink<WebPage>("databank", DatabankPage.class, pp);
 			add(bpl.add(lbl));
 
 			//Children

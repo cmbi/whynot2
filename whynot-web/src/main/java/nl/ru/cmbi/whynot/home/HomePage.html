@@ -7,7 +7,9 @@
 
 <body>
 	<div id="header">
-		<h1>Why <span>Not?</span></h1>
+		<wicket:link>
+		<h1><a href="../">Why <span>Not?</span></a></h1>
+		</wicket:link>
 	</div>
 	<div id="content">
 		<div id="main">
@@ -25,10 +27,9 @@
 		<div id="sidebar">
 			<ul class="navigation">
 				<wicket:link>
-				<li><a href="/" class="active">Home</a></li>
-				<li><a href="databank/DatabanksPage.html">Databanks</a></li>
-				<li><a href="comment/CommentsPage.html">Comments</a></li>
-				<li><a href="about/AboutPage.html">About</a></li>
+				<li><a href="../about/AboutPage.html">About</a></li>
+				<li><a href="../comment/CommentsPage.html">Comments</a></li>
+				<li><a href="../databank/ListPage.html">Databanks</a></li>
 				</wicket:link>
 			</ul>
 			<h1>Search</h1>

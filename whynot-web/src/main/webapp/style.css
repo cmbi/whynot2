@@ -38,10 +38,12 @@ body {
 	width:548px;
 }
 #header h1 {
-	color:#fff;
 	display:block;
 	font:36px "Trebuchet MS",Verdana,sans-serif;
 	padding:50px 0 0 25px;
+}
+#header h1 a {
+	color:#fff;
 }
 #header h1 span {
 	color:#01a5ec;

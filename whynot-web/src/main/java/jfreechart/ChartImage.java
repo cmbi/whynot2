@@ -1,4 +1,4 @@
-package jfreechart.complex;
+package jfreechart;
 
 import java.awt.image.BufferedImage;
 
@@ -17,8 +17,6 @@ import org.jfree.chart.JFreeChart;
  *
  */
 public class ChartImage extends Image {
-	private static final long				serialVersionUID	= -7165602010769784429L;
-
 	private int								width;
 	private int								height;
 	private JFreeChart						chart;
@@ -49,8 +47,6 @@ public class ChartImage extends Image {
 	@Override
 	protected Resource getImageResource() {
 		return new DynamicImageResource() {
-			private static final long	serialVersionUID	= -4386816651419227671L;
-
 			@Override
 			protected byte[] getImageData() {
 				return toImageData(createBufferedImage());

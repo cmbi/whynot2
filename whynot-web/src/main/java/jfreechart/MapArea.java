@@ -1,4 +1,4 @@
-package jfreechart.complex;
+package jfreechart;
 
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -17,11 +17,9 @@ import org.apache.wicket.model.IModel;
  *
  */
 public class MapArea extends WebMarkupContainer {
-	private static final long	serialVersionUID	= -135521429660733572L;
-
-	private String				shape;
-	private String				coords;
-	private String				tooltipText;
+	private String	shape;
+	private String	coords;
+	private String	tooltipText;
 
 	/**
 	 * Construct the map area
@@ -40,8 +38,6 @@ public class MapArea extends WebMarkupContainer {
 		this.tooltipText = tooltipText;
 		if (linkCallback != null)
 			add(new AjaxEventBehavior("onclick") {
-				private static final long	serialVersionUID	= 2615093257359874075L;
-
 				@Override
 				protected void onEvent(AjaxRequestTarget target) {
 					linkCallback.onClick(target);

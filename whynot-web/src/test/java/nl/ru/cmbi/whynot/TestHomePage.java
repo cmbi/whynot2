@@ -1,6 +1,8 @@
 package nl.ru.cmbi.whynot;
 
 import junit.framework.TestCase;
+import nl.ru.cmbi.whynot.home.HomePage;
+
 import org.apache.wicket.util.tester.WicketTester;
 
 /**

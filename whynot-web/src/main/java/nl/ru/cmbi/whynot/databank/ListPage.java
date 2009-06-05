@@ -2,11 +2,12 @@ package nl.ru.cmbi.whynot.databank;
 
 import java.awt.Color;
 
-import jfreechart.complex.MappedChart;
-import nl.ru.cmbi.whynot.HomePage;
+import jfreechart.MappedChart;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
+import nl.ru.cmbi.whynot.home.HomePage;
 import nl.ru.cmbi.whynot.model.Databank;
 
+import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -16,11 +17,15 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.entity.ChartEntity;
 import org.jfree.data.general.DefaultPieDataset;
 
-public class DatabanksPage extends HomePage {
+public class ListPage extends HomePage {
 	@SpringBean
 	protected EntryDAO	entrydao;
 
-	public DatabanksPage() {
+	public ListPage(PageParameters parameters) {
+		this();
+	}
+
+	public ListPage() {
 		ListView<Databank> chartlist = new ListView<Databank>("chartlist", databankdao.findAll()) {
 			private static final long	serialVersionUID	= -5581168078571199303L;
 

@@ -1,4 +1,4 @@
-package jfreechart.complex;
+package jfreechart;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -14,14 +14,11 @@ import org.jfree.chart.entity.EntityCollection;
  * the given JFreeChart chart. Uses the JFreeChart tooltip generator
  * to provide tooltips for the chart entities but does not use
  * the JFreeChart URL generator, but instead calls an Ajax callback
- * function/
+ * function
  * 
  * @author Jonny Wray
- *
  */
 public abstract class MappedChart extends Panel {
-	private static final long	serialVersionUID	= 4137002187344769160L;
-
 	public MappedChart(String panelId, JFreeChart chart, int width, int height) {
 		super(panelId);
 		ChartImage image = new ChartImage("image", chart, width, height);
@@ -41,7 +38,6 @@ public abstract class MappedChart extends Panel {
 	*/
 	protected abstract void onClickCallback(AjaxRequestTarget target, ChartEntity entity);
 
-	@SuppressWarnings("serial")
 	private DynamicImageMap constructImageMap(ChartImage image, String mapName) {
 		DynamicImageMap imageMap = new DynamicImageMap("imageMap", mapName);
 		EntityCollection entities = image.getRenderingInfo().getEntityCollection();

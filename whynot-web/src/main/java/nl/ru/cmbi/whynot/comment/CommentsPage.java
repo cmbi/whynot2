@@ -1,6 +1,6 @@
 package nl.ru.cmbi.whynot.comment;
 
-import nl.ru.cmbi.whynot.HomePage;
+import nl.ru.cmbi.whynot.home.HomePage;
 
 import org.apache.wicket.PageParameters;
 

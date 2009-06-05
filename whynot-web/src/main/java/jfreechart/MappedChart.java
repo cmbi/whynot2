@@ -22,7 +22,7 @@ public abstract class MappedChart extends Panel {
 	public MappedChart(String panelId, JFreeChart chart, int width, int height) {
 		super(panelId);
 		ChartImage image = new ChartImage("image", chart, width, height);
-		String mapName = getPath();
+		String mapName = getPath() + chart.getTitle().getText();
 		image.add(new AttributeModifier("usemap", true, new Model<String>("#" + mapName)));
 		add(image);
 		DynamicImageMap imageMap = constructImageMap(image, mapName);

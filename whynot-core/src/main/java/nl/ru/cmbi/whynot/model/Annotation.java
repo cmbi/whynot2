@@ -24,12 +24,14 @@ public class Annotation implements Comparable<Annotation>, Serializable {
 
 	@NaturalId
 	@ManyToOne
+	//TODO: Verify need for cascading here (think we can do without)
 	@Cascade(value = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE })
 	@NotNull
 	@Index(name = "annotation_comment_index")
 	private Comment	comment;
 	@NaturalId
 	@ManyToOne
+	//TODO: Verify need for cascading here (think we can do without)
 	@Cascade(value = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE })
 	@NotNull
 	@Index(name = "annotation_entry_index")

@@ -27,7 +27,7 @@ public class Installer {
 
 	public void fill() {
 		Databank pdb, dssp, nmr, nrg, nrg_docr, sf;
-		dbdao.makePersistent(pdb = new Databank("PDB", "http://www.pdb.org/", "http://www.pdb.org/pdb/download/downloadFile.do?fileFormat=pdb&compression=NO&structureId=", ".*/pdb([\\w]{4})\\.ent(\\.gz)?", CrawlType.FILE));
+		dbdao.makePersistent(pdb = new Databank("PDB", "H.M. Berman, K. Henrick, H. Nakamura\nAnnouncing the worldwide Protein Data Bank.\nNature Structural Biology 10 (12), p. 980 (2003)", "http://www.pdb.org/pdb/download/downloadFile.do?fileFormat=pdb&compression=NO&structureId=", ".*/pdb([\\w]{4})\\.ent(\\.gz)?", CrawlType.FILE));
 		dbdao.makePersistent(new Databank("PDBFINDER", "http://swift.cmbi.ru.nl/gv/pdbfinder/", "http://mrs.cmbi.ru.nl/mrs-3/entry.do?db=pdbfinder2&id=", pdb, "ID           : ([\\w]{4})", CrawlType.LINE));
 		dbdao.makePersistent(new Databank("PDBREPORT", "http://swift.cmbi.ru.nl/gv/pdbreport/", "http://www.cmbi.ru.nl/pdbreport/cgi-bin/nonotes?PDBID=", pdb, ".*pdbreport.*/([\\w]{4})", CrawlType.FILE));
 

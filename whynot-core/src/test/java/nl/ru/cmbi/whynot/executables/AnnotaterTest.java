@@ -4,11 +4,10 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
 
-import nl.ru.cmbi.whynot.annotate.CommentParser;
 import nl.ru.cmbi.whynot.annotate.Annotater;
+import nl.ru.cmbi.whynot.annotate.CommentParser;
 
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class AnnotaterTest {
@@ -19,7 +18,6 @@ public class AnnotaterTest {
 									};
 
 	@Test
-	@Ignore
 	public void comment() throws Exception {
 		Annotater.main(new String[0]);
 	}

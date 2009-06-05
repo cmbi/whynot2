@@ -32,6 +32,7 @@ public class Comment implements Comparable<Comment>, Serializable {
 	private String					text;
 
 	@OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
+	//FIXME cascade in comment
 	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
 	@Sort(type = SortType.NATURAL)
 	private SortedSet<Annotation>	annotations	= new TreeSet<Annotation>();

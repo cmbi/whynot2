@@ -37,74 +37,89 @@ body {
 	margin:0 auto;
 	width:548px;
 }
-#header h1 {
-	display:block;
-	font:36px "Trebuchet MS",Verdana,sans-serif;
-	padding:50px 0 0 25px;
-}
-#header h1 a {
-	color:#fff;
-}
-#header h1 span {
-	color:#01a5ec;
-}
+	#header h1 {
+		display:block;
+		font:36px "Trebuchet MS",Verdana,sans-serif;
+		padding:50px 0 0 25px;
+	}
+		#header h1 a {
+			color:#fff;
+		}
+		#header h1 span {
+			color:#01a5ec;
+		}
 
 /* content */
 #content {
 	margin:0 auto;
 	width:550px;
 }
-#content h1 {
-	color:#01a5ec;
-	font:23px Verdana,sans-serif;
-	margin:15px 0 5px 0;
-}
+	#content h1 {
+		color:#01a5ec;
+		font:23px Verdana,sans-serif;
+		margin:15px 0 5px 0;
+	}
+
 #main {
 	float:left;
 	padding:5px 10px 0 15px;
 	width:335px;
 }
+#main table {
+	width:100%;
+	font:12px "Trebuchet ms", Helvetica, sans-serif;
+}
+	#main table th {
+		text-align:left;
+	}
+	#main table td.number {
+		text-align:right;
+	}
+	#main table td.date {
+		text-align:right;
+	}
+
 #sidebar {
 	width:160px;
 	float:right;
 	padding:15px;
 }
-#sidebar .navigation {
-	list-style:none;
-}
-#sidebar .navigation li {
-	list-style:none;
-}
-#sidebar .navigation li a {
-	border-bottom:1px solid #ddd;
-	color:#4e4b44;
-	display:block;
-	padding:9px 5px;
-	width:150px;
-}
-#sidebar .navigation li a.active {
-	color:#333;
-	font-weight:bold;
-}
-#sidebar .navigation li a:hover {
-	color:#666;
-}
-#sidebar h1 {
-	color:#908a7e;
-	font:18px "Trebuchet MS",Verdana,sans-serif;
-	margin:15px 0 5px 0;
-}
-#sidebar li {
-	list-style:none;
-	margin:8px 0 0;
-}
-#sidebar li.hierarchy { 
-	padding-left:15px;
-}
-#sidebar input {
-	width:160px;
-	border:1px solid gray;
-}
+	#sidebar .navigation {
+		list-style:none;
+	}
+	#sidebar .navigation li {
+		list-style:none;
+	}
+		#sidebar .navigation li a {
+			border-bottom:1px solid #ddd;
+			color:#4e4b44;
+			display:block;
+			padding:9px 5px;
+			width:150px;
+		}
+		#sidebar .navigation li a.active {
+			color:#333;
+			font-weight:bold;
+		}
+		#sidebar .navigation li a:hover {
+			color:#666;
+		}
+	#sidebar h1 {
+		color:#908a7e;
+		font:18px "Trebuchet MS",Verdana,sans-serif;
+		margin:15px 0 5px 0;
+	}
+	#sidebar li {
+		list-style:none;
+		margin:8px 0 0;
+	}
+		#sidebar li .hierarchy { 
+			padding-left:15px;
+		}
+	#sidebar input {
+		width:160px;
+		border:1px solid gray;
+	}
 
 /* footer */
 #footer {
@@ -114,6 +129,7 @@ body {
 	margin:0 auto;
 	text-align:center;
 	width:548px;
+	bottom: 50px;
 }
 #footer p {
 	color:#666;

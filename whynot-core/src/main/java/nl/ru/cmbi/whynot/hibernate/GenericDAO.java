@@ -37,6 +37,9 @@ public interface GenericDAO<T, ID extends Serializable> {
 
 	//Interfaces
 	public interface AnnotationDAO extends GenericDAO<Annotation, Long> {
+		long getCount(Comment comment);
+
+		long getLatest(Comment comment);
 	}
 
 	public interface CommentDAO extends GenericDAO<Comment, Long> {
@@ -67,6 +70,16 @@ public interface GenericDAO<T, ID extends Serializable> {
 		List<Entry> getAnnotated(Databank child);
 
 		List<Entry> getUnannotated(Databank child);
+
+		long getValidCount(Databank child);
+
+		long getObsoleteCount(Databank child);
+
+		long getMissingCount(Databank child);
+
+		long getUnannotatedCount(Databank child);
+
+		long getAnnotatedCount(Databank child);
 	}
 
 	public interface FileDAO extends GenericDAO<File, Long> {

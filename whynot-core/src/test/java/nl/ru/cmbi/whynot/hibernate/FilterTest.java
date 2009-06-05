@@ -24,9 +24,8 @@ public class FilterTest {
 	private DatabankDAO	dbdao;
 
 	@Test
-	public void altprintCounts() {
+	public void getXXXsize() {
 		Databank nrg = dbdao.findByName("NRG");
-		//System.err.println(entdao.getValid(nrg).size());
 		System.err.println(entdao.getValid(nrg).size());
 		System.err.println(entdao.getObsolete(nrg).size());
 		System.err.println(entdao.getMissing(nrg).size());
@@ -35,8 +34,18 @@ public class FilterTest {
 	}
 
 	@Test
+	public void getXXXcount() {
+		Databank nrg = dbdao.findByName("NRG");
+		System.err.println(entdao.getValidCount(nrg));
+		System.err.println(entdao.getObsoleteCount(nrg));
+		System.err.println(entdao.getMissingCount(nrg));
+		System.err.println(entdao.getAnnotatedCount(nrg));
+		System.err.println(entdao.getUnannotatedCount(nrg));
+	}
+
+	@Test
 	@Ignore
-	public void printCounts() {
+	public void filters() {
 		//entdao.enableFilter("inDatabank").setParameter("name", "DSSP");
 
 		//entdao.enableFilter("withFile");

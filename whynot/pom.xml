@@ -29,8 +29,10 @@
 	</scm>
 
 	<modules>
+		<module>../whynot-apps</module>
 		<module>../whynot-core</module>
 		<module>../whynot-web</module>
+		<module>../whynot-ws</module>
 	</modules>
 
 	<dependencies>
@@ -66,14 +68,14 @@
 			<version>3.1.0.GA</version>
 		</dependency>
 		<dependency>
-			<groupId>postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>8.3-603.jdbc3</version>
-		</dependency>
-		<dependency>
 			<groupId>javassist</groupId>
 			<artifactId>javassist</artifactId>
 			<version>3.8.0.GA</version>
+		</dependency>
+		<dependency>
+			<groupId>postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>8.3-603.jdbc3</version>
 		</dependency>
 
 		<!-- Spring -->

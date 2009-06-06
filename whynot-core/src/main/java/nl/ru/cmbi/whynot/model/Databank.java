@@ -81,12 +81,12 @@ public class Databank implements Comparable<Databank>, Serializable {
 		this.name = name;
 	}
 
-	public Databank(String name, String reference, String filelink, String regex, CrawlType crawltype) {
-		this(name, reference, filelink, null, regex, crawltype);
+	public Databank(String name, CrawlType crawltype, String regex, String filelink, String reference) {
+		this(name, null, crawltype, regex, filelink, reference);
 		parent = this;
 	}
 
-	public Databank(String name, String reference, String filelink, Databank parent, String regex, CrawlType crawltype) {
+	public Databank(String name, Databank parent, CrawlType crawltype, String regex, String filelink, String reference) {
 		this.name = name;
 		this.reference = reference;
 		this.filelink = filelink;

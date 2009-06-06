@@ -1,9 +1,0 @@
-COMMENT: Comment one, 4 new id
-PDB,1tim
-PDB,2tim
-PDB,3tim
-PDB,4tim
-COMMENT: Comment two, 2 old, 1 new id
-PDB,1tim
-PDB,2tim
-PDB,5tim

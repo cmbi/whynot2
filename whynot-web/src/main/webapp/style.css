@@ -65,19 +65,6 @@ body {
 	padding:5px 10px 0 15px;
 	width:335px;
 }
-#main table {
-	width:100%;
-	font:12px "Trebuchet ms", Helvetica, sans-serif;
-}
-	#main table th {
-		text-align:left;
-	}
-	#main table td.number {
-		text-align:right;
-	}
-	#main table td.date {
-		text-align:right;
-	}
 
 #sidebar {
 	width:160px;
@@ -87,22 +74,22 @@ body {
 	#sidebar .navigation {
 		list-style:none;
 	}
-	#sidebar .navigation li {
-		list-style:none;
-	}
-		#sidebar .navigation li a {
+		#sidebar .navigation li {
+			list-style:none;
 			border-bottom:1px solid #ddd;
-			color:#4e4b44;
 			display:block;
 			padding:9px 5px;
 			width:150px;
 		}
-		#sidebar .navigation li a.active {
-			color:#333;
-			font-weight:bold;
+		#sidebar .navigation li a {
+			color:#4e4b44;
 		}
 		#sidebar .navigation li a:hover {
 			color:#666;
+		}
+		#sidebar .navigation li em {
+			color:#333;
+			font-weight:bold;
 		}
 	#sidebar h1 {
 		color:#908a7e;

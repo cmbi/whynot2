@@ -66,7 +66,7 @@ public class CommentPage extends HomePage {
 			@Override
 			protected void setHeaders(WebResponse response) {
 				super.setHeaders(response);
-				response.setAttachmentHeader("entries.txt");
+				response.setAttachmentHeader("comment" + id + "_entries.txt");
 			}
 		};
 		return export.setCacheable(false);

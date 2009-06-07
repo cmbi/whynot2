@@ -1,6 +1,7 @@
 package nl.ru.cmbi.whynot.home;
 
 import nl.ru.cmbi.whynot.databank.DatabankPage;
+import nl.ru.cmbi.whynot.feedback.FeedbackPanelWrapper;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
 import nl.ru.cmbi.whynot.model.Databank;
 
@@ -15,18 +16,23 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 
 public class HomePage extends WebPage {
 	@SpringBean
-	protected DatabankDAO	databankdao;
+	protected DatabankDAO			databankdao;
+
+	protected FeedbackPanelWrapper	feedbackwrapper;
 
 	public HomePage() {
-		ChildFragment childfragment = new ChildFragment("hierarchy", databankdao.findByName("PDB"));
+		feedbackwrapper = new FeedbackPanelWrapper("feedback");
+		add(feedbackwrapper);
+
+		DatabankHierarchyFragment childfragment = new DatabankHierarchyFragment("hierarchy", databankdao.findByName("PDB"));
 		add(childfragment);
 	}
 
-	public class ChildFragment extends Fragment {
+	public class DatabankHierarchyFragment extends Fragment {
 		private static final long	serialVersionUID	= -1982524056748695793L;
 
-		public ChildFragment(String id, final Databank db) {
-			super(id, "child", HomePage.this, new Model<Databank>(db));
+		public DatabankHierarchyFragment(String id, final Databank db) {
+			super(id, "hierarchyfragment", HomePage.this, new Model<Databank>(db));
 			//Link
 			Label lbl = new Label("name", db.getName());
 			PageParameters pp = new PageParameters("name=" + db.getName());
@@ -37,7 +43,7 @@ public class HomePage extends WebPage {
 			RepeatingView children = new RepeatingView("children");
 			add(children);
 			for (Databank child : databankdao.getChildren(db))
-				children.add(new ChildFragment(children.newChildId(), child));
+				children.add(new DatabankHierarchyFragment(children.newChildId(), child));
 		}
 	}
 }

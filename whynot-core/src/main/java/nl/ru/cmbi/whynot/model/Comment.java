@@ -40,6 +40,10 @@ public class Comment implements Comparable<Comment>, Serializable {
 	protected Comment() {
 	}
 
+	public Long getId() {
+		return id;
+	}
+
 	public Comment(String text) {
 		this.text = text;
 	}

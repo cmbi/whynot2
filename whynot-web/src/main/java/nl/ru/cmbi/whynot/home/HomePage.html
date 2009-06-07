@@ -2,7 +2,7 @@
 <head>
 	<title>Why Not?</title>
 	<!-- "Bright Blue" by Christopher Robinson: http://www.edg3.co.uk/ -->
-	<link rel="stylesheet" href="style.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="brightblue.css" type="text/css" media="screen" />
 </head>
 
 <body>
@@ -10,6 +10,7 @@
 		<h1><a href="./">Why <span>Not?</span></a></h1>
 	</div>
 	<div id="content">
+		<div id="feedback" wicket:id="feedback"></div>
 		<div id="main">
 <wicket:child>
 			<h1>Important</h1>
@@ -34,7 +35,7 @@
 			<form><input type="text" maxlength="4"/></form>
 			<h1>Databanks</h1>
 			<span wicket:id="hierarchy"></span>
-			<wicket:fragment wicket:id="child">
+			<wicket:fragment wicket:id="hierarchyfragment">
 				<a href="#" wicket:id="databank"><span wicket:id="name"></span></a>
 				<ul>
 					<li wicket:id="children" class="hierarchy"></li>
@@ -45,5 +46,16 @@
 	<div id="footer">
 		<p>Contact <a href="mailto:t.tebeek@cmbi.ru.nl">Tim te Beek</a></p>
 	</div>
+
+	<!-- Google Analytics Tracking -->
+	<script type="text/javascript">
+	var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+	document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	</script>
+	<script type="text/javascript">
+	try {
+	var pageTracker = _gat._getTracker("UA-9210071-1");
+	pageTracker._trackPageview();
+	} catch(err) {}</script>
 </body>
 </html>

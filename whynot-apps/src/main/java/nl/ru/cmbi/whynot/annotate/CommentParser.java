@@ -97,7 +97,7 @@ public class CommentParser {
 				if (entry.getFile() == null) {
 					//Add annotation 
 					if (entry.getAnnotations().add(new Annotation(comment, entry, time)))
-						added++;
+						added++;//TODO Maybe only comment actually missing entries (parent.file == null) but look out for performance problems
 				}
 				else
 					skipped++;

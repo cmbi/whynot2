@@ -29,7 +29,18 @@ public class DatabankPage extends HomePage {
 	}
 
 	public DatabankPage(PageParameters parameters) {
-		add(databankListView(databankdao.findByName(parameters.getString("name"))));
+		Databank db = null;
+		if (parameters.containsKey("name")) {
+			String name = parameters.getString("name");
+			db = databankdao.findByName(name);
+		}
+
+		if (db != null)
+			add(databankListView(db));
+		else {
+			error("Could not find databank for parameter name.");
+			add(databankListView(databankdao.findAll().toArray(new Databank[0])));
+		}
 	}
 
 	public ListView<Databank> databankListView(Databank... databanks) {

@@ -5,9 +5,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
 
-import nl.ru.cmbi.whynot.hibernate.SpringUtil;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.CommentDAO;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
+import nl.ru.cmbi.whynot.util.SpringUtil;
 
 public class Annotater {
 	public static void main(String[] args) throws IOException, ParseException {

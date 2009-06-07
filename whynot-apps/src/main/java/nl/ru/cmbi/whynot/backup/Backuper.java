@@ -6,10 +6,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import nl.ru.cmbi.whynot.hibernate.SpringUtil;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.CommentDAO;
 import nl.ru.cmbi.whynot.model.Annotation;
 import nl.ru.cmbi.whynot.model.Comment;
+import nl.ru.cmbi.whynot.util.SpringUtil;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.BeansException;

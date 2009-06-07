@@ -1,7 +1,6 @@
 package nl.ru.cmbi.whynot;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.ParseException;
@@ -33,7 +32,7 @@ public class AnnotaterTest {
 	public static void copyConvertAndOptimize() throws IOException, ParseException {
 		{//CommentFile as copy of backup
 			Scanner scn = new Scanner(new File("src/test/resources/20090519.txt.converted.optimized"));
-			commentFile = new File("comment/testfile.txt");
+			commentFile = new File("testfile_comment.txt");
 			PrintWriter pwr = new PrintWriter(commentFile);
 			while (scn.hasNextLine())
 				pwr.println(scn.nextLine());
@@ -41,9 +40,9 @@ public class AnnotaterTest {
 			scn.close();
 			commentFile = Converter.getFile(commentFile);
 		}
-		{//UncommentFile as subset of commentfile
+		{//UncommentFile one in every 5 lines in commentfile
 			Scanner scn = new Scanner(commentFile);
-			uncommentFile = new File("uncomment/testfile.txt");
+			uncommentFile = new File("testfile_uncomment.txt");
 			PrintWriter pwr = new PrintWriter(uncommentFile);
 			int count = 0;
 			while (scn.hasNextLine()) {
@@ -59,12 +58,12 @@ public class AnnotaterTest {
 
 	@Test
 	public void comment() throws IOException, ParseException {
-		cp.comment(commentFile);
+		commentFile = cp.comment(commentFile);
 	}
 
 	@Test
 	public void uncomment() throws IOException, ParseException {
-		cp.uncomment(uncommentFile);
+		uncommentFile = cp.uncomment(uncommentFile);
 	}
 
 	@Autowired
@@ -80,27 +79,7 @@ public class AnnotaterTest {
 
 	@AfterClass
 	public static void resetfiles() throws Exception {
-		File dirComments = new File("comment/");
-		File dirUncomments = new File("uncomment/");
-
-		//Make sure comment directories exist
-		if (!dirComments.isDirectory() && !dirComments.mkdir())
-			throw new FileNotFoundException(dirComments.getAbsolutePath());
-		if (!dirUncomments.isDirectory() && !dirUncomments.mkdir())
-			throw new FileNotFoundException(dirUncomments.getAbsolutePath());
-
-		//Rename files
-		for (File file : dirComments.listFiles())
-			file.renameTo(strip(file));
-		for (File file : dirUncomments.listFiles())
-			file.renameTo(strip(file));
-	}
-
-	private static File strip(File file) {
-		String path = file.getAbsolutePath();
-		path = path.replace(".converted", "");
-		path = path.replace(".optimized", "");
-		path = path.replace(".done", "");
-		return new File(path);
+		commentFile.delete();
+		uncommentFile.delete();
 	}
 }

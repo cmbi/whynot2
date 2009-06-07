@@ -1,4 +1,4 @@
-package nl.ru.cmbi.whynot;
+package nl.ru.cmbi.whynot.util;
 
 public class MainClass {
 	/**

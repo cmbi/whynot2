@@ -13,6 +13,7 @@ import java.util.regex.Matcher;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.AnnotationDAO;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.CommentDAO;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
+import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 import nl.ru.cmbi.whynot.model.Annotation;
 import nl.ru.cmbi.whynot.model.Comment;
 import nl.ru.cmbi.whynot.model.Databank;
@@ -40,34 +41,14 @@ public class CommentParser {
 	private CommentDAO			comdao;
 	@Autowired
 	private DatabankDAO			dbdao;
+	@Autowired
+	private EntryDAO			entdao;
 
 	@Autowired
 	private SessionFactory		sf;
 
 	@Transactional
-	public void comment(File file) throws IOException, ParseException {
-		storeComments(file);
-		storeAnnotations(file);
-	}
-
-	@Transactional
-	public void uncomment(File file) throws IOException, ParseException {
-		removeAnnotations(file);
-	}
-
-	public void storeComments(File file) throws IOException, ParseException {
-		Logger.getLogger(getClass()).info("Adding comments in " + file.getName());
-		LineNumberReader lnr = new LineNumberReader(new FileReader(file));
-		String line;
-		Matcher matcher;
-		Comment comment = new Comment("Empty comment");
-		while ((line = lnr.readLine()) != null)
-			if ((matcher = Converter.patternCOMMENT.matcher(line)).matches())
-				if (!comment.getText().equals(matcher.group(1)))
-					comment = comdao.findOrCreateByExample(new Comment(matcher.group(1)));
-	}
-
-	public void storeAnnotations(File file) throws IOException, ParseException {
+	public File comment(File file) throws IOException, ParseException {
 		Logger.getLogger(getClass()).info("Adding annotations in " + file.getName());
 		int added = 0, skipped = 0;
 		long time = System.currentTimeMillis();
@@ -109,7 +90,9 @@ public class CommentParser {
 					skipped = 0;
 
 					//Find comment
-					comment = comdao.findByText(matcher.group(1));
+					comment = comdao.findByText(matcher.group(1).trim());
+					if (comment == null)
+						comment = new Comment(matcher.group(1).trim());
 
 					//Flush & GC
 					sf.getCurrentSession().flush();
@@ -119,10 +102,13 @@ public class CommentParser {
 					throw new ParseException("Expected " + Converter.patternCOMMENT + " or " + Converter.patternEntry + "  on line " + lnr.getLineNumber(), lnr.getLineNumber());
 		lnr.close();
 		Logger.getLogger(getClass()).info("Added " + added + ", skipped " + skipped + " for comment: \"" + comment.getText() + "\"");
-		file.renameTo(new File(file.getAbsolutePath() + CommentParser.append));
+		File dest = new File(file.getAbsolutePath() + CommentParser.append);
+		file.renameTo(dest);
+		return dest;
 	}
 
-	public void removeAnnotations(File file) throws IOException, ParseException {
+	@Transactional
+	public File uncomment(File file) throws IOException, ParseException {
 		Logger.getLogger(getClass()).info("Removing annotations in " + file.getName());
 		int removed = 0, skipped = 0;
 
@@ -163,6 +149,10 @@ public class CommentParser {
 				entry.getAnnotations().remove(ann);
 				anndao.makeTransient(ann);
 				removed++;
+
+				//Remove entry if empty
+				if (entry.getAnnotations().isEmpty() && entry.getFile() == null)
+					entdao.makeTransient(entry);
 			}
 			else
 				if ((matcher = Converter.patternCOMMENT.matcher(line)).matches()) {
@@ -185,6 +175,8 @@ public class CommentParser {
 					throw new ParseException("Expected " + Converter.patternCOMMENT + " or " + Converter.patternEntry + "  on line " + lnr.getLineNumber(), lnr.getLineNumber());
 		lnr.close();
 		Logger.getLogger(getClass()).info("Removed " + removed + ", skipped " + skipped + " for comment: \"" + comment.getText() + "\"");
-		file.renameTo(new File(file.getAbsolutePath() + CommentParser.append));
+		File dest = new File(file.getAbsolutePath() + CommentParser.append);
+		file.renameTo(dest);
+		return dest;
 	}
 }

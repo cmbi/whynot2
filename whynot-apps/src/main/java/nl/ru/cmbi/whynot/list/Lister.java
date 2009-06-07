@@ -3,11 +3,11 @@ package nl.ru.cmbi.whynot.list;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.ru.cmbi.whynot.hibernate.SpringUtil;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Entry;
+import nl.ru.cmbi.whynot.util.SpringUtil;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.FileDAO;
 import nl.ru.cmbi.whynot.model.Databank;
@@ -14,9 +15,15 @@ import nl.ru.cmbi.whynot.model.Entry;
 
 import org.apache.log4j.Logger;
 
-public class FileCrawler extends AbstractCrawler {
-	public FileCrawler(Databank databank, FileDAO filedao) {
-		super(databank, filedao);
+public class FileCrawler implements ICrawler {
+	protected Databank	databank;
+	protected FileDAO	filedao;
+	protected Pattern	pattern;
+
+	public FileCrawler(Databank db, FileDAO fldao) {
+		databank = db;
+		filedao = fldao;
+		pattern = Pattern.compile(db.getRegex());
 	}
 
 	@Override

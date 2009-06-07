@@ -16,11 +16,27 @@ public class CrawlerTest {
 	private Crawler	crawler;
 
 	@Test
-	public void crawlNRGCING() throws Exception {
+	public void crawlNMRNRG() throws Exception {
 		crawler.crawl("NMR", "http://nmr.cmbi.ru.nl/NRG-CING/entry_list_nmr.csv");
 		crawler.crawl("NRG", "http://nmr.cmbi.ru.nl/NRG-CING/entry_list_nrg.csv");
 		crawler.crawl("NRG-DOCR", "http://nmr.cmbi.ru.nl/NRG-CING/entry_list_nrg_docr.csv");
-		crawler.crawl("NRG-CING", "http://nmr.cmbi.ru.nl/NRG-CING/entry_list_done.csv");
+	}
+
+	@Test
+	public void validateNMRNRG() throws Exception {
+		crawler.validate("NMR");
+		crawler.validate("NRG");
+		crawler.validate("NRG-DOCR");
+	}
+
+	@Test
+	public void crawlNRGCING() throws Exception {
+		crawler.crawl("NRG-CING", "/home/tbeek/workspace/whynot-apps/download/httpnmrcmbirunlNRGCINGentry_list_donecsv");
+	}
+
+	@Test
+	public void validateNRGCING() throws Exception {
+		crawler.validate("NRG-CING");
 	}
 
 	@Test

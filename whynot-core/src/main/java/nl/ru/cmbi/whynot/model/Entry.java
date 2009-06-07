@@ -12,14 +12,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.FilterDefs;
-import org.hibernate.annotations.Filters;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.NaturalId;
-import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
@@ -27,27 +22,6 @@ import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 
 @Entity
-@FilterDefs( {//
-@FilterDef(name = "inDatabank", defaultCondition = "databank_id = (select db.id from Databank db where db.name like :name)", parameters = @ParamDef(name = "name", type = "string")), //
-
-@FilterDef(name = "withFile", defaultCondition = "file_id is not null"), //
-@FilterDef(name = "withoutFile", defaultCondition = "file_id is null"), //
-
-@FilterDef(name = "withParentFile", defaultCondition = "(select par.file_id from Entry par where par.pdbid = pdbid and par.databank_id = (select db.parent_id from Databank db where db.id = databank_id)) is not null"), //
-@FilterDef(name = "withoutParentFile", defaultCondition = "(select par.file_id from Entry par where par.pdbid = pdbid and par.databank_id = (select db.parent_id from Databank db where db.id = databank_id)) is null"), //
-
-@FilterDef(name = "withComment", defaultCondition = "id in (select distinct ann.entry_id from Annotation ann)"), //
-@FilterDef(name = "withoutComment", defaultCondition = "id not in (select distinct ann.entry_id from Annotation ann)"), //
-
-@FilterDef(name = "withThisComment", defaultCondition = "id in (select distinct ann.entry_id from Annotation ann where ann.comment_id in (select com.id from Comment com where com.text like :comment))", parameters = @ParamDef(name = "comment", type = "string")), //
-@FilterDef(name = "withoutThisComment", defaultCondition = "id not in (select distinct ann.entry_id from Annotation ann where ann.comment_id in (select com.id from Comment com where com.text like :comment))", parameters = @ParamDef(name = "comment", type = "string")) })
-@Filters( { //
-@Filter(name = "inDatabank"),//
-@Filter(name = "withFile"), @Filter(name = "withoutFile"),//
-@Filter(name = "withParentFile"), @Filter(name = "withoutParentFile"),//
-@Filter(name = "withComment"), @Filter(name = "withoutComment"),//
-@Filter(name = "withThisComment"), @Filter(name = "withoutThisComment"), //
-})
 public class Entry implements Comparable<Entry>, Serializable {
 	@Id
 	@GeneratedValue(generator = "hibseq")

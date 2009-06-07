@@ -10,10 +10,15 @@ import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.List;
+import java.util.regex.Pattern;
 
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
+import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.FileDAO;
 import nl.ru.cmbi.whynot.model.Databank;
+import nl.ru.cmbi.whynot.model.Entry;
+import nl.ru.cmbi.whynot.model.Databank.CrawlType;
 import nl.ru.cmbi.whynot.util.SpringUtil;
 
 import org.apache.log4j.Logger;
@@ -22,11 +27,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 public class Crawler {
 	public static void main(String[] args) throws Exception {
-		if (args.length == 2)
-			((Crawler) SpringUtil.getContext().getBean("crawler")).crawl(args[0], args[1]);
+		if (args.length == 2) {
+			Crawler crawler = (Crawler) SpringUtil.getContext().getBean("crawler");
+			crawler.crawl(args[0], args[1]);
+			crawler.validate(args[0]);
+		}
 		else
 			throw new IllegalArgumentException("Usage: crawler DATABASE DIRECTORY/FILE");
 	}
@@ -34,11 +41,21 @@ public class Crawler {
 	@Autowired
 	private DatabankDAO	dbdao;
 	@Autowired
+	private EntryDAO	entrydao;
+	@Autowired
 	private FileDAO		filedao;
 
+	/**
+	 * Adds all FileEntries in the given file or directory and subdirectories to database
+	 * 
+	 * Extracts the PDBID from the filename/line using regular expression group matching:
+	 * the PDBID should be enclosed in () and be the explicitly matching group number 1
+	 * @param file
+	 */
+	@Transactional
 	public void crawl(String dbname, String path) throws IOException {
 		Databank db = dbdao.findByExample(new Databank(dbname), "id", "reference", "filelink", "parent", "regex", "crawltype", "entries");
-		AbstractCrawler fc;
+		ICrawler fc;
 		switch (db.getCrawltype()) {
 		case FILE:
 			fc = new FileCrawler(db, filedao);
@@ -50,9 +67,51 @@ public class Crawler {
 			throw new IllegalArgumentException("Invalid CrawlType");
 		}
 		fc.addEntriesIn(getFile(path));
-		fc.removeInvalidEntries();
-
 		Logger.getLogger(getClass()).info(dbname + ": Succes");
+	}
+
+	/**
+	 * Removes all the invalid FileEntries from database by checking if the file exists,
+	 * if the file matches the current regular expression (which might have changed) and
+	 * if the timestamp on the file is still the same as the timestamp on the entry
+	 */
+	@Transactional
+	public void validate(String dbname) {
+		Databank databank = dbdao.findByName(dbname);
+		Pattern pattern = Pattern.compile(databank.getRegex());
+
+		List<Entry> entrieswithfiles = entrydao.getValid(databank);
+		entrieswithfiles.addAll(entrydao.getObsolete(databank));
+
+		int checked = 0, removed = 0;
+		for (Entry entry : entrieswithfiles) {
+			nl.ru.cmbi.whynot.model.File stored = entry.getFile();
+			if (stored == null)//Should not happen, but to play safe skip
+				continue;
+			checked++;
+
+			boolean isValid = true;
+
+			//Check if file still exists
+			java.io.File found = new java.io.File(stored.getPath());
+			if (!found.exists() || found.lastModified() != stored.getTimestamp())
+				isValid = false;
+
+			//Check if file still matches regex
+			if (databank.getCrawltype() == CrawlType.FILE && !pattern.matcher(stored.getPath()).matches())
+				isValid = false;
+
+			//Remove invalid files
+			if (!isValid && databank.getCrawltype() == CrawlType.FILE) {
+				//FIXME LINE CRAWLED FILES ARENT REMOVED OR UPDATED HERE
+				filedao.makeTransient(stored);
+				entry.setFile(null);
+				removed++;
+			}
+		}
+		entrieswithfiles = null;
+
+		Logger.getLogger(getClass()).info(databank.getName() + ": Checked " + checked + ", Removed " + removed);
 	}
 
 	/**

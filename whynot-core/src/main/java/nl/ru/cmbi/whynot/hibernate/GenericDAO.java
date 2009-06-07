@@ -21,8 +21,6 @@ public interface GenericDAO<T, ID extends Serializable> {
 
 	T findByExample(T exampleInstance, String... excludeProperty);
 
-	T findOrCreateByExample(T exampleInstance, String... excludeProperty);
-
 	//Save / Delete
 	@Transactional
 	T makePersistent(T entity);
@@ -31,8 +29,10 @@ public interface GenericDAO<T, ID extends Serializable> {
 	void makeTransient(T entity);
 
 	//Filter
+	@Deprecated
 	void enableFilter(String filterName, String... params);
 
+	@Deprecated
 	void disableFilter(String filterName);
 
 	//Interfaces

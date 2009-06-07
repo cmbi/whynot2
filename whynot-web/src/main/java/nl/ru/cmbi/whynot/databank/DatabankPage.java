@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.Arrays;
 
 import jfreechart.MappedChart;
+import nl.ru.cmbi.whynot.error.ErrorPage;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 import nl.ru.cmbi.whynot.home.HomePage;
 import nl.ru.cmbi.whynot.model.Databank;
@@ -43,6 +44,20 @@ public class DatabankPage extends HomePage {
 		}
 	}
 
+	public DatabankPage(Databank db) {
+		add(databankListView(db));
+	}
+
+	public DatabankPage(Long id) {
+		Databank db = databankdao.findById(id, false);
+		if (db != null)
+			add(databankListView(db));
+		else {
+			error("Could not find databank for parameter name.");
+			add(databankListView(databankdao.findAll().toArray(new Databank[0])));
+		}
+	}
+
 	public ListView<Databank> databankListView(Databank... databanks) {
 		ListView<Databank> chartlist = new ListView<Databank>("chartlist", Arrays.asList(databanks)) {
 			@Override
@@ -59,10 +74,10 @@ public class DatabankPage extends HomePage {
 				long val = entrydao.getValidCount(db);
 				long ann = entrydao.getAnnotatedCount(db);
 				long una = entrydao.getUnannotatedCount(db);
-				pieDataset.setValue("Obsolete\n(" + obs + ")", obs);
-				pieDataset.setValue("Valid\n(" + val + ")", val);
-				pieDataset.setValue("Annotated\n(" + ann + ")", ann);
-				pieDataset.setValue("Unannotated\n(" + una + ")", una);
+				pieDataset.setValue("Obsolete\n" + obs, obs);
+				pieDataset.setValue("Valid\n" + val, val);
+				pieDataset.setValue("Annotated\n" + ann, ann);
+				pieDataset.setValue("Unannotated\n" + una, una);
 
 				//Create Chart
 				JFreeChart chart = ChartFactory.createPieChart3D(db.getName(), pieDataset, true, true, false);
@@ -76,9 +91,14 @@ public class DatabankPage extends HomePage {
 				MappedChart mc = new MappedChart("chart", chart, 350, 250) {
 					@Override
 					protected void onClickCallback(AjaxRequestTarget target, ChartEntity entity) {
-						String set = entity.getToolTipText().split("\n")[0];
-						//TODO Click on pie and label
-						System.out.println(set);
+						if (entity.toString().contains("Obsolete"))
+							setResponsePage(ErrorPage.class);
+						if (entity.toString().contains("Valid"))
+							setResponsePage(ErrorPage.class);
+						if (entity.toString().contains("Annotated"))
+							setResponsePage(ErrorPage.class);
+						if (entity.toString().contains("Unannotated"))
+							setResponsePage(ErrorPage.class);
 					}
 				};
 				return mc;
@@ -86,4 +106,30 @@ public class DatabankPage extends HomePage {
 		};
 		return chartlist;
 	}
+
+	/*public Resource getEntriesResource(final Long id) {
+		WebResource export = new WebResource() {
+			@Override
+			public IResourceStream getResourceStream() {
+				Comment com = commentdao.findById(id, false);
+				StringBuilder sb = new StringBuilder();
+				sb.append("COMMENT: " + com.getText() + '\n');
+				for (Annotation ann : com.getAnnotations()) {
+					Entry entry = ann.getEntry();
+					sb.append(entry.getDatabank().getName());
+					sb.append(',');
+					sb.append(entry.getPdbid());
+					sb.append('\n');
+				}
+				return new StringResourceStream(sb, "text/plain");
+			}
+
+			@Override
+			protected void setHeaders(WebResponse response) {
+				super.setHeaders(response);
+				response.setAttachmentHeader("comment" + id + "_entries.txt");
+			}
+		};
+		return export.setCacheable(false);
+	}*/
 }

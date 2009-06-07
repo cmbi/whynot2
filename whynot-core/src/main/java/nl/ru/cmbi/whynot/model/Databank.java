@@ -14,8 +14,6 @@ import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.Filters;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.LazyToOne;
 import org.hibernate.annotations.LazyToOneOption;
@@ -65,13 +63,6 @@ public class Databank implements Comparable<Databank>, Serializable {
 	@OneToMany(mappedBy = "databank", cascade = javax.persistence.CascadeType.ALL)
 	@Cascade(value = { CascadeType.DELETE_ORPHAN })
 	@Sort(type = SortType.NATURAL)
-	@Filters( { //
-	@Filter(name = "inDatabank"),//
-	@Filter(name = "withFile"), @Filter(name = "withoutFile"),//
-	@Filter(name = "withParentFile"), @Filter(name = "withoutParentFile"),//	
-	@Filter(name = "withComment"), @Filter(name = "withoutComment"), //
-	@Filter(name = "withThisComment"), @Filter(name = "withoutThisComment") //
-	})
 	private SortedSet<Entry>	entries	= new TreeSet<Entry>();
 
 	protected Databank() {
@@ -93,6 +84,10 @@ public class Databank implements Comparable<Databank>, Serializable {
 		this.parent = parent;
 		this.regex = regex;
 		this.crawltype = crawltype;
+	}
+
+	public Long getId() {
+		return id;
 	}
 
 	public String getName() {

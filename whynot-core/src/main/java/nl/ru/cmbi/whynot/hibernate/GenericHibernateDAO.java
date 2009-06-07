@@ -62,13 +62,6 @@ public class GenericHibernateDAO<T, ID extends Serializable> implements GenericD
 		return (T) crit.uniqueResult();
 	}
 
-	public T findOrCreateByExample(T exampleInstance, String... excludeProperty) {
-		T entity = findByExample(exampleInstance, excludeProperty);
-		if (entity == null)
-			return makePersistent(exampleInstance);
-		return entity;
-	}
-
 	/**
 	* Use this inside subclasses as a convenience method.
 	*/

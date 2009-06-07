@@ -34,10 +34,10 @@ public class HomePage extends WebPage {
 		public DatabankHierarchyFragment(String id, final Databank db) {
 			super(id, "hierarchyfragment", HomePage.this, new Model<Databank>(db));
 			//Link
-			Label lbl = new Label("name", db.getName());
-			PageParameters pp = new PageParameters("name=" + db.getName());
+			PageParameters pp = new PageParameters();
+			pp.put("name", db.getName());
 			BookmarkablePageLink<WebPage> bpl = new BookmarkablePageLink<WebPage>("databank", DatabankPage.class, pp);
-			add(bpl.add(lbl));
+			add(bpl.add(new Label("name", db.getName())));
 
 			//Children
 			RepeatingView children = new RepeatingView("children");

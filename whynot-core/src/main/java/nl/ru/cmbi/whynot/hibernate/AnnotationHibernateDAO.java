@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AnnotationHibernateDAO extends GenericHibernateDAO<Annotation, Long> implements AnnotationDAO {
-	public long getCount(Comment comment) {
+	public long countAllWith(Comment comment) {
 		Criteria crit = getSession().createCriteria(getPersistentClass());
 		crit.add(Restrictions.naturalId().set("comment", comment));
 		crit.setProjection(Projections.rowCount());

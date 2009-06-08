@@ -1,6 +1,5 @@
 package nl.ru.cmbi.whynot.crawl;
 
-import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,10 +11,11 @@ import java.util.regex.Pattern;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.FileDAO;
 import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Entry;
+import nl.ru.cmbi.whynot.model.File;
 
 import org.apache.log4j.Logger;
 
-public class FileCrawler implements ICrawler {
+public class FileCrawler {
 	protected Databank	databank;
 	protected FileDAO	filedao;
 	protected Pattern	pattern;
@@ -26,48 +26,49 @@ public class FileCrawler implements ICrawler {
 		pattern = Pattern.compile(db.getRegex());
 	}
 
-	@Override
-	public void addEntriesIn(File path) {
+	public void crawl(java.io.File path) {
 		List<Entry> oldEntries = new ArrayList<Entry>(databank.getEntries());
 		List<Entry> newEntries = new ArrayList<Entry>();
 
 		int crawled = 0, updated = 0, added = 0, index;
-		for (File dir : dirAndAllSubdirs(databank, path))
-			for (File file : dir.listFiles(new FileFilter() {
-				public boolean accept(File pathname) {
+		for (java.io.File dir : dirAndAllSubdirs(databank, path))
+			for (java.io.File file : dir.listFiles(new FileFilter() {
+				public boolean accept(java.io.File pathname) {
 					return pattern.matcher(pathname.getAbsolutePath()).matches();
 				}
 			})) {
 				Matcher m = pattern.matcher(file.getAbsolutePath());
-				if (m.matches()) {
-					crawled++;
+				if (!m.matches())
+					continue;
+				crawled++;
+				String id = m.group(1).toLowerCase();
 
-					String id = m.group(1).toLowerCase();
+				//Find or create entry
+				Entry entry = new Entry(databank, id);
+				if (0 <= (index = oldEntries.indexOf(entry)))
+					entry = oldEntries.get(index);
+				else
+					newEntries.add(entry);
 
-					//Find or create entry
-					Entry entry = new Entry(databank, id);
-					if (0 <= (index = oldEntries.indexOf(entry))) {
-						entry = oldEntries.get(index);
-						entry.getAnnotations().clear();
-					}
-					else
-						newEntries.add(entry);
+				//Find or create file
+				File stored = entry.getFile();
+				File found = new File(file);
+				if (found.equals(stored))
+					continue;//We're done
 
-					nl.ru.cmbi.whynot.model.File stored = entry.getFile();
-					nl.ru.cmbi.whynot.model.File found = new nl.ru.cmbi.whynot.model.File(file);
+				//Set new file
+				entry.setFile(found);
+				//Delete annotations: We just found it!
+				entry.getAnnotations().clear();
 
-					//Create or correct file
-					if (stored == null) {
-						entry.setFile(found);
-						added++;
-					}
-					else
-						if (!stored.equals(found)) {
-							filedao.makeTransient(entry.getFile());
-							entry.setFile(found);
-							updated++;
-						}
+				if (stored == null)
+					added++;
+				else {
+					//Delete old file
+					filedao.makeTransient(stored);
+					updated++;
 				}
+
 			}
 		//Add new entries to databank
 		databank.getEntries().addAll(newEntries);
@@ -79,11 +80,11 @@ public class FileCrawler implements ICrawler {
 	 * Creates set of directories containing argument and all recursive
 	 * subdirectories in argument, excluding directories that match entryfilter
 	 */
-	private SortedSet<File> dirAndAllSubdirs(final Databank databank, File directory) {
-		SortedSet<File> directories = new TreeSet<File>();
+	private SortedSet<java.io.File> dirAndAllSubdirs(final Databank databank, java.io.File directory) {
+		SortedSet<java.io.File> directories = new TreeSet<java.io.File>();
 		directories.add(directory); // Add this
-		for (File subdir : directory.listFiles(new FileFilter() {
-			public boolean accept(File pathname) {
+		for (java.io.File subdir : directory.listFiles(new FileFilter() {
+			public boolean accept(java.io.File pathname) {
 				//Sometimes entries are directories: Do not crawl these directories
 				return !pattern.matcher(pathname.getAbsolutePath()).matches() && pathname.isDirectory();
 			}

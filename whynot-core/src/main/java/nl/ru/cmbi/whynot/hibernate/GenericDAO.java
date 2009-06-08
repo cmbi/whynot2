@@ -30,7 +30,7 @@ public interface GenericDAO<T, ID extends Serializable> {
 
 	//Interfaces
 	public interface AnnotationDAO extends GenericDAO<Annotation, Long> {
-		long getCount(Comment comment);
+		long countAllWith(Comment comment);
 
 		long getLatest(Comment comment);
 	}

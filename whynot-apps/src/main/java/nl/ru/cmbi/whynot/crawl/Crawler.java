@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class Crawler {
 	public static void main(String[] args) throws Exception {
 		if (args.length == 2) {
@@ -46,37 +47,35 @@ public class Crawler {
 	private FileDAO		filedao;
 
 	/**
-	 * Adds all FileEntries in the given file or directory and subdirectories to database
-	 * 
+	 * Adds all FileEntries in the given file or directory and subdirectories to database.
+	 * Takes great care to delete old files when possible and to clear present annotations.
+	 * <br/><br/>
 	 * Extracts the PDBID from the filename/line using regular expression group matching:
 	 * the PDBID should be enclosed in () and be the explicitly matching group number 1
 	 * @param file
 	 */
-	@Transactional
 	public void crawl(String dbname, String path) throws IOException {
 		Databank db = dbdao.findByExample(new Databank(dbname), "id", "reference", "filelink", "parent", "regex", "crawltype", "entries");
-		ICrawler fc;
 		switch (db.getCrawltype()) {
 		case FILE:
-			fc = new FileCrawler(db, filedao);
+			new FileCrawler(db, filedao).crawl(getFile(path));
 			break;
 		case LINE:
-			fc = new LineCrawler(db, filedao);
+			new LineCrawler(db, entrydao, filedao).crawl(getFile(path));
 			break;
 		default:
 			throw new IllegalArgumentException("Invalid CrawlType");
 		}
-		fc.addEntriesIn(getFile(path));
+		validate(dbname);
 		Logger.getLogger(getClass()).info(dbname + ": Succes");
 	}
 
 	/**
-	 * Removes all the invalid FileEntries from database by checking if the file exists,
+	 * Removes all the invalid entries from database by checking if their file exists,
 	 * if the file matches the current regular expression (which might have changed) and
 	 * if the timestamp on the file is still the same as the timestamp on the entry
 	 */
-	@Transactional
-	public void validate(String dbname) {
+	private void validate(String dbname) {
 		Databank databank = dbdao.findByName(dbname);
 		Pattern pattern = Pattern.compile(databank.getRegex());
 
@@ -101,17 +100,16 @@ public class Crawler {
 			if (databank.getCrawltype() == CrawlType.FILE && !pattern.matcher(stored.getPath()).matches())
 				isValid = false;
 
-			//Remove invalid files
-			if (!isValid && databank.getCrawltype() == CrawlType.FILE) {
-				//FIXME LINE CRAWLED FILES ARENT REMOVED OR UPDATED HERE
-				filedao.makeTransient(stored);
-				entry.setFile(null);
+			//Remove invalid entries
+			if (!isValid) {
+				databank.getEntries().remove(entry);
+				entrydao.makeTransient(entry);
 				removed++;
 			}
 		}
 		entrieswithfiles = null;
 
-		Logger.getLogger(getClass()).info(databank.getName() + ": Checked " + checked + ", Removed " + removed);
+		Logger.getLogger(getClass()).info(databank.getName() + ": Validated " + checked + ", Removed " + removed);
 	}
 
 	/**

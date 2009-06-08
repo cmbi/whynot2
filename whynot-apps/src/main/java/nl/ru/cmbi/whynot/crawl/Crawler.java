@@ -102,6 +102,7 @@ public class Crawler {
 				databank.getEntries().remove(entry);
 				entrydao.makeTransient(entry);
 				removed++;
+				//FIXME Remove child entries without file
 			}
 		}
 		entrieswithfiles = null;

@@ -11,7 +11,6 @@ import nl.ru.cmbi.whynot.annotate.Converter;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +55,6 @@ public class AnnotaterTest {
 	}
 
 	@Test
-	@Ignore
 	public void comment() throws IOException, ParseException {
 		commentFile = cp.comment(commentFile);
 	}

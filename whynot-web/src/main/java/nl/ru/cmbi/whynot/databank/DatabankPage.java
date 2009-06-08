@@ -98,6 +98,7 @@ public class DatabankPage extends HomePage {
 						if (entity.toString().contains("Annotated"))
 							setResponsePage(ErrorPage.class);
 						if (entity.toString().contains("Unannotated"))
+							//TODO Handle these a little different as parent entries are returned!!!
 							setResponsePage(ErrorPage.class);
 					}
 				};

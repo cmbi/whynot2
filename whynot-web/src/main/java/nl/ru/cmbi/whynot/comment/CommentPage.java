@@ -38,7 +38,7 @@ public class CommentPage extends HomePage {
 				long latest = annotationdao.getLatest(com);
 				item.add(new Label("text", com.getText()));
 				item.add(new Label("latest", sdf.format(new Date(latest))));
-				ResourceLink rl = new ResourceLink("export", getEntriesResource(com.getId()));
+				ResourceLink rl = new ResourceLink("export", getEntriesResource(com));
 				rl.add(new Label("count", "" + count));
 				item.add(rl);
 			}
@@ -46,11 +46,11 @@ public class CommentPage extends HomePage {
 		add(commentlist);
 	}
 
-	public Resource getEntriesResource(final Long id) {
+	public Resource getEntriesResource(final Comment com) {
 		WebResource export = new WebResource() {
 			@Override
 			public IResourceStream getResourceStream() {
-				Comment com = commentdao.findById(id, false);
+				commentdao.makePersistent(com);
 				StringBuilder sb = new StringBuilder();
 				sb.append("COMMENT: " + com.getText() + '\n');
 				for (Annotation ann : com.getAnnotations()) {
@@ -66,7 +66,7 @@ public class CommentPage extends HomePage {
 			@Override
 			protected void setHeaders(WebResponse response) {
 				super.setHeaders(response);
-				response.setAttachmentHeader("comment" + id + "_entries.txt");
+				response.setAttachmentHeader(com.getText().replaceAll("[\\W]", "") + "_entries.txt");
 			}
 		};
 		return export.setCacheable(false);

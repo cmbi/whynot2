@@ -4,13 +4,11 @@ import java.io.Serializable;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.Parameter;
@@ -31,9 +29,7 @@ public class Comment implements Comparable<Comment>, Serializable {
 	@Length(max = 200)
 	private String					text;
 
-	@OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
-	//FIXME cascade in comment
-	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
+	@OneToMany(mappedBy = "comment")
 	@Sort(type = SortType.NATURAL)
 	private SortedSet<Annotation>	annotations	= new TreeSet<Annotation>();
 

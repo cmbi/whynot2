@@ -68,8 +68,7 @@ public class CommentParser {
 
 				//Only annotate missing files
 				if (entry.getFile() == null) {
-					//TODO Extend missing check with looking to see if parent exists?
-					//TODO Otherwise more entries will be annotated such that (annotated + unannotated > missing)
+					//FIXME Entries without parent file should not be annotated or #annotated overlaps obsolete/non-missing
 					//Add annotation 
 					if (entry.getAnnotations().add(new Annotation(comment, entry, time)))
 						added++;

@@ -1,10 +1,17 @@
 package test;
 
+import java.util.Random;
+
 import javax.jws.WebService;
 
 @WebService(endpointInterface = "test.RNG")
 public class RNGImpl implements RNG {
-	public int getRandomNumber() {
-		return 4;
+	public double getRandomNumber() {
+		return new Random().nextDouble();
+	}
+
+	@Override
+	public int getRandomNumberBetween(int min, int max) {
+		return new Random().nextInt(max) + min;
 	}
 }

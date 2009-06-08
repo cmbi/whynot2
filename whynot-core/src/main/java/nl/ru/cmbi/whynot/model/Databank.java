@@ -118,10 +118,6 @@ public class Databank implements Comparable<Databank>, Serializable {
 		return entries;
 	}
 
-	public void clearEntries() {
-		entries.clear();
-	}
-
 	@Override
 	public String toString() {
 		return name + "," + reference + "," + filelink + "," + (parent != null ? parent.getName() : null) + "," + regex + "," + crawltype;

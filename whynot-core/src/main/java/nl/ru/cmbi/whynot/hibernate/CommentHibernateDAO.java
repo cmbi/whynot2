@@ -5,7 +5,6 @@ import java.util.List;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.CommentDAO;
 import nl.ru.cmbi.whynot.model.Comment;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -24,13 +23,5 @@ public class CommentHibernateDAO extends GenericHibernateDAO<Comment, Long> impl
 		Criteria crit = getSession().createCriteria(getPersistentClass());
 		crit.add(Restrictions.naturalId().set("text", text));
 		return (Comment) crit.uniqueResult();
-	}
-
-	public void cleanUp() {
-		for (Comment comment : findAll())
-			if (comment.getAnnotations().size() == 0) {
-				makeTransient(comment);
-				Logger.getLogger(getClass()).info("Removed unused comment: " + comment);
-			}
 	}
 }

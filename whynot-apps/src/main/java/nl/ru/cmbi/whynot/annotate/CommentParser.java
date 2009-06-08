@@ -1,7 +1,6 @@
 package nl.ru.cmbi.whynot.annotate;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
@@ -27,14 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CommentParser {
-	public static final String	append			= ".done";
-	public static FileFilter	commentFilter	= new FileFilter() {
-													@Override
-													public boolean accept(File pathname) {
-														return pathname.isFile() && !pathname.getName().contains(CommentParser.append);
-													}
-												};
-
+	public static final String	append	= ".done";
 	@Autowired
 	private AnnotationDAO		anndao;
 	@Autowired
@@ -76,9 +68,10 @@ public class CommentParser {
 
 				//Only annotate missing files
 				if (entry.getFile() == null) {
+					//TODO Extend missing check with looking to see if parent exists?
 					//Add annotation 
 					if (entry.getAnnotations().add(new Annotation(comment, entry, time)))
-						added++;//TODO Maybe only comment actually missing entries (parent.file == null) but look out for performance problems
+						added++;
 				}
 				else
 					skipped++;
@@ -144,19 +137,26 @@ public class CommentParser {
 					continue;
 				}
 
-				//Remove annotation
+				//Delete annotation
 				comment.getAnnotations().remove(ann);
 				entry.getAnnotations().remove(ann);
 				anndao.makeTransient(ann);
 				removed++;
 
-				//Remove entry if empty
-				if (entry.getAnnotations().isEmpty() && entry.getFile() == null)
+				//Delete entry if empty
+				if (entry.getAnnotations().isEmpty() && entry.getFile() == null) {
+					db.getEntries().remove(entry);
 					entdao.makeTransient(entry);
+				}
 			}
 			else
 				if ((matcher = Converter.patternCOMMENT.matcher(line)).matches()) {
 					Logger.getLogger(getClass()).info("Removed " + removed + ", skipped " + skipped + " for comment: \"" + comment.getText() + "\"");
+					//Delete previous comment if now empty
+					if (comment.getAnnotations().isEmpty()) {
+						comdao.makeTransient(comment);
+						Logger.getLogger(getClass()).info("Removed unused comment: " + comment);
+					}
 					removed = 0;
 					skipped = 0;
 

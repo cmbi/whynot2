@@ -6,7 +6,6 @@ import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Entry;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.Restrictions;
@@ -93,16 +92,5 @@ public class EntryHibernateDAO extends GenericHibernateDAO<Entry, Long> implemen
 		Query q = getSession().createQuery("select count(*) from Entry child where child.file is null and child.databank = :child_db");
 		q.setParameter("child_db", child);
 		return (Long) q.uniqueResult();
-	}
-
-	public void cleanUp() {
-		int count = getSession().createSQLQuery(// 
-		"delete from entry where id in " + //
-		"(select e.id from entry e " + // 
-		"left outer join annotation a on e.id=a.entry_id " + //
-		"where a.entry_id is null and e.file_id is null)").executeUpdate();
-		Logger.getLogger(getClass()).info("Removed " + count + " unused entries");
-
-		//TODO: Also delete entries without both file and parent file
 	}
 }

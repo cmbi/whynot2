@@ -8,11 +8,10 @@ import java.util.Scanner;
 
 import nl.ru.cmbi.whynot.annotate.CommentParser;
 import nl.ru.cmbi.whynot.annotate.Converter;
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.CommentDAO;
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +56,7 @@ public class AnnotaterTest {
 	}
 
 	@Test
+	@Ignore
 	public void comment() throws IOException, ParseException {
 		commentFile = cp.comment(commentFile);
 	}
@@ -64,17 +64,6 @@ public class AnnotaterTest {
 	@Test
 	public void uncomment() throws IOException, ParseException {
 		uncommentFile = cp.uncomment(uncommentFile);
-	}
-
-	@Autowired
-	private CommentDAO	comdao;
-	@Autowired
-	private EntryDAO	entdao;
-
-	@Test
-	public void cleanUp() {
-		comdao.cleanUp();
-		entdao.cleanUp();
 	}
 
 	@AfterClass

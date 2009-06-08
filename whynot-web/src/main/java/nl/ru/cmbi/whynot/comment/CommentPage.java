@@ -34,7 +34,7 @@ public class CommentPage extends HomePage {
 			@Override
 			protected void populateItem(ListItem<Comment> item) {
 				Comment com = item.getModelObject();
-				long count = annotationdao.getCount(com);
+				long count = annotationdao.countAllWith(com);
 				long latest = annotationdao.getLatest(com);
 				item.add(new Label("text", com.getText()));
 				item.add(new Label("latest", sdf.format(new Date(latest))));

@@ -12,7 +12,7 @@ import nl.ru.cmbi.whynot.model.File;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface GenericDAO<T, ID extends Serializable> {
-	Long countAll();
+	long countAll();
 
 	//Finders
 	T findById(ID id, boolean lock);
@@ -28,13 +28,6 @@ public interface GenericDAO<T, ID extends Serializable> {
 	@Transactional
 	void makeTransient(T entity);
 
-	//Filter
-	@Deprecated
-	void enableFilter(String filterName, String... params);
-
-	@Deprecated
-	void disableFilter(String filterName);
-
 	//Interfaces
 	public interface AnnotationDAO extends GenericDAO<Annotation, Long> {
 		long getCount(Comment comment);
@@ -46,6 +39,7 @@ public interface GenericDAO<T, ID extends Serializable> {
 		Comment findByText(String text);
 
 		@Transactional
+		@Deprecated
 		void cleanUp();
 	}
 
@@ -59,6 +53,7 @@ public interface GenericDAO<T, ID extends Serializable> {
 		Entry findByDatabankAndPdbid(Databank databank, String pdbid);
 
 		@Transactional
+		@Deprecated
 		void cleanUp();
 
 		List<Entry> getValid(Databank child);

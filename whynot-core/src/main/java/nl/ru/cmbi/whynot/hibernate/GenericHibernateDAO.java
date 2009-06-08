@@ -5,12 +5,12 @@ import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
 import org.hibernate.Criteria;
-import org.hibernate.Filter;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Example;
+import org.hibernate.criterion.Projections;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class GenericHibernateDAO<T, ID extends Serializable> implements GenericDAO<T, ID> {
@@ -32,8 +32,10 @@ public class GenericHibernateDAO<T, ID extends Serializable> implements GenericD
 		return sessionFactory.getCurrentSession();
 	}
 
-	public Long countAll() {
-		return (Long) getSession().createQuery("select count(*) from " + persistentClass.getName()).uniqueResult();
+	public long countAll() {
+		Criteria crit = getSession().createCriteria(getPersistentClass());
+		return (Integer) crit.setProjection(Projections.rowCount()).uniqueResult();
+		//return (Long) getSession().createQuery("select count(*) from " + persistentClass.getName()).uniqueResult();
 	}
 
 	//Finders
@@ -81,22 +83,5 @@ public class GenericHibernateDAO<T, ID extends Serializable> implements GenericD
 
 	public void makeTransient(T entity) {
 		getSession().delete(entity);
-	}
-
-	//Filters
-	public void enableFilter(String filterName, String... params) {
-		Filter filter = getSession().enableFilter(filterName);
-		String key = null;
-		for (String par : params)
-			if (key == null)
-				key = par;
-			else {
-				filter.setParameter(key, par);
-				key = null;
-			}
-	}
-
-	public void disableFilter(String filterName) {
-		getSession().disableFilter(filterName);
 	}
 }

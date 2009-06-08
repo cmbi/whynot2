@@ -84,11 +84,8 @@ public class Crawler {
 
 		int checked = 0, removed = 0;
 		for (Entry entry : entrieswithfiles) {
-			nl.ru.cmbi.whynot.model.File stored = entry.getFile();
-			if (stored == null)//Should not happen, but to play safe skip
-				continue;
 			checked++;
-
+			nl.ru.cmbi.whynot.model.File stored = entry.getFile();
 			boolean isValid = true;
 
 			//Check if file still exists
@@ -100,7 +97,7 @@ public class Crawler {
 			if (databank.getCrawltype() == CrawlType.FILE && !pattern.matcher(stored.getPath()).matches())
 				isValid = false;
 
-			//Remove invalid entries
+			//Delete invalid entries
 			if (!isValid) {
 				databank.getEntries().remove(entry);
 				entrydao.makeTransient(entry);

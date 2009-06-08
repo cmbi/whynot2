@@ -51,6 +51,8 @@ public interface GenericDAO<T, ID extends Serializable> {
 		@Transactional
 		int removeEntriesWithoutBothFileAndParentFile();
 
+		Entry getParent(Entry entry);
+
 		List<Entry> getChildren(Entry entry);
 
 		List<Entry> getValid(Databank child);

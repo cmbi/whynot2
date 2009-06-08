@@ -6,6 +6,7 @@ import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Entry;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.Restrictions;
@@ -22,6 +23,14 @@ public class EntryHibernateDAO extends GenericHibernateDAO<Entry, Long> implemen
 
 	@Autowired
 	DatabankDAO	databankdao;
+
+	@Override
+	public Entry getParent(Entry entry) {
+		Criteria crit = getSession().createCriteria(getPersistentClass());
+		crit.add(Restrictions.naturalId().set("databank", entry.getDatabank().getParent()));
+		crit.add(Restrictions.naturalId().set("pdbid", entry.getPdbid()));
+		return (Entry) crit.uniqueResult();
+	}
 
 	@SuppressWarnings("unchecked")
 	public List<Entry> getChildren(Entry entry) {
@@ -44,6 +53,8 @@ public class EntryHibernateDAO extends GenericHibernateDAO<Entry, Long> implemen
 			q2.setParameter("parent_db", child.getParent());
 			removed += q2.executeUpdate();
 		}
+		if (0 < removed)
+			Logger.getLogger(getClass()).info("Removed " + removed + " entries with comment, but without both file and without parent file: Not missing!");
 		return removed;
 	}
 

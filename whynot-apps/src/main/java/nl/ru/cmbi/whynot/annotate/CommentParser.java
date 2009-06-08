@@ -68,7 +68,6 @@ public class CommentParser {
 
 				//Only annotate missing files
 				if (entry.getFile() == null) {
-					//FIXME Entries without parent file should not be annotated or #annotated overlaps obsolete/non-missing
 					//Add annotation 
 					if (entry.getAnnotations().add(new Annotation(comment, entry, time)))
 						added++;

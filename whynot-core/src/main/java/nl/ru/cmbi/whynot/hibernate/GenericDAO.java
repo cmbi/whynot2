@@ -48,6 +48,11 @@ public interface GenericDAO<T, ID extends Serializable> {
 	public interface EntryDAO extends GenericDAO<Entry, Long> {
 		Entry findByDatabankAndPdbid(Databank databank, String pdbid);
 
+		@Transactional
+		int removeEntriesWithoutBothFileAndParentFile();
+
+		List<Entry> getChildren(Entry entry);
+
 		List<Entry> getValid(Databank child);
 
 		List<Entry> getObsolete(Databank child);

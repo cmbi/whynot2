@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 import nl.ru.cmbi.whynot.annotate.CommentParser;
 import nl.ru.cmbi.whynot.annotate.Converter;
+import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -62,6 +63,14 @@ public class AnnotaterTest {
 	@Test
 	public void uncomment() throws IOException, ParseException {
 		uncommentFile = cp.uncomment(uncommentFile);
+	}
+
+	@Autowired
+	EntryDAO	entdao;
+
+	@Test
+	public void removeSome() {
+		entdao.removeEntriesWithoutBothFileAndParentFile();
 	}
 
 	@AfterClass

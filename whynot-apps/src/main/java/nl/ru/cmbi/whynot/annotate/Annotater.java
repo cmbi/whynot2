@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
 
+import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 import nl.ru.cmbi.whynot.util.SpringUtil;
 
 public class Annotater {
@@ -33,5 +34,8 @@ public class Annotater {
 			commentParser.comment(Converter.getFile(file));
 		for (File file : dirUncomments.listFiles(commentFilter))
 			commentParser.uncomment(Converter.getFile(file));
+
+		EntryDAO entdao = (EntryDAO) SpringUtil.getContext().getBean("entryDAO");
+		entdao.removeEntriesWithoutBothFileAndParentFile();
 	}
 }

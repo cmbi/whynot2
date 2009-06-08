@@ -67,6 +67,7 @@ public class Crawler {
 			throw new IllegalArgumentException("Invalid CrawlType");
 		}
 		validate(dbname);
+		entrydao.removeEntriesWithoutBothFileAndParentFile();
 		Logger.getLogger(getClass()).info(dbname + ": Succes");
 	}
 
@@ -99,14 +100,13 @@ public class Crawler {
 
 			//Delete invalid entries
 			if (!isValid) {
+				//Remove entry
 				databank.getEntries().remove(entry);
 				entrydao.makeTransient(entry);
 				removed++;
-				//FIXME Remove child entries without file
 			}
 		}
 		entrieswithfiles = null;
-
 		Logger.getLogger(getClass()).info(databank.getName() + ": Validated " + checked + ", Removed " + removed);
 	}
 

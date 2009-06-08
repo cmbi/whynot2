@@ -9,6 +9,7 @@ import nl.ru.cmbi.whynot.model.Entry;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,6 +18,33 @@ public class EntryHibernateDAO extends GenericHibernateDAO<Entry, Long> implemen
 		Criteria crit = getSession().createCriteria(getPersistentClass());
 		crit.add(Restrictions.naturalId().set("databank", databank).set("pdbid", pdbid));
 		return (Entry) crit.uniqueResult();
+	}
+
+	@Autowired
+	DatabankDAO	databankdao;
+
+	@SuppressWarnings("unchecked")
+	public List<Entry> getChildren(Entry entry) {
+		Criteria crit = getSession().createCriteria(getPersistentClass());
+		crit.add(Restrictions.in("databank", databankdao.getChildren(entry.getDatabank())));
+		crit.add(Restrictions.naturalId().set("pdbid", entry.getPdbid()));
+		return crit.list();
+	}
+
+	public int removeEntriesWithoutBothFileAndParentFile() {
+		int removed = 0;
+		for (Databank child : databankdao.findAll()) {
+			Query q = getSession().createQuery("delete from Annotation where entry_id in (select child.id from Entry child where file is null and child.databank = :child_db and (select parent.file from Entry parent where parent.pdbid = child.pdbid and parent.databank = :parent_db) is null)");
+			q.setParameter("child_db", child);
+			q.setParameter("parent_db", child.getParent());
+			q.executeUpdate();
+
+			Query q2 = getSession().createQuery("delete from Entry child where file is null and child.databank = :child_db and (select parent.file from Entry parent where parent.pdbid = child.pdbid and parent.databank = :parent_db) is null");
+			q2.setParameter("child_db", child);
+			q2.setParameter("parent_db", child.getParent());
+			removed += q2.executeUpdate();
+		}
+		return removed;
 	}
 
 	//TODO Rewrite some of these queries to projections

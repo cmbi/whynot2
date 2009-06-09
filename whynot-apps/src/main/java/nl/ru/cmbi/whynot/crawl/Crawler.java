@@ -136,6 +136,7 @@ public class Crawler {
 				while ((line = bf.readLine()) != null)
 					pw.println(line);
 				pw.close();
+				bf.close();
 				downloaded.setLastModified(con.getLastModified());
 				Logger.getLogger(Crawler.class).info("Downloaded " + downloaded.getAbsolutePath());
 			}

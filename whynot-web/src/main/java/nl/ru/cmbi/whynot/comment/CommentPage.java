@@ -38,7 +38,7 @@ public class CommentPage extends HomePage {
 				long latest = annotationdao.getLatest(com);
 				item.add(new Label("text", com.getText()));
 				item.add(new Label("latest", sdf.format(new Date(latest))));
-				ResourceLink rl = new ResourceLink("export", getEntriesResource(com));
+				ResourceLink<WebResource> rl = new ResourceLink<WebResource>("export", getEntriesResource(com));
 				rl.add(new Label("count", "" + count));
 				item.add(rl);
 			}

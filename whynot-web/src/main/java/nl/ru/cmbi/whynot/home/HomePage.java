@@ -4,6 +4,7 @@ import nl.ru.cmbi.whynot.databank.DatabankPage;
 import nl.ru.cmbi.whynot.feedback.FeedbackPanelWrapper;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
 import nl.ru.cmbi.whynot.model.Databank;
+import nl.ru.cmbi.whynot.search.SearchPanel;
 
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.WebPage;
@@ -16,16 +17,12 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 
 public class HomePage extends WebPage {
 	@SpringBean
-	protected DatabankDAO			databankdao;
-
-	protected FeedbackPanelWrapper	feedbackwrapper;
+	protected DatabankDAO	databankdao;
 
 	public HomePage() {
-		feedbackwrapper = new FeedbackPanelWrapper("feedback");
-		add(feedbackwrapper);
-
-		DatabankHierarchyFragment childfragment = new DatabankHierarchyFragment("hierarchy", databankdao.findByName("PDB"));
-		add(childfragment);
+		add(new FeedbackPanelWrapper("feedback"));
+		add(new SearchPanel("search"));
+		add(new DatabankHierarchyFragment("hierarchy", databankdao.findByName("PDB")));
 	}
 
 	public class DatabankHierarchyFragment extends Fragment {

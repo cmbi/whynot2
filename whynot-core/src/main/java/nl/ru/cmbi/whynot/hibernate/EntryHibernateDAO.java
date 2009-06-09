@@ -73,7 +73,7 @@ public class EntryHibernateDAO extends GenericHibernateDAO<Entry, Long> implemen
 
 	@SuppressWarnings("unchecked")
 	public List<Entry> getValid(Databank child) {//Child file present, parent file present
-		Query q = getSession().createQuery("from Entry child where file is not null and child.databank = :child_db and (select parent.file from Entry parent where parent.pdbid = child.pdbid and parent.databank = :parent_db) is not null");
+		Query q = getSession().createQuery("from Entry child where file is not null and child.databank = :child_db and (select parent.file from Entry parent where parent.pdbid = child.pdbid and parent.databank = :parent_db) is not null order by pdbid");
 		q.setParameter("child_db", child);
 		q.setParameter("parent_db", child.getParent());
 		return q.list();
@@ -88,7 +88,7 @@ public class EntryHibernateDAO extends GenericHibernateDAO<Entry, Long> implemen
 
 	@SuppressWarnings("unchecked")
 	public List<Entry> getObsolete(Databank child) {//Child file present, no parent file
-		Query q = getSession().createQuery("from Entry child where file is not null and child.databank = :child_db and (select parent.file from Entry parent where parent.pdbid = child.pdbid and parent.databank = :parent_db) is null");
+		Query q = getSession().createQuery("from Entry child where file is not null and child.databank = :child_db and (select parent.file from Entry parent where parent.pdbid = child.pdbid and parent.databank = :parent_db) is null order by pdbid");
 		q.setParameter("child_db", child);
 		q.setParameter("parent_db", child.getParent());
 		return q.list();
@@ -103,7 +103,7 @@ public class EntryHibernateDAO extends GenericHibernateDAO<Entry, Long> implemen
 
 	@SuppressWarnings("unchecked")
 	public List<Entry> getMissing(Databank child) {//Parent file present, no child file
-		Query q = getSession().createQuery("from Entry parent where file is not null and parent.databank = :parent_db and (select child.file from Entry child where parent.pdbid = child.pdbid and child.databank = :child_db) is null");
+		Query q = getSession().createQuery("from Entry parent where file is not null and parent.databank = :parent_db and (select child.file from Entry child where parent.pdbid = child.pdbid and child.databank = :child_db) is null order by pdbid");
 		q.setParameter("child_db", child);
 		q.setParameter("parent_db", child.getParent());
 		return q.list();
@@ -118,7 +118,7 @@ public class EntryHibernateDAO extends GenericHibernateDAO<Entry, Long> implemen
 
 	@SuppressWarnings("unchecked")
 	public List<Entry> getUnannotated(Databank child) {//Parent file present, no child (because no file & no annotation => no child)
-		Query q = getSession().createQuery("from Entry parent where file is not null and parent.databank = :parent_db and (select child from Entry child where parent.pdbid = child.pdbid and child.databank = :child_db) is null");
+		Query q = getSession().createQuery("from Entry parent where file is not null and parent.databank = :parent_db and (select child from Entry child where parent.pdbid = child.pdbid and child.databank = :child_db) is null order by pdbid");
 		q.setParameter("child_db", child);
 		q.setParameter("parent_db", child.getParent());
 		return q.list();
@@ -133,7 +133,7 @@ public class EntryHibernateDAO extends GenericHibernateDAO<Entry, Long> implemen
 
 	@SuppressWarnings("unchecked")
 	public List<Entry> getAnnotated(Databank child) {//No child file (annotations implicitly present or there wouldnt be a child)
-		Query q = getSession().createQuery("from Entry child where child.file is null and child.databank = :child_db");
+		Query q = getSession().createQuery("from Entry child where child.file is null and child.databank = :child_db order by pdbid");
 		q.setParameter("child_db", child);
 		return q.list();
 	}

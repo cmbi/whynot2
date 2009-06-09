@@ -3,7 +3,6 @@ package nl.ru.cmbi.whynot.hibernate;
 import java.util.List;
 
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
-import nl.ru.cmbi.whynot.model.Comment;
 import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Entry;
 
@@ -53,10 +52,11 @@ public class EntryHibernateDAO extends GenericHibernateDAO<Entry, Long> implemen
 			q1.setParameter("parent_db", child.getParent());
 			q1.executeUpdate();
 
+			getSession().flush();
+
 			//Delete empty comments
-			for (Comment com : commentdao.findAll())
-				if (com.getAnnotations().isEmpty())
-					commentdao.makeTransient(com);
+			Query q2 = getSession().createQuery("delete from Comment where id not in (select ann.comment.id from Annotation ann)");
+			q2.executeUpdate();
 
 			//Delete entries without file or parent file
 			Query q3 = getSession().createQuery("delete from Entry child where file is null and child.databank = :child_db and (select parent.file from Entry parent where parent.pdbid = child.pdbid and parent.databank = :parent_db) is null");

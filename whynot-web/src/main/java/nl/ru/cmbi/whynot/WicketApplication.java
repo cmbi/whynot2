@@ -2,6 +2,7 @@ package nl.ru.cmbi.whynot;
 
 import nl.ru.cmbi.whynot.about.AboutPage;
 import nl.ru.cmbi.whynot.comment.CommentPage;
+import nl.ru.cmbi.whynot.databank.DatabankEntriesPage;
 import nl.ru.cmbi.whynot.databank.DatabankPage;
 import nl.ru.cmbi.whynot.error.ErrorPage;
 import nl.ru.cmbi.whynot.home.HomePage;
@@ -25,8 +26,9 @@ public class WicketApplication extends WebApplication {
 
 		//Pretty URLs
 		mountBookmarkablePage("about", AboutPage.class);
-		mountBookmarkablePage("databanks", DatabankPage.class);
 		mountBookmarkablePage("comments", CommentPage.class);
+		mountBookmarkablePage("databanks", DatabankPage.class);
+		mountBookmarkablePage("entries", DatabankEntriesPage.class);
 	}
 
 	@Override

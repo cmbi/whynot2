@@ -33,6 +33,8 @@ public interface GenericDAO<T, ID extends Serializable> {
 		long countAllWith(Comment comment);
 
 		long getLatest(Comment comment);
+
+		List<Annotation> getRecent();
 	}
 
 	public interface CommentDAO extends GenericDAO<Comment, Long> {
@@ -78,5 +80,7 @@ public interface GenericDAO<T, ID extends Serializable> {
 
 	public interface FileDAO extends GenericDAO<File, Long> {
 		File findByPathAndTimestamp(String path, Long timestamp);
+
+		List<File> getRecent();
 	}
 }

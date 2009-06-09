@@ -10,6 +10,7 @@ import nl.ru.cmbi.whynot.annotate.CommentParser;
 import nl.ru.cmbi.whynot.annotate.Converter;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -68,7 +69,7 @@ public class AnnotaterTest {
 	@Autowired
 	EntryDAO	entdao;
 
-	@Test
+	@After
 	public void removeSome() {
 		entdao.removeEntriesWithoutBothFileAndParentFile();
 	}

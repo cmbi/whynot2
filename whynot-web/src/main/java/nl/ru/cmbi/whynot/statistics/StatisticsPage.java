@@ -1,4 +1,4 @@
-package nl.ru.cmbi.whynot.status;
+package nl.ru.cmbi.whynot.statistics;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -17,7 +17,7 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
-public class StatusPage extends HomePage {
+public class StatisticsPage extends HomePage {
 	@SpringBean
 	private AnnotationDAO		anndao;
 	@SpringBean
@@ -31,7 +31,7 @@ public class StatusPage extends HomePage {
 
 	private SimpleDateFormat	sdf	= new SimpleDateFormat("dd/MM/yyyy hh:mm");
 
-	public StatusPage() {
+	public StatisticsPage() {
 		add(new Label("annotations", "" + anndao.countAll()));
 		add(new Label("comments", "" + comdao.countAll()));
 		add(new Label("databanks", "" + dbdao.countAll()));

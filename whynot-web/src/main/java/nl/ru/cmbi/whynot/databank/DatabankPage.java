@@ -11,6 +11,7 @@ import nl.ru.cmbi.whynot.model.Databank;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.spring.injection.annot.SpringBean;
@@ -49,7 +50,7 @@ public class DatabankPage extends HomePage {
 			protected void populateItem(ListItem<Databank> item) {
 				Databank db = item.getModelObject();
 				item.add(databankChart(db));
-				item.add(new Label("reference", db.getReference()));
+				item.add(new ExternalLink("reference", db.getReference()).add(new Label("href", db.getReference())));
 			}
 
 			private MappedChart databankChart(final Databank db) {

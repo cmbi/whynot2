@@ -2,7 +2,14 @@
 <body>
 <wicket:extend>
 	<h1>Search results</h1>
-	<p></p>
+	<p wicket:id="searchresult"></p>
+	
+	<wicket:fragment wicket:id="hierarchyfragment">
+		<a href="#" wicket:id="databank"><span wicket:id="name"></span></a>
+		<ul>
+			<li wicket:id="children" class="hierarchy"></li>
+		</ul>
+	</wicket:fragment>
 </wicket:extend>
 </body>
 </html>

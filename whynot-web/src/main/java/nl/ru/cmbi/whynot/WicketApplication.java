@@ -7,7 +7,7 @@ import nl.ru.cmbi.whynot.databank.DatabankPage;
 import nl.ru.cmbi.whynot.error.ErrorPage;
 import nl.ru.cmbi.whynot.home.HomePage;
 import nl.ru.cmbi.whynot.search.SearchResultsPage;
-import nl.ru.cmbi.whynot.status.StatusPage;
+import nl.ru.cmbi.whynot.statistics.StatisticsPage;
 
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
@@ -31,7 +31,7 @@ public class WicketApplication extends WebApplication {
 		mountBookmarkablePage("comments", CommentPage.class);
 		mountBookmarkablePage("databanks", DatabankPage.class);
 		mountBookmarkablePage("entries", DatabankEntriesPage.class);
-		mountBookmarkablePage("status", StatusPage.class);
+		mountBookmarkablePage("statistics", StatisticsPage.class);
 		mountBookmarkablePage("search", SearchResultsPage.class);
 	}
 

@@ -22,6 +22,19 @@ a:hover {
 p {
 	padding:0 0 10px;
 }
+table {
+	width:100%;
+	font:12px "Trebuchet ms", Helvetica, sans-serif;
+}
+th {
+	text-align:left;
+}
+td.number {
+	text-align:right;
+}
+td.date {
+	text-align:right;
+}
 
 /* body */
 body {

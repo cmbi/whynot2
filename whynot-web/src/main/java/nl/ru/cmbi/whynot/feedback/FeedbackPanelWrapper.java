@@ -9,7 +9,6 @@ public class FeedbackPanelWrapper extends Panel {
 	public FeedbackPanelWrapper(String id) {
 		super(id);
 		add(feedbackpanel);
-		//TODO: Further styling, maybe split single panel into multiple separately styled panels 
 	}
 
 }

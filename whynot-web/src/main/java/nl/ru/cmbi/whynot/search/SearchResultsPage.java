@@ -1,15 +1,16 @@
 package nl.ru.cmbi.whynot.search;
 
-import nl.ru.cmbi.whynot.databank.DatabankPage;
+import java.util.Arrays;
+
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 import nl.ru.cmbi.whynot.home.HomePage;
 import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Entry;
 
 import org.apache.wicket.PageParameters;
-import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.Model;
@@ -20,10 +21,15 @@ public class SearchResultsPage extends HomePage {
 	public SearchResultsPage(PageParameters parameters) {
 		if (parameters.containsKey("pdbid")) {
 			String[] pdbids = parameters.getStringArray("pdbid");
-			RepeatingView rv = new RepeatingView("searchresult");
-			for (String id : pdbids)
-				rv.add(new FileHierarchyFragment(rv.newChildId(), databankdao.findByName("PDB"), id));
-			add(rv);
+			ListView<String> lv = new ListView<String>("searchresult", Arrays.asList(pdbids)) {
+				@Override
+				protected void populateItem(ListItem<String> item) {
+					String id = item.getModelObject();
+					item.add(new Label("pdbid", id));
+					item.add(new FileHierarchyFragment("filehierarchy", databankdao.findByName("PDB"), id));
+				}
+			};
+			add(lv);
 		}
 
 	}
@@ -33,16 +39,31 @@ public class SearchResultsPage extends HomePage {
 		protected EntryDAO	entrydao;
 
 		public FileHierarchyFragment(String id, final Databank db, String pdbid) {
-			super(id, "hierarchyfragment", SearchResultsPage.this, new Model<Databank>(db));
+			super(id, "filehierarchyfragment", SearchResultsPage.this, new Model<Databank>(db));
 			//TODO: Handle non-found entries
 			Entry entry = entrydao.findByDatabankAndPdbid(db, pdbid);
+			add(new Label("databank", db.getName()));
 
-			//Link
-			PageParameters pp = new PageParameters();
-			pp.put("name", db.getName());
-			BookmarkablePageLink<WebPage> bpl = new BookmarkablePageLink<WebPage>("databank", DatabankPage.class, pp);
-			add(bpl.add(new Label("name", db.getName())));
+			if (entry == null) {
+				add(new Label("file", "entry == null"));
+				add(new Label("annotations", "entry == null"));
+			}
+			else {
+				if (entry.getFile() == null)
+					add(new Label("file", "file == null"));
+				else
+					add(new Label("file", "file exists!"));
 
+				if (entry.getAnnotations().isEmpty())
+					add(new Label("annotations", "no annotations"));
+				else
+					add(new Label("annotations", "annotations exist!"));
+			}
+			/*			//Link
+						PageParameters pp = new PageParameters();
+						pp.put("name", db.getName());
+						BookmarkablePageLink<WebPage> bpl = new BookmarkablePageLink<WebPage>("databank", DatabankPage.class, pp);
+						add(bpl.add(new Label("name", db.getName())));*/
 			//Children
 			RepeatingView children = new RepeatingView("children");
 			add(children);

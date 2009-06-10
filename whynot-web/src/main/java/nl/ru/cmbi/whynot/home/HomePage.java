@@ -26,8 +26,6 @@ public class HomePage extends WebPage {
 	}
 
 	public class DatabankHierarchyFragment extends Fragment {
-		private static final long	serialVersionUID	= -1982524056748695793L;
-
 		public DatabankHierarchyFragment(String id, final Databank db) {
 			super(id, "hierarchyfragment", HomePage.this, new Model<Databank>(db));
 			//Link

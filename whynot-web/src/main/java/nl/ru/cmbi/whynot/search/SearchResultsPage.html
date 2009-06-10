@@ -2,10 +2,15 @@
 <body>
 <wicket:extend>
 	<h1>Search results</h1>
-	<p wicket:id="searchresult"></p>
+	<p wicket:id="searchresult">
+		<span wicket:id="pdbid"></span>
+		<wicket:container wicket:id="filehierarchy"></wicket:container>
+	</p>
 	
-	<wicket:fragment wicket:id="hierarchyfragment">
-		<a href="#" wicket:id="databank"><span wicket:id="name"></span></a>
+	<wicket:fragment wicket:id="filehierarchyfragment">
+		<span wicket:id="databank"></span>
+		<span wicket:id="file"></span>
+		<span wicket:id="annotations"></span>
 		<ul>
 			<li wicket:id="children" class="hierarchy"></li>
 		</ul>

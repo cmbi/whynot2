@@ -1,6 +1,5 @@
 package nl.ru.cmbi.whynot.util;
 
-
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
 import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Databank.CrawlType;
@@ -40,6 +39,7 @@ public class Install {
 	private DatabankDAO	dbdao;
 
 	public void storeDatabanks() {
+		//FIXME Set link's to proper urls with ${PDBID}
 		Databank pdb, dssp, nmr, nrg, nrg_docr, sf;
 		dbdao.makePersistent(pdb = new Databank("PDB", CrawlType.FILE, ".*/pdb([\\w]{4})\\.ent(\\.gz)?", "http://www.pdb.org/pdb/download/downloadFile.do?fileFormat=pdb&compression=NO&structureId=", "http://www.wwpdb.org/"));
 		dbdao.makePersistent(new Databank("PDBFINDER", pdb, CrawlType.LINE, "ID           : ([\\w]{4})", "http://mrs.cmbi.ru.nl/mrs-3/entry.do?db=pdbfinder2&id=", "http://swift.cmbi.ru.nl/gv/pdbfinder/"));

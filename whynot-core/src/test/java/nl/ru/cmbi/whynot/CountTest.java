@@ -4,6 +4,7 @@ import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 import nl.ru.cmbi.whynot.model.Databank;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +23,14 @@ public class CountTest {
 	private DatabankDAO	dbdao;
 
 	@Test
+	@Ignore
 	public void getCounts() {
 		System.err.println(dbdao.countAll());
 		System.err.println(entdao.countAll());
 	}
 
 	@Test
+	@Ignore
 	public void getXXXsize() {
 		Databank nrg = dbdao.findByName("NRG");
 		System.err.println(entdao.getValid(nrg).size());
@@ -38,6 +41,7 @@ public class CountTest {
 	}
 
 	@Test
+	@Ignore
 	public void getXXXcount() {
 		Databank nrg = dbdao.findByName("NRG");
 		System.err.println(entdao.getValidCount(nrg));

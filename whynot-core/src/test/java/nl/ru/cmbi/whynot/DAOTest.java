@@ -6,6 +6,7 @@ import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.FileDAO;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ public class DAOTest {
 	private FileDAO			filedao;
 
 	@Test
+	@Ignore
 	public void doSomethingToDAO() {
 		entdao.removeEntriesWithoutBothFileAndParentFile();
 	}

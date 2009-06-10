@@ -69,8 +69,6 @@ public class EntryHibernateDAO extends GenericHibernateDAO<Entry, Long> implemen
 		return removed;
 	}
 
-	//TODO Rewrite some of these queries to projections
-
 	@SuppressWarnings("unchecked")
 	public List<Entry> getValid(Databank child) {//Child file present, parent file present
 		Query q = getSession().createQuery("from Entry child where file is not null and child.databank = :child_db and (select parent.file from Entry parent where parent.pdbid = child.pdbid and parent.databank = :parent_db) is not null order by pdbid");

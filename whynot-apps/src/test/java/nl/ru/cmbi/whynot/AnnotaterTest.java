@@ -13,6 +13,7 @@ import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,8 @@ public class AnnotaterTest {
 	@BeforeClass
 	public static void copyConvertAndOptimize() throws IOException, ParseException {
 		{//CommentFile as copy of backup
-			Scanner scn = new Scanner(new File("src/test/resources/20090519.txt.converted.optimized"));
+			File converted = Converter.convert(new File("src/test/resources/20090610_comments.txt"));
+			Scanner scn = new Scanner(converted);
 			commentFile = new File("testfile_comment.txt");
 			PrintWriter pwr = new PrintWriter(commentFile);
 			while (scn.hasNextLine())
@@ -57,11 +59,13 @@ public class AnnotaterTest {
 	}
 
 	@Test
+	@Ignore
 	public void comment() throws IOException, ParseException {
 		commentFile = cp.comment(commentFile);
 	}
 
 	@Test
+	@Ignore
 	public void uncomment() throws IOException, ParseException {
 		uncommentFile = cp.uncomment(uncommentFile);
 	}

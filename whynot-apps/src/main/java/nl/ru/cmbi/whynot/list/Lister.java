@@ -7,6 +7,7 @@ import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Entry;
+import nl.ru.cmbi.whynot.model.Databank.CollectionType;
 import nl.ru.cmbi.whynot.util.SpringUtil;
 
 import org.apache.log4j.Logger;
@@ -17,10 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class Lister {
-	public enum CollectionType {
-		VALID, OBSOLETE, MISSING, ANNOTATED, UNANNOTATED
-	};
-
 	public static void main(String... args) {
 		String dbname = "DATABASE";
 		String selection = "VALID|OBSOLETE|MISSING|ANNOTATED|UNANNOTATED";

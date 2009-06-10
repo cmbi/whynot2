@@ -27,6 +27,10 @@ import org.hibernate.validator.NotNull;
 
 @Entity
 public class Databank implements Comparable<Databank>, Serializable {
+	public enum CollectionType {
+		VALID, OBSOLETE, MISSING, ANNOTATED, UNANNOTATED
+	}
+
 	public enum CrawlType {
 		FILE, LINE
 	}

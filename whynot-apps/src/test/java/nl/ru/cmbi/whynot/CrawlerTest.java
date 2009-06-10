@@ -16,6 +16,7 @@ public class CrawlerTest {
 	private Crawler	crawler;
 
 	@Test
+	@Ignore
 	public void crawlNMRNRG() throws Exception {
 		crawler.crawl("NMR", "http://nmr.cmbi.ru.nl/NRG-CING/entry_list_nmr.csv");
 		crawler.crawl("NRG", "http://nmr.cmbi.ru.nl/NRG-CING/entry_list_nrg.csv");

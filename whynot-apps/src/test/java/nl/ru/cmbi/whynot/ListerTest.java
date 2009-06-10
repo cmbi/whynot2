@@ -1,8 +1,9 @@
 package nl.ru.cmbi.whynot;
 
 import nl.ru.cmbi.whynot.list.Lister;
-import nl.ru.cmbi.whynot.list.Lister.CollectionType;
+import nl.ru.cmbi.whynot.model.Databank.CollectionType;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ public class ListerTest {
 	private Lister	lister;
 
 	@Test
+	@Ignore
 	public void nrgcing() throws Exception {
 		for (String dbname : new String[] { "NMR", "NRG", "NRG-DOCR", "NRG-CING" })
 			for (CollectionType ct : CollectionType.values())

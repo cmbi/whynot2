@@ -1,27 +1,22 @@
 <html xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
 <body>
 <wicket:extend>
-	<h1>Search results</h1>
-	<p wicket:id="searchresult">
-		<span wicket:id="pdbid"></span>
+	<wicket:container wicket:id="searchresult">
+		<h1 wicket:id="pdbid">101d</h1>
 		<wicket:container wicket:id="filehierarchy"></wicket:container>
-	</p>
+	</wicket:container>
 	
-	<wicket:fragment wicket:id="filehierarchyfragment">
-		<span wicket:id="databank"></span>
-		<span wicket:id="file"></span>
-		<span wicket:id="annotations"></span>
-		<ul>
-			<li wicket:id="children" class="hierarchy"></li>
-		</ul>
-	</wicket:fragment>
-	
-	<wicket:fragment wicket:id="annotationsfragment">
-		<ul><li wicket:id="annotation"></li></ul>
-	</wicket:fragment>
-	<wicket:fragment wicket:id="filefragment">
-		<a href="#" wicket:id="link"><span wicket:id="path"></span></a>
-	</wicket:fragment>
+	<wicket:link>
+		<wicket:fragment wicket:id="filehierarchyfragment">
+	<span wicket:id="databank"></span> 
+	<ul>
+		<li wicket:id="file"></li>
+		<li wicket:id="annotation"></li>
+		<li wicket:id="children">
+		</li>
+	</ul>
+		</wicket:fragment>
+	</wicket:link>
 </wicket:extend>
 </body>
 </html>

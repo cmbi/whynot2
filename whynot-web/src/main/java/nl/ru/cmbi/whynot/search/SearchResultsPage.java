@@ -1,7 +1,6 @@
 package nl.ru.cmbi.whynot.search;
 
 import java.util.Arrays;
-import java.util.Collection;
 
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 import nl.ru.cmbi.whynot.home.HomePage;
@@ -20,6 +19,8 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
 public class SearchResultsPage extends HomePage {
+	@SpringBean
+	protected EntryDAO	entrydao;
 
 	public SearchResultsPage(PageParameters parameters) {
 		if (parameters.containsKey("pdbid")) {
@@ -27,6 +28,7 @@ public class SearchResultsPage extends HomePage {
 			ListView<String> lv = new ListView<String>("searchresult", Arrays.asList(pdbids)) {
 				@Override
 				protected void populateItem(ListItem<String> item) {
+					//TODO: If no entries with this id, report error & skip
 					String id = item.getModelObject();
 					item.add(new Label("pdbid", id));
 					item.add(new FileHierarchyFragment("filehierarchy", databankdao.findByName("PDB"), id));
@@ -38,52 +40,42 @@ public class SearchResultsPage extends HomePage {
 	}
 
 	public class FileHierarchyFragment extends Fragment {
-		@SpringBean
-		protected EntryDAO	entrydao;
 
 		public FileHierarchyFragment(String id, final Databank db, String pdbid) {
 			super(id, "filehierarchyfragment", SearchResultsPage.this, new Model<Databank>(db));
 			add(new Label("databank", db.getName()));
-			/*//Link
-			PageParameters pp = new PageParameters();
-			pp.put("name", db.getName());
-			BookmarkablePageLink<WebPage> bpl = new BookmarkablePageLink<WebPage>("databank", DatabankPage.class, pp);
-			add(bpl.add(new Label("name", db.getName())));*/
+			//TODO use icons
 
+			//File
 			Entry entry = entrydao.findByDatabankAndPdbid(db, pdbid);
-			if (entry != null && entry.getFile() != null)
-				add(new FileFragment("file", db, entry));
+			if (entry != null && entry.getFile() != null) {
+				String href = db.getFilelink();
+				href = href.replace("${PDBID}", entry.getPdbid());
+				href = href.replace("${PART}", entry.getPdbid().substring(1, 3));
+
+				String path = entry.getFile().getPath();
+				path = path.substring(path.lastIndexOf('/') + 1);
+				//FIXME Real link in html aswell, so move outside li and into a
+				add(new ExternalLink("file", href, path));
+			}
 			else
-				add(new Label("file"));
-			if (entry != null && !entry.getAnnotations().isEmpty())
-				add(new AnnotationFragment("annotations", entry.getAnnotations()));
+				add(new Label("file").setRenderBodyOnly(true));
+
+			//Annotations
+			if (entry != null && !entry.getAnnotations().isEmpty()) {
+				RepeatingView rv = new RepeatingView("annotation");
+				for (Annotation ann : entry.getAnnotations())
+					rv.add(new Label(rv.newChildId(), ann.getComment().getText()));
+				add(rv);
+			}
 			else
-				add(new Label("annotations"));
+				add(new Label("annotation").setRenderBodyOnly(true));
 
 			//Children
 			RepeatingView children = new RepeatingView("children");
 			add(children);
 			for (Databank child : databankdao.getChildren(db))
 				children.add(new FileHierarchyFragment(children.newChildId(), child, pdbid));
-		}
-	}
-
-	public class AnnotationFragment extends Fragment {
-		public AnnotationFragment(String id, Collection<Annotation> annotations) {
-			super(id, "annotationsfragment", SearchResultsPage.this);
-			RepeatingView rv = new RepeatingView("annotation");
-			for (Annotation ann : annotations)
-				rv.add(new Label(rv.newChildId(), ann.getComment().getText()));
-			add(rv);
-		}
-	}
-
-	public class FileFragment extends Fragment {
-		public FileFragment(String id, Databank db, Entry entry) {
-			super(id, "filefragment", SearchResultsPage.this);
-			ExternalLink el = new ExternalLink("link", db.getFilelink().replace("${PDBID}", entry.getPdbid()));
-			el.add(new Label("path", entry.getFile().getPath()));
-			add(el);
 		}
 	}
 }

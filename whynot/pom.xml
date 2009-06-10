@@ -66,7 +66,7 @@
 		</resources>
 
 		<plugins>
-			<plugin>
+		<!-- <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
@@ -76,14 +76,14 @@
 				</configuration>
 				<executions>
 					<execution>
-						<id>make-assembly</id> <!-- this is used for inheritance merges -->
-						<phase>package</phase> <!-- append to the packaging phase. -->
+						<id>make-assembly</id>
+						<phase>package</phase>
 						<goals>
-							<goal>single</goal> <!-- goals == mojos -->
+							<goal>single</goal>
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
+			</plugin> -->
 			<plugin>
 				<inherited>true</inherited>
 				<groupId>org.apache.maven.plugins</groupId>

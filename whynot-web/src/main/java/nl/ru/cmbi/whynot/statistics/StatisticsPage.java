@@ -53,7 +53,9 @@ public class StatisticsPage extends HomePage {
 			@Override
 			protected void populateItem(ListItem<File> item) {
 				File file = item.getModelObject();
-				item.add(new Label("path", file.getPath()));
+				String path = file.getPath();
+				path = path.substring(path.lastIndexOf('/') + 1);
+				item.add(new Label("path", path));
 				item.add(new Label("timestamp", sdf.format(new Date(file.getTimestamp()))));
 			}
 		};

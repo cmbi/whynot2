@@ -3,9 +3,9 @@
 	<session-factory>
 		<!-- Database connection settings -->
 		<property name="connection.driver_class">org.postgresql.Driver</property>
-		<property name="connection.url">jdbc:postgresql://localhost/whynot</property>
+		<property name="connection.url">jdbc:postgresql://localhost/whynot2</property>
 		<property name="connection.username">whynotuser</property>
-		<property name="connection.password">huPe2Ube</property>
+		<property name="connection.password">oon6oo4J</property>
 		<property name="dialect">org.hibernate.dialect.PostgreSQLDialect</property>
 
 		<!-- Drop and re-create the database schema on startup -->

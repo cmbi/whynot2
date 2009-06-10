@@ -39,23 +39,23 @@ public class Install {
 	private DatabankDAO	dbdao;
 
 	public void storeDatabanks() {
-		//FIXME Set link's to proper urls with ${PDBID}
+		//Link's to proper urls with ${PDBID}
 		Databank pdb, dssp, nmr, nrg, nrg_docr, sf;
-		dbdao.makePersistent(pdb = new Databank("PDB", CrawlType.FILE, ".*/pdb([\\w]{4})\\.ent(\\.gz)?", "http://www.pdb.org/pdb/download/downloadFile.do?fileFormat=pdb&compression=NO&structureId=", "http://www.wwpdb.org/"));
-		dbdao.makePersistent(new Databank("PDBFINDER", pdb, CrawlType.LINE, "ID           : ([\\w]{4})", "http://mrs.cmbi.ru.nl/mrs-3/entry.do?db=pdbfinder2&id=", "http://swift.cmbi.ru.nl/gv/pdbfinder/"));
-		dbdao.makePersistent(new Databank("PDBREPORT", pdb, CrawlType.FILE, ".*pdbreport.*/([\\w]{4})", "http://www.cmbi.ru.nl/pdbreport/cgi-bin/nonotes?PDBID=", "http://swift.cmbi.ru.nl/gv/pdbreport/"));
+		dbdao.makePersistent(pdb = new Databank("PDB", CrawlType.FILE, ".*/pdb([\\w]{4})\\.ent(\\.gz)?", "http://www.wwpdb.org/", "ftp://ftp.wwpdb.org/pub/pdb/data/structures/all/pdb/pdb${PDBID}.ent.gz"));
+		dbdao.makePersistent(new Databank("PDBFINDER", pdb, CrawlType.LINE, "ID           : ([\\w]{4})", "http://swift.cmbi.ru.nl/gv/pdbfinder/", "ftp://ftp.cmbi.ru.nl/pub/molbio/data/pdbfinder/PDBFIND.TXT.gz"));
+		dbdao.makePersistent(new Databank("PDBREPORT", pdb, CrawlType.FILE, ".*pdbreport.*/([\\w]{4})", "http://swift.cmbi.ru.nl/gv/pdbreport/", "http://www.cmbi.ru.nl/pdbreport/cgi-bin/nonotes?PDBID=${PDBID}"));
 
-		dbdao.makePersistent(dssp = new Databank("DSSP", pdb, CrawlType.FILE, ".*/([\\w]{4})\\.dssp", "http://mrs.cmbi.ru.nl/mrs-3/entry.do?db=dssp&id=", "http://swift.cmbi.ru.nl/gv/dssp/"));
-		dbdao.makePersistent(new Databank("HSSP", dssp, CrawlType.FILE, ".*/([\\w]{4})\\.hssp", "http://mrs.cmbi.ru.nl/mrs-3/entry.do?db=hssp&id=", "http://swift.cmbi.ru.nl/gv/hssp/"));
+		dbdao.makePersistent(dssp = new Databank("DSSP", pdb, CrawlType.FILE, ".*/([\\w]{4})\\.dssp", "http://swift.cmbi.ru.nl/gv/dssp/", "ftp://ftp.cmbi.ru.nl/pub/molbio/data/dssp/${PDBID}.dssp"));
+		dbdao.makePersistent(new Databank("HSSP", dssp, CrawlType.FILE, ".*/([\\w]{4})\\.hssp", "http://swift.cmbi.ru.nl/gv/hssp/", "ftp://ftp.cmbi.ru.nl/pub/molbio/data/hssp/${PDBID}.hssp"));
 
-		dbdao.makePersistent(nmr = new Databank("NMR", pdb, CrawlType.LINE, "([\\w]{4})", "link", "http://www.bmrb.wisc.edu/"));
-		dbdao.makePersistent(new Databank("RECOORD", nmr, CrawlType.FILE, ".*/([\\w]{4})_cns_w\\.pdb", "http://www.cmbi.ru.nl/whynot/recoord_trampoline/", "http://www.ebi.ac.uk/msd-srv/docs/NMR/recoord/main.html"));
-		dbdao.makePersistent(nrg = new Databank("NRG", nmr, CrawlType.LINE, "([\\w]{4})", "link", "http://restraintsgrid.bmrb.wisc.edu/NRG/MRGridServlet"));
-		dbdao.makePersistent(nrg_docr = new Databank("NRG-DOCR", nrg, CrawlType.LINE, "([\\w]{4})", "link", "http://restraintsgrid.bmrb.wisc.edu/NRG/MRGridServlet"));
-		dbdao.makePersistent(new Databank("NRG-CING", nrg_docr, CrawlType.LINE, "([\\w]{4})", "link", "http://nmr.cmbi.ru.nl/cing/"));
+		dbdao.makePersistent(nmr = new Databank("NMR", pdb, CrawlType.LINE, "([\\w]{4})", "http://www.bmrb.wisc.edu/", "ftp://ftp.wwpdb.org/pub/pdb/data/structures/all/nmr_restraints/${PDBID}.mr.gz"));
+		dbdao.makePersistent(new Databank("RECOORD", nmr, CrawlType.FILE, ".*/([\\w]{4})_cns_w\\.pdb", "http://www.ebi.ac.uk/msd-srv/docs/NMR/recoord/main.html", ""));//
+		dbdao.makePersistent(nrg = new Databank("NRG", nmr, CrawlType.LINE, "([\\w]{4})", "http://restraintsgrid.bmrb.wisc.edu/NRG/MRGridServlet", ""));//
+		dbdao.makePersistent(nrg_docr = new Databank("NRG-DOCR", nrg, CrawlType.LINE, "([\\w]{4})", "http://restraintsgrid.bmrb.wisc.edu/NRG/MRGridServlet", ""));//
+		dbdao.makePersistent(new Databank("NRG-CING", nrg_docr, CrawlType.LINE, "([\\w]{4})", "http://nmr.cmbi.ru.nl/cing/", "http://nmr.cmbi.ru.nl/NRG-CING/data/${PART}/${PDBID}/${PDBID}.cing"));//
 
-		dbdao.makePersistent(sf = new Databank("STRUCTUREFACTORS", pdb, CrawlType.FILE, ".*/r([\\w]{4})sf\\.ent", "http://www.pdb.org/pdb/download/downloadFile.do?fileFormat=STRUCTFACT&compression=NO&structureId=", "http://www.pdb.org/"));
-		dbdao.makePersistent(new Databank("PDB_REDO", sf, CrawlType.FILE, ".*/[\\w]{2}/([\\d][\\w]{3})", "http://www.cmbi.ru.nl/pdb_redo/cgi-bin/redir2.pl?pdbCode=", "http://www.cmbi.ru.nl/pdb_redo/"));
+		dbdao.makePersistent(sf = new Databank("STRUCTUREFACTORS", pdb, CrawlType.FILE, ".*/r([\\w]{4})sf\\.ent", "http://www.pdb.org/", "ftp://ftp.wwpdb.org/pub/pdb/data/structures/all/structure_factors/r${PDBID}sf.ent.gz"));
+		dbdao.makePersistent(new Databank("PDB_REDO", sf, CrawlType.FILE, ".*/[\\w]{2}/([\\d][\\w]{3})", "http://www.cmbi.ru.nl/pdb_redo/", "http://www.cmbi.ru.nl/pdb_redo/cgi-bin/redir2.pl?pdbCode=${PDBID}"));
 
 		Logger.getLogger(getClass()).info("Databanks stored.");
 	}

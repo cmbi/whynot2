@@ -32,8 +32,7 @@ public class AnnotaterTest {
 	@BeforeClass
 	public static void copyConvertAndOptimize() throws IOException, ParseException {
 		{//CommentFile as copy of backup
-			File converted = Converter.convert(new File("src/test/resources/20090610_comments.txt"));
-			Scanner scn = new Scanner(converted);
+			Scanner scn = new Scanner(new File("src/test/resources/20090610_comments.txt.converted.optimized"));
 			commentFile = new File("testfile_comment.txt");
 			PrintWriter pwr = new PrintWriter(commentFile);
 			while (scn.hasNextLine())

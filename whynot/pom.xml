@@ -33,7 +33,6 @@
 		<module>../whynot-apps</module>
 		<module>../whynot-core</module>
 		<module>../whynot-web</module>
-		<module>../whynot-ws</module>
 	</modules>
 
 	<dependencies>

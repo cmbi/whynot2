@@ -32,7 +32,7 @@ public interface GenericDAO<T, ID extends Serializable> {
 	public interface AnnotationDAO extends GenericDAO<Annotation, Long> {
 		long countAllWith(Comment comment);
 
-		long getLatest(Comment comment);
+		long getLastUsed(Comment comment);
 
 		List<Annotation> getRecent();
 	}
@@ -50,12 +50,10 @@ public interface GenericDAO<T, ID extends Serializable> {
 	public interface EntryDAO extends GenericDAO<Entry, Long> {
 		Entry findByDatabankAndPdbid(Databank databank, String pdbid);
 
+		boolean contains(String pdbid);
+
 		@Transactional
 		int removeEntriesWithoutBothFileAndParentFile();
-
-		Entry getParent(Entry entry);
-
-		List<Entry> getChildren(Entry entry);
 
 		List<Entry> getValid(Databank child);
 

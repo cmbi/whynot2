@@ -21,7 +21,7 @@ public class AnnotationHibernateDAO extends GenericHibernateDAO<Annotation, Long
 		return (Integer) crit.uniqueResult();
 	}
 
-	public long getLatest(Comment comment) {
+	public long getLastUsed(Comment comment) {
 		Criteria crit = getSession().createCriteria(getPersistentClass());
 		crit.add(Restrictions.naturalId().set("comment", comment));
 		crit.setProjection(Projections.max("timestamp"));

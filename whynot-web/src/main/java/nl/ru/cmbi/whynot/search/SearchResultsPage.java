@@ -28,10 +28,14 @@ public class SearchResultsPage extends HomePage {
 			ListView<String> lv = new ListView<String>("searchresult", Arrays.asList(pdbids)) {
 				@Override
 				protected void populateItem(ListItem<String> item) {
-					//TODO: If no entries with this id, report error & skip
-					String id = item.getModelObject();
-					item.add(new Label("pdbid", id));
-					item.add(new FileHierarchyFragment("filehierarchy", databankdao.findByName("PDB"), id));
+					String pdbid = item.getModelObject();
+					if (entrydao.contains(pdbid)) {
+						item.add(new Label("pdbid", pdbid));
+						item.add(new FileHierarchyFragment("filehierarchy", databankdao.findByName("PDB"), pdbid));
+					}
+					else
+						warn("Entry " + pdbid + " could not be found.");
+					//FIXME: pdbid is now declared in markup but not added in code
 				}
 			};
 			add(lv);

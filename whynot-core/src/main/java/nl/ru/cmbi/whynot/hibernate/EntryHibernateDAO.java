@@ -19,29 +19,16 @@ public class EntryHibernateDAO extends GenericHibernateDAO<Entry, Long> implemen
 		Criteria crit = getSession().createCriteria(getPersistentClass());
 		crit.add(Restrictions.naturalId().set("databank", databank).set("pdbid", pdbid));
 		return (Entry) crit.uniqueResult();
+
 	}
 
 	@Override
-	public Entry getParent(Entry entry) {
-		Criteria crit = getSession().createCriteria(getPersistentClass());
-		crit.add(Restrictions.naturalId().set("databank", entry.getDatabank().getParent()));
-		crit.add(Restrictions.naturalId().set("pdbid", entry.getPdbid()));
-		return (Entry) crit.uniqueResult();
+	public boolean contains(String pdbid) {
+		return !findByCriteria(Restrictions.naturalId().set("pdbid", pdbid)).isEmpty();
 	}
 
 	@Autowired
-	DatabankDAO	databankdao;
-
-	@SuppressWarnings("unchecked")
-	public List<Entry> getChildren(Entry entry) {
-		Criteria crit = getSession().createCriteria(getPersistentClass());
-		crit.add(Restrictions.in("databank", databankdao.getChildren(entry.getDatabank())));
-		crit.add(Restrictions.naturalId().set("pdbid", entry.getPdbid()));
-		return crit.list();
-	}
-
-	@Autowired
-	CommentDAO	commentdao;
+	private DatabankDAO	databankdao;
 
 	public int removeEntriesWithoutBothFileAndParentFile() {
 		int removed = 0;

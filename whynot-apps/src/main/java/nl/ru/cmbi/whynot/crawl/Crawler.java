@@ -127,7 +127,9 @@ public class Crawler {
 
 			//Open URL
 			URLConnection con = new URL(path).openConnection();
-			File downloaded = new File("download/" + path.replaceAll("[^\\w]", ""));
+			path = path.substring(path.lastIndexOf('/') + 1);
+			path.replaceAll("[^\\w]", "");
+			File downloaded = new File("download/" + path);
 			if (!downloaded.exists() || downloaded.lastModified() != con.getLastModified()) {
 				//Overwrite file
 				BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));

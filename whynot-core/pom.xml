@@ -9,6 +9,10 @@
 
 	<artifactId>whynot-core</artifactId>
 	
+	<properties>
+		<spring.version>2.5.6.SEC01</spring.version>
+	</properties>
+	
 	<dependencies>
 		<!-- Hibernate -->
 		<dependency>
@@ -41,32 +45,32 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
-			<version>2.5.6.SEC01</version>
+			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aop</artifactId>
-			<version>2.5.6.SEC01</version>
+			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-jdbc</artifactId>
-			<version>2.5.6.SEC01</version>
+			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-orm</artifactId>
-			<version>2.5.6.SEC01</version>
+			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
-			<version>2.5.6.SEC01</version>
+			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
-			<version>2.5.6.SEC01</version>
+			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>cglib</groupId>

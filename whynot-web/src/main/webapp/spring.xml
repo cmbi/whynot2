@@ -15,7 +15,7 @@
 	<import resource="classpath:META-INF/cxf/cxf.xml" />
 	<import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
 	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
-	<jaxws:endpoint id="RNG" implementor="nl.ru.cmbi.whynot.webservice.RNGImpl" address="/ws" />
+	<jaxws:endpoint id="Whynot" implementor="#whynotImpl" address="/" />
 
 	<!-- Spring -->
 	<context:component-scan base-package="nl.ru.cmbi.whynot" />

@@ -14,12 +14,6 @@
 	<!-- Spring -->
 	<context:component-scan base-package="nl.ru.cmbi.whynot" />
 
-	<!-- CXF -->
-	<import resource="classpath:META-INF/cxf/cxf.xml" />
-	<import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
-	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
-	<jaxws:endpoint id="Whynot" implementor="#whynotImpl" address="/" />
-
 	<!-- Hibernate -->
 	<bean id="transactionManager"
 		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
@@ -31,4 +25,10 @@
 		<property name="configLocation" value="hibernate.cfg.xml" />
 		<property name="packagesToScan" value="nl.ru.cmbi.whynot.model" />
 	</bean>
+
+	<!-- CXF -->
+	<import resource="classpath:META-INF/cxf/cxf.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+	<jaxws:endpoint id="whynot" implementor="#whynotImpl" address="/" />
 </beans>

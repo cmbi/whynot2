@@ -12,6 +12,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class DatabankHibernateDAO extends GenericHibernateDAO<Databank, Long> implements DatabankDAO {
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<Databank> findAll() {
+		Criteria crit = getSession().createCriteria(getPersistentClass());
+		return crit.addOrder(Order.asc("name")).list();
+	}
+
 	public Databank findByName(String name) {
 		Criteria crit = getSession().createCriteria(getPersistentClass());
 		crit.add(Restrictions.naturalId().set("name", name));

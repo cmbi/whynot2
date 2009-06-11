@@ -10,6 +10,7 @@ import nl.ru.cmbi.whynot.model.Entry;
 import nl.ru.cmbi.whynot.model.Databank.CollectionType;
 import nl.ru.cmbi.whynot.util.SpringUtil;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class Lister {
 	public static void main(String... args) {
+		Logger.getRootLogger().setLevel(Level.WARN);//We dont want chatter
+
 		String dbname = "DATABASE";
 		String selection = "VALID|OBSOLETE|MISSING|ANNOTATED|UNANNOTATED";
 		if (args.length != 2 || !args[1].matches(selection))

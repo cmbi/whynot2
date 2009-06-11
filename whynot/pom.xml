@@ -54,19 +54,8 @@
 	</dependencies>
 
 	<build>
-		<resources>
-			<resource>
-				<directory>../whynot/</directory>
-				<includes>
-					<include>log4j.properties</include>
-					<include>hibernate.cfg.xml</include>
-					<include>spring.xml</include>
-				</includes>
-			</resource>
-		</resources>
-
 		<plugins>
-		<!-- <plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
@@ -83,7 +72,7 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin> -->
+			</plugin>
 			<plugin>
 				<inherited>true</inherited>
 				<groupId>org.apache.maven.plugins</groupId>

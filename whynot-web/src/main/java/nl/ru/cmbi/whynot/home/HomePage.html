@@ -1,0 +1,63 @@
+<html xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+<head>
+	<title>Why Not?</title>
+	<!-- "Bright Blue" by Christopher Robinson: http://www.edg3.co.uk/ -->
+	<link rel="stylesheet" href="brightblue.css" type="text/css" media="screen" />
+</head>
+
+<body>
+	<div id="header">
+		<h1><a href="./">Why <span>Not?</span></a></h1>
+	</div>
+	<div id="content">
+		<div id="feedback" wicket:id="feedback"></div>
+		<div id="main">
+<wicket:child>
+			<h1>Home</h1>
+			<p>Why Not aims to answer a common question when working with PDB derived databanks: <i>Why is there no entry for ...?</i></p>
+			<p>To accomplish this we've looked at dependencies between PDB derived databanks (<i>entry X can only exist if entry Y is present, or if condition Z is met</i>) and compiled these into a databank hierarchy.</p>
+			<p>By indexing all entries for each databank, and comparing these with entries found higher up the hierarchy, we can find out which entries are missing. These lists can then be used to try to recreate any of the missing databank entries.</p>
+			<p>Should for any reason the creation of an entry fail, then the respective databank maintainer is given the option to either manually or automatically annotate the reason why a given entry could not be created.</p>
+			<p>Why Not offers a way conveniently access this information for all databanks.</p>
+			<h1>Usage</h1>
+			<p>To find out why a specific entry does not exist enter the PDBID into the search field on the right.</p>
+			<p>Click on any of the links on the right to drill down into collections of databank entries.</p>
+</wicket:child>
+		</div>
+		<div id="sidebar">
+			<ul class="navigation">
+				<wicket:link>
+				<li><a href="../about/AboutPage.html">About</a></li>
+				<li><a href="../comment/CommentPage.html">Comments</a></li>
+				<li><a href="../databank/DatabankPage.html">Databanks</a></li>
+				<li><a href="../statistics/StatisticsPage.html">Statistics</a></li>
+				</wicket:link>
+			</ul>
+			<h1>Search</h1>
+			<div wicket:id="search"></div>
+			<h1>Databanks</h1>
+			<div wicket:id="hierarchy"></div>
+			<wicket:fragment wicket:id="hierarchyfragment">
+				<a href="#" wicket:id="databank"><span wicket:id="name"></span></a>
+				<ul>
+					<li wicket:id="children"></li>
+				</ul>
+			</wicket:fragment>
+			<h1>Webservice</h1>
+			<wicket:link><a href="webservice/?wsdl">wsdl</a></wicket:link>
+		</div>
+	</div>
+	<!--<div id="footer"><p>Contact <a href="mailto:t.tebeek@cmbi.ru.nl">Tim te Beek</a></p></div>-->
+
+	<!-- Google Analytics Tracking -->
+	<script type="text/javascript">
+	var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+	document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	</script>
+	<script type="text/javascript">
+	try {
+	var pageTracker = _gat._getTracker("UA-9210071-1");
+	pageTracker._trackPageview();
+	} catch(err) {}</script>
+</body>
+</html>

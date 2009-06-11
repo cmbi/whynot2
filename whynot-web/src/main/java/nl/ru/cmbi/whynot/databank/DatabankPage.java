@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.Arrays;
 
 import jfreechart.MappedChart;
+import nl.ru.cmbi.whynot.databank.DatabankEntriesPage.Selection;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 import nl.ru.cmbi.whynot.home.HomePage;
 import nl.ru.cmbi.whynot.model.Databank;
@@ -79,8 +80,8 @@ public class DatabankPage extends HomePage {
 					protected void onClickCallback(AjaxRequestTarget target, ChartEntity entity) {
 						PageParameters params = new PageParameters();
 						params.put("name", db.getName());
-						for (String test : new String[] { "Obsolete", "Valid", "Annotated", "Unannotated" })
-							if (entity.toString().contains(test)) {
+						for (Selection test : Selection.values())
+							if (entity.toString().contains(test.toString())) {
 								params.put("selection", test);
 								setResponsePage(DatabankEntriesPage.class, params);
 							}

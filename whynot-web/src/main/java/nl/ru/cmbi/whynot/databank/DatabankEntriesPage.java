@@ -35,9 +35,13 @@ public class DatabankEntriesPage extends HomePage {
 			String name = parameters.getString("name");
 			databank = databankdao.findByName(name);
 		}
+		else
+			error("No value specified for parameter databank.");
 
 		if (parameters.containsKey("selection"))
 			selection = Selection.valueOf(parameters.getString("selection"));
+		else
+			error("No value specified for parameter selection.");
 
 		List<Entry> entries;
 		switch (selection) {

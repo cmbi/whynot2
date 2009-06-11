@@ -11,14 +11,14 @@
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
 		http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
 
+	<!-- Spring -->
+	<context:component-scan base-package="nl.ru.cmbi.whynot" />
+
 	<!-- CXF -->
 	<import resource="classpath:META-INF/cxf/cxf.xml" />
 	<import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
 	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
 	<jaxws:endpoint id="Whynot" implementor="#whynotImpl" address="/" />
-
-	<!-- Spring -->
-	<context:component-scan base-package="nl.ru.cmbi.whynot" />
 
 	<!-- Hibernate -->
 	<bean id="transactionManager"

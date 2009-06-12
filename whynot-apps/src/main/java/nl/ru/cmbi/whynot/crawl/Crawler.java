@@ -33,7 +33,6 @@ public class Crawler {
 		if (args.length == 2) {
 			Crawler crawler = (Crawler) SpringUtil.getContext().getBean("crawler");
 			crawler.crawl(args[0], args[1]);
-			crawler.validate(args[0]);
 		}
 		else
 			throw new IllegalArgumentException("Usage: crawler DATABASE DIRECTORY/FILE");
@@ -55,7 +54,7 @@ public class Crawler {
 	 * @param file
 	 */
 	public void crawl(String dbname, String path) throws IOException {
-		Databank db = dbdao.findByExample(new Databank(dbname), "id", "reference", "filelink", "parent", "regex", "crawltype", "entries");
+		Databank db = dbdao.findByName(dbname);
 		switch (db.getCrawltype()) {
 		case FILE:
 			new FileCrawler(db, filedao).crawl(getFile(path));
@@ -66,7 +65,7 @@ public class Crawler {
 		default:
 			throw new IllegalArgumentException("Invalid CrawlType");
 		}
-		validate(dbname);
+		validate(db);
 		entrydao.removeEntriesWithoutBothFileAndParentFile();
 		Logger.getLogger(getClass()).info(dbname + ": Succes");
 	}
@@ -76,10 +75,8 @@ public class Crawler {
 	 * if the file matches the current regular expression (which might have changed) and
 	 * if the timestamp on the file is still the same as the timestamp on the entry
 	 */
-	private void validate(String dbname) {
-		Databank databank = dbdao.findByName(dbname);
+	private void validate(Databank databank) {
 		Pattern pattern = Pattern.compile(databank.getRegex());
-
 		List<Entry> entrieswithfiles = entrydao.getValid(databank);
 		entrieswithfiles.addAll(entrydao.getObsolete(databank));
 

@@ -21,7 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class Backuper {
 	public static void main(String[] args) throws BeansException, IOException {
+		Logger.getLogger(Backuper.class).info("Backup start.");
 		((Backuper) SpringUtil.getContext().getBean("backuper")).backup();
+		Logger.getLogger(Backuper.class).info("Backup done.");
 	}
 
 	@Autowired

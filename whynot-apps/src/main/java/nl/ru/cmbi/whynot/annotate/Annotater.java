@@ -6,11 +6,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
 
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 import nl.ru.cmbi.whynot.util.SpringUtil;
+
+import org.apache.log4j.Logger;
 
 public class Annotater {
 	public static void main(String[] args) throws IOException, ParseException {
+		Logger.getLogger(Annotater.class).info("Annotater start.");
 		File dirComments = new File("comment/");
 		File dirUncomments = new File("uncomment/");
 
@@ -35,7 +37,7 @@ public class Annotater {
 		for (File file : dirUncomments.listFiles(commentFilter))
 			commentParser.uncomment(Converter.getFile(file));
 
-		EntryDAO entdao = (EntryDAO) SpringUtil.getContext().getBean("entryDAO");
-		entdao.removeEntriesWithoutBothFileAndParentFile();
+		commentParser.removeEntriesWithoutBothFileAndParentFile();
+		Logger.getLogger(Annotater.class).info("Annotater done.");
 	}
 }

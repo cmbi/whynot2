@@ -52,7 +52,6 @@ public interface GenericDAO<T, ID extends Serializable> {
 
 		boolean contains(String pdbid);
 
-		@Transactional
 		int removeEntriesWithoutBothFileAndParentFile();
 
 		List<Entry> getValid(Databank child);

@@ -31,8 +31,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class Crawler {
 	public static void main(String[] args) throws Exception {
 		if (args.length == 2) {
+			Logger.getLogger(Crawler.class).info("Crawler start.");
 			Crawler crawler = (Crawler) SpringUtil.getContext().getBean("crawler");
 			crawler.crawl(args[0], args[1]);
+			Logger.getLogger(Crawler.class).info("Crawler done.");
 		}
 		else
 			throw new IllegalArgumentException("Usage: crawler DATABASE DIRECTORY/FILE");

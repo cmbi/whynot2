@@ -178,4 +178,9 @@ public class CommentParser {
 		file.renameTo(dest);
 		return dest;
 	}
+
+	@Transactional
+	public int removeEntriesWithoutBothFileAndParentFile() {
+		return entdao.removeEntriesWithoutBothFileAndParentFile();
+	}
 }

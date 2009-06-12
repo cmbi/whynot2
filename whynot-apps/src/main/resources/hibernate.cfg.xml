@@ -8,9 +8,6 @@
 		<property name="connection.password">waivuy8N</property>
 		<property name="dialect">org.hibernate.dialect.PostgreSQLDialect</property>
 
-		<!-- Drop and re-create the database schema on startup -->
-		<property name="hbm2ddl.auto">update</property>
-
 		<!-- Use the C3P0 connection pool provider -->
 		<property name="hibernate.c3p0.min_size">5</property>
 		<property name="hibernate.c3p0.max_size">20</property>

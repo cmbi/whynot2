@@ -21,6 +21,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.entity.ChartEntity;
 import org.jfree.chart.plot.PiePlot3D;
 import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.ui.RectangleEdge;
 
 public class DatabankPage extends HomePage {
 	@SpringBean
@@ -50,6 +51,7 @@ public class DatabankPage extends HomePage {
 			@Override
 			protected void populateItem(ListItem<Databank> item) {
 				Databank db = item.getModelObject();
+				item.add(new Label("name", db.getName()));
 				item.add(databankChart(db));
 				item.add(new ExternalLink("reference", db.getReference()).add(new Label("href", db.getReference())));
 			}
@@ -61,21 +63,25 @@ public class DatabankPage extends HomePage {
 				long val = entrydao.getValidCount(db);
 				long ann = entrydao.getAnnotatedCount(db);
 				long una = entrydao.getUnannotatedCount(db);
-				pieDataset.setValue("Obsolete\n " + obs, obs);
-				pieDataset.setValue("Valid\n " + val, val);
-				pieDataset.setValue("Annotated\n " + ann, ann);
-				pieDataset.setValue("Unannotated\n " + una, una);
+				pieDataset.setValue("Obsolete " + obs, obs);
+				pieDataset.setValue("Valid " + val, val);
+				pieDataset.setValue("Annotated " + ann, ann);
+				pieDataset.setValue("Unannotated " + una, una);
 
 				//Create Chart
-				JFreeChart chart = ChartFactory.createPieChart3D(db.getName(), pieDataset, true, true, false);
+				JFreeChart chart = ChartFactory.createPieChart3D(null, pieDataset, true, true, false);
+				chart.setBackgroundPaint(Color.WHITE);
+				chart.getLegend().setPosition(RectangleEdge.RIGHT);
+				chart.getLegend().setItemPaint(new Color(1, 165, 236));
 				PiePlot3D plot = (PiePlot3D) chart.getPlot();
 				plot.setBackgroundPaint(Color.WHITE);
 				plot.setForegroundAlpha(0.6f);
 				plot.setCircular(true);
-				chart.setBackgroundPaint(Color.WHITE);
+				plot.setLabelGenerator(null);
+				plot.setOutlineVisible(false);
 
 				//Create Mapped Chart
-				MappedChart mc = new MappedChart("chart", chart, 350, 250) {
+				MappedChart mc = new MappedChart("chart", chart, 350, 230) {
 					@Override
 					protected void onClickCallback(AjaxRequestTarget target, ChartEntity entity) {
 						PageParameters params = new PageParameters();

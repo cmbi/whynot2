@@ -1,0 +1,16 @@
+ul.about {
+  float: left;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+ 
+ul.about li {
+  float: left;
+  width: 32%;
+  margin: 0;
+  padding: 0;
+}
+
+p {clear:both;}

@@ -1,5 +1,7 @@
 package jfreechart;
 
+import java.util.UUID;
+
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -8,6 +10,7 @@ import org.apache.wicket.model.Model;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.entity.ChartEntity;
 import org.jfree.chart.entity.EntityCollection;
+import org.jfree.chart.entity.JFreeChartEntity;
 
 /**
  * Component that produces an image and associated image map from
@@ -22,7 +25,7 @@ public abstract class MappedChart extends Panel {
 	public MappedChart(String panelId, JFreeChart chart, int width, int height) {
 		super(panelId);
 		ChartImage image = new ChartImage("image", chart, width, height);
-		String mapName = getPath() + chart.getTitle().getText();
+		String mapName = UUID.randomUUID().toString();
 		image.add(new AttributeModifier("usemap", true, new Model<String>("#" + mapName)));
 		add(image);
 		DynamicImageMap imageMap = constructImageMap(image, mapName);
@@ -45,12 +48,13 @@ public abstract class MappedChart extends Panel {
 			int count = entities.getEntityCount();
 			for (int i = count - 1; i >= 0; i--) {
 				final ChartEntity entity = entities.getEntity(i);
-				imageMap.addArea(entity.getShapeType(), entity.getShapeCoords(), entity.getToolTipText(), new AjaxLink<Void>("link") {
-					@Override
-					public void onClick(AjaxRequestTarget target) {
-						onClickCallback(target, entity);
-					}
-				});
+				if (entity.getClass() != JFreeChartEntity.class)
+					imageMap.addArea(entity.getShapeType(), entity.getShapeCoords(), entity.getToolTipText(), new AjaxLink<Void>("link") {
+						@Override
+						public void onClick(AjaxRequestTarget target) {
+							onClickCallback(target, entity);
+						}
+					});
 			}
 		}
 		return imageMap;

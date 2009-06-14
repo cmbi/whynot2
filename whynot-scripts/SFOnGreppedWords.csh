@@ -6,7 +6,7 @@
 
 
 #Set environment parameters (define directories and files). Edit when needed.
-set LISTING = "java -cp ../dependency/*:../whynot-apps-2.0-090612.jar nl.ru.cmbi.whynot.list.Lister STRUCTUREFACTORS UNANNOTATED"
+set LISTING = "./SF_UN.sh"
 setenv COMDIR $PWD 						#Target directory for WHY_NOT comments
 setenv PDB /data/uncompressed/pdb 		#Directory with decompressed pdb files
 

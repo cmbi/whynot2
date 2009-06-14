@@ -20,7 +20,7 @@ import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.resource.StringResourceStream;
 
 public class DatabankEntriesPage extends HomePage {
-	public enum Selection {
+	private enum Selection {
 		Obsolete, Valid, Missing, Annotated, Unannotated
 	};
 

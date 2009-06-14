@@ -1,13 +1,17 @@
 package nl.ru.cmbi.whynot.databank;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import jfreechart.MappedChart;
-import nl.ru.cmbi.whynot.databank.DatabankEntriesPage.Selection;
+import nl.ru.cmbi.whynot.entries.EntriesPage;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 import nl.ru.cmbi.whynot.home.HomePage;
 import nl.ru.cmbi.whynot.model.Databank;
+import nl.ru.cmbi.whynot.model.Entry;
+import nl.ru.cmbi.whynot.model.Databank.CollectionType;
 
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -15,6 +19,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -84,13 +89,28 @@ public class DatabankPage extends HomePage {
 				MappedChart mc = new MappedChart("chart", chart, 350, 230) {
 					@Override
 					protected void onClickCallback(AjaxRequestTarget target, ChartEntity entity) {
-						PageParameters params = new PageParameters();
-						params.put("name", db.getName());
-						for (Selection test : Selection.values())
-							if (entity.toString().contains(test.toString())) {
-								params.put("selection", test);
-								setResponsePage(DatabankEntriesPage.class, params);
-							}
+						//Determine selection
+						for (final CollectionType test : CollectionType.values())
+							if (entity.toString().toUpperCase().contains(test.toString()))
+								setResponsePage(new EntriesPage(db.getName() + " " + test.toString().toLowerCase(), new LoadableDetachableModel<List<Entry>>() {
+									@Override
+									protected List<Entry> load() {
+										switch (test) {
+										case OBSOLETE:
+											return entrydao.getObsolete(db);
+										case VALID:
+											return entrydao.getValid(db);
+										case MISSING:
+											return entrydao.getMissing(db);
+										case ANNOTATED:
+											return entrydao.getAnnotated(db);
+										case UNANNOTATED:
+											return entrydao.getUnannotated(db);
+										default:
+											return new ArrayList<Entry>();
+										}
+									};
+								}));
 					}
 				};
 				return mc;

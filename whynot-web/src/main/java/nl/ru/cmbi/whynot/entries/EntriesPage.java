@@ -1,5 +1,6 @@
 package nl.ru.cmbi.whynot.entries;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import nl.ru.cmbi.whynot.home.HomePage;
@@ -12,12 +13,18 @@ import org.apache.wicket.markup.html.link.ResourceLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.WebResponse;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.resource.StringResourceStream;
 
 public class EntriesPage extends HomePage {
 	private String	source	= "";
+
+	@SuppressWarnings("unchecked")
+	public EntriesPage() {
+		this("No entries selected", new Model(new ArrayList()));
+	}
 
 	public EntriesPage(String source, IModel<List<Entry>> entrylist) {
 		this.source = source;

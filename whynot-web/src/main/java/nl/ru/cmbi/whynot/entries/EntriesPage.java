@@ -19,8 +19,9 @@ import org.apache.wicket.util.resource.StringResourceStream;
 public class EntriesPage extends HomePage {
 	private String	source	= "";
 
-	public EntriesPage(String title, IModel<List<Entry>> entrylist) {
-		add(new Label("title", source = title));
+	public EntriesPage(String source, IModel<List<Entry>> entrylist) {
+		this.source = source;
+		add(new Label("title", source + " (" + entrylist.getObject().size() + ")"));
 		add(new ResourceLink<WebResource>("export", asResource(entrylist)));
 		add(new ListView<Entry>("entrylist", entrylist) {
 			@Override

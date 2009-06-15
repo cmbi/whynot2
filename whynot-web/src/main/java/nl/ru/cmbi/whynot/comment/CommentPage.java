@@ -1,8 +1,11 @@
 package nl.ru.cmbi.whynot.comment;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import nl.ru.cmbi.whynot.entries.EntriesPage;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.AnnotationDAO;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.CommentDAO;
 import nl.ru.cmbi.whynot.home.HomePage;
@@ -13,9 +16,11 @@ import nl.ru.cmbi.whynot.model.Entry;
 import org.apache.wicket.Resource;
 import org.apache.wicket.markup.html.WebResource;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.link.ResourceLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.protocol.http.WebResponse;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.resource.IResourceStream;
@@ -33,14 +38,28 @@ public class CommentPage extends HomePage {
 
 			@Override
 			protected void populateItem(ListItem<Comment> item) {
-				Comment com = item.getModelObject();
+				final Comment com = item.getModelObject();
 				long count = annotationdao.countAllWith(com);
 				long latest = annotationdao.getLastUsed(com);
-				item.add(new Label("text", com.getText()));
-				item.add(new Label("latest", sdf.format(new Date(latest))));
 				ResourceLink<WebResource> rl = new ResourceLink<WebResource>("export", getEntriesResource(com));
-				rl.add(new Label("count", "" + count));
-				item.add(rl);
+				item.add(rl.add(new Label("text", com.getText())));
+				item.add(new Label("latest", sdf.format(new Date(latest))));
+				Link<Void> lnk = new Link<Void>("entries") {
+					@Override
+					public void onClick() {
+						setResponsePage(new EntriesPage(com.getText(), new LoadableDetachableModel<List<Entry>>() {
+							@Override
+							protected List<Entry> load() {
+								commentdao.makePersistent(com);
+								List<Entry> entries = new ArrayList<Entry>();
+								for (Annotation ann : com.getAnnotations())
+									entries.add(ann.getEntry());
+								return entries;
+							}
+						}));
+					}
+				};
+				item.add(lnk.add(new Label("count", "" + count)));
 			}
 		};
 		add(commentlist);

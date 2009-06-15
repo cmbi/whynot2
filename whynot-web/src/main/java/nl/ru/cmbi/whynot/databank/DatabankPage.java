@@ -59,23 +59,26 @@ public class DatabankPage extends HomePage {
 			protected void populateItem(ListItem<Databank> item) {
 				Databank db = item.getModelObject();
 				item.add(new Label("name", db.getName()));
-				item.add(new DatabankChart("chart", db));
+				item.add(new PieChartFragment("piechart", db));
 				item.add(new ExternalLink("reference", db.getReference()).add(new Label("href", db.getReference())));
 			}
 		};
 		return chartlist;
 	}
 
-	private class DatabankChart extends Fragment {
-		public DatabankChart(String id, final Databank db) {
-			super(id, "chartfragment", DatabankPage.this);
+	private class PieChartFragment extends Fragment {
+		public PieChartFragment(String id, final Databank db) {
+			super(id, "piechartfragment", DatabankPage.this);
 
 			long obs = entrydao.getObsoleteCount(db);
 			long val = entrydao.getValidCount(db);
 			long ann = entrydao.getAnnotatedCount(db);
 			long una = entrydao.getUnannotatedCount(db);
 
-			add(createMappedChart("chart", db, obs, val, ann, una));
+			//Chart
+			add(createPieChart("chart", db, obs, val, ann, una));
+
+			//Legend
 			add(new Link<Void>("valid") {
 				@Override
 				public void onClick() {
@@ -122,7 +125,7 @@ public class DatabankPage extends HomePage {
 			}.add(new Label("count", "" + una)));
 		}
 
-		private MappedChart createMappedChart(String id, final Databank db, long obs, long val, long ann, long una) {
+		private MappedChart createPieChart(String id, final Databank db, long obs, long val, long ann, long una) {
 			//Create a DataSet
 			DefaultPieDataset pieDataset = new DefaultPieDataset();
 			pieDataset.setValue("Obsolete", obs);

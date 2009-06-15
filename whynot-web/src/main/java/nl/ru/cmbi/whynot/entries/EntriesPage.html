@@ -3,7 +3,9 @@
 <wicket:extend>
 	<h1 wicket:id="title">NRG-CING: MISSING</h1>
 	<a href="#" wicket:id="export">Download as file <wicket:link><img src="page_white_put.png"/></wicket:link></a>
-	<p wicket:id="entrylist" style="font-family:monospace;"><span wicket:id="pdbid"></span></p>
+	<p style="font-family:monospace;">
+		<wicket:container wicket:id="entrylist"><wicket:container wicket:id="pdbid"></wicket:container></wicket:container>
+	</p>
 </wicket:extend>
 </body>
 </html>

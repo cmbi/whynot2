@@ -1,12 +1,6 @@
-li.annotation:before {
-	content: url(comment.png);
-	margin-left:-15px;
-}
-a.missing:before {
+.annotation:before {
 	content: url(page_white_delete.png);
-	margin-left:-15px;
 }
-a.present:before {
-	content: url(page_white_go.png);
-	margin-left:-15px;
+.file:before {
+	content: url(page_white_put.png);
 }

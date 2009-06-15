@@ -19,7 +19,7 @@ public class SearchPanel extends Panel {
 			protected void onSubmit() {
 				PageParameters pp = new PageParameters();
 				pp.put("pdbid", tt.getConvertedInput().split("\\s+"));
-				setResponsePage(SearchResultsPage.class, pp);
+				setResponsePage(ResultsPage.class, pp);
 			}
 		};
 		form.add(tt);

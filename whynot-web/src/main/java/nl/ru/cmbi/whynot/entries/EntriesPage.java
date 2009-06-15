@@ -17,15 +17,15 @@ import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.resource.StringResourceStream;
 
 public class EntriesPage extends HomePage {
-	private String	title	= "";
+	private String	source	= "";
 
 	public EntriesPage(String title, IModel<List<Entry>> entrylist) {
-		add(new Label("title", this.title = title));
+		add(new Label("title", source = title));
 		add(new ResourceLink<WebResource>("export", asResource(entrylist)));
 		add(new ListView<Entry>("entrylist", entrylist) {
 			@Override
 			protected void populateItem(ListItem<Entry> item) {
-				item.add(new Label("pdbid", item.getModelObject().getPdbid() + " ").setRenderBodyOnly(true));
+				item.add(new Label("pdbid", item.getModelObject().getPdbid() + " "));
 			}
 		});
 	}
@@ -45,7 +45,7 @@ public class EntriesPage extends HomePage {
 			@Override
 			protected void setHeaders(WebResponse response) {
 				super.setHeaders(response);
-				response.setAttachmentHeader(title + ".txt");
+				response.setAttachmentHeader(source.replaceAll("[\\W]", "") + "_entries.txt");
 			}
 		};
 		return export.setCacheable(false);

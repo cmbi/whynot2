@@ -1,0 +1,26 @@
+<html xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+<body>
+<wicket:head>
+	<wicket:link><link href="search.css" rel="stylesheet" /></wicket:link>
+</wicket:head>
+<wicket:extend>
+	<wicket:container wicket:id="resultslist"></wicket:container>
+
+	<wicket:fragment wicket:id="resultfragment">
+		<h1 wicket:id="pdbid">101d</h1>
+		<table>
+		<tr wicket:id="databanklist">
+			<th wicket:id="databank"></th>
+			<td wicket:id="result"></td>
+		</tr>
+		</table>
+	</wicket:fragment>
+	<wicket:fragment wicket:id="annotationfragment">
+		<span class="annotation" wicket:id="annotation"></span>
+	</wicket:fragment>
+	<wicket:fragment wicket:id="filefragment">
+		<a class="file" href="#" wicket:id="file"></a>
+	</wicket:fragment>
+</wicket:extend>
+</body>
+</html>

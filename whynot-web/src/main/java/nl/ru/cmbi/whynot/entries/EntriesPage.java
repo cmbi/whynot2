@@ -42,6 +42,9 @@ public class EntriesPage extends HomePage {
 				return new FilesPanel(panelId, source, entrylist);
 			}
 		});
+		//TODO: AnnotationsPanel
+		//TODO: DatabankPanel
+		//TODO: TimelinePanel
 		add(new TabbedPanel("tabs", tabs));
 	}
 }

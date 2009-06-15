@@ -56,6 +56,7 @@ public class FilesPanel extends Panel {
 		add(new ListView<Entry>("entrylist", withFile) {
 			@Override
 			protected void populateItem(ListItem<Entry> item) {
+				//TODO: Databank, icon & File link
 				item.add(new Label("pdbid", item.getModelObject().getPdbid()));
 			}
 		});

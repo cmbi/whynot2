@@ -70,10 +70,13 @@ public class DatabankPage extends HomePage {
 		public PieChartFragment(String id, final Databank db) {
 			super(id, "piechartfragment", DatabankPage.this);
 
-			long obs = entrydao.getObsoleteCount(db);
+			//TODO: Present
 			long val = entrydao.getValidCount(db);
+			long obs = entrydao.getObsoleteCount(db);
+			//TODO: Missing
 			long ann = entrydao.getAnnotatedCount(db);
 			long una = entrydao.getUnannotatedCount(db);
+			//TODO: Total
 
 			//Chart
 			add(createPieChart("chart", db, obs, val, ann, una));

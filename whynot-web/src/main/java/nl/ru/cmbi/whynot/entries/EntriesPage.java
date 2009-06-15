@@ -36,16 +36,10 @@ public class EntriesPage extends HomePage {
 				return new EntriesPanel(panelId, source, entrylist);
 			}
 		});
-		tabs.add(new AbstractTab(new Model<String>("PDBIDs2")) {
+		tabs.add(new AbstractTab(new Model<String>("Files")) {
 			@Override
 			public Panel getPanel(String panelId) {
-				return new PdbidPanel(panelId, source, entrylist);
-			}
-		});
-		tabs.add(new AbstractTab(new Model<String>("Entries2")) {
-			@Override
-			public Panel getPanel(String panelId) {
-				return new EntriesPanel(panelId, source, entrylist);
+				return new FilesPanel(panelId, source, entrylist);
 			}
 		});
 		add(new TabbedPanel("tabs", tabs));

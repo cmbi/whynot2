@@ -26,7 +26,7 @@ public class EntriesPage extends HomePage {
 		add(new ListView<Entry>("entrylist", entrylist) {
 			@Override
 			protected void populateItem(ListItem<Entry> item) {
-				item.add(new Label("pdbid", item.getModelObject().getPdbid() + " "));
+				item.add(new Label("pdbid", item.getModelObject().getPdbid()));
 			}
 		});
 	}
@@ -37,6 +37,8 @@ public class EntriesPage extends HomePage {
 			public IResourceStream getResourceStream() {
 				StringBuilder sb = new StringBuilder();
 				for (Entry entry : entrylist.getObject()) {
+					sb.append(entry.getDatabank().getName());
+					sb.append(',');
 					sb.append(entry.getPdbid());
 					sb.append('\n');
 				}

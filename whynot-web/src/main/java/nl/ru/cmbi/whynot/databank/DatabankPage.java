@@ -17,8 +17,10 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ExternalLink;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.jfree.chart.ChartFactory;
@@ -26,7 +28,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.entity.ChartEntity;
 import org.jfree.chart.plot.PiePlot3D;
 import org.jfree.data.general.DefaultPieDataset;
-import org.jfree.ui.RectangleEdge;
+import org.jfree.ui.RectangleInsets;
 
 public class DatabankPage extends HomePage {
 	@SpringBean
@@ -57,65 +59,122 @@ public class DatabankPage extends HomePage {
 			protected void populateItem(ListItem<Databank> item) {
 				Databank db = item.getModelObject();
 				item.add(new Label("name", db.getName()));
-				item.add(databankChart(db));
+				item.add(new DatabankChart("chart", db));
 				item.add(new ExternalLink("reference", db.getReference()).add(new Label("href", db.getReference())));
-			}
-
-			private MappedChart databankChart(final Databank db) {
-				//Create a DataSet
-				DefaultPieDataset pieDataset = new DefaultPieDataset();
-				long obs = entrydao.getObsoleteCount(db);
-				long val = entrydao.getValidCount(db);
-				long ann = entrydao.getAnnotatedCount(db);
-				long una = entrydao.getUnannotatedCount(db);
-				pieDataset.setValue("Obsolete " + obs, obs);
-				pieDataset.setValue("Valid " + val, val);
-				pieDataset.setValue("Annotated " + ann, ann);
-				pieDataset.setValue("Unannotated " + una, una);
-
-				//Create Chart
-				JFreeChart chart = ChartFactory.createPieChart3D(null, pieDataset, true, true, false);
-				chart.setBackgroundPaint(Color.WHITE);
-				chart.getLegend().setPosition(RectangleEdge.RIGHT);
-				chart.getLegend().setItemPaint(new Color(1, 165, 236));
-				PiePlot3D plot = (PiePlot3D) chart.getPlot();
-				plot.setBackgroundPaint(Color.WHITE);
-				plot.setForegroundAlpha(0.6f);
-				plot.setCircular(true);
-				plot.setLabelGenerator(null);
-				plot.setOutlineVisible(false);
-
-				//Create Mapped Chart
-				MappedChart mc = new MappedChart("chart", chart, 350, 230) {
-					@Override
-					protected void onClickCallback(AjaxRequestTarget target, ChartEntity entity) {
-						//Determine selection
-						for (final CollectionType test : CollectionType.values())
-							if (entity.toString().toUpperCase().contains(test.toString()))
-								setResponsePage(new EntriesPage(db.getName() + " " + test.toString().toLowerCase(), new LoadableDetachableModel<List<Entry>>() {
-									@Override
-									protected List<Entry> load() {
-										switch (test) {
-										case OBSOLETE:
-											return entrydao.getObsolete(db);
-										case VALID:
-											return entrydao.getValid(db);
-										case MISSING:
-											return entrydao.getMissing(db);
-										case ANNOTATED:
-											return entrydao.getAnnotated(db);
-										case UNANNOTATED:
-											return entrydao.getUnannotated(db);
-										default:
-											return new ArrayList<Entry>();
-										}
-									};
-								}));
-					}
-				};
-				return mc;
 			}
 		};
 		return chartlist;
+	}
+
+	private class DatabankChart extends Fragment {
+		public DatabankChart(String id, final Databank db) {
+			super(id, "chartfragment", DatabankPage.this);
+
+			long obs = entrydao.getObsoleteCount(db);
+			long val = entrydao.getValidCount(db);
+			long ann = entrydao.getAnnotatedCount(db);
+			long una = entrydao.getUnannotatedCount(db);
+
+			add(createMappedChart("chart", db, obs, val, ann, una));
+			add(new Link<Void>("valid") {
+				@Override
+				public void onClick() {
+					setResponsePage(new EntriesPage(db.getName() + " valid", new LoadableDetachableModel<List<Entry>>() {
+						@Override
+						protected List<Entry> load() {
+							return entrydao.getValid(db);
+						}
+					}));
+				}
+			}.add(new Label("count", "" + val)));
+			add(new Link<Void>("obsolete") {
+				@Override
+				public void onClick() {
+					setResponsePage(new EntriesPage(db.getName() + " obsolete", new LoadableDetachableModel<List<Entry>>() {
+						@Override
+						protected List<Entry> load() {
+							return entrydao.getObsolete(db);
+						}
+					}));
+				}
+			}.add(new Label("count", "" + obs)));
+			add(new Link<Void>("annotated") {
+				@Override
+				public void onClick() {
+					setResponsePage(new EntriesPage(db.getName() + " annotated", new LoadableDetachableModel<List<Entry>>() {
+						@Override
+						protected List<Entry> load() {
+							return entrydao.getAnnotated(db);
+						}
+					}));
+				}
+			}.add(new Label("count", "" + ann)));
+			add(new Link<Void>("unannotated") {
+				@Override
+				public void onClick() {
+					setResponsePage(new EntriesPage(db.getName() + " unannotated", new LoadableDetachableModel<List<Entry>>() {
+						@Override
+						protected List<Entry> load() {
+							return entrydao.getUnannotated(db);
+						}
+					}));
+				}
+			}.add(new Label("count", "" + una)));
+		}
+
+		private MappedChart createMappedChart(String id, final Databank db, long obs, long val, long ann, long una) {
+			//Create a DataSet
+			DefaultPieDataset pieDataset = new DefaultPieDataset();
+			pieDataset.setValue("Obsolete", obs);
+			pieDataset.setValue("Valid", val);
+			pieDataset.setValue("Annotated", ann);
+			pieDataset.setValue("Unannotated", una);
+
+			//Create Chart
+			JFreeChart chart = ChartFactory.createPieChart3D(null, pieDataset, false, true, false);
+			chart.setBackgroundPaint(Color.WHITE);
+			chart.setPadding(RectangleInsets.ZERO_INSETS);
+			PiePlot3D plot = (PiePlot3D) chart.getPlot();
+			plot.setCircular(true);
+			plot.setForegroundAlpha(0.6f);
+			plot.setBackgroundPaint(Color.WHITE);
+			plot.setSectionPaint("Obsolete", Color.GRAY);
+			plot.setSectionPaint("Valid", new Color(0, 112, 184));//#0070B8
+			plot.setSectionPaint("Annotated", new Color(0, 184, 112));
+			plot.setSectionPaint("Unannotated", Color.YELLOW);
+			plot.setLabelGenerator(null);
+			plot.setOutlineVisible(false);
+
+			//Create Mapped Chart
+			MappedChart mc = new MappedChart(id, chart, 150, 150) {
+				@Override
+				protected void onClickCallback(AjaxRequestTarget target, ChartEntity entity) {
+					//Determine selection
+					for (final CollectionType test : CollectionType.values())
+						if (entity.toString().toUpperCase().contains(test.toString()))
+							setResponsePage(new EntriesPage(db.getName() + " " + test.toString().toLowerCase(), new LoadableDetachableModel<List<Entry>>() {
+								@Override
+								protected List<Entry> load() {
+									switch (test) {
+									case OBSOLETE:
+										return entrydao.getObsolete(db);
+									case VALID:
+										return entrydao.getValid(db);
+									case MISSING:
+										return entrydao.getMissing(db);
+									case ANNOTATED:
+										return entrydao.getAnnotated(db);
+									case UNANNOTATED:
+										return entrydao.getUnannotated(db);
+									default:
+										return new ArrayList<Entry>();
+									}
+								};
+							}));
+				}
+			};
+			return mc;
+		}
+
 	}
 }

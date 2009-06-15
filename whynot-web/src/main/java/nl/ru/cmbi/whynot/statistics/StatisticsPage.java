@@ -42,9 +42,9 @@ public class StatisticsPage extends HomePage {
 			@Override
 			protected void populateItem(ListItem<Annotation> item) {
 				Annotation ann = item.getModelObject();
+				item.add(new Label("comment", ann.getComment().getText()));
 				item.add(new Label("databank", ann.getEntry().getDatabank().getName()));
 				item.add(new Label("pdbid", ann.getEntry().getPdbid()));
-				item.add(new Label("comment", ann.getComment().getText()));
 			}
 		};
 		add(lva);

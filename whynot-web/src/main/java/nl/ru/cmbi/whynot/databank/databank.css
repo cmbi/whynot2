@@ -1,0 +1,12 @@
+ul.legend {
+	float:right;
+	width:120px;}
+ul.legend li {
+	list-style:square;
+	padding-left:0px;
+}
+ul.legend span {float:right;}
+.valid {color: #0070b8;}
+.obsolete {color: gray;}
+.annotated {color: #00b870;}
+.unannotated {color: yellow;}

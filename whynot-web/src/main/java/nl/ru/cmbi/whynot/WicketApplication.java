@@ -20,6 +20,9 @@ public class WicketApplication extends WebApplication {
 		//Spring
 		addComponentInstantiationListener(new SpringComponentInjector(this));
 
+		//RequestLogger
+		//getRequestLoggerSettings().setRequestLoggerEnabled(true);
+
 		//ErrorPages
 		IApplicationSettings settings = getApplicationSettings();
 		settings.setAccessDeniedPage(ErrorPage.class);

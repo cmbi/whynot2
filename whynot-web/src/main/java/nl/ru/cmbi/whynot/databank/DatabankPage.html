@@ -1,13 +1,28 @@
 <html xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
 <body>
+<wicket:head>
+	<wicket:link><link href="databank.css" rel="stylesheet" /></wicket:link>
+</wicket:head>
 <wicket:extend>
 	<wicket:container wicket:id="chartlist">
 		<h1 wicket:id="name"></h1>
-		<p>
-		<wicket:container wicket:id="chart"/>
+		<p wicket:id="chart"></p>
 		<a href="#" wicket:id="reference"><span wicket:id="href"></span></a>
-		</p>
 	</wicket:container>
+	
+	<wicket:fragment wicket:id="chartfragment">
+		<ul class="legend">
+			<li class="valid">
+				<a href="#" wicket:id="valid"><span wicket:id="count"></span> Valid </a></li>
+			<li class="obsolete">
+				<a href="#" wicket:id="obsolete"><span wicket:id="count"></span> Obsolete </a></li>
+			<li class="annotated">
+				<a href="#" wicket:id="annotated"><span wicket:id="count"></span> Annotated </a></li>
+			<li class="unannotated">
+				<a href="#" wicket:id="unannotated"><span wicket:id="count"></span> Unannotated </a></li>
+		</ul>
+		<wicket:container rowspan="4" wicket:id="chart" width="180px"></wicket:container>
+	</wicket:fragment>
 </wicket:extend>
 </body>
 </html>

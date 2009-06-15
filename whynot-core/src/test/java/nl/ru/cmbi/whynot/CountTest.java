@@ -32,7 +32,7 @@ public class CountTest {
 	@Test
 	@Ignore
 	public void getXXXsize() {
-		Databank nrg = dbdao.findByName("NRG");
+		Databank nrg = dbdao.findByName("NRG-CING");
 		System.err.println(entdao.getValid(nrg).size());
 		System.err.println(entdao.getObsolete(nrg).size());
 		System.err.println(entdao.getMissing(nrg).size());
@@ -43,7 +43,7 @@ public class CountTest {
 	@Test
 	@Ignore
 	public void getXXXcount() {
-		Databank nrg = dbdao.findByName("NRG");
+		Databank nrg = dbdao.findByName("NRG-CING");
 		System.err.println(entdao.getValidCount(nrg));
 		System.err.println(entdao.getObsoleteCount(nrg));
 		System.err.println(entdao.getMissingCount(nrg));

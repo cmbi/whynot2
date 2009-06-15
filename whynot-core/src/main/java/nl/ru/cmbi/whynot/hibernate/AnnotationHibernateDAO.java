@@ -31,7 +31,7 @@ public class AnnotationHibernateDAO extends GenericHibernateDAO<Annotation, Long
 	@SuppressWarnings("unchecked")
 	public List<Annotation> getRecent() {
 		Criteria crit = getSession().createCriteria(getPersistentClass());
-		crit.addOrder(Order.asc("timestamp"));
+		crit.addOrder(Order.desc("timestamp"));
 		crit.setMaxResults(10);
 		return crit.list();
 	}

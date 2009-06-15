@@ -21,7 +21,7 @@ public class FileHibernateDAO extends GenericHibernateDAO<File, Long> implements
 	@SuppressWarnings("unchecked")
 	public List<File> getRecent() {
 		Criteria crit = getSession().createCriteria(getPersistentClass());
-		crit.addOrder(Order.asc("timestamp"));
+		crit.addOrder(Order.desc("timestamp"));
 		crit.setMaxResults(10);
 		return crit.list();
 	}

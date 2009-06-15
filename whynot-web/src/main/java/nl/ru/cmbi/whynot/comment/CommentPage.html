@@ -9,14 +9,11 @@
 		<th>Total</th>
 	</tr>
 	<tr wicket:id="commentlist">
-		<td>
-			<a href="#" wicket:id="export">
-				<wicket:link><img src="page_white_put.png" style="float:right"/></wicket:link>
-				<span wicket:id="text" class="comment"></span>
-			</a>
-		</td>
+		<td><a href="#" wicket:id="export" class="file">
+			<span wicket:id="text" class="comment"></span></a></td>
 		<td wicket:id="latest" class="date">latest</td>
-		<td class="number"><a href="#" wicket:id="entries"><span wicket:id="count"></span></a></td>
+		<td class="number"><a href="#" wicket:id="entries">
+			<span wicket:id="count"></span></a></td>
 	</tr>
 	</table>
 </wicket:extend>

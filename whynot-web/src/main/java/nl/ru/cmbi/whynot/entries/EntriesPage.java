@@ -6,58 +6,48 @@ import java.util.List;
 import nl.ru.cmbi.whynot.home.HomePage;
 import nl.ru.cmbi.whynot.model.Entry;
 
-import org.apache.wicket.Resource;
-import org.apache.wicket.markup.html.WebResource;
+import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
+import org.apache.wicket.extensions.markup.html.tabs.ITab;
+import org.apache.wicket.extensions.markup.html.tabs.TabbedPanel;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.link.ResourceLink;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.protocol.http.WebResponse;
-import org.apache.wicket.util.resource.IResourceStream;
-import org.apache.wicket.util.resource.StringResourceStream;
 
 public class EntriesPage extends HomePage {
-	private String	source	= "";
-
 	@SuppressWarnings("unchecked")
 	public EntriesPage() {
 		this("No entries selected", new Model(new ArrayList()));
 	}
 
-	public EntriesPage(String source, IModel<List<Entry>> entrylist) {
-		this.source = source;
+	public EntriesPage(final String source, final IModel<List<Entry>> entrylist) {
 		add(new Label("title", source + " (" + entrylist.getObject().size() + ")"));
-		add(new ResourceLink<WebResource>("export", asResource(entrylist)));
-		add(new ListView<Entry>("entrylist", entrylist) {
+
+		List<ITab> tabs = new ArrayList<ITab>();
+		tabs.add(new AbstractTab(new Model<String>("PDBIDs")) {
 			@Override
-			protected void populateItem(ListItem<Entry> item) {
-				item.add(new Label("pdbid", item.getModelObject().getPdbid()));
+			public Panel getPanel(String panelId) {
+				return new PdbidPanel(panelId, source, entrylist);
 			}
 		});
-	}
-
-	public Resource asResource(final IModel<List<Entry>> entrylist) {
-		WebResource export = new WebResource() {
+		tabs.add(new AbstractTab(new Model<String>("Entries")) {
 			@Override
-			public IResourceStream getResourceStream() {
-				StringBuilder sb = new StringBuilder();
-				for (Entry entry : entrylist.getObject()) {
-					sb.append(entry.getDatabank().getName());
-					sb.append(',');
-					sb.append(entry.getPdbid());
-					sb.append('\n');
-				}
-				return new StringResourceStream(sb, "text/plain");
+			public Panel getPanel(String panelId) {
+				return new EntriesPanel(panelId, source, entrylist);
 			}
-
+		});
+		tabs.add(new AbstractTab(new Model<String>("PDBIDs2")) {
 			@Override
-			protected void setHeaders(WebResponse response) {
-				super.setHeaders(response);
-				response.setAttachmentHeader(source.replaceAll("[\\W]", "") + "_entries.txt");
+			public Panel getPanel(String panelId) {
+				return new PdbidPanel(panelId, source, entrylist);
 			}
-		};
-		return export.setCacheable(false);
+		});
+		tabs.add(new AbstractTab(new Model<String>("Entries2")) {
+			@Override
+			public Panel getPanel(String panelId) {
+				return new EntriesPanel(panelId, source, entrylist);
+			}
+		});
+		add(new TabbedPanel("tabs", tabs));
 	}
 }

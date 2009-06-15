@@ -44,6 +44,8 @@ li {
 	list-style:none;
 	padding-left:15px;
 }
+.annotation:before {content: url('image/page_white_delete.png');}
+.file:before {content: url('image/page_white_put.png');}
 
 /* body */
 body {

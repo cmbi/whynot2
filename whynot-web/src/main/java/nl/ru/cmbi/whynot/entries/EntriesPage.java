@@ -42,7 +42,12 @@ public class EntriesPage extends HomePage {
 				return new FilesPanel(panelId, source, entrylist);
 			}
 		});
-		//TODO: AnnotationsPanel
+		tabs.add(new AbstractTab(new Model<String>("Comments")) {
+			@Override
+			public Panel getPanel(String panelId) {
+				return new CommentsPanel(panelId, source, entrylist);
+			}
+		});
 		//TODO: DatabankPanel
 		//TODO: TimelinePanel
 		add(new TabbedPanel("tabs", tabs));

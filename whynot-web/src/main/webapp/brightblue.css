@@ -44,7 +44,7 @@ li {
 	list-style:none;
 	padding-left:15px;
 }
-.file:before {content: url('image/page_white_put.png');}
+.download:before {content: url('image/page_white_put.png');}
 
 /* body */
 body {

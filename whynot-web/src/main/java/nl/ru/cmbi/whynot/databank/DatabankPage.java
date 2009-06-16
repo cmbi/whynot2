@@ -70,18 +70,28 @@ public class DatabankPage extends HomePage {
 		public PieChartFragment(String id, final Databank db) {
 			super(id, "piechartfragment", DatabankPage.this);
 
-			//TODO: Present
+			long pre = entrydao.getPresentCount(db);
 			long val = entrydao.getValidCount(db);
 			long obs = entrydao.getObsoleteCount(db);
-			//TODO: Missing
+			long mis = entrydao.getMissingCount(db);
 			long ann = entrydao.getAnnotatedCount(db);
 			long una = entrydao.getUnannotatedCount(db);
-			//TODO: Total
 
 			//Chart
 			add(createPieChart("chart", db, obs, val, ann, una));
 
 			//Legend
+			add(new Link<Void>("present") {
+				@Override
+				public void onClick() {
+					setResponsePage(new EntriesPage(db.getName() + " present", new LoadableDetachableModel<List<Entry>>() {
+						@Override
+						protected List<Entry> load() {
+							return entrydao.getPresent(db);
+						}
+					}));
+				}
+			}.add(new Label("count", "" + pre)));
 			add(new Link<Void>("valid") {
 				@Override
 				public void onClick() {
@@ -104,6 +114,17 @@ public class DatabankPage extends HomePage {
 					}));
 				}
 			}.add(new Label("count", "" + obs)));
+			add(new Link<Void>("missing") {
+				@Override
+				public void onClick() {
+					setResponsePage(new EntriesPage(db.getName() + " missing", new LoadableDetachableModel<List<Entry>>() {
+						@Override
+						protected List<Entry> load() {
+							return entrydao.getMissing(db);
+						}
+					}));
+				}
+			}.add(new Label("count", "" + mis)));
 			add(new Link<Void>("annotated") {
 				@Override
 				public void onClick() {
@@ -144,7 +165,7 @@ public class DatabankPage extends HomePage {
 			plot.setCircular(true);
 			plot.setForegroundAlpha(0.6f);
 			plot.setBackgroundPaint(Color.WHITE);
-			plot.setSectionPaint("Obsolete", Color.GRAY);
+			plot.setSectionPaint("Obsolete", new Color(184, 0, 0));
 			plot.setSectionPaint("Valid", new Color(0, 112, 184));//#0070B8
 			plot.setSectionPaint("Annotated", new Color(0, 184, 112));
 			plot.setSectionPaint("Unannotated", Color.YELLOW);

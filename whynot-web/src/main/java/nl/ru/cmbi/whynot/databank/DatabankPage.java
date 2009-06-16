@@ -157,7 +157,7 @@ public class DatabankPage extends HomePage {
 			chart.setBackgroundPaint(Color.WHITE);
 			chart.setPadding(RectangleInsets.ZERO_INSETS);
 			PiePlot3D plot = (PiePlot3D) chart.getPlot();
-			plot.setCircular(true);
+			plot.setCircular(false);
 			plot.setForegroundAlpha(0.6f);
 			plot.setBackgroundPaint(Color.WHITE);
 			plot.setSectionPaint("Obsolete", new Color(184, 0, 0));
@@ -168,7 +168,7 @@ public class DatabankPage extends HomePage {
 			plot.setOutlineVisible(false);
 
 			//Create Mapped Chart
-			MappedChart mc = new MappedChart(id, chart, 150, 150) {
+			MappedChart mc = new MappedChart(id, chart, 250, 150) {
 				@Override
 				protected void onClickCallback(AjaxRequestTarget target, ChartEntity entity) {
 					//Determine selection

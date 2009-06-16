@@ -33,6 +33,8 @@ public class CommentsPanel extends Panel {
 						map.put(ann.getComment(), new ArrayList<Entry>());
 					map.get(ann.getComment()).add(ent);
 				}
+		if (map.isEmpty())
+			map.put(new Comment("Comments"), new ArrayList());
 
 		//Download link
 		add(new ResourceLink<WebResource>("export", new WebResource() {
@@ -65,12 +67,15 @@ public class CommentsPanel extends Panel {
 		add(new ListView<Comment>("commentlist", new ArrayList<Comment>(map.keySet())) {
 			@Override
 			protected void populateItem(ListItem<Comment> item) {
-				item.add(new Label("text", item.getModelObject().getText()));
-				item.add(new ListView<Entry>("entrylist", map.get(item.getModelObject())) {
+				Comment com = item.getModelObject();
+				List<Entry> entries = map.get(com);
+				item.add(new Label("text", com.getText() + " (" + entries.size() + ")"));
+				item.add(new ListView<Entry>("entrylist", entries) {
 					@Override
 					protected void populateItem(ListItem<Entry> item) {
-						item.add(new Label("databank", item.getModelObject().getDatabank().getName()));
-						item.add(new Label("pdbid", item.getModelObject().getPdbid()));
+						Entry entry = item.getModelObject();
+						item.add(new Label("databank", entry.getDatabank().getName()));
+						item.add(new Label("pdbid", entry.getPdbid()));
 					}
 				});
 			}

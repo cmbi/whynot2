@@ -45,6 +45,8 @@ public class PdbidPanel extends Panel {
 			}
 		}.setCacheable(false)));
 
+		add(new Label("text", "Unique PDBIDs (" + pdbids.size() + ")"));
+
 		//List of PDBIDs
 		add(new ListView<String>("entrylist", new ArrayList<String>(pdbids)) {
 			@Override

@@ -7,6 +7,7 @@ import nl.ru.cmbi.whynot.model.Entry;
 import nl.ru.cmbi.whynot.panels.FilePanel;
 
 import org.apache.wicket.markup.html.WebResource;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ResourceLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -51,6 +52,8 @@ public class FilesPanel extends Panel {
 				response.setAttachmentHeader(source.replaceAll("[\\W]", "") + "_files.txt");
 			}
 		}.setCacheable(false)));
+
+		add(new Label("text", "Files (" + withFile.size() + ")"));
 
 		//List of PDBIDs
 		add(new ListView<Entry>("entrylist", withFile) {

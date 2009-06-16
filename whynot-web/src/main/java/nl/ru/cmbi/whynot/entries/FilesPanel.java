@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.ru.cmbi.whynot.model.Entry;
+import nl.ru.cmbi.whynot.panels.FilePanel;
 
 import org.apache.wicket.markup.html.WebResource;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ResourceLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -56,8 +56,7 @@ public class FilesPanel extends Panel {
 		add(new ListView<Entry>("entrylist", withFile) {
 			@Override
 			protected void populateItem(ListItem<Entry> item) {
-				//TODO: Databank, icon & File link
-				item.add(new Label("pdbid", item.getModelObject().getPdbid()));
+				item.add(new FilePanel("file", item.getModelObject()));
 			}
 		});
 	}

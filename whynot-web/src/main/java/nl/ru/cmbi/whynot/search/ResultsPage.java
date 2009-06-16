@@ -2,13 +2,13 @@ package nl.ru.cmbi.whynot.search;
 
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 import nl.ru.cmbi.whynot.home.HomePage;
-import nl.ru.cmbi.whynot.model.Annotation;
 import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Entry;
+import nl.ru.cmbi.whynot.panels.AnnotationPanel;
+import nl.ru.cmbi.whynot.panels.FilePanel;
 
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Fragment;
@@ -48,36 +48,15 @@ public class ResultsPage extends HomePage {
 					item.add(new Label("databank", db.getName()));
 					Entry entry = entrydao.findByDatabankAndPdbid(db, pdbid);
 					if (entry != null && entry.getFile() != null)
-						item.add(new FileFragment("result", entry));
+						item.add(new FilePanel("result", entry));
 					else
 						if (entry != null && !entry.getAnnotations().isEmpty())
-							item.add(new AnnotationFragment("result", entry));
+							item.add(new AnnotationPanel("result", entry));
 						else
 							item.add(new Label("result", "No data"));
 				}
 			};
 			add(lv);
-		}
-	}
-
-	public class AnnotationFragment extends Fragment {
-		public AnnotationFragment(String id, Entry entry) {
-			super(id, "annotationfragment", ResultsPage.this);
-			RepeatingView rv = new RepeatingView("annotation");
-			for (Annotation ann : entry.getAnnotations())
-				rv.add(new Label(rv.newChildId(), ann.getComment().getText()));
-			add(rv);
-		}
-	}
-
-	public class FileFragment extends Fragment {
-		public FileFragment(String string, Entry entry) {
-			super(string, "filefragment", ResultsPage.this);
-			String href = entry.getDatabank().getFilelink();
-			href = href.replace("${PDBID}", entry.getPdbid());
-			href = href.replace("${PART}", entry.getPdbid().substring(1, 3));
-
-			add(new ExternalLink("file", href, "File present"));
 		}
 	}
 }

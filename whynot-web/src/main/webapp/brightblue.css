@@ -44,12 +44,11 @@ li {
 	list-style:none;
 	padding-left:15px;
 }
-.annotation:before {content: url('image/page_white_delete.png');}
 .file:before {content: url('image/page_white_put.png');}
 
 /* body */
 body {
-	background:#0070b8 url('image/background_body.jpg') center repeat-y;
+	background:#0070b8 url('image/background_wide.jpg') center repeat-y;
 	color:#666;
 	font:12px "Trebuchet ms", Helvetica, sans-serif;
 }
@@ -76,7 +75,7 @@ body {
 /* content */
 #content {
 	margin:0 auto;
-	width:550px;
+	width:700px;
 }
 	#content h1 {
 		color:#01a5ec;
@@ -87,7 +86,7 @@ body {
 #main {
 	float:left;
 	padding:5px 10px 0 15px;
-	width:335px;
+	width:485px;
 }
 
 #sidebar {

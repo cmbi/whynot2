@@ -45,6 +45,7 @@ public class StatisticsPage extends HomePage {
 				item.add(new Label("comment", ann.getComment().getText()));
 				item.add(new Label("databank", ann.getEntry().getDatabank().getName()));
 				item.add(new Label("pdbid", ann.getEntry().getPdbid()));
+				item.add(new Label("timestamp", sdf.format(new Date(ann.getTimestamp()))));
 			}
 		};
 		add(lva);

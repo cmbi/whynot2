@@ -30,7 +30,13 @@ public class CountTest {
 	}
 
 	@Test
-	@Ignore
+	public void getPresent() {
+		Databank nrg = dbdao.findByName("NRG-CING");
+		System.err.println(entdao.getPresent(nrg));
+	}
+
+	@Test
+	//@Ignore
 	public void getXXXsize() {
 		Databank nrg = dbdao.findByName("NRG-CING");
 		System.err.println(entdao.getValid(nrg).size());

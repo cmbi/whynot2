@@ -27,54 +27,43 @@ public class EntryHibernateDAO extends GenericHibernateDAO<Entry, Long> implemen
 	}
 
 	//TODO: Use these to filter collections internally
-	//TODO: Also verify these work.. ;)
+	//Unfortunately these only work with persistent collections and thus can't be chained.
+	//We _could_ add multiple conditions per filter, but that wont help in finding missing
+	//entries, as these can (and often will) not exist if neither file nor annotations exist
 	@SuppressWarnings("unchecked")
-	private List<Entry> withFile(Collection<Entry> collection) {
+	private List<Entry> withFile(Collection<Entry> collection) {//Present (Valid + Obsolete)
 		return getSession().createFilter(collection, "where this.file is not null").list();
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<Entry> withoutFile(Collection<Entry> collection) {
-		return getSession().createFilter(collection, "where this.file is null").list();
+	private List<Entry> withAnnotation(Collection<Entry> collection) {//Annotated
+		return getSession().createFilter(collection, "where this.annotations is not empty").list();
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<Entry> withAnnotations(Collection<Entry> collection) {
-		return getSession().createFilter(collection, "where (select ann from Annotations ann where ann.entry_id = this.id) is not empty").list();
+	private List<Entry> withParentFile(Collection<Entry> collection) {//Valid + Missing
+		return getSession().createFilter(collection, "where (select par.file from this.databank.parent.entries par where par.pdbid = this.pdbid) is not null").list();
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<Entry> withoutAnnotations(Collection<Entry> collection) {
-		return getSession().createFilter(collection, "where (select ann from Annotations ann where ann.entry_id = this.id) is empty").list();
+	private List<Entry> withoutParentFile(Collection<Entry> collection) {//Obsolete
+		return getSession().createFilter(collection, "where (select par.file from this.databank.parent.entries par where par.pdbid = this.pdbid) is null").list();
 	}
 
-	@Autowired
-	private DatabankDAO	databankdao;
+	@SuppressWarnings("unchecked")
+	private List<Entry> withFileAndParentFile(Collection<Entry> collection) {//Valid
+		return getSession().createFilter(collection, "where this.file is not null and (select par.file from this.databank.parent.entries par where par.pdbid = this.pdbid) is not null").list();
+	}
 
-	public int removeEntriesWithoutBothFileAndParentFile() {
-		int removed = 0;
-		for (Databank child : databankdao.findAll()) {
-			//Delete Annotations from entries without file or parent file
-			Query q1 = getSession().createQuery("delete from Annotation where entry_id in (select child.id from Entry child where file is null and child.databank = :child_db and (select parent.file from Entry parent where parent.pdbid = child.pdbid and parent.databank = :parent_db) is null)");
-			q1.setParameter("child_db", child);
-			q1.setParameter("parent_db", child.getParent());
-			q1.executeUpdate();
-
-			getSession().flush();
-
-			//Delete empty comments
-			Query q2 = getSession().createQuery("delete from Comment where id not in (select ann.comment.id from Annotation ann)");
-			q2.executeUpdate();
-
-			//Delete entries without file or parent file
-			Query q3 = getSession().createQuery("delete from Entry child where file is null and child.databank = :child_db and (select parent.file from Entry parent where parent.pdbid = child.pdbid and parent.databank = :parent_db) is null");
-			q3.setParameter("child_db", child);
-			q3.setParameter("parent_db", child.getParent());
-			removed += q3.executeUpdate();
-		}
-		if (0 < removed)
-			Logger.getLogger(getClass()).info("Removed " + removed + " entries with comment, but without both file and without parent file: Not missing!");
-		return removed;
+	@Override
+	public List<Entry> getPresent(Databank db) {
+		System.out.println(db.getEntries().size());//All
+		System.out.println(withFile(db.getEntries()).size()); //Present (Valid + Obsolete)
+		System.out.println(withAnnotation(db.getEntries()).size());//Annotated
+		System.out.println(withParentFile(db.getEntries()).size());//Valid + Missing
+		System.out.println(withoutParentFile(db.getEntries()).size());//Obsolete
+		System.out.println(withFileAndParentFile(db.getEntries()).size());//Valid
+		return null;
 	}
 
 	//Child file present, parent file present
@@ -163,5 +152,35 @@ public class EntryHibernateDAO extends GenericHibernateDAO<Entry, Long> implemen
 		Query q = getSession().createQuery("select count(*) " + annotated);
 		q.setParameter("child_db", child);
 		return (Long) q.uniqueResult();
+	}
+
+	@Autowired
+	private DatabankDAO	databankdao;
+
+	//Cleanup comments that where added but werent really missing
+	public int removeEntriesWithoutBothFileAndParentFile() {
+		int removed = 0;
+		for (Databank child : databankdao.findAll()) {
+			//Delete Annotations from entries without file or parent file
+			Query q1 = getSession().createQuery("delete from Annotation where entry_id in (select child.id from Entry child where file is null and child.databank = :child_db and (select parent.file from Entry parent where parent.pdbid = child.pdbid and parent.databank = :parent_db) is null)");
+			q1.setParameter("child_db", child);
+			q1.setParameter("parent_db", child.getParent());
+			q1.executeUpdate();
+
+			getSession().flush();
+
+			//Delete empty comments
+			Query q2 = getSession().createQuery("delete from Comment where id not in (select ann.comment.id from Annotation ann)");
+			q2.executeUpdate();
+
+			//Delete entries without file or parent file
+			Query q3 = getSession().createQuery("delete from Entry child where file is null and child.databank = :child_db and (select parent.file from Entry parent where parent.pdbid = child.pdbid and parent.databank = :parent_db) is null");
+			q3.setParameter("child_db", child);
+			q3.setParameter("parent_db", child.getParent());
+			removed += q3.executeUpdate();
+		}
+		if (0 < removed)
+			Logger.getLogger(getClass()).info("Removed " + removed + " entries with comment, but without both file and without parent file: Not missing!");
+		return removed;
 	}
 }

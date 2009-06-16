@@ -56,6 +56,9 @@ public interface GenericDAO<T, ID extends Serializable> {
 		int removeEntriesWithoutBothFileAndParentFile();
 
 		//Collections
+
+		List<Entry> getPresent(Databank db);
+
 		List<Entry> getValid(Databank child);
 
 		List<Entry> getObsolete(Databank child);

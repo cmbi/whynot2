@@ -56,28 +56,29 @@ public interface GenericDAO<T, ID extends Serializable> {
 		int removeEntriesWithoutBothFileAndParentFile();
 
 		//Collections
-
 		List<Entry> getPresent(Databank db);
 
-		List<Entry> getValid(Databank child);
+		List<Entry> getValid(Databank db);
 
-		List<Entry> getObsolete(Databank child);
+		List<Entry> getObsolete(Databank db);
 
-		List<Entry> getMissing(Databank child);
+		List<Entry> getMissing(Databank db);
 
-		List<Entry> getAnnotated(Databank child);
+		List<Entry> getAnnotated(Databank db);
 
-		List<Entry> getUnannotated(Databank child);
+		List<Entry> getUnannotated(Databank db);
 
-		long getValidCount(Databank child);
+		long getPresentCount(Databank db);
 
-		long getObsoleteCount(Databank child);
+		long getValidCount(Databank db);
 
-		long getMissingCount(Databank child);
+		long getObsoleteCount(Databank db);
 
-		long getUnannotatedCount(Databank child);
+		long getMissingCount(Databank db);
 
-		long getAnnotatedCount(Databank child);
+		long getAnnotatedCount(Databank db);
+
+		long getUnannotatedCount(Databank db);
 	}
 
 	public interface FileDAO extends GenericDAO<File, Long> {

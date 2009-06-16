@@ -84,69 +84,64 @@ public class DatabankPage extends HomePage {
 			add(new Link<Void>("present") {
 				@Override
 				public void onClick() {
-					setResponsePage(new EntriesPage(db.getName() + " present", new LoadableDetachableModel<List<Entry>>() {
-						@Override
-						protected List<Entry> load() {
-							return entrydao.getPresent(db);
-						}
-					}));
+					setResponsePage(new EntriesPage(db.getName() + " present", getEntriesModel(db, CollectionType.PRESENT)));
 				}
 			}.add(new Label("count", "" + pre)));
 			add(new Link<Void>("valid") {
 				@Override
 				public void onClick() {
-					setResponsePage(new EntriesPage(db.getName() + " valid", new LoadableDetachableModel<List<Entry>>() {
-						@Override
-						protected List<Entry> load() {
-							return entrydao.getValid(db);
-						}
-					}));
+					setResponsePage(new EntriesPage(db.getName() + " valid", getEntriesModel(db, CollectionType.VALID)));
 				}
 			}.add(new Label("count", "" + val)));
 			add(new Link<Void>("obsolete") {
 				@Override
 				public void onClick() {
-					setResponsePage(new EntriesPage(db.getName() + " obsolete", new LoadableDetachableModel<List<Entry>>() {
-						@Override
-						protected List<Entry> load() {
-							return entrydao.getObsolete(db);
-						}
-					}));
+					setResponsePage(new EntriesPage(db.getName() + " obsolete", getEntriesModel(db, CollectionType.OBSOLETE)));
 				}
 			}.add(new Label("count", "" + obs)));
+
 			add(new Link<Void>("missing") {
 				@Override
 				public void onClick() {
-					setResponsePage(new EntriesPage(db.getName() + " missing", new LoadableDetachableModel<List<Entry>>() {
-						@Override
-						protected List<Entry> load() {
-							return entrydao.getMissing(db);
-						}
-					}));
+					setResponsePage(new EntriesPage(db.getName() + " missing", getEntriesModel(db, CollectionType.MISSING)));
 				}
 			}.add(new Label("count", "" + mis)));
 			add(new Link<Void>("annotated") {
 				@Override
 				public void onClick() {
-					setResponsePage(new EntriesPage(db.getName() + " annotated", new LoadableDetachableModel<List<Entry>>() {
-						@Override
-						protected List<Entry> load() {
-							return entrydao.getAnnotated(db);
-						}
-					}));
+					setResponsePage(new EntriesPage(db.getName() + " annotated", getEntriesModel(db, CollectionType.ANNOTATED)));
 				}
 			}.add(new Label("count", "" + ann)));
 			add(new Link<Void>("unannotated") {
 				@Override
 				public void onClick() {
-					setResponsePage(new EntriesPage(db.getName() + " unannotated", new LoadableDetachableModel<List<Entry>>() {
-						@Override
-						protected List<Entry> load() {
-							return entrydao.getUnannotated(db);
-						}
-					}));
+					setResponsePage(new EntriesPage(db.getName() + " unannotated", getEntriesModel(db, CollectionType.UNANNOTATED)));
 				}
 			}.add(new Label("count", "" + una)));
+		}
+
+		private LoadableDetachableModel<List<Entry>> getEntriesModel(final Databank db, final CollectionType test) {
+			return new LoadableDetachableModel<List<Entry>>() {
+				@Override
+				protected List<Entry> load() {
+					switch (test) {
+					case PRESENT:
+						return entrydao.getPresent(db);
+					case VALID:
+						return entrydao.getValid(db);
+					case OBSOLETE:
+						return entrydao.getObsolete(db);
+					case MISSING:
+						return entrydao.getMissing(db);
+					case ANNOTATED:
+						return entrydao.getAnnotated(db);
+					case UNANNOTATED:
+						return entrydao.getUnannotated(db);
+					default:
+						return new ArrayList<Entry>();
+					}
+				};
+			};
 		}
 
 		private MappedChart createPieChart(String id, final Databank db, long obs, long val, long ann, long una) {
@@ -179,25 +174,7 @@ public class DatabankPage extends HomePage {
 					//Determine selection
 					for (final CollectionType test : CollectionType.values())
 						if (entity.toString().toUpperCase().contains(test.toString()))
-							setResponsePage(new EntriesPage(db.getName() + " " + test.toString().toLowerCase(), new LoadableDetachableModel<List<Entry>>() {
-								@Override
-								protected List<Entry> load() {
-									switch (test) {
-									case OBSOLETE:
-										return entrydao.getObsolete(db);
-									case VALID:
-										return entrydao.getValid(db);
-									case MISSING:
-										return entrydao.getMissing(db);
-									case ANNOTATED:
-										return entrydao.getAnnotated(db);
-									case UNANNOTATED:
-										return entrydao.getUnannotated(db);
-									default:
-										return new ArrayList<Entry>();
-									}
-								};
-							}));
+							setResponsePage(new EntriesPage(db.getName() + " " + test.toString().toLowerCase(), getEntriesModel(db, test)));
 				}
 			};
 			return mc;

@@ -34,7 +34,7 @@ public class CommentsPanel extends Panel {
 					map.get(ann.getComment()).add(ent);
 				}
 		if (map.isEmpty())
-			map.put(new Comment("Comments"), new ArrayList());
+			map.put(new Comment("Comments"), new ArrayList<Entry>());
 
 		//Download link
 		add(new ResourceLink<WebResource>("export", new WebResource() {

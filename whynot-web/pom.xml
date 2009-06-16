@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>nl.ru.cmbi.whynot</groupId>
 		<artifactId>whynot</artifactId>
-		<version>2.0-090612</version>
+		<version>2.0-090616</version>
 	</parent>
 
 	<artifactId>whynot-web</artifactId>

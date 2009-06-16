@@ -11,6 +11,7 @@ import nl.ru.cmbi.whynot.util.SpringUtil;
 import org.apache.log4j.Logger;
 
 public class Annotater {
+
 	public static void main(String[] args) throws IOException, ParseException {
 		Logger.getLogger(Annotater.class).info("Annotater start.");
 		File dirComments = new File("comment/");

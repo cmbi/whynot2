@@ -21,7 +21,6 @@ public class Annotation implements Comparable<Annotation>, Serializable {
 	@GeneratedValue(generator = "hibseq")
 	@GenericGenerator(name = "hibseq", strategy = "seqhilo", parameters = { @Parameter(name = "max_lo", value = "50"), })
 	Long			id;
-
 	@NaturalId
 	@ManyToOne
 	@Cascade(value = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE })

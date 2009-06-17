@@ -11,15 +11,15 @@ import nl.ru.cmbi.whynot.model.File;
 
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Count - count
+ * Find - single
+ * Get - multiple
+ */
 public interface GenericDAO<T, ID extends Serializable> {
 	long countAll();
 
-	//Finders
-	T findById(ID id, boolean lock);
-
-	List<T> findAll();
-
-	T findByExample(T exampleInstance, String... excludeProperty);
+	List<T> getAll();
 
 	//Save / Delete
 	@Transactional
@@ -30,11 +30,13 @@ public interface GenericDAO<T, ID extends Serializable> {
 
 	//Interfaces
 	public interface AnnotationDAO extends GenericDAO<Annotation, Long> {
-		long countAllWith(Comment comment);
-
 		long getLastUsed(Comment comment);
 
 		List<Annotation> getRecent();
+
+		int countWith(Comment comment);
+
+		List<Entry> getEntriesForComment(Long l);
 	}
 
 	public interface CommentDAO extends GenericDAO<Comment, Long> {
@@ -43,8 +45,6 @@ public interface GenericDAO<T, ID extends Serializable> {
 
 	public interface DatabankDAO extends GenericDAO<Databank, Long> {
 		Databank findByName(String name);
-
-		List<Databank> getChildren(Databank parent);
 	}
 
 	public interface EntryDAO extends GenericDAO<Entry, Long> {
@@ -56,6 +56,18 @@ public interface GenericDAO<T, ID extends Serializable> {
 		int removeEntriesWithoutBothFileAndParentFile();
 
 		//Collections
+		int countPresent(Databank db);
+
+		int countValid(Databank db);
+
+		int countObsolete(Databank db);
+
+		int countMissing(Databank db);
+
+		int countAnnotated(Databank db);
+
+		int counUnannotated(Databank db);
+
 		List<Entry> getPresent(Databank db);
 
 		List<Entry> getValid(Databank db);
@@ -67,18 +79,6 @@ public interface GenericDAO<T, ID extends Serializable> {
 		List<Entry> getAnnotated(Databank db);
 
 		List<Entry> getUnannotated(Databank db);
-
-		int getPresentCount(Databank db);
-
-		long getValidCount(Databank db);
-
-		long getObsoleteCount(Databank db);
-
-		long getMissingCount(Databank db);
-
-		long getAnnotatedCount(Databank db);
-
-		long getUnannotatedCount(Databank db);
 	}
 
 	public interface FileDAO extends GenericDAO<File, Long> {

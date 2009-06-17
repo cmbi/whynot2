@@ -26,12 +26,12 @@ public class CountTest {
 	@Ignore
 	public void getXXXcount() {
 		Databank nrg = dbdao.findByName("DSSP");
-		System.err.println(entdao.getPresentCount(nrg));
-		System.err.println(entdao.getValidCount(nrg));
-		System.err.println(entdao.getObsoleteCount(nrg));
-		System.err.println(entdao.getMissingCount(nrg));
-		System.err.println(entdao.getAnnotatedCount(nrg));
-		System.err.println(entdao.getUnannotatedCount(nrg));
+		System.err.println(entdao.countPresent(nrg));
+		System.err.println(entdao.countValid(nrg));
+		System.err.println(entdao.countObsolete(nrg));
+		System.err.println(entdao.countMissing(nrg));
+		System.err.println(entdao.countAnnotated(nrg));
+		System.err.println(entdao.counUnannotated(nrg));
 	}
 
 	@Test

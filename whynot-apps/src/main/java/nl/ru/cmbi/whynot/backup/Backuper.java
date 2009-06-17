@@ -37,7 +37,7 @@ public class Backuper {
 
 		File file = new File("backup/" + System.currentTimeMillis() + ".backup");
 		PrintWriter pw = new PrintWriter(new FileWriter(file));
-		for (Comment com : comdao.findAll()) {
+		for (Comment com : comdao.getAll()) {
 			pw.println("COMMENT: " + com.getText());
 			for (Annotation ann : com.getAnnotations()) {
 				pw.print(ann.getEntry().getDatabank().getName());

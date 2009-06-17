@@ -1,0 +1,3 @@
+java -cp ../dependency/*:../whynot-apps-2.0-090612.jar nl.ru.cmbi.whynot.list.Lister STRUCTUREFACTORS UNANNOTATED | java ParsePDBEntryType STRUCTUREFACTORS "NMR experiment" "([a-zA-Z0-9]{4})\t.*\tNMR" > ../comment/SF_NMR_experiment.txt;
+java -cp ../dependency/*:../whynot-apps-2.0-090612.jar nl.ru.cmbi.whynot.list.Lister NMR UNANNOTATED | java ParsePDBEntryType NMR "Diffraction experiment" "([a-zA-Z0-9]{4})\t.*\tdiffraction" > ../comment/NMR_Diffraction_experiment.txt;
+java -cp ../dependency/*:../whynot-apps-2.0-090612.jar nl.ru.cmbi.whynot.list.Lister DSSP UNANNOTATED | java ParsePDBEntryType DSSP "Nucleic acids only" "([a-zA-Z0-9]{4})\tnuc\t.*" > ../comment/DSSP_Nucleic_acids_only.txt;

@@ -8,30 +8,25 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SFOnPDBEntryType {
+/**
+ * Expects 3 parameters:
+ * 1: Databank name
+ * 2: Comment to add to entries
+ * 3: Pattern to match on line
+ * Adds annotation for comment for each PDBID read from
+ * System.in that matches the specified Pattern.
+ */
+public class ParsePDBEntryType {
 	public static void main(String... args) throws Exception {
-		String id = "([a-zA-Z0-9]{4})";
-		List<String> em_entries = getEntries(id + "\t.*\tEM");
-		List<String> nmr_entries = getEntries(id + "\t.*\tNMR");
-		List<String> diff_entries = getEntries(id + "\t.*\tdiffraction");
-
-		String prev_comment = "COMMENT: Unknown comment";
+		if (args.length != 3)
+			throw new IllegalArgumentException("Expected arguments [DBNAME] [COMMENT] [PATTERN]");
+		List<String> nmr_entries = getEntries(args[2]);
+		System.out.println("COMMENT: "+args[1]);
 		Scanner scn = new Scanner(System.in);
 		while (scn.hasNextLine()){
 			String pdbid = scn.nextLine();
-			if (em_entries.contains(pdbid))
-				;
-			else
-				if (nmr_entries.contains(pdbid)) {
-					if (!prev_comment.equals("COMMENT: NMR experiment"))
-						System.out.println(prev_comment = "COMMENT: NMR experiment");
-					System.out.println("STRUCTUREFACTORS," + pdbid);
-				}
-				else
-					if (diff_entries.contains(pdbid))
-						;
-					else
-						;//Other
+			if (nmr_entries.contains(pdbid))
+				System.out.println(args[0] +','+ pdbid);
 		}
 	}
 

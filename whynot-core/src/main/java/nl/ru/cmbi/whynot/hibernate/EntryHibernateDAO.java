@@ -31,7 +31,6 @@ public class EntryHibernateDAO extends GenericHibernateDAO<Entry, Long> implemen
 	//as these can (and often will) not exist if neither file nor annotations exist
 	@SuppressWarnings("unchecked")
 	public List<Entry> getPresent(Databank db) {
-		db = (Databank) getSession().merge(db);
 		return getSession().createFilter(db.getEntries(), "where this.file is not null").list();
 	}
 
@@ -42,7 +41,6 @@ public class EntryHibernateDAO extends GenericHibernateDAO<Entry, Long> implemen
 
 	@SuppressWarnings("unchecked")
 	public List<Entry> getValid(Databank db) {
-		db = (Databank) getSession().merge(db);
 		return getSession().createFilter(db.getEntries(), "where this.file is not null and (select par.file from this.databank.parent.entries par where par.pdbid = this.pdbid) is not null").list();
 	}
 
@@ -53,7 +51,6 @@ public class EntryHibernateDAO extends GenericHibernateDAO<Entry, Long> implemen
 
 	@SuppressWarnings("unchecked")
 	public List<Entry> getObsolete(Databank db) {
-		db = (Databank) getSession().merge(db);
 		return getSession().createFilter(db.getEntries(), "where (select par.file from this.databank.parent.entries par where par.pdbid = this.pdbid) is null").list();
 	}
 
@@ -64,7 +61,6 @@ public class EntryHibernateDAO extends GenericHibernateDAO<Entry, Long> implemen
 
 	@SuppressWarnings("unchecked")
 	public List<Entry> getAnnotated(Databank db) {
-		db = (Databank) getSession().merge(db);
 		return getSession().createFilter(db.getEntries(), "where this.annotations is not empty").list();
 	}
 

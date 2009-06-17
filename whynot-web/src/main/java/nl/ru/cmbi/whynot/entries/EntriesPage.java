@@ -48,8 +48,6 @@ public class EntriesPage extends HomePage {
 				return new CommentsPanel(panelId, source, entrylist);
 			}
 		});
-		//TODO: DatabankPanel
-		//TODO: TimelinePanel
 		add(new TabbedPanel("tabs", tabs));
 	}
 }

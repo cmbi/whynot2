@@ -78,52 +78,53 @@ public class DatabankPage extends HomePage {
 			long una = entrydao.getUnannotatedCount(db);
 
 			//Chart
-			add(createPieChart("chart", db, obs, val, ann, una));
+			add(createPieChart("chart", db.getName(), obs, val, ann, una));
 
 			//Legend
 			add(new Link<Void>("present") {
 				@Override
 				public void onClick() {
-					setResponsePage(new EntriesPage(db.getName() + " present", getEntriesModel(db, CollectionType.PRESENT)));
+					setResponsePage(new EntriesPage(db.getName() + " present", getEntriesModel(db.getName(), CollectionType.PRESENT)));
 				}
 			}.add(new Label("count", "" + pre)));
 			add(new Link<Void>("valid") {
 				@Override
 				public void onClick() {
-					setResponsePage(new EntriesPage(db.getName() + " valid", getEntriesModel(db, CollectionType.VALID)));
+					setResponsePage(new EntriesPage(db.getName() + " valid", getEntriesModel(db.getName(), CollectionType.VALID)));
 				}
 			}.add(new Label("count", "" + val)));
 			add(new Link<Void>("obsolete") {
 				@Override
 				public void onClick() {
-					setResponsePage(new EntriesPage(db.getName() + " obsolete", getEntriesModel(db, CollectionType.OBSOLETE)));
+					setResponsePage(new EntriesPage(db.getName() + " obsolete", getEntriesModel(db.getName(), CollectionType.OBSOLETE)));
 				}
 			}.add(new Label("count", "" + obs)));
 
 			add(new Link<Void>("missing") {
 				@Override
 				public void onClick() {
-					setResponsePage(new EntriesPage(db.getName() + " missing", getEntriesModel(db, CollectionType.MISSING)));
+					setResponsePage(new EntriesPage(db.getName() + " missing", getEntriesModel(db.getName(), CollectionType.MISSING)));
 				}
 			}.add(new Label("count", "" + mis)));
 			add(new Link<Void>("annotated") {
 				@Override
 				public void onClick() {
-					setResponsePage(new EntriesPage(db.getName() + " annotated", getEntriesModel(db, CollectionType.ANNOTATED)));
+					setResponsePage(new EntriesPage(db.getName() + " annotated", getEntriesModel(db.getName(), CollectionType.ANNOTATED)));
 				}
 			}.add(new Label("count", "" + ann)));
 			add(new Link<Void>("unannotated") {
 				@Override
 				public void onClick() {
-					setResponsePage(new EntriesPage(db.getName() + " unannotated", getEntriesModel(db, CollectionType.UNANNOTATED)));
+					setResponsePage(new EntriesPage(db.getName() + " unannotated", getEntriesModel(db.getName(), CollectionType.UNANNOTATED)));
 				}
 			}.add(new Label("count", "" + una)));
 		}
 
-		private LoadableDetachableModel<List<Entry>> getEntriesModel(final Databank db, final CollectionType test) {
+		private LoadableDetachableModel<List<Entry>> getEntriesModel(final String databank, final CollectionType test) {
 			return new LoadableDetachableModel<List<Entry>>() {
 				@Override
 				protected List<Entry> load() {
+					Databank db = databankdao.findByName(databank);
 					switch (test) {
 					case PRESENT:
 						return entrydao.getPresent(db);
@@ -132,19 +133,24 @@ public class DatabankPage extends HomePage {
 					case OBSOLETE:
 						return entrydao.getObsolete(db);
 					case MISSING:
+						warn("Your request includes missing entries without annotations.\n"//
+								+ "Because these are not stored by Why Not, parent entries are returned.");
 						return entrydao.getMissing(db);
 					case ANNOTATED:
 						return entrydao.getAnnotated(db);
 					case UNANNOTATED:
+						warn("Your request includes missing entries without annotations.\n"//
+								+ "Because these are not stored by Why Not, parent entries are returned.");
 						return entrydao.getUnannotated(db);
 					default:
+						error("Invalid CollectionType specified, please notify an administrator.");
 						return new ArrayList<Entry>();
 					}
 				};
 			};
 		}
 
-		private MappedChart createPieChart(String id, final Databank db, long obs, long val, long ann, long una) {
+		private MappedChart createPieChart(String id, final String databank, long obs, long val, long ann, long una) {
 			//Create a DataSet
 			DefaultPieDataset pieDataset = new DefaultPieDataset();
 			pieDataset.setValue("Obsolete", obs);
@@ -174,7 +180,7 @@ public class DatabankPage extends HomePage {
 					//Determine selection
 					for (final CollectionType test : CollectionType.values())
 						if (entity.toString().toUpperCase().contains(test.toString()))
-							setResponsePage(new EntriesPage(db.getName() + " " + test.toString().toLowerCase(), getEntriesModel(db, test)));
+							setResponsePage(new EntriesPage(databank + " " + test.toString().toLowerCase(), getEntriesModel(databank, test)));
 				}
 			};
 			return mc;

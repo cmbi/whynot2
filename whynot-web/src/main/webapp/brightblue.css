@@ -3,74 +3,42 @@
 	margin:0;
 	padding:0;
 }
-.left {
-	float:left;
-	padding:0 10px 0 0;
-}
-.right {
-	float:right;
-	padding:0 0 0 10px;
-}
-a {
-	color:#01a5ec;
-	text-decoration:none;
-}
-a:hover {
-	color:#666;
-	text-decoration:underline;
-}
-p {
-	padding:0 0 10px;
-}
-table {
-	width:100%;
-	font:12px "Trebuchet ms", Helvetica, sans-serif;
-}
-th {
-	text-align:left;
-}
-td {
-	padding-bottom:5px;
-	padding-right:5px;
-}
-td.number {
-	text-align:right;
-}
-td.date {
-	text-align:right;
-	white-space:nowrap;
-}
-li { 
-	list-style:none;
-	padding-left:15px;
-}
+.left {float:left;padding:0 10px 0 0;}
+.right {float:right;padding:0 0 0 10px;}
+p {padding:0 0 10px;}
+a {	color:#01a5ec;text-decoration:none;}
+a:hover {color:#666;text-decoration:underline;}
+
+table {width:100%;font:12px "Trebuchet ms", Helvetica, sans-serif;}
+th {text-align:left;}
+td {padding: 0 5px 5px 0;}
+td.number {text-align:right;}
+td.date {text-align:right;white-space:nowrap;}
+li {list-style:none;padding-left:15px;}
+
 .download:before {content: url('image/page_white_put.png');}
 
 /* body */
 body {
-	background:#0070b8 url('image/background_wide.jpg') center repeat-y;
+	background:#0070b8 url('image/background_body_wide.jpg') center repeat-y;
 	color:#666;
 	font:12px "Trebuchet ms", Helvetica, sans-serif;
 }
 
 /* header */
 #header {
-	background:#0070b8 url('image/background_header.jpg') center no-repeat;
+	background:#0070b8 url('image/background_header_wide.jpg') center no-repeat;
 	height:100px;
 	margin:0 auto;
-	width:548px;
+	width:700px;
 }
 	#header h1 {
 		display:block;
 		font:36px "Trebuchet MS",Verdana,sans-serif;
 		padding:50px 0 0 25px;
 	}
-		#header h1 a {
-			color:#fff;
-		}
-		#header h1 span {
-			color:#01a5ec;
-		}
+	#header h1 a {color:#fff;}
+	#header h1 span {color:#01a5ec;}
 
 /* content */
 #content {
@@ -101,16 +69,9 @@ body {
 		padding:9px 5px;
 		width:150px;
 	}
-		#sidebar .navigation li a {
-			color:#4e4b44;
-		}
-		#sidebar .navigation li a:hover {
-			color:#666;
-		}
-		#sidebar .navigation li em {
-			color:#333;
-			font-weight:bold;
-		}
+		#sidebar .navigation li a {color:#4e4b44;}
+		#sidebar .navigation li a:hover {color:#666;}
+		#sidebar .navigation li em {color:#333;font-weight:bold;}
 	#sidebar h1 {
 		color:#908a7e;
 		font:18px "Trebuchet MS",Verdana,sans-serif;

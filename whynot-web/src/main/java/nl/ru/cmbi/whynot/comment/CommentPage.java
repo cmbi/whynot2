@@ -50,9 +50,8 @@ public class CommentPage extends HomePage {
 						setResponsePage(new EntriesPage(com.getText(), new LoadableDetachableModel<List<Entry>>() {
 							@Override
 							protected List<Entry> load() {
-								commentdao.makePersistent(com);
 								List<Entry> entries = new ArrayList<Entry>();
-								for (Annotation ann : com.getAnnotations())
+								for (Annotation ann : commentdao.findById(com.getId(), false).getAnnotations())
 									entries.add(ann.getEntry());
 								return entries;
 							}

@@ -49,7 +49,7 @@ public class Install {
 		dbdao.makePersistent(new Databank("HSSP", dssp, CrawlType.FILE, ".*/([\\w]{4})\\.hssp", "http://swift.cmbi.ru.nl/gv/hssp/", "ftp://ftp.cmbi.ru.nl/pub/molbio/data/hssp/${PDBID}.hssp"));
 
 		dbdao.makePersistent(nmr = new Databank("NMR", pdb, CrawlType.LINE, "([\\w]{4})", "http://www.bmrb.wisc.edu/", "ftp://ftp.wwpdb.org/pub/pdb/data/structures/all/nmr_restraints/${PDBID}.mr.gz"));
-		dbdao.makePersistent(new Databank("RECOORD", nmr, CrawlType.FILE, ".*/([\\w]{4})_cns_w\\.pdb", "http://www.ebi.ac.uk/msd-srv/docs/NMR/recoord/main.html", "http://www.ebi.ac.uk/msd/NMR/recoord/browse.html"));//
+		dbdao.makePersistent(new Databank("RECOORD", nmr, CrawlType.FILE, ".*/([\\w]{4})_cns_w\\.pdb", "http://www.ebi.ac.uk/msd-srv/docs/NMR/recoord/main.html", "http://www.ebi.ac.uk/msd/NMR/recoord/entries/${PDBID}.html"));//
 		dbdao.makePersistent(nrg = new Databank("NRG", nmr, CrawlType.LINE, "([\\w]{4})", "http://restraintsgrid.bmrb.wisc.edu/NRG/MRGridServlet", "http://restraintsgrid.bmrb.wisc.edu/NRG/MRGridServlet?pdb_id=${PDBID}"));
 		dbdao.makePersistent(nrg_docr = new Databank("NRG-DOCR", nrg, CrawlType.LINE, "([\\w]{4})", "http://restraintsgrid.bmrb.wisc.edu/NRG/MRGridServlet", "http://restraintsgrid.bmrb.wisc.edu/NRG/MRGridServlet?block_text_type=3-converted-DOCR&pdb_id=${PDBID}"));
 		dbdao.makePersistent(new Databank("NRG-CING", nrg_docr, CrawlType.LINE, "([\\w]{4})", "http://nmr.cmbi.ru.nl/cing/", "http://nmr.cmbi.ru.nl/NRG-CING/data/${PART}/${PDBID}/${PDBID}.cing"));

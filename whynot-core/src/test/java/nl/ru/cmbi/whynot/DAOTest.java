@@ -9,7 +9,6 @@ import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.FileDAO;
 import nl.ru.cmbi.whynot.model.Entry;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,10 +33,9 @@ public class DAOTest {
 	private FileDAO			filedao;
 
 	@Test
-	@Ignore
+	//@Ignore
 	public void doSomethingToDAO() {
-		List<Entry> entries = anndao.getEntriesForComment(701466L);
+		List<Entry> entries = entdao.getPresent(dbdao.findByName("DSSP"));
 		System.out.println(entries.size());
 	}
-
 }

@@ -31,7 +31,7 @@ public class EntryHibernateDAO extends GenericHibernateDAO<Entry, Long> implemen
 
 	//Present
 	@SuppressWarnings("unchecked")
-	public List<Entry> getPresent(Databank db) {
+	public List<Entry> getPresent(Databank db) {//FIXME Takes over 3 minutes to return for DSSP
 		return getSession().createFilter(db.getEntries(), "where this.file is not null").list();
 	}
 
@@ -43,7 +43,7 @@ public class EntryHibernateDAO extends GenericHibernateDAO<Entry, Long> implemen
 
 	//Valid
 	@SuppressWarnings("unchecked")
-	public List<Entry> getValid(Databank db) {
+	public List<Entry> getValid(Databank db) {//FIXME Takes 55 seconds to return for DSSP
 		return getSession().createFilter(db.getEntries(), "where this.file is not null and (select par.file from this.databank.parent.entries par where par.pdbid = this.pdbid) is not null").list();
 	}
 

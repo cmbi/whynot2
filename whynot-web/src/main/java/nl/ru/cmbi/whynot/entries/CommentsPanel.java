@@ -1,9 +1,9 @@
 package nl.ru.cmbi.whynot.entries;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import nl.ru.cmbi.whynot.model.Annotation;
 import nl.ru.cmbi.whynot.model.Comment;
@@ -25,7 +25,7 @@ public class CommentsPanel extends Panel {
 		super(id, entrylist);
 
 		//Filter list
-		final Map<Comment, List<Entry>> map = new HashMap<Comment, List<Entry>>();
+		final Map<Comment, List<Entry>> map = new TreeMap<Comment, List<Entry>>();
 		for (Entry ent : entrylist.getObject())
 			if (!ent.getAnnotations().isEmpty())
 				for (Annotation ann : ent.getAnnotations()) {

@@ -1,5 +1,7 @@
 package nl.ru.cmbi.whynot.home;
 
+import java.util.List;
+
 import nl.ru.cmbi.whynot.databank.DatabankPage;
 import nl.ru.cmbi.whynot.feedback.FeedbackPanelWrapper;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
@@ -22,11 +24,11 @@ public class HomePage extends WebPage {
 	public HomePage() {
 		add(new FeedbackPanelWrapper("feedback"));
 		add(new SearchPanel("search"));
-		add(new DatabankHierarchyFragment("hierarchy", databankdao.findByName("PDB")));
+		add(new DatabankHierarchyFragment("hierarchy", databankdao.findByName("PDB"), databankdao.findAll()));
 	}
 
 	public class DatabankHierarchyFragment extends Fragment {
-		public DatabankHierarchyFragment(String id, final Databank db) {
+		public DatabankHierarchyFragment(String id, Databank db, List<Databank> list) {
 			super(id, "hierarchyfragment", HomePage.this, new Model<Databank>(db));
 			//Link
 			PageParameters pp = new PageParameters();
@@ -36,9 +38,10 @@ public class HomePage extends WebPage {
 
 			//Children
 			RepeatingView children = new RepeatingView("children");
+			for (Databank child : list)
+				if (child.getParent().equals(db) && !child.equals(db))
+					children.add(new DatabankHierarchyFragment(children.newChildId(), child, list));
 			add(children);
-			for (Databank child : databankdao.getChildren(db))
-				children.add(new DatabankHierarchyFragment(children.newChildId(), child));
 		}
 	}
 }

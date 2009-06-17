@@ -68,7 +68,7 @@ public interface GenericDAO<T, ID extends Serializable> {
 
 		List<Entry> getUnannotated(Databank db);
 
-		long getPresentCount(Databank db);
+		int getPresentCount(Databank db);
 
 		long getValidCount(Databank db);
 

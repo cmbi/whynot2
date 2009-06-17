@@ -8,7 +8,10 @@ import nl.ru.cmbi.whynot.model.Entry;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
+import org.hibernate.Hibernate;
 import org.hibernate.Query;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,9 +37,12 @@ public class EntryHibernateDAO extends GenericHibernateDAO<Entry, Long> implemen
 		return getSession().createFilter(db.getEntries(), "where this.file is not null").list();
 	}
 
-	@Override
-	public long getPresentCount(Databank db) {
-		return getPresent(db).size();
+	public int getPresentCount(Databank db) {
+		Criteria crit = getSession().createCriteria(getPersistentClass());
+		crit.add(Restrictions.eq("databank", db));
+		crit.add(Restrictions.isNotNull("file"));
+		crit.setProjection(Projections.rowCount());
+		return (Integer) crit.uniqueResult();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -44,9 +50,12 @@ public class EntryHibernateDAO extends GenericHibernateDAO<Entry, Long> implemen
 		return getSession().createFilter(db.getEntries(), "where this.file is not null and (select par.file from this.databank.parent.entries par where par.pdbid = this.pdbid) is not null").list();
 	}
 
-	@Override
 	public long getValidCount(Databank db) {
-		return getValid(db).size();
+		Criteria crit = getSession().createCriteria(getPersistentClass());
+		crit.add(Restrictions.eq("databank", db));
+		crit.add(Restrictions.isNotNull("file"));
+		crit.add(Restrictions.sqlRestriction("(select parent.file_id from Entry parent where parent.pdbid = {alias}.pdbid and parent.databank_id = ?) is not null", db.getParent().getId(), Hibernate.LONG));
+		return (Integer) crit.setProjection(Projections.rowCount()).uniqueResult();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -54,9 +63,11 @@ public class EntryHibernateDAO extends GenericHibernateDAO<Entry, Long> implemen
 		return getSession().createFilter(db.getEntries(), "where (select par.file from this.databank.parent.entries par where par.pdbid = this.pdbid) is null").list();
 	}
 
-	@Override
 	public long getObsoleteCount(Databank db) {
-		return getObsolete(db).size();
+		Criteria crit = getSession().createCriteria(getPersistentClass());
+		crit.add(Restrictions.eq("databank", db));
+		crit.add(Restrictions.sqlRestriction("(select parent.file_id from Entry parent where parent.pdbid = {alias}.pdbid and parent.databank_id = ?) is null", db.getParent().getId(), Hibernate.LONG));
+		return (Integer) crit.setProjection(Projections.rowCount()).uniqueResult();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -64,45 +75,45 @@ public class EntryHibernateDAO extends GenericHibernateDAO<Entry, Long> implemen
 		return getSession().createFilter(db.getEntries(), "where this.annotations is not empty").list();
 	}
 
-	@Override
-	public long getAnnotatedCount(Databank child) {
-		return getAnnotated(child).size();
+	public long getAnnotatedCount(Databank db) {
+		Criteria crit = getSession().createCriteria(getPersistentClass());
+		crit.add(Restrictions.eq("databank", db));
+		crit.add(Restrictions.isNotEmpty("annotations"));
+		return (Integer) crit.setProjection(Projections.rowCount()).uniqueResult();
 	}
-
-	//Parent file present, no child file
-	private String	missing	= "from Entry parent where file is not null and parent.databank = :parent_db and (select child.file from Entry child where parent.pdbid = child.pdbid and child.databank = :child_db) is null";
 
 	@SuppressWarnings("unchecked")
 	public List<Entry> getMissing(Databank child) {
-		Query q = getSession().createQuery(missing + " order by pdbid");
-		q.setParameter("child_db", child);
-		q.setParameter("parent_db", child.getParent());
-		return q.list();
+		Criteria crit = getSession().createCriteria(getPersistentClass());
+		crit.add(Restrictions.eq("databank", child.getParent()));
+		crit.add(Restrictions.isNotNull("file"));
+		crit.add(Restrictions.sqlRestriction("(select child.file_id from Entry child where {alias}.pdbid = child.pdbid and child.databank_id = ?) is null", child.getId(), Hibernate.LONG));
+		return crit.addOrder(Order.asc("pdbid")).list();
 	}
 
 	public long getMissingCount(Databank child) {
-		Query q = getSession().createQuery("select count(*) " + missing);
-		q.setParameter("child_db", child);
-		q.setParameter("parent_db", child.getParent());
-		return (Long) q.uniqueResult();
+		Criteria crit = getSession().createCriteria(getPersistentClass());
+		crit.add(Restrictions.eq("databank", child.getParent()));
+		crit.add(Restrictions.isNotNull("file"));
+		crit.add(Restrictions.sqlRestriction("(select child.file_id from Entry child where {alias}.pdbid = child.pdbid and child.databank_id = ?) is null", child.getId(), Hibernate.LONG));
+		return (Integer) crit.setProjection(Projections.rowCount()).uniqueResult();
 	}
-
-	//Parent file present, no child (because no file & no annotation => no child)
-	private String	unannotated	= "from Entry parent where file is not null and parent.databank = :parent_db and (select child from Entry child where parent.pdbid = child.pdbid and child.databank = :child_db) is null";
 
 	@SuppressWarnings("unchecked")
 	public List<Entry> getUnannotated(Databank child) {
-		Query q = getSession().createQuery(unannotated + " order by pdbid");
-		q.setParameter("child_db", child);
-		q.setParameter("parent_db", child.getParent());
-		return q.list();
+		Criteria crit = getSession().createCriteria(getPersistentClass());
+		crit.add(Restrictions.eq("databank", child.getParent()));
+		crit.add(Restrictions.isNotNull("file"));
+		crit.add(Restrictions.sqlRestriction("(select child from Entry child where {alias}.pdbid = child.pdbid and child.databank_id = ?) is null", child.getId(), Hibernate.LONG));
+		return crit.addOrder(Order.asc("pdbid")).list();
 	}
 
 	public long getUnannotatedCount(Databank child) {
-		Query q = getSession().createQuery("select count(*) " + unannotated);
-		q.setParameter("child_db", child);
-		q.setParameter("parent_db", child.getParent());
-		return (Long) q.uniqueResult();
+		Criteria crit = getSession().createCriteria(getPersistentClass());
+		crit.add(Restrictions.eq("databank", child.getParent()));
+		crit.add(Restrictions.isNotNull("file"));
+		crit.add(Restrictions.sqlRestriction("(select child from Entry child where {alias}.pdbid = child.pdbid and child.databank_id = ?) is null", child.getId(), Hibernate.LONG));
+		return (Integer) crit.setProjection(Projections.rowCount()).uniqueResult();
 	}
 
 	@Autowired

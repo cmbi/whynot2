@@ -24,37 +24,26 @@ public class CountTest {
 
 	@Test
 	@Ignore
-	public void getCounts() {
-		System.err.println(dbdao.countAll());
-		System.err.println(entdao.countAll());
-	}
-
-	@Test
-	@Ignore
-	public void getPresent() {
-		Databank nrg = dbdao.findByName("NRG-CING");
-		System.err.println(entdao.getPresentCount(nrg));
-	}
-
-	@Test
-	//@Ignore
-	public void getXXXsize() {
-		Databank nrg = dbdao.findByName("NRG-CING");
-		System.err.println(entdao.getValid(nrg).size());
-		System.err.println(entdao.getObsolete(nrg).size());
-		System.err.println(entdao.getMissing(nrg).size());
-		System.err.println(entdao.getAnnotated(nrg).size());
-		System.err.println(entdao.getUnannotated(nrg).size());
-	}
-
-	@Test
-	@Ignore
 	public void getXXXcount() {
-		Databank nrg = dbdao.findByName("NRG-CING");
+		Databank nrg = dbdao.findByName("DSSP");
+		System.err.println(entdao.getPresentCount(nrg));
 		System.err.println(entdao.getValidCount(nrg));
 		System.err.println(entdao.getObsoleteCount(nrg));
 		System.err.println(entdao.getMissingCount(nrg));
 		System.err.println(entdao.getAnnotatedCount(nrg));
 		System.err.println(entdao.getUnannotatedCount(nrg));
+	}
+
+	@Test
+	@Ignore
+	@Deprecated
+	public void getXXXsize() {
+		Databank nrg = dbdao.findByName("DSSP");
+		System.err.println(entdao.getPresent(nrg).size());
+		System.err.println(entdao.getValid(nrg).size());
+		System.err.println(entdao.getObsolete(nrg).size());
+		System.err.println(entdao.getMissing(nrg).size());
+		System.err.println(entdao.getAnnotated(nrg).size());
+		System.err.println(entdao.getUnannotated(nrg).size());
 	}
 }

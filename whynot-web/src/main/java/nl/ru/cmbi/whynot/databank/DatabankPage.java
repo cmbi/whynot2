@@ -19,7 +19,7 @@ public class DatabankPage extends HomePage {
 	protected EntryDAO	entrydao;
 
 	public DatabankPage() {
-		add(databankListView(databankdao.findAll().toArray(new Databank[0])));
+		add(databankListView(databankdao.getAll().toArray(new Databank[0])));
 	}
 
 	public DatabankPage(PageParameters parameters) {
@@ -33,7 +33,7 @@ public class DatabankPage extends HomePage {
 			add(databankListView(db));
 		else {
 			error("Could not find databank for parameter name.");
-			add(databankListView(databankdao.findAll().toArray(new Databank[0])));
+			add(databankListView(databankdao.getAll().toArray(new Databank[0])));
 		}
 	}
 

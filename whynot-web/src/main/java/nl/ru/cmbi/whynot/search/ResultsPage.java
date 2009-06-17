@@ -41,7 +41,7 @@ public class ResultsPage extends HomePage {
 		public ResultFragment(String id, final String pdbid) {
 			super(id, "resultfragment", ResultsPage.this);
 			add(new Label("pdbid", pdbid));
-			ListView<Databank> lv = new ListView<Databank>("databanklist", databankdao.findAll()) {
+			ListView<Databank> lv = new ListView<Databank>("databanklist", databankdao.getAll()) {
 				@Override
 				protected void populateItem(ListItem<Databank> item) {
 					Databank db = item.getModelObject();
@@ -53,7 +53,7 @@ public class ResultsPage extends HomePage {
 						if (entry != null && !entry.getAnnotations().isEmpty())
 							item.add(new AnnotationPanel("result", entry));
 						else
-							item.add(new Label("result", "No data"));
+							item.add(new Label("result", ""));
 				}
 			};
 			add(lv);

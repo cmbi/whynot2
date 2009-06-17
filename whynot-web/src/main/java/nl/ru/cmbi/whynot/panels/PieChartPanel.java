@@ -49,12 +49,12 @@ public class PieChartPanel extends Panel {
 		public PieChartFragment(String id, final Databank db) {
 			super(id, "piechartfragment", PieChartPanel.this);
 
-			long pre = entrydao.getPresentCount(db);
-			long val = entrydao.getValidCount(db);
-			long obs = entrydao.getObsoleteCount(db);
-			long mis = entrydao.getMissingCount(db);
-			long ann = entrydao.getAnnotatedCount(db);
-			long una = entrydao.getUnannotatedCount(db);
+			long pre = entrydao.countPresent(db);
+			long val = entrydao.countValid(db);
+			long obs = entrydao.countObsolete(db);
+			long mis = entrydao.countMissing(db);
+			long ann = entrydao.countAnnotated(db);
+			long una = entrydao.counUnannotated(db);
 
 			//Chart
 			add(createPieChart("chart", db.getName(), obs, val, ann, una));

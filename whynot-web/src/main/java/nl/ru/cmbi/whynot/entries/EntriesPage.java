@@ -26,25 +26,25 @@ public class EntriesPage extends HomePage {
 		List<ITab> tabs = new ArrayList<ITab>();
 		tabs.add(new AbstractTab(new Model<String>("PDBIDs")) {
 			@Override
-			public Panel getPanel(String panelId) {
+			public Panel getPanel(final String panelId) {
 				return new PdbidPanel(panelId, source, entrylist);
 			}
 		});
 		tabs.add(new AbstractTab(new Model<String>("Entries")) {
 			@Override
-			public Panel getPanel(String panelId) {
+			public Panel getPanel(final String panelId) {
 				return new EntriesPanel(panelId, source, entrylist);
 			}
 		});
 		tabs.add(new AbstractTab(new Model<String>("Files")) {
 			@Override
-			public Panel getPanel(String panelId) {
+			public Panel getPanel(final String panelId) {
 				return new FilesPanel(panelId, source, entrylist);
 			}
 		});
 		tabs.add(new AbstractTab(new Model<String>("Comments")) {
 			@Override
-			public Panel getPanel(String panelId) {
+			public Panel getPanel(final String panelId) {
 				return new CommentsPanel(panelId, source, entrylist);
 			}
 		});

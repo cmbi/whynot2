@@ -24,7 +24,7 @@ public class HomePage extends WebPage {
 	public HomePage() {
 		add(new FeedbackPanelWrapper("feedback"));
 		add(new SearchPanel("search"));
-		add(new DatabankHierarchyFragment("hierarchy", databankdao.findByName("PDB"), databankdao.findAll()));
+		add(new DatabankHierarchyFragment("hierarchy", databankdao.findByName("PDB"), databankdao.getAll()));
 	}
 
 	public class DatabankHierarchyFragment extends Fragment {

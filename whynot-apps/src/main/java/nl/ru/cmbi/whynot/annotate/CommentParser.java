@@ -50,7 +50,7 @@ public class CommentParser {
 		Matcher matcher;
 
 		Databank db = new Databank("Empty databank");
-		List<Entry> entries = new ArrayList<Entry>(db.getEntries());
+		//List<Entry> entries = new ArrayList<Entry>(db.getEntries());
 		Entry entry;
 		Comment comment = new Comment("Empty comment");
 		while ((line = lnr.readLine()) != null)
@@ -58,13 +58,13 @@ public class CommentParser {
 				//Find DB
 				if (!db.getName().equals(matcher.group(1))) {
 					db = dbdao.findByName(matcher.group(1));
-					entries = new ArrayList<Entry>(db.getEntries());
+					;//entries = new ArrayList<Entry>(db.getEntries());
 				}
 
 				//Add or Find Entry
 				if (!db.getEntries().add(entry = new Entry(db, matcher.group(2).toLowerCase())))
-					entry = entries.get(entries.indexOf(entry));
-				//	entry = entdao.findByDatabankAndPdbid(db, matcher.group(2));
+					//entry = entries.get(entries.indexOf(entry));
+					entry = entdao.findByDatabankAndPdbid(db, matcher.group(2));
 
 				//Only annotate missing files
 				if (entry.getFile() == null) {

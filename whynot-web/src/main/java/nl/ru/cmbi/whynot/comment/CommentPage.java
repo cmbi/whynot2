@@ -41,9 +41,8 @@ public class CommentPage extends HomePage {
 				final Comment com = item.getModelObject();
 				long count = annotationdao.countAllWith(com);
 				long latest = annotationdao.getLastUsed(com);
-				ResourceLink<WebResource> rl = new ResourceLink<WebResource>("export", getEntriesResource(com));
-				item.add(rl.add(new Label("text", com.getText())));
-				item.add(new Label("latest", sdf.format(new Date(latest))));
+				item.add(new Label("text", com.getText()));
+				item.add(new ResourceLink<WebResource>("export", getEntriesResource(com)));
 				Link<Void> lnk = new Link<Void>("entries") {
 					@Override
 					public void onClick() {
@@ -59,6 +58,7 @@ public class CommentPage extends HomePage {
 					}
 				};
 				item.add(lnk.add(new Label("count", "" + count)));
+				item.add(new Label("latest", sdf.format(new Date(latest))));
 			}
 		};
 		add(commentlist);

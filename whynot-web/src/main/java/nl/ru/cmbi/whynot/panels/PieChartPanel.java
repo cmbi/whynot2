@@ -40,15 +40,45 @@ public class PieChartPanel extends Panel {
 		});
 	}
 
+	private LoadableDetachableModel<List<Entry>> getEntriesModel(final String databank, final CollectionType test) {
+		return new LoadableDetachableModel<List<Entry>>() {
+			@Override
+			protected List<Entry> load() {
+				Databank db = databankdao.findByName(databank);
+				switch (test) {
+				case PRESENT:
+					return entrydao.getPresent(db);
+				case VALID:
+					return entrydao.getValid(db);
+				case OBSOLETE:
+					return entrydao.getObsolete(db);
+				case MISSING:
+					warn("Your request includes missing entries without annotations. \n"//
+							+ "Because these are not stored by Why Not, parent entries are returned.");
+					return entrydao.getMissing(db);
+				case ANNOTATED:
+					return entrydao.getAnnotated(db);
+				case UNANNOTATED:
+					warn("Your request includes missing entries without annotations. \n"//
+							+ "Because these are not stored by Why Not, parent entries are returned.");
+					return entrydao.getUnannotated(db);
+				default:
+					error("Invalid CollectionType specified, please notify an administrator.");
+					return new ArrayList<Entry>();
+				}
+			};
+		};
+	}
+
 	@SpringBean
 	protected DatabankDAO	databankdao;
 	@SpringBean
 	protected EntryDAO		entrydao;
 
 	private class PieChartFragment extends Fragment {
-		public PieChartFragment(String id, final Databank db) {
+		public PieChartFragment(String id, Databank db) {
 			super(id, "piechartfragment", PieChartPanel.this);
-
+			final String dbname = db.getName();
 			long pre = entrydao.countPresent(db);
 			long val = entrydao.countValid(db);
 			long obs = entrydao.countObsolete(db);
@@ -57,80 +87,26 @@ public class PieChartPanel extends Panel {
 			long una = entrydao.counUnannotated(db);
 
 			//Chart
-			add(createPieChart("chart", db.getName(), obs, val, ann, una));
+			add(new MappedChart("chart", createPieChart(obs, val, ann, una), 250, 150) {
+				@Override
+				protected void onClickCallback(AjaxRequestTarget target, ChartEntity entity) {
+					//Determine selection
+					for (final CollectionType test : CollectionType.values())
+						if (entity.toString().toUpperCase().contains(test.toString()))
+							setResponsePage(new EntriesPage(dbname + " " + test.toString().toLowerCase(), getEntriesModel(dbname, test)));
+				}
+			});
 
 			//Legend
-			add(new Link<Void>("present") {
-				@Override
-				public void onClick() {
-					setResponsePage(new EntriesPage(db.getName() + " present", getEntriesModel(db.getName(), CollectionType.PRESENT)));
-				}
-			}.add(new Label("count", "" + pre)));
-			add(new Link<Void>("valid") {
-				@Override
-				public void onClick() {
-					setResponsePage(new EntriesPage(db.getName() + " valid", getEntriesModel(db.getName(), CollectionType.VALID)));
-				}
-			}.add(new Label("count", "" + val)));
-			add(new Link<Void>("obsolete") {
-				@Override
-				public void onClick() {
-					setResponsePage(new EntriesPage(db.getName() + " obsolete", getEntriesModel(db.getName(), CollectionType.OBSOLETE)));
-				}
-			}.add(new Label("count", "" + obs)));
-
-			add(new Link<Void>("missing") {
-				@Override
-				public void onClick() {
-					setResponsePage(new EntriesPage(db.getName() + " missing", getEntriesModel(db.getName(), CollectionType.MISSING)));
-				}
-			}.add(new Label("count", "" + mis)));
-			add(new Link<Void>("annotated") {
-				@Override
-				public void onClick() {
-					setResponsePage(new EntriesPage(db.getName() + " annotated", getEntriesModel(db.getName(), CollectionType.ANNOTATED)));
-				}
-			}.add(new Label("count", "" + ann)));
-			add(new Link<Void>("unannotated") {
-				@Override
-				public void onClick() {
-					setResponsePage(new EntriesPage(db.getName() + " unannotated", getEntriesModel(db.getName(), CollectionType.UNANNOTATED)));
-				}
-			}.add(new Label("count", "" + una)));
+			add(createCollectionLink(dbname, CollectionType.PRESENT, pre));
+			add(createCollectionLink(dbname, CollectionType.VALID, val));
+			add(createCollectionLink(dbname, CollectionType.OBSOLETE, obs));
+			add(createCollectionLink(dbname, CollectionType.MISSING, mis));
+			add(createCollectionLink(dbname, CollectionType.ANNOTATED, ann));
+			add(createCollectionLink(dbname, CollectionType.UNANNOTATED, una));
 		}
 
-		private LoadableDetachableModel<List<Entry>> getEntriesModel(final String databank, final CollectionType test) {
-			return new LoadableDetachableModel<List<Entry>>() {
-				@Override
-				protected List<Entry> load() {
-					Databank db = databankdao.findByName(databank);
-					switch (test) {
-					case PRESENT:
-						return entrydao.getPresent(db);
-					case VALID:
-						return entrydao.getValid(db);
-					case OBSOLETE:
-						return entrydao.getObsolete(db);
-					case MISSING:
-						warn("Your request includes missing entries without annotations.\n"//
-								+ "Because these are not stored by Why Not, parent entries are returned.");
-						return entrydao.getMissing(db);
-					case ANNOTATED:
-						return entrydao.getAnnotated(db);
-					case UNANNOTATED:
-						warn("Your request includes missing entries without annotations.\n"//
-								+ "Because these are not stored by Why Not, parent entries are returned.");
-						return entrydao.getUnannotated(db);
-					default:
-						error("Invalid CollectionType specified, please notify an administrator.");
-						return new ArrayList<Entry>();
-					}
-				};
-			};
-		}
-
-		//FIXME: Click on chart is now broken
-		private MappedChart createPieChart(String id, final String databank, long obs, long val, long ann, long una) {
+		private JFreeChart createPieChart(long obs, long val, long ann, long una) {
 			//Create a DataSet
 			DefaultPieDataset pieDataset = new DefaultPieDataset();
 			pieDataset.setValue("Obsolete", obs);
@@ -153,17 +129,20 @@ public class PieChartPanel extends Panel {
 			plot.setLabelGenerator(null);
 			plot.setOutlineVisible(false);
 
-			//Create Mapped Chart
-			MappedChart mc = new MappedChart(id, chart, 250, 150) {
+			return chart;
+		}
+
+		private Link<Void> createCollectionLink(final String dbname, final CollectionType collectionType, long count) {
+			final String clname = collectionType.name().toLowerCase();
+			Link<Void> lnk = new Link<Void>(clname) {
 				@Override
-				protected void onClickCallback(AjaxRequestTarget target, ChartEntity entity) {
-					//Determine selection
-					for (final CollectionType test : CollectionType.values())
-						if (entity.toString().toUpperCase().contains(test.toString()))
-							setResponsePage(new EntriesPage(databank + " " + test.toString().toLowerCase(), getEntriesModel(databank, test)));
+				public void onClick() {
+					setResponsePage(new EntriesPage(dbname + " " + clname, getEntriesModel(dbname, collectionType)));
 				}
 			};
-			return mc;
+			lnk.add(new Label("count", "" + count));
+			return lnk;
 		}
 	}
+
 }

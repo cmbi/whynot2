@@ -129,6 +129,7 @@ public class PieChartPanel extends Panel {
 			};
 		}
 
+		//FIXME: Click on chart is now broken
 		private MappedChart createPieChart(String id, final String databank, long obs, long val, long ann, long una) {
 			//Create a DataSet
 			DefaultPieDataset pieDataset = new DefaultPieDataset();

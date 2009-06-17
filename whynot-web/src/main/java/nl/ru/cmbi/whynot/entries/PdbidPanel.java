@@ -1,17 +1,14 @@
 package nl.ru.cmbi.whynot.entries;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import nl.ru.cmbi.whynot.model.Entry;
 
 import org.apache.wicket.markup.html.WebResource;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ResourceLink;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.protocol.http.WebResponse;
@@ -22,7 +19,7 @@ public class PdbidPanel extends Panel {
 	public PdbidPanel(String id, final String source, final IModel<List<Entry>> entrylist) {
 		super(id, entrylist);
 
-		final Set<String> pdbids = new HashSet<String>();
+		final Set<String> pdbids = new TreeSet<String>();
 		for (Entry ent : entrylist.getObject())
 			pdbids.add(ent.getPdbid());
 
@@ -48,11 +45,6 @@ public class PdbidPanel extends Panel {
 		add(new Label("text", "Unique PDBIDs (" + pdbids.size() + ")"));
 
 		//List of PDBIDs
-		add(new ListView<String>("entrylist", new ArrayList<String>(pdbids)) {
-			@Override
-			protected void populateItem(ListItem<String> item) {
-				item.add(new Label("pdbid", item.getModelObject()));
-			}
-		});
+		add(new Label("pdbids", pdbids.toString().replaceAll("[,\\[\\]]", "")));
 	}
 }

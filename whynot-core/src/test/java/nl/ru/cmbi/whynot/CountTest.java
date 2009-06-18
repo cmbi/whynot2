@@ -35,7 +35,7 @@ public class CountTest {
 	}
 
 	@Test
-	//@Ignore
+	@Ignore
 	@Deprecated
 	public void getXXXsize() {
 		Databank nrg = dbdao.findByName("DSSP");

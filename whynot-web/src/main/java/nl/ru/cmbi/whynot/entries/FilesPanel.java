@@ -56,7 +56,7 @@ public class FilesPanel extends Panel {
 		add(new Label("text", "Files (" + withFile.size() + ")"));
 
 		//List of PDBIDs
-		DataView dv = new DataView<Entry>("entrylist", new ListDataProvider<Entry>(withFile)) {
+		DataView<Entry> dv = new DataView<Entry>("entrylist", new ListDataProvider<Entry>(withFile)) {
 			@Override
 			protected void populateItem(Item<Entry> item) {
 				item.add(new FilePanel("file", item.getModelObject()));

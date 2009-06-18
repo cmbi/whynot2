@@ -41,7 +41,7 @@ public class EntriesPanel extends Panel {
 		}.setCacheable(false)));
 
 		//List of PDBIDs
-		DataView dv = new DataView<Entry>("entrylist", new ListDataProvider<Entry>(entrylist.getObject())) {
+		DataView<Entry> dv = new DataView<Entry>("entrylist", new ListDataProvider<Entry>(entrylist.getObject())) {
 			@Override
 			protected void populateItem(Item<Entry> item) {
 				item.add(new Label("entry", item.getModelObject().toString()));

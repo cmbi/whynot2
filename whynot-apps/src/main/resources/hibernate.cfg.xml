@@ -3,7 +3,7 @@
 	<session-factory>
 		<!-- Database connection settings -->
 		<property name="connection.driver_class">org.postgresql.Driver</property>
-		<property name="connection.url">jdbc:postgresql://localhost/whynot2</property>
+		<property name="connection.url">jdbc:postgresql://cmbi11/whynot2</property>
 		<property name="connection.username">whynotadmin</property>
 		<property name="connection.password">waivuy8N</property>
 		<property name="dialect">org.hibernate.dialect.PostgreSQLDialect</property>

@@ -47,9 +47,7 @@ public class CommentsPanel extends Panel {
 					sb.append('\n');
 					List<Entry> withAnnotation = map.get(com);
 					for (Entry entry : withAnnotation) {
-						sb.append(entry.getDatabank().getName());
-						sb.append(',');
-						sb.append(entry.getPdbid());
+						sb.append(entry.toString());
 						sb.append('\n');
 					}
 				}
@@ -73,9 +71,7 @@ public class CommentsPanel extends Panel {
 				item.add(new ListView<Entry>("entrylist", entries) {
 					@Override
 					protected void populateItem(ListItem<Entry> item) {
-						Entry entry = item.getModelObject();
-						item.add(new Label("databank", entry.getDatabank().getName()));
-						item.add(new Label("pdbid", entry.getPdbid()));
+						item.add(new Label("entry", item.getModelObject().toString()));
 					}
 				});
 			}

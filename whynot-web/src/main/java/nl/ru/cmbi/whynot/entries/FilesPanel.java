@@ -9,9 +9,11 @@ import nl.ru.cmbi.whynot.panels.FilePanel;
 import org.apache.wicket.markup.html.WebResource;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ResourceLink;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.markup.repeater.data.ListDataProvider;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.protocol.http.WebResponse;
 import org.apache.wicket.util.resource.IResourceStream;
@@ -33,9 +35,7 @@ public class FilesPanel extends Panel {
 			public IResourceStream getResourceStream() {
 				StringBuilder sb = new StringBuilder();
 				for (Entry entry : withFile) {
-					sb.append(entry.getDatabank().getName());
-					sb.append(',');
-					sb.append(entry.getPdbid());
+					sb.append(entry.toString());
 					sb.append(',');
 					String href = entry.getDatabank().getFilelink();
 					href = href.replace("${PDBID}", entry.getPdbid());
@@ -56,11 +56,14 @@ public class FilesPanel extends Panel {
 		add(new Label("text", "Files (" + withFile.size() + ")"));
 
 		//List of PDBIDs
-		add(new ListView<Entry>("entrylist", withFile) {
+		DataView dv = new DataView<Entry>("entrylist", new ListDataProvider<Entry>(withFile)) {
 			@Override
-			protected void populateItem(ListItem<Entry> item) {
+			protected void populateItem(Item<Entry> item) {
 				item.add(new FilePanel("file", item.getModelObject()));
 			}
-		});
+		};
+		dv.setItemsPerPage(2000);
+		add(dv);
+		add(new PagingNavigator("navigator", dv));
 	}
 }

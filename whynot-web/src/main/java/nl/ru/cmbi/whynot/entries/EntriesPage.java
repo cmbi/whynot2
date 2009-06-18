@@ -30,7 +30,7 @@ public class EntriesPage extends HomePage {
 				return new PdbidPanel(panelId, source, entrylist);
 			}
 		});
-		/*tabs.add(new AbstractTab(new Model<String>("Entries")) {
+		tabs.add(new AbstractTab(new Model<String>("Entries")) {
 			@Override
 			public Panel getPanel(final String panelId) {
 				return new EntriesPanel(panelId, source, entrylist);
@@ -47,7 +47,7 @@ public class EntriesPage extends HomePage {
 			public Panel getPanel(final String panelId) {
 				return new CommentsPanel(panelId, source, entrylist);
 			}
-		});*/
+		});
 		add(new TabbedPanel("tabs", tabs));
 	}
 }

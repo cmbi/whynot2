@@ -12,8 +12,8 @@ a:hover {color:#666;text-decoration:underline;}
 table {width:100%;font:12px "Trebuchet ms", Helvetica, sans-serif;}
 th {text-align:left;}
 td {padding: 0 5px 5px 0;}
-td.number {text-align:right;}
-td.date {text-align:right;white-space:nowrap;}
+.number {text-align:right;}
+.date {text-align:right;white-space:nowrap;}
 li {list-style:none;padding-left:15px;}
 
 .download:after {padding-left:5px;content: url('image/page_white_put.png');}

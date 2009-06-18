@@ -31,20 +31,33 @@ public class EntryHibernateDAO extends GenericHibernateDAO<Entry, Long> implemen
 
 	//Present
 	@SuppressWarnings("unchecked")
-	public List<Entry> getPresent(Databank db) {//FIXME Takes over 3 minutes to return for DSSP
+	public List<Entry> getPresent(Databank db) {
 		return getSession().createFilter(db.getEntries(), "where this.file is not null").list();
 	}
 
 	public int countPresent(Databank db) {
 		Criteria crit = createCriteria(Restrictions.eq("databank", db), Restrictions.isNotNull("file"));
-		crit.setProjection(Projections.rowCount());
-		return (Integer) crit.uniqueResult();
+		return (Integer) crit.setProjection(Projections.rowCount()).uniqueResult();
 	}
 
 	//Valid
 	@SuppressWarnings("unchecked")
-	public List<Entry> getValid(Databank db) {//FIXME Takes 55 seconds to return for DSSP
+	public List<Entry> getValid(Databank db) {
 		return getSession().createFilter(db.getEntries(), "where this.file is not null and (select par.file from this.databank.parent.entries par where par.pdbid = this.pdbid) is not null").list();
+
+		/*	
+		Criteria crit = createCriteria(Restrictions.eq("databank", db), Restrictions.isNotNull("file"));
+				crit.add(Restrictions.sqlRestriction("(select parent.file_id from Entry parent where parent.pdbid = {alias}.pdbid and parent.databank_id = ?) is not null", db.getParent().getId(), Hibernate.LONG));
+				return crit.list();*/
+
+		/*
+		SQLQuery q = getSession().createSQLQuery("" + //
+		"select (chi.*) from entry chi where chi.databank_id = :chi and chi.file_id is not null and " + //
+		"(select par.file_id from entry par where par.databank_id = :par and par.pdbid = chi.pdbid) is not null");
+		q.addEntity(getPersistentClass());
+		q.setLong("chi", db.getId());
+		q.setLong("par", db.getParent().getId());
+		return q.list();*/
 	}
 
 	public int countValid(Databank db) {

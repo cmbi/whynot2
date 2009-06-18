@@ -1,14 +1,13 @@
 package nl.ru.cmbi.whynot;
 
-import java.util.List;
-
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.AnnotationDAO;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.CommentDAO;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.FileDAO;
-import nl.ru.cmbi.whynot.model.Entry;
+import nl.ru.cmbi.whynot.model.Databank;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +32,20 @@ public class DAOTest {
 	private FileDAO			filedao;
 
 	@Test
-	//@Ignore
-	public void doSomethingToDAO() {
-		List<Entry> entries = entdao.getPresent(dbdao.findByName("DSSP"));
-		System.out.println(entries.size());
+	@Ignore
+	public void getValid() {
+		Databank dssp = dbdao.findByName("DSSP");
+		//int count = entdao.countValid(dssp);
+		int count = entdao.getValid(dssp).size();
+		System.out.println(count);
+	}
+
+	@Test
+	@Ignore
+	public void getPresent() {
+		Databank dssp = dbdao.findByName("DSSP");
+		//int count = entdao.countPresent(dssp);
+		int count = entdao.getPresent(dssp).size();
+		System.out.println(count);
 	}
 }

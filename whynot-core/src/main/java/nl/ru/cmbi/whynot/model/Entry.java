@@ -14,6 +14,8 @@ import javax.persistence.OneToMany;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Index;
+import org.hibernate.annotations.LazyToOne;
+import org.hibernate.annotations.LazyToOneOption;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Sort;
@@ -31,6 +33,7 @@ public class Entry implements Comparable<Entry>, Serializable {
 	@NaturalId
 	@ManyToOne
 	@NotNull
+	@LazyToOne(LazyToOneOption.PROXY)
 	@Index(name = "entry_databank_index")
 	private Databank				databank;
 	@NaturalId
@@ -40,6 +43,7 @@ public class Entry implements Comparable<Entry>, Serializable {
 	private String					pdbid;
 
 	@ManyToOne(cascade = CascadeType.ALL)
+	@LazyToOne(LazyToOneOption.PROXY)
 	private File					file;
 
 	@OneToMany(mappedBy = "entry", cascade = CascadeType.ALL)

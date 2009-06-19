@@ -8,7 +8,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.FileDAO;
 import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Entry;
 import nl.ru.cmbi.whynot.model.File;
@@ -16,15 +15,13 @@ import nl.ru.cmbi.whynot.model.File;
 import org.apache.log4j.Logger;
 
 public class FileCrawler {
-	protected Databank	databank;
-	protected EntryDAO	entrydao;
-	protected FileDAO	filedao;
-	protected Pattern	pattern;
+	private Databank	databank;
+	private EntryDAO	entrydao;
+	private Pattern		pattern;
 
-	public FileCrawler(Databank db, EntryDAO entdao, FileDAO fldao) {
+	public FileCrawler(Databank db, EntryDAO entdao) {
 		databank = db;
 		entrydao = entdao;
-		filedao = fldao;
 		pattern = Pattern.compile(db.getRegex());
 	}
 

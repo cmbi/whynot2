@@ -31,8 +31,13 @@ public class Crawler {
 		if (args.length == 2) {
 			Logger.getLogger(Crawler.class).info("Crawler start.");
 			Crawler crawler = (Crawler) SpringUtil.getContext().getBean("crawler");
+
+			//Should run before addCrawled
 			crawler.removeChanged(args[0]);
+
+			//Should run after removeChanged
 			crawler.addCrawled(args[0], args[1]);
+
 			Logger.getLogger(Crawler.class).info("Crawler done.");
 		}
 		else
@@ -89,7 +94,7 @@ public class Crawler {
 		Databank db = dbdao.findByName(dbname);
 		switch (db.getCrawltype()) {
 		case FILE:
-			new FileCrawler(db, entrydao, filedao).crawl(getFile(path));
+			new FileCrawler(db, entrydao).crawl(getFile(path));
 			break;
 		case LINE:
 			new LineCrawler(db, entrydao, filedao).crawl(getFile(path));

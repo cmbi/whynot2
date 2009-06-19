@@ -15,10 +15,10 @@ import nl.ru.cmbi.whynot.model.File;
 import org.apache.log4j.Logger;
 
 public class LineCrawler {
-	protected Databank	databank;
-	protected EntryDAO	entrydao;
-	protected FileDAO	filedao;
-	protected Pattern	pattern;
+	private Databank	databank;
+	private EntryDAO	entrydao;
+	private FileDAO		filedao;
+	private Pattern		pattern;
 
 	public LineCrawler(Databank db, EntryDAO entdao, FileDAO fldao) {
 		databank = db;

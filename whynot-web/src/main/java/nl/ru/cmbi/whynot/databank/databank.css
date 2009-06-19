@@ -9,7 +9,7 @@ ul.legend li {
 ul.legend span {float:right;}
 
 .valid {color: #0070b8;}
-.obsolete {color: b80000;}
+.obsolete {color: #b80000;}
 
 .annotated {color: #00b870;}
 .unannotated {color: yellow;}

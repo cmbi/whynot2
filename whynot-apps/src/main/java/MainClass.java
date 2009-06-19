@@ -7,7 +7,7 @@ import nl.ru.cmbi.whynot.util.Install;
 public class MainClass {
 	public static void main(String[] args) {
 		System.out.println("Usage:");
-		String base = "java -cp dependency/*:whynot-apps-2.0-090617.jar ";
+		String base = "java -cp dependency/*:whynot-apps.jar ";
 		for (Class<Object> clazz : new Class[] { Install.class, Crawler.class, Annotater.class, Lister.class, Backuper.class })
 			System.out.println(base + clazz.getCanonicalName());
 	}

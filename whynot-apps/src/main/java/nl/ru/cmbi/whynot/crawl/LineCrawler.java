@@ -1,10 +1,9 @@
 package nl.ru.cmbi.whynot.crawl;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,54 +28,41 @@ public class LineCrawler {
 		pattern = Pattern.compile(db.getRegex());
 	}
 
-	public void crawl(java.io.File file) throws IOException {
+	public void crawl(java.io.File crawlfile) throws IOException {
+		//Cache old Entries
 		List<Entry> oldEntries = new ArrayList<Entry>(databank.getEntries());
-		List<Entry> newEntries = new ArrayList<Entry>();
 
-		BufferedReader bf = new BufferedReader(new FileReader(file));
+		//File to assign to new entries
+		File file = filedao.findByPathAndTimestamp(crawlfile.getAbsolutePath(), crawlfile.lastModified());
+		if (file == null)
+			file = new File(crawlfile);
 
-		File found = filedao.findByPathAndTimestamp(file.getAbsolutePath(), file.lastModified());
-		if (found == null)
-			found = new File(file);
-		int crawled = 0, updated = 0, added = 0, index;
-		for (String line = ""; (line = bf.readLine()) != null;) {
-			Matcher m = pattern.matcher(line);
-			if (!m.matches())
+		int added = 0;
+		Matcher m;
+		Scanner scn = new Scanner(crawlfile);
+		while (scn.hasNextLine()) {
+			//Ignore lines that do not match
+			if (!(m = pattern.matcher(scn.nextLine())).matches())
 				continue;
-			crawled++;
 			String id = m.group(1).toLowerCase();
 
 			//Find or create entry
 			Entry entry = new Entry(databank, id);
-			if (0 <= (index = oldEntries.indexOf(entry)))
-				entry = oldEntries.get(index);
+			int oldEntryIndex = oldEntries.indexOf(entry);
+			if (0 <= oldEntryIndex)
+				entry = oldEntries.get(oldEntryIndex);
 			else
-				newEntries.add(entry);
+				//Add new entry to databank
+				if (databank.getEntries().add(entry))
+					added++;
 
-			//Find or create file
-			File stored = entry.getFile();
-			if (found.equals(stored))
-				continue;//We're done
-
-			//Set new file
-			entry.setFile(found);
 			//Delete annotations: We just found it!
 			entry.getAnnotations().clear();
-
-			if (stored == null)
-				added++;
-			else {
-				//Delete old file (if no longer used)
-				;//if (entrydao.countAllWith(stored) == 0)
-				;//	filedao.makeTransient(stored);
-				updated++;
-			}
-
+			//Set new file
+			entry.setFile(file);
 		}
-		bf.close();
-		//Add new entries to databank
-		databank.getEntries().addAll(newEntries);
+		scn.close();
 
-		Logger.getLogger(getClass()).info(databank.getName() + ": Crawled " + crawled + ", Updated " + updated + ", Added " + added);
+		Logger.getLogger(getClass()).info(databank.getName() + ": Adding " + added + " new Entries");
 	}
 }

@@ -17,40 +17,33 @@ public class CrawlerTest {
 
 	@Test
 	@Ignore
+	public void doDSSP() throws Exception {
+		crawler.removeChanged("DSSP");
+		crawler.addCrawled("DSSP", "src/test/resources/dssp_present.txt");
+	}
+
+	@Test
+	@Ignore
+	public void crawlPDBDSSPHSSP() throws Exception {
+		crawler.addCrawled("PDB", "src/test/resources/pdb_present.txt");
+		crawler.addCrawled("DSSP", "src/test/resources/dssp_present.txt");
+		crawler.addCrawled("HSSP", "src/test/resources/hssp_present.txt");
+	}
+
+	@Test
+	@Ignore
+	public void removePDBDSSPHSSP() throws Exception {
+		crawler.removeChanged("PDB");
+		crawler.removeChanged("DSSP");
+		crawler.removeChanged("HSSP");
+	}
+
+	@Test
+	@Ignore
 	public void crawlNMRNRG() throws Exception {
-		crawler.crawl("NMR", "http://nmr.cmbi.ru.nl/NRG-CING/entry_list_nmr.csv");
-		crawler.crawl("NRG", "http://nmr.cmbi.ru.nl/NRG-CING/entry_list_nrg.csv");
-		crawler.crawl("NRG-DOCR", "http://nmr.cmbi.ru.nl/NRG-CING/entry_list_nrg_docr.csv");
-		crawler.crawl("NRG-CING", "http://nmr.cmbi.ru.nl/NRG-CING/entry_list_done.csv");
-	}
-
-	@Test
-	@Ignore
-	public void crawlNRGDOCR() throws Exception {
-		crawler.crawl("NRG-DOCR", "/home/tbeek/workspace/whynot-apps/download/httpnmrcmbirunlNRGCINGentry_list_nrg_docrcsv");
-	}
-
-	@Test
-	@Ignore
-	public void crawlPDB() throws Exception {
-		crawler.crawl("PDB", "/home/tbeek/Desktop/raw/pdb/");
-	}
-
-	@Test
-	@Ignore
-	public void crawlDSSP() throws Exception {
-		crawler.crawl("DSSP", "/home/tbeek/Desktop/raw/dssp/");
-	}
-
-	@Test
-	@Ignore
-	public void crawlHSSP() throws Exception {
-		crawler.crawl("HSSP", "/home/tbeek/Desktop/raw/hssp/");
-	}
-
-	@Test
-	@Ignore
-	public void crawlPDBFINDER() throws Exception {
-		crawler.crawl("PDBFINDER", "/home/tbeek/Desktop/raw/pdbfinder/PDBFIND.TXT");
+		crawler.addCrawled("NMR", "http://nmr.cmbi.ru.nl/NRG-CING/entry_list_nmr.csv");
+		crawler.addCrawled("NRG", "http://nmr.cmbi.ru.nl/NRG-CING/entry_list_nrg.csv");
+		crawler.addCrawled("NRG-DOCR", "http://nmr.cmbi.ru.nl/NRG-CING/entry_list_nrg_docr.csv");
+		crawler.addCrawled("NRG-CING", "http://nmr.cmbi.ru.nl/NRG-CING/entry_list_done.csv");
 	}
 }

@@ -20,10 +20,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class Lister {
 	public static void main(String... args) {
-		Logger.getRootLogger().setLevel(Level.WARN);//We dont want chatter
+		Logger.getRootLogger().setLevel(Level.WARN);//Disable chatter
 
 		String dbname = "DATABASE";
-		String selection = "VALID|OBSOLETE|MISSING|ANNOTATED|UNANNOTATED";
+		String selection = "PRESENT|VALID|OBSOLETE|MISSING|ANNOTATED|UNANNOTATED";
 		if (args.length != 2 || !args[1].matches(selection))
 			throw new IllegalArgumentException("Usage: lister " + dbname + " " + selection);
 
@@ -44,6 +44,9 @@ public class Lister {
 
 		List<Entry> entries = new ArrayList<Entry>();
 		switch (selection) {
+		case PRESENT:
+			entries = entdao.getPresent(db);
+			break;
 		case VALID:
 			entries = entdao.getValid(db);
 			break;

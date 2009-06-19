@@ -10,7 +10,6 @@ import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.List;
 import java.util.regex.Pattern;
 
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
@@ -27,13 +26,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 public class Crawler {
 	public static void main(String[] args) throws Exception {
 		if (args.length == 2) {
 			Logger.getLogger(Crawler.class).info("Crawler start.");
 			Crawler crawler = (Crawler) SpringUtil.getContext().getBean("crawler");
-			crawler.crawl(args[0], args[1]);
+			crawler.removeChanged(args[0]);
+			crawler.addCrawled(args[0], args[1]);
 			Logger.getLogger(Crawler.class).info("Crawler done.");
 		}
 		else
@@ -48,6 +47,40 @@ public class Crawler {
 	private FileDAO		filedao;
 
 	/**
+	 * Removes entries from databank if
+	 * <li>file on path does not exist
+	 * <li>timestamp differs from timestamp of file on path
+	 * <li>path does not match databank regex (which might have changed)
+	 */
+	@Transactional
+	public void removeChanged(String name) {
+		Databank databank = dbdao.findByName(name);
+		Pattern regex = Pattern.compile(databank.getRegex());
+		boolean matchRegex = databank.getCrawltype() == CrawlType.FILE;
+		int removed = 0;
+		for (Entry entry : entrydao.getPresent(databank)) {
+			String path = entry.getFile().getPath();
+			long stamp = entry.getFile().getTimestamp();
+			boolean isValid = true;
+
+			File file = new File(path);
+			//Check if file still exists
+			if (!file.exists() || file.lastModified() != stamp ||
+			//Check if file still matches regex
+			matchRegex && !regex.matcher(path).matches())
+				isValid = false;
+
+			if (!isValid) {
+				//Remove entry
+				databank.getEntries().remove(entry);
+				entrydao.makeTransient(entry);
+				removed++;
+			}
+		}
+		Logger.getLogger(getClass()).info(databank.getName() + ": Removing " + removed + " changed Entries");
+	}
+
+	/**
 	 * Adds all FileEntries in the given file or directory and subdirectories to database.
 	 * Takes great care to delete old files when possible and to clear present annotations.
 	 * <br/><br/>
@@ -55,7 +88,8 @@ public class Crawler {
 	 * the PDBID should be enclosed in () and be the explicitly matching group number 1
 	 * @param file
 	 */
-	public void crawl(String dbname, String path) throws IOException {
+	@Transactional
+	public void addCrawled(String dbname, String path) throws IOException {
 		Databank db = dbdao.findByName(dbname);
 		switch (db.getCrawltype()) {
 		case FILE:
@@ -67,46 +101,6 @@ public class Crawler {
 		default:
 			throw new IllegalArgumentException("Invalid CrawlType");
 		}
-		validate(db);
-		entrydao.removeEntriesWithoutBothFileAndParentFile();
-		Logger.getLogger(getClass()).info(dbname + ": Succes");
-	}
-
-	/**
-	 * Removes all the invalid entries from database by checking if their file exists,
-	 * if the file matches the current regular expression (which might have changed) and
-	 * if the timestamp on the file is still the same as the timestamp on the entry
-	 */
-	private void validate(Databank databank) {
-		Pattern pattern = Pattern.compile(databank.getRegex());
-		List<Entry> entrieswithfiles = entrydao.getValid(databank);
-		entrieswithfiles.addAll(entrydao.getObsolete(databank));
-
-		int checked = 0, removed = 0;
-		for (Entry entry : entrieswithfiles) {
-			checked++;
-			nl.ru.cmbi.whynot.model.File stored = entry.getFile();
-			boolean isValid = true;
-
-			//Check if file still exists
-			java.io.File found = new java.io.File(stored.getPath());
-			if (!found.exists() || found.lastModified() != stored.getTimestamp())
-				isValid = false;
-
-			//Check if file still matches regex
-			if (databank.getCrawltype() == CrawlType.FILE && !pattern.matcher(stored.getPath()).matches())
-				isValid = false;
-
-			//Delete invalid entries
-			if (!isValid) {
-				//Remove entry
-				databank.getEntries().remove(entry);
-				entrydao.makeTransient(entry);
-				removed++;
-			}
-		}
-		entrieswithfiles = null;
-		Logger.getLogger(getClass()).info(databank.getName() + ": Validated " + checked + ", Removed " + removed);
 	}
 
 	/**

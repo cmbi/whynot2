@@ -60,17 +60,11 @@ public class Crawler {
 		int removed = 0;
 		for (Entry entry : entrydao.getPresent(databank)) {
 			String path = entry.getFile().getPath();
-			long stamp = entry.getFile().getTimestamp();
-			boolean isValid = true;
-
 			File file = new File(path);
 			//Check if file still exists
-			if (!file.exists() || file.lastModified() != stamp ||
+			if (!file.exists() || file.lastModified() != entry.getFile().getTimestamp() ||
 			//Check if file still matches regex
-			matchRegex && !regex.matcher(path).matches())
-				isValid = false;
-
-			if (!isValid) {
+			matchRegex && !regex.matcher(path).matches()) {
 				//Remove entry
 				databank.getEntries().remove(entry);
 				entrydao.makeTransient(entry);

@@ -1,7 +1,6 @@
 package nl.ru.cmbi.whynot.crawl;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -30,7 +29,8 @@ public class LineCrawler {
 
 	public void crawl(java.io.File crawlfile) throws IOException {
 		//Cache old Entries
-		List<Entry> oldEntries = new ArrayList<Entry>(databank.getEntries());
+		List<Entry> annotatedEntries = entrydao.getAnnotated(databank);
+		List<Entry> presentEntries = entrydao.getPresent(databank);
 
 		//File to assign to new entries
 		File file = filedao.findByPathAndTimestamp(crawlfile.getAbsolutePath(), crawlfile.lastModified());
@@ -41,23 +41,27 @@ public class LineCrawler {
 		Matcher m;
 		Scanner scn = new Scanner(crawlfile);
 		while (scn.hasNextLine()) {
-			//Ignore lines that do not match
+			//Skip lines that do not match
 			if (!(m = pattern.matcher(scn.nextLine())).matches())
 				continue;
-			String id = m.group(1).toLowerCase();
+			Entry entry = new Entry(databank, m.group(1).toLowerCase());
 
-			//Find or create entry
-			Entry entry = new Entry(databank, id);
-			int oldEntryIndex = oldEntries.indexOf(entry);
-			if (0 <= oldEntryIndex)
-				entry = oldEntries.get(oldEntryIndex);
+			//Skip present entries: No changes at this point if removeChanged ran before
+			if (presentEntries.contains(entry))
+				continue;
+
+			//Find annotated entry
+			int oldEntryIndex = annotatedEntries.indexOf(entry);
+			if (0 <= oldEntryIndex) {
+				entry = annotatedEntries.get(oldEntryIndex);
+				//Delete annotations: We just found it!
+				entry.getAnnotations().clear();
+			}
 			else
 				//Add new entry to databank
 				if (databank.getEntries().add(entry))
 					added++;
 
-			//Delete annotations: We just found it!
-			entry.getAnnotations().clear();
 			//Set new file
 			entry.setFile(file);
 		}

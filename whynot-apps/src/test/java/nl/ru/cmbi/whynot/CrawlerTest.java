@@ -18,24 +18,21 @@ public class CrawlerTest {
 	@Test
 	@Ignore
 	public void doDSSP() throws Exception {
+		crawler.removeChanged("PDB");
+		crawler.addCrawled("PDB", "/home/tbeek/Desktop/raw/pdb/");
 		crawler.removeChanged("DSSP");
-		crawler.addCrawled("DSSP", "src/test/resources/dssp_present.txt");
+		crawler.addCrawled("DSSP", "/home/tbeek/Desktop/raw/dssp/");
 	}
 
 	@Test
 	@Ignore
 	public void crawlPDBDSSPHSSP() throws Exception {
-		crawler.addCrawled("PDB", "src/test/resources/pdb_present.txt");
-		crawler.addCrawled("DSSP", "src/test/resources/dssp_present.txt");
-		crawler.addCrawled("HSSP", "src/test/resources/hssp_present.txt");
-	}
-
-	@Test
-	@Ignore
-	public void removePDBDSSPHSSP() throws Exception {
 		crawler.removeChanged("PDB");
+		crawler.addCrawled("PDB", "src/test/resources/pdb_present.txt");
 		crawler.removeChanged("DSSP");
+		crawler.addCrawled("DSSP", "src/test/resources/dssp_present.txt");
 		crawler.removeChanged("HSSP");
+		crawler.addCrawled("HSSP", "src/test/resources/hssp_present.txt");
 	}
 
 	@Test

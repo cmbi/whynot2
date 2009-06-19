@@ -1,13 +1,13 @@
 package nl.ru.cmbi.whynot.crawl;
 
 import java.io.FileFilter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.FileDAO;
 import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Entry;
@@ -17,63 +17,53 @@ import org.apache.log4j.Logger;
 
 public class FileCrawler {
 	protected Databank	databank;
+	protected EntryDAO	entrydao;
 	protected FileDAO	filedao;
 	protected Pattern	pattern;
 
-	public FileCrawler(Databank db, FileDAO fldao) {
+	public FileCrawler(Databank db, EntryDAO entdao, FileDAO fldao) {
 		databank = db;
+		entrydao = entdao;
 		filedao = fldao;
 		pattern = Pattern.compile(db.getRegex());
 	}
 
-	public void crawl(java.io.File path) {
-		List<Entry> oldEntries = new ArrayList<Entry>(databank.getEntries());
-		List<Entry> newEntries = new ArrayList<Entry>();
+	public void crawl(java.io.File crawldir) {
+		//Cache old Entries
+		List<Entry> annotatedEntries = entrydao.getAnnotated(databank);
+		List<Entry> presentEntries = entrydao.getPresent(databank);
 
-		int crawled = 0, updated = 0, added = 0, index;
-		for (java.io.File dir : dirAndAllSubdirs(databank, path))
-			for (java.io.File file : dir.listFiles(new FileFilter() {
-				public boolean accept(java.io.File pathname) {
-					return pattern.matcher(pathname.getAbsolutePath()).matches();
-				}
-			})) {
-				Matcher m = pattern.matcher(file.getAbsolutePath());
-				if (!m.matches())
+		int added = 0;
+		Matcher m;
+
+		for (java.io.File dir : dirAndAllSubdirs(databank, crawldir))
+			for (java.io.File crawlfile : dir.listFiles()) {
+				//Skip files that do not match
+				if (!(m = pattern.matcher(crawlfile.getAbsolutePath())).matches())
 					continue;
-				crawled++;
-				String id = m.group(1).toLowerCase();
+				Entry entry = new Entry(databank, m.group(1).toLowerCase());
 
-				//Find or create entry
-				Entry entry = new Entry(databank, id);
-				if (0 <= (index = oldEntries.indexOf(entry)))
-					entry = oldEntries.get(index);
+				//Skip present entries: No changes at this point if removeChanged ran before
+				if (presentEntries.contains(entry))
+					continue;
+
+				//Find annotated entry
+				int oldEntryIndex = annotatedEntries.indexOf(entry);
+				if (0 <= oldEntryIndex) {
+					entry = annotatedEntries.get(oldEntryIndex);
+					//Delete annotations: We just found it!
+					entry.getAnnotations().clear();
+				}
 				else
-					newEntries.add(entry);
-
-				//Find or create file
-				File stored = entry.getFile();
-				File found = new File(file);
-				if (found.equals(stored))
-					continue;//We're done
+					//Add new entry to databank
+					if (databank.getEntries().add(entry))
+						added++;
 
 				//Set new file
-				entry.setFile(found);
-				//Delete annotations: We just found it!
-				entry.getAnnotations().clear();
-
-				if (stored == null)
-					added++;
-				else {
-					//Delete old file
-					filedao.makeTransient(stored);
-					updated++;
-				}
-
+				entry.setFile(new File(crawlfile));
 			}
-		//Add new entries to databank
-		databank.getEntries().addAll(newEntries);
 
-		Logger.getLogger(getClass()).info(databank.getName() + ": Crawled " + crawled + ", Updated " + updated + ", Added " + added);
+		Logger.getLogger(getClass()).info(databank.getName() + ": Adding " + added + " new Entries");
 	}
 
 	/**

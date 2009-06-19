@@ -80,6 +80,8 @@ public class Crawler {
 	 * <br/><br/>
 	 * Extracts the PDBID from the filename/line using regular expression group matching:
 	 * the PDBID should be enclosed in () and be the explicitly matching group number 1
+	 * 
+	 * Note: Strongly expects removeChanged to have run before
 	 * @param file
 	 */
 	@Transactional
@@ -87,7 +89,7 @@ public class Crawler {
 		Databank db = dbdao.findByName(dbname);
 		switch (db.getCrawltype()) {
 		case FILE:
-			new FileCrawler(db, filedao).crawl(getFile(path));
+			new FileCrawler(db, entrydao, filedao).crawl(getFile(path));
 			break;
 		case LINE:
 			new LineCrawler(db, entrydao, filedao).crawl(getFile(path));

@@ -3,8 +3,6 @@ package nl.ru.cmbi.whynot.annotate;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.text.ParseException;
 
 import nl.ru.cmbi.whynot.util.SpringUtil;
 
@@ -12,7 +10,7 @@ import org.apache.log4j.Logger;
 
 public class Annotater {
 
-	public static void main(String[] args) throws IOException, ParseException {
+	public static void main(String[] args) throws Exception {
 		Logger.getLogger(Annotater.class).info("Annotater start.");
 		File dirComments = new File("comment/");
 		File dirUncomments = new File("uncomment/");

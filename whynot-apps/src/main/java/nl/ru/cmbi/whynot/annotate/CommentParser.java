@@ -1,12 +1,14 @@
 package nl.ru.cmbi.whynot.annotate;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.AnnotationDAO;
@@ -40,7 +42,69 @@ public class CommentParser {
 	private SessionFactory		sf;
 
 	@Transactional
-	public File comment(File file) throws IOException, ParseException {
+	public File comment(File file) throws FileNotFoundException {
+		Logger.getLogger(getClass()).info("Adding annotations in " + file.getName());
+		Comment comment = new Comment("Empty comment");
+		Databank databank = new Databank("Empty databank");
+		List<Entry> presentParents = new ArrayList<Entry>();
+		List<Entry> previouslyAnnotated = new ArrayList<Entry>();
+
+		int added = 0, index = 0;
+		long time = System.currentTimeMillis();
+		Matcher m;
+		Scanner scn = new Scanner(file);
+		while (scn.hasNextLine()) {
+			String line = scn.nextLine();
+			if ((m = Converter.patternEntry.matcher(line)).matches()) {
+				String dbname = m.group(1);
+				String pdbid = m.group(2).toLowerCase();
+				//Check if databank still the same as current
+				if (!databank.getName().equals(dbname)) {
+					databank = dbdao.findByName(dbname);
+					presentParents = entdao.getMissing(databank);
+					previouslyAnnotated = entdao.getAnnotated(databank);
+				}
+
+				//Skip if there's no present parent for missing entry
+				if (!presentParents.contains(new Entry(databank.getParent(), pdbid))) {
+					Logger.getLogger(getClass()).warn("Skipping annotation for " + dbname + "," + pdbid + ": No missing parent");
+					continue;
+				}
+
+				//Create or find Entry
+				Entry entry = new Entry(databank, pdbid);
+				if (0 <= (index = previouslyAnnotated.indexOf(entry)))
+					entry = previouslyAnnotated.get(index);
+				else
+					databank.getEntries().add(entry);
+
+				//Add annotation
+				if (entry.getAnnotations().add(new Annotation(comment, entry, time)))
+					added++;
+				else
+					Logger.getLogger(getClass()).warn("Skipping annotation for " + dbname + "," + pdbid + ": Annotation already present");
+			}
+			else
+				if ((m = Converter.patternCOMMENT.matcher(line)).matches()) {
+					//Comment stats
+					Logger.getLogger(getClass()).info("COMMENT: " + comment.getText() + ": Adding " + added + " annotations");
+					added = 0;
+
+					//Find comment
+					String text = m.group(1).trim();
+					if ((comment = comdao.findByText(text)) == null)
+						comment = new Comment(text);
+				}
+		}
+		scn.close();
+		Logger.getLogger(getClass()).info("COMMENT: " + comment.getText() + ": Adding " + added + " annotations");
+		File dest = new File(file.getAbsolutePath() + CommentParser.append);
+		file.renameTo(dest);
+		return dest;
+	}
+
+	@Transactional
+	public File comment_old(File file) throws IOException, ParseException {
 		Logger.getLogger(getClass()).info("Adding annotations in " + file.getName());
 		int added = 0, skipped = 0;
 		long time = System.currentTimeMillis();

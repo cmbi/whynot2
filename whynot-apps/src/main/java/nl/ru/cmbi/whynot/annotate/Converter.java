@@ -33,7 +33,7 @@ public class Converter {
 
 	//New
 	public static Pattern	patternCOMMENT	= Pattern.compile("COMMENT: (.+)");
-	public static Pattern	patternEntry	= Pattern.compile("(.+),(.+)");
+	public static Pattern	patternEntry	= Pattern.compile("(.+),([a-zA-Z0-9]{4})");
 
 	/**
 	 * Try to read the file, and if necessary convert & optimize it.

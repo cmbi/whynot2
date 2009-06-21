@@ -75,10 +75,18 @@ public interface GenericDAO<T, ID extends Serializable> {
 
 		List<Entry> getObsolete(Databank db);
 
+		/**
+		 * @param db
+		 * @return parents!
+		 */
 		List<Entry> getMissing(Databank db);
 
 		List<Entry> getAnnotated(Databank db);
 
+		/**
+		 * @param db
+		 * @return parents!
+		 */
 		List<Entry> getUnannotated(Databank db);
 	}
 

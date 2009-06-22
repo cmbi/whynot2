@@ -115,7 +115,7 @@ public class Entry implements Comparable<Entry>, Serializable {
 				return false;
 		}
 		else
-			if (!databank.equals(other.databank))
+			if (!databank.getName().equals(other.databank.getName()))
 				return false;
 		if (pdbid == null) {
 			if (other.pdbid != null)

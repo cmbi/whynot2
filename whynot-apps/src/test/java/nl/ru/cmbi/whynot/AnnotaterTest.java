@@ -11,6 +11,7 @@ import nl.ru.cmbi.whynot.annotate.Converter;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,8 @@ public class AnnotaterTest {
 	@Autowired
 	private Annotater	cp;
 
-	private static File		commentFile;
-	private static File		uncommentFile;
+	private static File	commentFile;
+	private static File	uncommentFile;
 
 	@BeforeClass
 	public static void copyConvertAndOptimize() throws IOException, ParseException {
@@ -55,7 +56,7 @@ public class AnnotaterTest {
 	}
 
 	@Test
-	//@Ignore
+	@Ignore
 	public void comment() throws IOException, ParseException {
 		commentFile = cp.comment(commentFile);
 		uncommentFile = cp.uncomment(uncommentFile);

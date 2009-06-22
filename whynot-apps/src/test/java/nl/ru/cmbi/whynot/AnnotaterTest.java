@@ -6,7 +6,7 @@ import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.Scanner;
 
-import nl.ru.cmbi.whynot.annotate.CommentParser;
+import nl.ru.cmbi.whynot.annotate.Annotater;
 import nl.ru.cmbi.whynot.annotate.Converter;
 
 import org.junit.AfterClass;
@@ -21,7 +21,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(locations = { "classpath:/spring.xml" })
 public class AnnotaterTest {
 	@Autowired
-	private CommentParser	cp;
+	private Annotater	cp;
 
 	private static File		commentFile;
 	private static File		uncommentFile;
@@ -58,7 +58,7 @@ public class AnnotaterTest {
 	//@Ignore
 	public void comment() throws IOException, ParseException {
 		commentFile = cp.comment(commentFile);
-		//uncommentFile = cp.uncomment(uncommentFile);
+		uncommentFile = cp.uncomment(uncommentFile);
 	}
 
 	@AfterClass

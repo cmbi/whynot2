@@ -45,7 +45,7 @@ public class Annotater {
 			}
 		};
 
-		Annotater commentParser = (Annotater) SpringUtil.getContext().getBean("commentParser");
+		Annotater commentParser = (Annotater) SpringUtil.getContext().getBean("annotater");
 		//Comment / Uncomment all files in directories
 		for (File file : dirComments.listFiles(commentFilter))
 			commentParser.comment(Converter.getFile(file));

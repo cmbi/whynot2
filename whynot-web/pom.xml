@@ -13,7 +13,7 @@
 	<properties>
 		<cxf.version>2.2.1</cxf.version>
 		<spring.version>2.5.6.SEC01</spring.version>
-		<wicket.version>1.4-rc5</wicket.version>
+		<wicket.version>1.4-rc6</wicket.version>
 	</properties>
 
 	<dependencies>

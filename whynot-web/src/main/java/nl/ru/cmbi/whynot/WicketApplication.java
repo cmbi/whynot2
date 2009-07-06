@@ -11,7 +11,7 @@ import nl.ru.cmbi.whynot.statistics.StatisticsPage;
 
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
-import org.apache.wicket.settings.IApplicationSettings;
+import org.apache.wicket.settings.IExceptionSettings;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 
 public class WicketApplication extends WebApplication {
@@ -24,10 +24,10 @@ public class WicketApplication extends WebApplication {
 		//getRequestLoggerSettings().setRequestLoggerEnabled(true);
 
 		//ErrorPages
-		IApplicationSettings settings = getApplicationSettings();
-		settings.setAccessDeniedPage(ErrorPage.class);
-		settings.setPageExpiredErrorPage(ErrorPage.class);
-		settings.setInternalErrorPage(ErrorPage.class);
+		getApplicationSettings().setAccessDeniedPage(ErrorPage.class);
+		getApplicationSettings().setPageExpiredErrorPage(ErrorPage.class);
+		getApplicationSettings().setInternalErrorPage(ErrorPage.class);
+		getExceptionSettings().setUnexpectedExceptionDisplay(IExceptionSettings.SHOW_INTERNAL_ERROR_PAGE);
 
 		//Pretty URLs
 		mountBookmarkablePage("about", AboutPage.class);

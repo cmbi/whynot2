@@ -56,6 +56,7 @@ public class Crawler {
 	 * <li>file on path does not exist
 	 * <li>timestamp differs from timestamp of file on path
 	 * <li>path does not match databank regex (which might have changed)
+	 * <li>no file or parent entry file exists
 	 */
 	@Transactional
 	public void removeChanged(String name) {
@@ -76,6 +77,11 @@ public class Crawler {
 				removed++;
 			}
 		}
+		for (Entry entry : entrydao.getObsolete(databank))
+			if (entry.getFile() == null) {
+				entrydao.makeTransient(entry);
+				removed++;
+			}
 		Logger.getLogger(getClass()).info(databank.getName() + ": Removing " + removed + " changed Entries");
 	}
 

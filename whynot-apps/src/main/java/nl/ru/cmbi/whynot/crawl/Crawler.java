@@ -79,6 +79,8 @@ public class Crawler {
 		}
 		for (Entry entry : entrydao.getObsolete(databank))
 			if (entry.getFile() == null) {
+				//Remove entry
+				databank.getEntries().remove(entry);
 				entrydao.makeTransient(entry);
 				removed++;
 			}

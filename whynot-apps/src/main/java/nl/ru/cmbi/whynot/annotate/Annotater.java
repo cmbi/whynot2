@@ -52,6 +52,8 @@ public class Annotater {
 		for (File file : dirUncomments.listFiles(commentFilter))
 			commentParser.uncomment(Converter.getFile(file));
 
+		commentParser.removeUnusedComments();
+
 		Logger.getLogger(Annotater.class).info("Annotater done.");
 	}
 
@@ -186,12 +188,6 @@ public class Annotater {
 					Logger.getLogger(getClass()).info("COMMENT: " + comment.getText() + ": Removing " + removed + " annotations");
 					removed = 0;
 
-					//Delete comment if now empty
-					if (comment.getAnnotations().isEmpty()) {
-						comdao.makeTransient(comment);
-						Logger.getLogger(getClass()).info("Removing unused COMMENT: " + comment.getText());
-					}
-
 					//Find comment
 					String text = m.group(1).trim();
 					comment = comdao.findByText(text);
@@ -210,14 +206,19 @@ public class Annotater {
 		//Comment stats
 		Logger.getLogger(getClass()).info("COMMENT: " + comment.getText() + ": Removing " + removed + " annotations");
 
-		//Delete previous comment if now empty
-		if (comment.getAnnotations().isEmpty()) {
-			comdao.makeTransient(comment);
-			Logger.getLogger(getClass()).info("Removing unused COMMENT: " + comment.getText());
-		}
-
 		File dest = new File(file.getAbsolutePath() + Annotater.append);
 		file.renameTo(dest);
 		return dest;
 	}
+
+	@Transactional
+	public void removeUnusedComments() {
+		for (Comment comment : comdao.getAll())
+			//Delete previous comment if now empty
+			if (comment.getAnnotations().isEmpty()) {
+				comdao.makeTransient(comment);
+				Logger.getLogger(getClass()).info("Removing unused COMMENT: " + comment.getText());
+			}
+	}
+
 }

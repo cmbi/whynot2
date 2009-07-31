@@ -1,3 +1,5 @@
+package scripts;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -21,8 +23,9 @@ public class ParsePDBEntryType {
 		if (args.length != 3)
 			throw new IllegalArgumentException("Expected arguments [DBNAME] [COMMENT] [PATTERN]");
 		List<String> nmr_entries = getEntries(args[2]);
-		System.out.println("COMMENT: "+args[1]);
 		Scanner scn = new Scanner(System.in);
+		if(scn.hasNextLine())
+			System.out.println("COMMENT: "+args[1]);
 		while (scn.hasNextLine()){
 			String pdbid = scn.nextLine();
 			if (nmr_entries.contains(pdbid))

@@ -1,1 +1,4 @@
-java -jar whynot-apps-2.0-090612.jar
+#!/bin/bash
+cd /data/scratch/whynot2/;
+
+java -jar whynot-apps.jar;

@@ -1,1 +1,4 @@
-java -cp dependency/*:whynot-apps-2.0-090612.jar nl.ru.cmbi.whynot.annotate.Annotater
+#!/bin/bash
+cd /data/scratch/whynot2/;
+
+java -cp dependency/*:whynot-apps.jar nl.ru.cmbi.whynot.annotate.Annotater

@@ -6,6 +6,7 @@ import nl.ru.cmbi.whynot.databank.DatabankPage;
 import nl.ru.cmbi.whynot.entries.EntriesPage;
 import nl.ru.cmbi.whynot.error.ErrorPage;
 import nl.ru.cmbi.whynot.home.HomePage;
+import nl.ru.cmbi.whynot.list.ListInitializer;
 import nl.ru.cmbi.whynot.search.ResultsPage;
 import nl.ru.cmbi.whynot.statistics.StatisticsPage;
 
@@ -15,6 +16,11 @@ import org.apache.wicket.settings.IExceptionSettings;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 
 public class WicketApplication extends WebApplication {
+	@Override
+	public Class<? extends WebPage> getHomePage() {
+		return HomePage.class;
+	}
+
 	@Override
 	protected void init() {
 		//Spring
@@ -36,10 +42,9 @@ public class WicketApplication extends WebApplication {
 		mountBookmarkablePage("entries", EntriesPage.class);
 		mountBookmarkablePage("statistics", StatisticsPage.class);
 		mountBookmarkablePage("search", ResultsPage.class);
-	}
 
-	@Override
-	public Class<? extends WebPage> getHomePage() {
-		return HomePage.class;
+		//Register export lists as shared resources
+		getSharedResources().putClassAlias(ListInitializer.class, "list");
+		new ListInitializer().init(this);
 	}
 }

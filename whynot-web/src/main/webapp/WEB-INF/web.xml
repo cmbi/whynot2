@@ -6,30 +6,25 @@
 	<display-name>whynot-web_old</display-name>
 	<context-param>
 		<param-name>configuration</param-name>
-<!--		<param-value>development</param-value>-->
-		<param-value>deployment</param-value>
+		<param-value>development</param-value>
+		<!--<param-value>deployment</param-value>-->
 	</context-param>
-	
+
 	<!-- Spring -->
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
-	<context-param>
-		<param-name>contextConfigLocation</param-name>
-		<param-value>spring.xml</param-value>
-	</context-param>
-	
+
 	<!-- Hibernate -->
 	<filter>
 		<filter-name>opensessioninview</filter-name>
-		<filter-class>
-			org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
+		<filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
 	</filter>
 	<filter-mapping>
 		<filter-name>opensessioninview</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-	
+
 	<!-- CXF -->
 	<servlet>
 		<servlet-name>CXFServlet</servlet-name>

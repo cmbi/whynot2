@@ -8,11 +8,13 @@ import nl.ru.cmbi.whynot.model.Databank;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class DatabankHibernateDAO extends GenericHibernateDAO<Databank, Long> implements DatabankDAO {
 	@Override
 	@SuppressWarnings("unchecked")
+	@Transactional
 	public List<Databank> getAll() {
 		return createCriteria().addOrder(Order.asc("name")).list();
 	}

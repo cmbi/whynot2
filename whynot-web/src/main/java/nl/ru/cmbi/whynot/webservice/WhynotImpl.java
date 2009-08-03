@@ -74,6 +74,7 @@ public class WhynotImpl implements Whynot {
 			entries = entrydao.getUnannotated(db);
 			break;
 		}
+
 		List<String> pdbids = new ArrayList<String>();
 		for (Entry ent : entries)
 			pdbids.add(ent.getPdbid());

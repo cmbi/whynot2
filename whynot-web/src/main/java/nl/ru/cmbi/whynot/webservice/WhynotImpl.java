@@ -31,17 +31,33 @@ public class WhynotImpl implements Whynot {
 		if (entry != null && !entry.getAnnotations().isEmpty())
 			for (Annotation ann : entry.getAnnotations())
 				annotations.add(ann.getComment().getText());
+
+		//If we still don't have anything, see what we can find out about the parent
+		if (annotations.isEmpty()) {
+			Entry parent = entrydao.findByDatabankAndPdbid(db.getParent(), pdbid);
+			if (parent != null && parent.getFile() == null) {
+				annotations.add("Missing required " + db.getParent().getName() + " file");
+				for (Annotation ann : parent.getAnnotations())
+					annotations.add(ann.getComment().getText());
+			}
+		}
+
 		return annotations;
 	}
 
 	@Override
-	public List<String> getEntries(String dbname, CollectionType selection) {
+	public List<String> getEntries(String dbname, String selection) {
 		Databank db = databankdao.findByName(dbname);
 		if (db == null)
 			throw new IllegalArgumentException("Unknown databank: " + dbname);
 
+		CollectionType collection = CollectionType.valueOf(selection);
+
 		List<Entry> entries = new ArrayList<Entry>();
-		switch (selection) {
+		switch (collection) {
+		case PRESENT:
+			entries = entrydao.getPresent(db);
+			break;
 		case VALID:
 			entries = entrydao.getValid(db);
 			break;

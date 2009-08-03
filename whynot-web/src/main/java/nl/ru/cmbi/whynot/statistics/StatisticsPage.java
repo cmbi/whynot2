@@ -29,7 +29,7 @@ public class StatisticsPage extends HomePage {
 	@SpringBean
 	private FileDAO				filedao;
 
-	private SimpleDateFormat	sdf	= new SimpleDateFormat("dd/MM/yyyy hh:mm");
+	private SimpleDateFormat	sdf	= new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
 	public StatisticsPage() {
 		add(new Label("annotations", "" + anndao.countAll()));

@@ -26,7 +26,7 @@ public class CommentPage extends HomePage {
 
 	public CommentPage() {
 		ListView<Comment> commentlist = new ListView<Comment>("commentlist", commentdao.getAll()) {
-			private SimpleDateFormat	sdf	= new SimpleDateFormat("dd/MM/yyyy hh:mm");
+			private SimpleDateFormat	sdf	= new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
 			@Override
 			protected void populateItem(ListItem<Comment> item) {

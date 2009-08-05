@@ -1,4 +1,4 @@
-package nl.ru.cmbi.whynot.list;
+package nl.ru.cmbi.whynot.databank;
 
 import java.util.List;
 

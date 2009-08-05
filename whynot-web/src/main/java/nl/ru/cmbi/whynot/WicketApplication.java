@@ -3,10 +3,10 @@ package nl.ru.cmbi.whynot;
 import nl.ru.cmbi.whynot.about.AboutPage;
 import nl.ru.cmbi.whynot.comment.CommentPage;
 import nl.ru.cmbi.whynot.databank.DatabankPage;
+import nl.ru.cmbi.whynot.databank.ListInitializer;
 import nl.ru.cmbi.whynot.entries.EntriesPage;
 import nl.ru.cmbi.whynot.error.ErrorPage;
 import nl.ru.cmbi.whynot.home.HomePage;
-import nl.ru.cmbi.whynot.list.ListInitializer;
 import nl.ru.cmbi.whynot.search.ResultsPage;
 import nl.ru.cmbi.whynot.statistics.StatisticsPage;
 
@@ -40,8 +40,9 @@ public class WicketApplication extends WebApplication {
 		mountBookmarkablePage("comments", CommentPage.class);
 		mountBookmarkablePage("databanks", DatabankPage.class);
 		mountBookmarkablePage("entries", EntriesPage.class);
-		mountBookmarkablePage("statistics", StatisticsPage.class);
+		mountBookmarkablePage("error", ErrorPage.class);
 		mountBookmarkablePage("search", ResultsPage.class);
+		mountBookmarkablePage("statistics", StatisticsPage.class);
 
 		//Register export lists as shared resources
 		getSharedResources().putClassAlias(ListInitializer.class, "list");

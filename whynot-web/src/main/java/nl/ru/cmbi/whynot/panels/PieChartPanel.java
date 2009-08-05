@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jfreechart.MappedChart;
+import nl.ru.cmbi.whynot.databank.ListInitializer;
 import nl.ru.cmbi.whynot.entries.EntriesPage;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
@@ -13,10 +14,12 @@ import nl.ru.cmbi.whynot.model.Entry;
 import nl.ru.cmbi.whynot.model.Databank.CollectionType;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.AjaxLazyLoadPanel;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.link.ResourceLink;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.LoadableDetachableModel;
@@ -49,20 +52,22 @@ public class PieChartPanel extends Panel {
 			super(id, "piechartfragment", PieChartPanel.this);
 			final String dbname = db.getName();
 
-			long pre = entrydao.countPresent(db);
 			long val = entrydao.countValid(db);
 			long obs = entrydao.countObsolete(db);
-			long mis = entrydao.countMissing(db);
+			long pre = entrydao.countPresent(db);
+
 			long ann = entrydao.countAnnotated(db);
 			long una = entrydao.counUnannotated(db);
+			long mis = entrydao.countMissing(db);
 
 			//Legend
-			add(createCollectionLink(dbname, CollectionType.PRESENT, pre));
-			add(createCollectionLink(dbname, CollectionType.VALID, val));
-			add(createCollectionLink(dbname, CollectionType.OBSOLETE, obs));
-			add(createCollectionLink(dbname, CollectionType.MISSING, mis));
-			add(createCollectionLink(dbname, CollectionType.ANNOTATED, ann));
-			add(createCollectionLink(dbname, CollectionType.UNANNOTATED, una));
+			add(new LegendItemFragment("valid", dbname, CollectionType.VALID, val));
+			add(new LegendItemFragment("obsolete", dbname, CollectionType.OBSOLETE, obs));
+			add(new LegendItemFragment("present", dbname, CollectionType.PRESENT, pre));
+
+			add(new LegendItemFragment("annotated", dbname, CollectionType.ANNOTATED, ann));
+			add(new LegendItemFragment("unannotated", dbname, CollectionType.UNANNOTATED, una));
+			add(new LegendItemFragment("missing", dbname, CollectionType.MISSING, mis));
 
 			//Chart
 			add(new MappedChart("chart", createPieChart(obs, val, ann, una), 250, 150) {
@@ -74,18 +79,6 @@ public class PieChartPanel extends Panel {
 							setResponsePage(new EntriesPage(dbname + " " + test.toString().toLowerCase(), getEntriesModel(dbname, test)));
 				}
 			});
-		}
-
-		private Link<Void> createCollectionLink(final String dbname, final CollectionType collectionType, long count) {
-			final String clname = collectionType.name().toLowerCase();
-			Link<Void> lnk = new Link<Void>(clname) {
-				@Override
-				public void onClick() {
-					setResponsePage(new EntriesPage(dbname + " " + clname, getEntriesModel(dbname, collectionType)));
-				}
-			};
-			lnk.add(new Label("count", "" + count));
-			return lnk;
 		}
 
 		private JFreeChart createPieChart(long obs, long val, long ann, long una) {
@@ -112,6 +105,27 @@ public class PieChartPanel extends Panel {
 			plot.setOutlineVisible(false);
 
 			return chart;
+		}
+	}
+
+	private class LegendItemFragment extends Fragment {
+		public LegendItemFragment(String id, final String dbname, final CollectionType colType, long count) {
+			super(id, "legenditemfragment", PieChartPanel.this);
+			//Entries
+			final String clname = colType.name().toLowerCase();
+			Link<Void> lnk = new Link<Void>("entrylink") {
+				@Override
+				public void onClick() {
+					setResponsePage(new EntriesPage(dbname + " " + clname, getEntriesModel(dbname, colType)));
+				}
+			};
+			lnk.add(new Label("label", clname));
+			lnk.add(new Label("count", "" + count));
+			add(lnk);
+
+			//Resource
+			ResourceReference reference = new ResourceReference(ListInitializer.class, dbname + '_' + colType.name().toUpperCase());
+			add(new ResourceLink<String>("resourcelink", reference));
 		}
 	}
 

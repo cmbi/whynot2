@@ -52,10 +52,6 @@ public interface GenericDAO<T, ID extends Serializable> {
 
 		boolean contains(String pdbid);
 
-		@Transactional
-		@Deprecated
-		int removeEntriesWithoutBothFileAndParentFile();
-
 		//Collections
 		int countPresent(Databank db);
 

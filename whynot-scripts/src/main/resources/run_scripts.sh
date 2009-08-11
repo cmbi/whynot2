@@ -19,3 +19,5 @@ java -cp dependency/*:whynot-apps.jar nl.ru.cmbi.whynot.list.Lister DSSP UNANNOT
 
 java -cp dependency/*:whynot-apps.jar nl.ru.cmbi.whynot.list.Lister DSSP UNANNOTATED\
 	| java scripts.GetDSSPErrors > comment/DSSPCMBI_Errors_$(date +%y%m%d).txt;
+
+find comment/ -size 0 -print0|xargs -0 rm;

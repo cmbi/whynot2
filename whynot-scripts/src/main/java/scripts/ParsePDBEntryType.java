@@ -23,16 +23,33 @@ public class ParsePDBEntryType {
 		if (args.length != 3)
 			throw new IllegalArgumentException("Expected arguments [DBNAME] [COMMENT] [PATTERN]");
 		List<String> nmr_entries = getEntries(args[2]);
+		List<String> affected = new ArrayList<String>();
+
+		//Read pdbids from System.in and add if in nmr entries
 		Scanner scn = new Scanner(System.in);
-		if(scn.hasNextLine())
-			System.out.println("COMMENT: "+args[1]);
-		while (scn.hasNextLine()){
+		while (scn.hasNextLine()) {
 			String pdbid = scn.nextLine();
 			if (nmr_entries.contains(pdbid))
-				System.out.println(args[0] +','+ pdbid);
+				affected.add(pdbid);
 		}
+
+		//If none were affected, we're done
+		if (affected.isEmpty())
+			return;
+
+		//Write comment and all entries to System.out
+		System.out.println("COMMENT: " + args[1]);
+		for (String pdbid : affected)
+			System.out.println(args[0] + ',' + pdbid);
 	}
 
+	/**
+	 * Reads the NMR entries from wwpdb.org's pdb_entry_type.txt.
+	 * @param pattern
+	 * @return
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 */
 	private static List<String> getEntries(String pattern) throws MalformedURLException, IOException {
 		URLConnection con = new URL("ftp://ftp.wwpdb.org/pub/pdb/derived_data/pdb_entry_type.txt").openConnection();
 		Scanner scn = new Scanner(con.getInputStream());

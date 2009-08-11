@@ -15,7 +15,7 @@ import java.util.Scanner;
 public class GetDSSPErrors {
 	public static void main(String... args) throws Exception {
 		Scanner scn = new Scanner(System.in);
-		String comment = "";
+		String prevError = ""; //We don't want to print immediate doubles
 		while (scn.hasNextLine()) {
 			String pdbid = scn.nextLine();
 
@@ -28,23 +28,21 @@ public class GetDSSPErrors {
 
 			//Read stdout
 			BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
-			String line = null, previous = null;
+			String line = null, lastline = "No output read from dsspcmbi";
 			while ((line = br.readLine()) != null)
-				if (!line.equals(previous))
-					previous = line;
+				lastline = line;
 
-			//Wait for DSSPCMBI to exit with 1
-			if (process.waitFor() != 0) {
-				//Strip !!! & trim
-				String lastline = previous.replaceAll("!", "").trim();
-				//Print COMMENT: line
-				if (!comment.equals(lastline)) {
-					comment = lastline;
-					System.out.println("COMMENT: " + comment);
-				}
-				//Print DSSP,1giy
-				System.out.println("DSSP," + pdbid);
-			}
+			//Wait for DSSPCMBI to exit: continue if exit code was normal
+			if (process.waitFor() == 0)
+				continue;
+
+			//Strip "!!!" & trim
+			String error = lastline.replaceAll("!", "").trim();
+			//Print COMMENT: error
+			if (!prevError.equals(error))
+				System.out.println("COMMENT: " + (prevError = error));
+			//Print DSSP,1giy
+			System.out.println("DSSP," + pdbid);
 		}
 	}
 }

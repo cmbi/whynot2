@@ -57,7 +57,7 @@ public class AnnotaterTest {
 
 	@Test
 	@Ignore
-	public void comment() throws IOException, ParseException {
+	public void comment() throws IOException {
 		commentFile = cp.comment(commentFile);
 		uncommentFile = cp.uncomment(uncommentFile);
 	}

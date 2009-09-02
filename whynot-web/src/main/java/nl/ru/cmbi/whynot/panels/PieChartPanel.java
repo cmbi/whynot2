@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jfreechart.MappedChart;
+
 import nl.ru.cmbi.whynot.databank.ListInitializer;
 import nl.ru.cmbi.whynot.entries.EntriesPage;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
@@ -155,7 +156,7 @@ public class PieChartPanel extends Panel {
 					error("Invalid CollectionType specified, please notify an administrator.");
 					return new ArrayList<Entry>();
 				}
-			};
+			}
 		};
 	}
 }

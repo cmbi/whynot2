@@ -88,7 +88,7 @@ public class Converter {
 			//Property
 			if (!(m = patternProperty.matcher(lnr.readLine())).matches())
 				throw new ParseException("Expected " + patternProperty.pattern() + " on line " + lnr.getLineNumber(), lnr.getLineNumber());
-			;//Ignore Property
+			//Ignore Property
 
 			//Comment
 			if (!(m = patternComment.matcher(lnr.readLine())).matches())

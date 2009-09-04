@@ -12,9 +12,9 @@
 
 	<properties>
 		<spring.version>2.5.6.SEC01</spring.version>
-		<wicket.version>1.4.0</wicket.version>
-		<cxf.version>2.2.1</cxf.version>
-		<jetty.version>6.1.4</jetty.version>
+		<wicket.version>1.4.1</wicket.version>
+		<cxf.version>2.2.3</cxf.version>
+		<jetty.version>6.1.20</jetty.version>
 	</properties>
 
 	<dependencies>

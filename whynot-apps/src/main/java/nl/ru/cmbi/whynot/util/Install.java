@@ -40,7 +40,7 @@ public class Install {
 
 	public void storeDatabanks() {
 		//Link's to proper urls with ${PDBID}
-		Databank pdb, dssp, nmr, nrg, nrg_docr, sf;
+		Databank pdb, dssp, nmr, nrg, nrg_docr, sfr;
 		dbdao.makePersistent(pdb = new Databank("PDB", CrawlType.FILE, ".*/pdb([\\w]{4})\\.ent(\\.gz)?", "http://www.wwpdb.org/", "ftp://ftp.wwpdb.org/pub/pdb/data/structures/all/pdb/pdb${PDBID}.ent.gz"));
 		dbdao.makePersistent(new Databank("PDBFINDER", pdb, CrawlType.LINE, "ID           : ([\\w]{4})", "http://swift.cmbi.ru.nl/gv/pdbfinder/", "ftp://ftp.cmbi.ru.nl/pub/molbio/data/pdbfinder/PDBFIND.TXT.gz"));
 		dbdao.makePersistent(new Databank("PDBREPORT", pdb, CrawlType.FILE, ".*pdbreport.*/([\\w]{4})", "http://swift.cmbi.ru.nl/gv/pdbreport/", "http://www.cmbi.ru.nl/pdbreport/cgi-bin/nonotes?PDBID=${PDBID}"));
@@ -54,8 +54,8 @@ public class Install {
 		dbdao.makePersistent(nrg_docr = new Databank("NRG-DOCR", nrg, CrawlType.LINE, "([\\w]{4})", "http://restraintsgrid.bmrb.wisc.edu/NRG/MRGridServlet", "http://restraintsgrid.bmrb.wisc.edu/NRG/MRGridServlet?block_text_type=3-converted-DOCR&pdb_id=${PDBID}"));
 		dbdao.makePersistent(new Databank("NRG-CING", nrg_docr, CrawlType.LINE, "([\\w]{4})", "http://nmr.cmbi.ru.nl/cing/", "http://nmr.cmbi.ru.nl/NRG-CING/data/${PART}/${PDBID}/${PDBID}.cing"));
 
-		dbdao.makePersistent(sf = new Databank("STRUCTUREFACTORS", pdb, CrawlType.FILE, ".*/r([\\w]{4})sf\\.ent", "http://www.pdb.org/", "ftp://ftp.wwpdb.org/pub/pdb/data/structures/all/structure_factors/r${PDBID}sf.ent.gz"));
-		dbdao.makePersistent(new Databank("PDB_REDO", sf, CrawlType.FILE, ".*/[\\w]{2}/([\\d][\\w]{3})", "http://www.cmbi.ru.nl/pdb_redo/", "http://www.cmbi.ru.nl/pdb_redo/cgi-bin/redir2.pl?pdbCode=${PDBID}"));
+		dbdao.makePersistent(sfr = new Databank("STRUCTUREFACTORS", pdb, CrawlType.FILE, ".*/r([\\w]{4})sf\\.ent", "http://www.pdb.org/", "ftp://ftp.wwpdb.org/pub/pdb/data/structures/all/structure_factors/r${PDBID}sf.ent.gz"));
+		dbdao.makePersistent(new Databank("PDB_REDO", sfr, CrawlType.FILE, ".*/[\\w]{2}/([\\d][\\w]{3})", "http://www.cmbi.ru.nl/pdb_redo/", "http://www.cmbi.ru.nl/pdb_redo/cgi-bin/redir2.pl?pdbCode=${PDBID}"));
 
 		Logger.getLogger(getClass()).info("Databanks stored.");
 	}

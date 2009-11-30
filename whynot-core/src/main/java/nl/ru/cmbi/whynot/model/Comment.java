@@ -33,8 +33,7 @@ public class Comment implements Comparable<Comment>, Serializable {
 	@Sort(type = SortType.NATURAL)
 	private SortedSet<Annotation>	annotations	= new TreeSet<Annotation>();
 
-	protected Comment() {
-	}
+	protected Comment() {}
 
 	public Long getId() {
 		return id;

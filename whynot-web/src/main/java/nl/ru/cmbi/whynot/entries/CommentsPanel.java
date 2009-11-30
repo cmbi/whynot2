@@ -64,14 +64,14 @@ public class CommentsPanel extends Panel {
 		//Comments
 		add(new ListView<Comment>("commentlist", new ArrayList<Comment>(map.keySet())) {
 			@Override
-			protected void populateItem(ListItem<Comment> item) {
-				Comment com = item.getModelObject();
+			protected void populateItem(ListItem<Comment> commentItem) {
+				Comment com = commentItem.getModelObject();
 				List<Entry> entries = map.get(com);
-				item.add(new Label("text", com.getText() + " (" + entries.size() + ")"));
-				item.add(new ListView<Entry>("entrylist", entries) {
+				commentItem.add(new Label("text", com.getText() + " (" + entries.size() + ")"));
+				commentItem.add(new ListView<Entry>("entrylist", entries) {
 					@Override
-					protected void populateItem(ListItem<Entry> item) {
-						item.add(new Label("entry", item.getModelObject().toString()));
+					protected void populateItem(ListItem<Entry> entryItem) {
+						entryItem.add(new Label("entry", entryItem.getModelObject().toString()));
 					}
 				});
 			}

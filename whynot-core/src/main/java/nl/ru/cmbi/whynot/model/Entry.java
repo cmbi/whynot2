@@ -51,8 +51,7 @@ public class Entry implements Comparable<Entry>, Serializable {
 	@Sort(type = SortType.NATURAL)
 	private SortedSet<Annotation>	annotations	= new TreeSet<Annotation>();
 
-	protected Entry() {
-	}
+	protected Entry() {}
 
 	public Entry(Databank db, String id) {
 		databank = db;

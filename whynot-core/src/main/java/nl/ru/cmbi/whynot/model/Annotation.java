@@ -36,8 +36,7 @@ public class Annotation implements Comparable<Annotation>, Serializable {
 
 	private Long	timestamp;
 
-	protected Annotation() {
-	}
+	protected Annotation() {}
 
 	public Annotation(Comment comment, Entry entry, Long timestamp) {
 		this.comment = comment;

@@ -29,8 +29,7 @@ public class File implements Comparable<File>, Serializable {
 	@NotNull
 	private Long	timestamp;
 
-	protected File() {
-	}
+	protected File() {}
 
 	public File(String path, Long timestamp) {
 		this.path = path;

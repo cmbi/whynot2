@@ -69,8 +69,7 @@ public class Databank implements Comparable<Databank>, Serializable {
 	@Sort(type = SortType.NATURAL)
 	private SortedSet<Entry>	entries	= new TreeSet<Entry>();
 
-	protected Databank() {
-	}
+	protected Databank() {}
 
 	public Databank(String name) {
 		this.name = name;

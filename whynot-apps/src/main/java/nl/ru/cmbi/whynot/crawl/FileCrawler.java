@@ -33,7 +33,7 @@ public class FileCrawler {
 		int added = 0;
 		Matcher m;
 
-		for (java.io.File dir : dirAndAllSubdirs(databank, crawldir))
+		for (java.io.File dir : dirAndAllSubdirs(crawldir))
 			for (java.io.File crawlfile : dir.listFiles()) {
 				//Skip files that do not match
 				if (!(m = pattern.matcher(crawlfile.getAbsolutePath())).matches())
@@ -67,7 +67,7 @@ public class FileCrawler {
 	 * Creates set of directories containing argument and all recursive
 	 * subdirectories in argument, excluding directories that match entryfilter
 	 */
-	private SortedSet<java.io.File> dirAndAllSubdirs(final Databank databank, java.io.File directory) {
+	private SortedSet<java.io.File> dirAndAllSubdirs(java.io.File directory) {
 		SortedSet<java.io.File> directories = new TreeSet<java.io.File>();
 		directories.add(directory); // Add this
 		for (java.io.File subdir : directory.listFiles(new FileFilter() {
@@ -76,7 +76,7 @@ public class FileCrawler {
 				return !pattern.matcher(pathname.getAbsolutePath()).matches() && pathname.isDirectory();
 			}
 		}))
-			directories.addAll(dirAndAllSubdirs(databank, subdir)); // Add recursive subdirs
+			directories.addAll(dirAndAllSubdirs(subdir)); // Add recursive subdirs
 		return directories;
 	}
 }

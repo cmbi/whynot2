@@ -1,5 +1,10 @@
 package nl.ru.cmbi.whynot;
 
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
@@ -21,22 +26,27 @@ public class StartWhyNot {
 		bb.setContextPath("/");
 		bb.setWar("src/main/webapp");
 
-		// START JMX SERVER
-		// MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
-		// MBeanContainer mBeanContainer = new MBeanContainer(mBeanServer);
-		// server.getContainer().addEventListener(mBeanContainer);
-		// mBeanContainer.start();
-
 		server.addHandler(bb);
 
 		try {
 			System.out.println(">>> STARTING EMBEDDED JETTY SERVER, PRESS ANY KEY TO STOP");
 			server.start();
+
+			//Launch browser
+			if (Desktop.isDesktopSupported())
+				if (Desktop.getDesktop().isSupported(Desktop.Action.BROWSE))
+					try {
+						Desktop.getDesktop().browse(new URI("http://localhost:8081/"));
+					}
+					catch (IOException ioe) {
+						ioe.printStackTrace();
+					}
+					catch (URISyntaxException use) {
+						use.printStackTrace();
+					}
+
 			System.in.read();
 			System.out.println(">>> STOPPING EMBEDDED JETTY SERVER");
-			// while (System.in.available() == 0) {
-			//   Thread.sleep(5000);
-			// }
 			server.stop();
 			server.join();
 		}

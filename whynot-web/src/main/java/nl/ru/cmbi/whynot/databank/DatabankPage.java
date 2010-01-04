@@ -21,6 +21,12 @@ public class DatabankPage extends HomePage {
 	protected EntryDAO	entrydao;
 
 	public DatabankPage() {
+		add(new AjaxLazyLoadPanel("piechart") {
+			@Override
+			public Component getLazyLoadComponent(String markupId) {
+				return new Label(markupId, "Bla");
+			}
+		});
 		add(databankListView(databankdao.getAll().toArray(new Databank[0])));
 	}
 
@@ -45,7 +51,7 @@ public class DatabankPage extends HomePage {
 			protected void populateItem(ListItem<Databank> item) {
 				final Databank db = item.getModelObject();
 				item.add(new Label("name", db.getName()));
-				item.add(new AjaxLazyLoadPanel("piechart") {
+				item.add(new AjaxLazyLoadPanel("chartpanel") {
 					@Override
 					public Component getLazyLoadComponent(String markupId) {
 						return new PieChartPanel(markupId, db);

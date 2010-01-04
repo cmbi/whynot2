@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jfreechart.MappedChart;
-
 import nl.ru.cmbi.whynot.databank.ListInitializer;
 import nl.ru.cmbi.whynot.entries.EntriesPage;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
@@ -14,10 +13,8 @@ import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Entry;
 import nl.ru.cmbi.whynot.model.Databank.CollectionType;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.extensions.ajax.markup.html.AjaxLazyLoadPanel;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.link.ResourceLink;
@@ -33,80 +30,68 @@ import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.ui.RectangleInsets;
 
 public class PieChartPanel extends Panel {
-	public PieChartPanel(String id, final Databank databank) {
-		super(id);
-		add(new AjaxLazyLoadPanel("lazy") {
-			@Override
-			public Component getLazyLoadComponent(String markupId) {
-				return new PieChartFragment(markupId, databank);
-			}
-		});
-	}
-
 	@SpringBean
 	protected DatabankDAO	databankdao;
 	@SpringBean
 	protected EntryDAO		entrydao;
 
-	private class PieChartFragment extends Fragment {
-		public PieChartFragment(String id, Databank db) {
-			super(id, "piechartfragment", PieChartPanel.this);
-			final String dbname = db.getName();
+	public PieChartPanel(String id, final Databank db) {
+		super(id);
+		final String dbname = db.getName();
 
-			long val = entrydao.countValid(db);
-			long obs = entrydao.countObsolete(db);
-			long pre = entrydao.countPresent(db);
+		long val = entrydao.countValid(db);
+		long obs = entrydao.countObsolete(db);
+		long pre = entrydao.countPresent(db);
 
-			long ann = entrydao.countAnnotated(db);
-			long una = entrydao.counUnannotated(db);
-			long mis = entrydao.countMissing(db);
+		long ann = entrydao.countAnnotated(db);
+		long una = entrydao.counUnannotated(db);
+		long mis = entrydao.countMissing(db);
 
-			//Legend
-			add(new LegendItemFragment("valid", dbname, CollectionType.VALID, val));
-			add(new LegendItemFragment("obsolete", dbname, CollectionType.OBSOLETE, obs));
-			add(new LegendItemFragment("present", dbname, CollectionType.PRESENT, pre));
+		//Legend
+		add(new LegendItemFragment("valid", dbname, CollectionType.VALID, val));
+		add(new LegendItemFragment("obsolete", dbname, CollectionType.OBSOLETE, obs));
+		add(new LegendItemFragment("present", dbname, CollectionType.PRESENT, pre));
 
-			add(new LegendItemFragment("annotated", dbname, CollectionType.ANNOTATED, ann));
-			add(new LegendItemFragment("unannotated", dbname, CollectionType.UNANNOTATED, una));
-			add(new LegendItemFragment("missing", dbname, CollectionType.MISSING, mis));
+		add(new LegendItemFragment("annotated", dbname, CollectionType.ANNOTATED, ann));
+		add(new LegendItemFragment("unannotated", dbname, CollectionType.UNANNOTATED, una));
+		add(new LegendItemFragment("missing", dbname, CollectionType.MISSING, mis));
 
-			//Chart
-			add(new MappedChart("chart", createPieChart(obs, val, ann, una), 250, 150) {
-				@Override
-				protected void onClickCallback(AjaxRequestTarget target, ChartEntity entity) {
-					//Determine selection
-					for (final CollectionType test : CollectionType.values())
-						if (entity.toString().toUpperCase().contains(test.toString()))
-							setResponsePage(new EntriesPage(dbname + " " + test.toString().toLowerCase(), getEntriesModel(dbname, test)));
-				}
-			});
-		}
+		//Chart
+		add(new MappedChart("chart", createPieChart(obs, val, ann, una), 250, 150) {
+			@Override
+			protected void onClickCallback(AjaxRequestTarget target, ChartEntity entity) {
+				//Determine selection
+				for (final CollectionType test : CollectionType.values())
+					if (entity.toString().toUpperCase().contains(test.toString()))
+						setResponsePage(new EntriesPage(dbname + " " + test.toString().toLowerCase(), getEntriesModel(dbname, test)));
+			}
+		});
+	}
 
-		private JFreeChart createPieChart(long obs, long val, long ann, long una) {
-			//Create a DataSet
-			DefaultPieDataset pieDataset = new DefaultPieDataset();
-			pieDataset.setValue("Obsolete", obs);
-			pieDataset.setValue("Valid", val);
-			pieDataset.setValue("Annotated", ann);
-			pieDataset.setValue("Unannotated", una);
+	private JFreeChart createPieChart(long obs, long val, long ann, long una) {
+		//Create a DataSet
+		DefaultPieDataset pieDataset = new DefaultPieDataset();
+		pieDataset.setValue("Obsolete", obs);
+		pieDataset.setValue("Valid", val);
+		pieDataset.setValue("Annotated", ann);
+		pieDataset.setValue("Unannotated", una);
 
-			//Create Chart
-			JFreeChart chart = ChartFactory.createPieChart3D(null, pieDataset, false, true, false);
-			chart.setBackgroundPaint(Color.WHITE);
-			chart.setPadding(RectangleInsets.ZERO_INSETS);
-			PiePlot3D plot = (PiePlot3D) chart.getPlot();
-			plot.setCircular(false);
-			plot.setForegroundAlpha(0.6f);
-			plot.setBackgroundPaint(Color.WHITE);
-			plot.setSectionPaint("Obsolete", new Color(184, 0, 0));
-			plot.setSectionPaint("Valid", new Color(0, 112, 184));//#0070B8
-			plot.setSectionPaint("Annotated", new Color(0, 184, 112));
-			plot.setSectionPaint("Unannotated", Color.YELLOW);
-			plot.setLabelGenerator(null);
-			plot.setOutlineVisible(false);
+		//Create Chart
+		JFreeChart chart = ChartFactory.createPieChart3D(null, pieDataset, false, true, false);
+		chart.setBackgroundPaint(Color.WHITE);
+		chart.setPadding(RectangleInsets.ZERO_INSETS);
+		PiePlot3D plot = (PiePlot3D) chart.getPlot();
+		plot.setCircular(false);
+		plot.setForegroundAlpha(0.6f);
+		plot.setBackgroundPaint(Color.WHITE);
+		plot.setSectionPaint("Obsolete", new Color(184, 0, 0));
+		plot.setSectionPaint("Valid", new Color(0, 112, 184));//#0070B8
+		plot.setSectionPaint("Annotated", new Color(0, 184, 112));
+		plot.setSectionPaint("Unannotated", Color.YELLOW);
+		plot.setLabelGenerator(null);
+		plot.setOutlineVisible(false);
 
-			return chart;
-		}
+		return chart;
 	}
 
 	private class LegendItemFragment extends Fragment {

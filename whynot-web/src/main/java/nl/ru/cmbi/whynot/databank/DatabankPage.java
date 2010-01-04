@@ -7,7 +7,9 @@ import nl.ru.cmbi.whynot.home.HomePage;
 import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.panels.PieChartPanel;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.extensions.ajax.markup.html.AjaxLazyLoadPanel;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -41,9 +43,14 @@ public class DatabankPage extends HomePage {
 		ListView<Databank> chartlist = new ListView<Databank>("chartlist", Arrays.asList(databanks)) {
 			@Override
 			protected void populateItem(ListItem<Databank> item) {
-				Databank db = item.getModelObject();
+				final Databank db = item.getModelObject();
 				item.add(new Label("name", db.getName()));
-				item.add(new PieChartPanel("piechart", db));
+				item.add(new AjaxLazyLoadPanel("piechart") {
+					@Override
+					public Component getLazyLoadComponent(String markupId) {
+						return new PieChartPanel(markupId, db);
+					}
+				});
 				item.add(new ExternalLink("reference", db.getReference()).add(new Label("href", db.getReference())));
 			}
 		};

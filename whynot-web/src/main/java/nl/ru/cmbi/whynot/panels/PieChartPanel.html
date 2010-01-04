@@ -1,9 +1,6 @@
 <html xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
 <body>
 <wicket:panel>
-	<p wicket:id="lazy"></p>
-</wicket:panel>
-<wicket:fragment wicket:id="piechartfragment">
 	<ul class="legend">
 		<li class="valid" wicket:id="valid"></li>
 		<li class="obsolete" wicket:id="obsolete"></li>
@@ -14,7 +11,7 @@
 		<li class="missing" wicket:id="missing"></li>
 	</ul>
 	<wicket:container wicket:id="chart"></wicket:container>
-</wicket:fragment>
+</wicket:panel>
 	
 <wicket:fragment wicket:id="legenditemfragment">
 	<a wicket:id="resourcelink" href="#">

@@ -21,12 +21,6 @@ public class DatabankPage extends HomePage {
 	protected EntryDAO	entrydao;
 
 	public DatabankPage() {
-		add(new AjaxLazyLoadPanel("piechart") {
-			@Override
-			public Component getLazyLoadComponent(String markupId) {
-				return new Label(markupId, "Bla");
-			}
-		});
 		add(databankListView(databankdao.getAll().toArray(new Databank[0])));
 	}
 

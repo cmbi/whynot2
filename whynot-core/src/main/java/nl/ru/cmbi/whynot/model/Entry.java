@@ -27,7 +27,7 @@ import org.hibernate.validator.NotNull;
 public class Entry implements Comparable<Entry>, Serializable {
 	@Id
 	@GeneratedValue(generator = "hibseq")
-	@GenericGenerator(name = "hibseq", strategy = "seqhilo", parameters = { @Parameter(name = "max_lo", value = "50"), })
+	@GenericGenerator(name = "hibseq", strategy = "seqhilo", parameters = { @Parameter(name = "max_lo", value = "50") })
 	Long							id;
 
 	@NaturalId

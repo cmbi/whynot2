@@ -17,7 +17,7 @@ import org.hibernate.validator.NotNull;
 public class File implements Comparable<File>, Serializable {
 	@Id
 	@GeneratedValue(generator = "hibseq")
-	@GenericGenerator(name = "hibseq", strategy = "seqhilo", parameters = { @Parameter(name = "max_lo", value = "50"), })
+	@GenericGenerator(name = "hibseq", strategy = "seqhilo", parameters = { @Parameter(name = "max_lo", value = "50") })
 	Long			id;
 
 	@NaturalId

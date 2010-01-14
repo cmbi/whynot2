@@ -19,8 +19,9 @@ import org.hibernate.validator.NotNull;
 public class Annotation implements Comparable<Annotation>, Serializable {
 	@Id
 	@GeneratedValue(generator = "hibseq")
-	@GenericGenerator(name = "hibseq", strategy = "seqhilo", parameters = { @Parameter(name = "max_lo", value = "50"), })
+	@GenericGenerator(name = "hibseq", strategy = "seqhilo", parameters = { @Parameter(name = "max_lo", value = "50") })
 	Long			id;
+
 	@NaturalId
 	@ManyToOne
 	@Cascade(value = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.SAVE_UPDATE })

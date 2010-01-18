@@ -8,6 +8,8 @@ import org.apache.wicket.markup.html.image.resource.DynamicImageResource;
 import org.apache.wicket.protocol.http.WebResponse;
 import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.JFreeChart;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Wicket Image constructed from a JFreeChart and exposing the
@@ -17,6 +19,8 @@ import org.jfree.chart.JFreeChart;
  *
  */
 public class ChartImage extends Image {
+	private static final Logger				log	= LoggerFactory.getLogger(ChartImage.class);
+
 	private int								width;
 	private int								height;
 	private JFreeChart						chart;
@@ -33,7 +37,13 @@ public class ChartImage extends Image {
 	private BufferedImage createBufferedImage() {
 		if (image == null) {
 			renderingInfo = new ChartRenderingInfo();
-			image = chart.createBufferedImage(width, height, renderingInfo);
+			try {
+				image = chart.createBufferedImage(width, height, renderingInfo);
+			}
+			catch (NoClassDefFoundError e) {
+				log.error(e.getMessage(), e);
+				image = null;
+			}
 		}
 		return image;
 	}
@@ -49,7 +59,10 @@ public class ChartImage extends Image {
 		return new DynamicImageResource() {
 			@Override
 			protected byte[] getImageData() {
-				return toImageData(createBufferedImage());
+				BufferedImage bufferedImage = createBufferedImage();
+				if (bufferedImage == null)
+					return new byte[0];
+				return toImageData(bufferedImage);
 			}
 
 			@Override

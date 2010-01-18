@@ -28,6 +28,9 @@ public class WicketApplication extends WebApplication {
 
 	@Override
 	protected void init() {
+		//Set headless property for JFreeChart image generation
+		System.setProperty("java.awt.headless", "true");
+
 		//Spring
 		addComponentInstantiationListener(new SpringComponentInjector(this));
 

@@ -6,6 +6,6 @@
 		<groupId>nl.ru.cmbi.whynot</groupId>
 		<version>2.2</version>
 	</parent>
-
 	<artifactId>whynot-scripts</artifactId>
+	<name>Scripts</name>
 </project>

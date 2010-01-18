@@ -7,6 +7,7 @@
 		<version>2.2</version>
 	</parent>
 	<artifactId>whynot-apps</artifactId>
+	<name>Apps</name>
 
 	<dependencies>
 		<dependency>

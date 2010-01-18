@@ -6,17 +6,14 @@
 		<artifactId>whynot</artifactId>
 		<version>2.1</version>
 	</parent>
-
 	<artifactId>whynot-web</artifactId>
 	<packaging>war</packaging>
-
 	<properties>
 		<spring.version>2.5.6.SEC01</spring.version>
 		<wicket.version>1.4.3</wicket.version>
 		<cxf.version>2.2.5</cxf.version>
 		<jetty.version>6.1.4</jetty.version>
 	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>${groupId}</groupId>
@@ -94,6 +91,22 @@
 			<artifactId>cxf-common-utilities</artifactId>
 			<version>${cxf.version}</version>
 		</dependency>
+		
+		<!-- JFreeChart -->
+		<dependency>
+			<groupId>org.jfree</groupId>
+			<artifactId>jfreechart</artifactId>
+			<version>1.0.13</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/src/main/webapp/WEB-INF/lib/jfreechart-1.0.13.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>org.jfree</groupId>
+			<artifactId>jcommon</artifactId>
+			<version>1.0.16</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/src/main/webapp/WEB-INF/lib/jcommon-1.0.16.jar</systemPath>
+		</dependency>
 
 		<!--  JUNIT DEPENDENCY FOR TESTING -->
 		<dependency>
@@ -158,8 +171,8 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
+					<source>1.6</source>
+					<target>1.6</target>
 					<optimize>true</optimize>
 					<debug>true</debug>
 				</configuration>

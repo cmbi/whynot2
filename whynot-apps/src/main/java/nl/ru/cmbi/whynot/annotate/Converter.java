@@ -13,6 +13,7 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -128,6 +129,7 @@ public class Converter {
 
 		SortedMap<String, SortedSet<String>> mapje = new TreeMap<String, SortedSet<String>>();
 
+		//Read
 		String line, com = "COMMENT: Empty comment";
 		while ((line = lnr.readLine()) != null)
 			//Entry 
@@ -144,12 +146,16 @@ public class Converter {
 					throw new ParseException("Expected " + patternCOMMENT + " or " + patternEntry + " on line " + lnr.getLineNumber(), lnr.getLineNumber());
 		lnr.close();
 
+		//Write
 		PrintWriter fw = new PrintWriter(new FileWriter(optimized));
 		while (!mapje.isEmpty()) {
 			String smallest = mapje.firstKey();
-			for (String comment : mapje.keySet())
-				if (mapje.get(comment).size() < mapje.get(smallest).size())
-					smallest = comment;
+			int size = mapje.get(smallest).size();
+			for (Entry<String, SortedSet<String>> ce : mapje.entrySet())
+				if (ce.getValue().size() < size) {
+					smallest = ce.getKey();
+					size = ce.getValue().size();
+				}
 
 			//Print comment
 			fw.println(smallest);

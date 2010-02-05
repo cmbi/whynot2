@@ -23,6 +23,9 @@
 		<module>../whynot-scripts</module>
 		<module>../whynot-web</module>
 	</modules>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 	<ciManagement>
 		<system>Hudson</system>
 		<url>cmbipc56.cmbi.umcn.nl:8080</url>

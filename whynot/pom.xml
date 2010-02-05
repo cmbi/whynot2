@@ -1,19 +1,15 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>nl.ru.cmbi.whynot</groupId>
 	<artifactId>whynot</artifactId>
 	<version>2.2</version>
 	<packaging>pom</packaging>
-
 	<name>Why Not</name>
 	<description></description>
-
 	<organization>
 		<name>CMBI</name>
 		<url>www.cmbi.ru.nl</url>
 	</organization>
-
 	<!--<licenses>-->
 	<!--	<license>-->
 	<!--		<name>The Apache Software License, Version 2.0</name>-->
@@ -21,14 +17,16 @@
 	<!--		<distribution>repo</distribution>-->
 	<!--	</license>-->
 	<!--</licenses>-->
-
 	<modules>
 		<module>../whynot-core</module>
 		<module>../whynot-apps</module>
 		<module>../whynot-scripts</module>
 		<module>../whynot-web</module>
 	</modules>
-
+	<ciManagement>
+		<system>Hudson</system>
+		<url>cmbipc56.cmbi.umcn.nl:8080</url>
+	</ciManagement>
 	<scm>
 		<connection>scm:svn:https://svn.cmbi.ru.nl/whynot/trunk</connection>
 		<developerConnection>scm:svn:https://svn.cmbi.ru.nl/whynot/trunk</developerConnection>
@@ -41,7 +39,6 @@
 			<email>t.tebeek@cmbi.ru.nl</email>
 		</developer>
 	</developers>
-
 	<dependencies>
 		<!-- Testing -->
 		<dependency>
@@ -57,25 +54,30 @@
 			<version>1.5.2</version>
 		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
+				<inherited>true</inherited>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
+					<optimize>true</optimize>
+					<debug>true</debug>
 				</configuration>
 			</plugin>
 			<plugin>
+				<inherited>true</inherited>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>2.7</version>
 				<configuration>
 					<downloadSources>true</downloadSources>
 				</configuration>
 			</plugin>
 			<plugin>
+				<inherited>true</inherited>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
 				<configuration>
@@ -84,4 +86,25 @@
 			</plugin>
 		</plugins>
 	</build>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+				<configuration>
+					<findbugsXmlOutput>true</findbugsXmlOutput>
+					<findbugsXmlWithMessages>true</findbugsXmlWithMessages>
+					<xmlOutput>true</xmlOutput>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<configuration>
+					<targetJdk>1.6</targetJdk>
+					<ignoreAnnotations>false</ignoreAnnotations>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
 </project>

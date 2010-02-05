@@ -26,14 +26,14 @@ public class Converter {
 	}
 
 	//Old
-	private static Pattern	patternPDBID	= Pattern.compile("PDBID        : (.+)");
-	private static Pattern	patternDatabase	= Pattern.compile("Database     : (.+)");
-	private static Pattern	patternProperty	= Pattern.compile("Property     : (.+)");
-	private static Pattern	patternComment	= Pattern.compile("Comment      : (.+)");
+	private static final Pattern	patternPDBID	= Pattern.compile("PDBID        : (.+)");
+	private static final Pattern	patternDatabase	= Pattern.compile("Database     : (.+)");
+	private static final Pattern	patternProperty	= Pattern.compile("Property     : (.+)");
+	private static final Pattern	patternComment	= Pattern.compile("Comment      : (.+)");
 
 	//New
-	public static Pattern	patternCOMMENT	= Pattern.compile("COMMENT: (.+)");
-	public static Pattern	patternEntry	= Pattern.compile("(.+),([a-zA-Z0-9]{4})");
+	public static final Pattern		patternCOMMENT	= Pattern.compile("COMMENT: (.+)");
+	public static final Pattern		patternEntry	= Pattern.compile("(.+),([a-zA-Z0-9]{4})");
 
 	/**
 	 * Try to read the file, and if necessary convert & optimize it.

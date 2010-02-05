@@ -130,7 +130,7 @@ public class Crawler {
 			//Open URL
 			URLConnection con = new URL(path).openConnection();
 			path = path.substring(path.lastIndexOf('/') + 1);
-			path.replaceAll("[^\\w]", "");
+			path = path.replaceAll("[^\\w]", "");
 			File downloaded = new File("download/" + path);
 			if (!downloaded.exists() || downloaded.lastModified() != con.getLastModified()) {
 				//Overwrite file

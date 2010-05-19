@@ -18,10 +18,10 @@
 	<!--	</license>-->
 	<!--</licenses>-->
 	<modules>
-		<module>../whynot-core</module>
-		<module>../whynot-apps</module>
-		<module>../whynot-scripts</module>
-		<module>../whynot-web</module>
+		<module>whynot-core</module>
+		<module>whynot-apps</module>
+		<module>whynot-scripts</module>
+		<module>whynot-web</module>
 	</modules>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

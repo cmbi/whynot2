@@ -28,7 +28,7 @@
 	</properties>
 	<ciManagement>
 		<system>Hudson</system>
-		<url>cmbipc56.cmbi.umcn.nl:8080</url>
+		<url>http://brs.nbic.nl/ci</url>
 	</ciManagement>
 	<scm>
 		<connection>scm:svn:https://svn.cmbi.ru.nl/whynot/trunk</connection>

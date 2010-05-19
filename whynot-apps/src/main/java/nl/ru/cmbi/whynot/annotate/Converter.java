@@ -131,7 +131,8 @@ public class Converter {
 
 		//Read
 		String line, com = "COMMENT: Empty comment";
-		while ((line = lnr.readLine()) != null)
+		while ((line = lnr.readLine()) != null) {
+			line = line.trim();
 			//Entry 
 			if (patternEntry.matcher(line).matches())
 				//Add new entry line
@@ -144,6 +145,7 @@ public class Converter {
 				}
 				else
 					throw new ParseException("Expected " + patternCOMMENT + " or " + patternEntry + " on line " + lnr.getLineNumber(), lnr.getLineNumber());
+		}
 		lnr.close();
 
 		//Write

@@ -17,8 +17,8 @@ public class MyExceptionErrorPage extends WebPage {
 	 */
 	public MyExceptionErrorPage(Page page, RuntimeException e) {
 		add(new FeedbackPanelWrapper("feedback"));
-		
-		add(new Label("page", page.toString()));
+
+		add(new Label("page", page == null ? "null" : page.toString()));
 
 		StringWriter s = new StringWriter();
 		e.printStackTrace(new PrintWriter(s));

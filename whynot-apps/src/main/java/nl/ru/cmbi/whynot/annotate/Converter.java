@@ -8,18 +8,21 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.PrintWriter;
 import java.text.ParseException;
+import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Converter {
+	private static final Logger	log	= LoggerFactory.getLogger(Converter.class);
+
 	public static void main(String[] args) throws IOException, ParseException {
 		if (args.length != 1)
 			throw new IllegalArgumentException("Usage: converter FILENAME");
@@ -38,6 +41,7 @@ public class Converter {
 
 	/**
 	 * Try to read the file, and if necessary convert & optimize it.
+	 * 
 	 * @param file
 	 * @return
 	 * @throws FileNotFoundException
@@ -60,13 +64,14 @@ public class Converter {
 	 * Converts an old style comment file into new style comment file,
 	 * only writing a new comment line if different from previous line.
 	 * Old file is replaced with new file named OldFileName.converted.
+	 * 
 	 * @param original
 	 * @return converted file
 	 * @throws IOException
 	 * @throws ParseException
 	 */
 	public static File convert(File original) throws IOException, ParseException {
-		Logger.getLogger(Converter.class).info("Converting file " + original.getAbsolutePath());
+		log.info("Converting file " + original.getAbsolutePath());
 
 		LineNumberReader lnr = new LineNumberReader(new FileReader(original));
 		File converted = new File(original.getAbsolutePath() + ".converted");
@@ -116,13 +121,14 @@ public class Converter {
 	 * Optimizes new style comment file by removing duplicate comment
 	 * lines, sorting entry lines beneath each comment, and ordering
 	 * the comments from small to large.
+	 * 
 	 * @param original
 	 * @return optimized file
 	 * @throws IOException
 	 * @throws ParseException
 	 */
 	public static File optimize(File original) throws IOException, ParseException {
-		Logger.getLogger(Converter.class).info("Optimizing file " + original.getAbsolutePath());
+		log.info("Optimizing file " + original.getAbsolutePath());
 
 		LineNumberReader lnr = new LineNumberReader(new FileReader(original));
 		File optimized = new File(original.getAbsolutePath() + ".optimized");

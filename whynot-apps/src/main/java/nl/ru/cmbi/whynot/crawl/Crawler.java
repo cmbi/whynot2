@@ -12,24 +12,27 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.regex.Pattern;
 
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.FileDAO;
-import nl.ru.cmbi.whynot.model.Databank;
-import nl.ru.cmbi.whynot.model.Entry;
-import nl.ru.cmbi.whynot.model.Databank.CrawlType;
-import nl.ru.cmbi.whynot.util.SpringUtil;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
+import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
+import nl.ru.cmbi.whynot.hibernate.GenericDAO.FileDAO;
+import nl.ru.cmbi.whynot.model.Databank;
+import nl.ru.cmbi.whynot.model.Databank.CrawlType;
+import nl.ru.cmbi.whynot.model.Entry;
+import nl.ru.cmbi.whynot.util.SpringUtil;
+
 @Service
 public class Crawler {
+	private static final Logger	log	= LoggerFactory.getLogger(Crawler.class);
+
 	public static void main(String[] args) throws Exception {
 		if (args.length == 2) {
-			Logger.getLogger(Crawler.class).info("Crawler start.");
+			log.info("Crawler start.");
 			Crawler crawler = (Crawler) SpringUtil.getContext().getBean("crawler");
 
 			//Should run before addCrawled
@@ -38,7 +41,7 @@ public class Crawler {
 			//Should run after removeChanged
 			crawler.addCrawled(args[0], args[1]);
 
-			Logger.getLogger(Crawler.class).info("Crawler done.");
+			log.info("Crawler done.");
 		}
 		else
 			throw new IllegalArgumentException("Usage: crawler DATABASE DIRECTORY/FILE");
@@ -52,11 +55,8 @@ public class Crawler {
 	private FileDAO		filedao;
 
 	/**
-	 * Removes entries from databank if
-	 * <li>file on path does not exist
-	 * <li>timestamp differs from timestamp of file on path
-	 * <li>path does not match databank regex (which might have changed)
-	 * <li>no file or parent entry file exists
+	 * Removes entries from databank if <li>file on path does not exist <li>timestamp differs from timestamp of file on
+	 * path <li>path does not match databank regex (which might have changed) <li>no file or parent entry file exists
 	 */
 	@Transactional
 	public void removeChanged(String name) {
@@ -84,17 +84,17 @@ public class Crawler {
 				entrydao.makeTransient(entry);
 				removed++;
 			}
-		Logger.getLogger(getClass()).info(databank.getName() + ": Removing " + removed + " changed Entries");
+		log.info(databank.getName() + ": Removing " + removed + " changed Entries");
 	}
 
 	/**
 	 * Adds all FileEntries in the given file or directory and subdirectories to database.
-	 * Takes great care to delete old files when possible and to clear present annotations.
-	 * <br/><br/>
+	 * Takes great care to delete old files when possible and to clear present annotations. <br/>
+	 * <br/>
 	 * Extracts the PDBID from the filename/line using regular expression group matching:
 	 * the PDBID should be enclosed in () and be the explicitly matching group number 1
-	 * 
 	 * Note: Strongly expects removeChanged to have run before
+	 * 
 	 * @param file
 	 */
 	@Transactional
@@ -115,6 +115,7 @@ public class Crawler {
 	/**
 	 * Gets the file on the supplied path. If the path starts with http://
 	 * we first store a local copy with the same timestamp and return that.
+	 * 
 	 * @param path
 	 * @return
 	 * @throws IOException
@@ -142,7 +143,7 @@ public class Crawler {
 				pw.close();
 				bf.close();
 				downloaded.setLastModified(con.getLastModified());
-				Logger.getLogger(Crawler.class).info("Downloaded " + downloaded.getAbsolutePath());
+				log.info("Downloaded " + downloaded.getAbsolutePath());
 			}
 			path = downloaded.getAbsolutePath();
 		}

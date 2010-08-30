@@ -3,31 +3,31 @@ package nl.ru.cmbi.whynot.list;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
-import nl.ru.cmbi.whynot.model.Databank;
-import nl.ru.cmbi.whynot.model.Entry;
-import nl.ru.cmbi.whynot.model.Databank.CollectionType;
-import nl.ru.cmbi.whynot.util.SpringUtil;
-
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
+import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
+import nl.ru.cmbi.whynot.model.Databank;
+import nl.ru.cmbi.whynot.model.Databank.CollectionType;
+import nl.ru.cmbi.whynot.model.Entry;
+import nl.ru.cmbi.whynot.util.SpringUtil;
+
 @Service
 @Transactional
 public class Lister {
-	public static void main(String... args) {
-		Logger.getRootLogger().setLevel(Level.WARN);//Disable chatter
+	private static final Logger	log	= LoggerFactory.getLogger(Lister.class);
 
+	public static void main(String... args) {
 		String dbname = "DATABASE";
 		String selection = "PRESENT|VALID|OBSOLETE|MISSING|ANNOTATED|UNANNOTATED";
 		if (args.length != 2 || !args[1].matches(selection))
 			throw new IllegalArgumentException("Usage: lister " + dbname + " " + selection);
 
-		Lister lister = (Lister) SpringUtil.getContext().getBean("lister");
+		Lister lister = SpringUtil.getContext().getBean(Lister.class);
 		lister.list(args[0], CollectionType.valueOf(args[1]));
 	}
 
@@ -63,7 +63,7 @@ public class Lister {
 			entries = entdao.getUnannotated(db);
 			break;
 		}
-		Logger.getLogger(getClass()).info("#" + dbname + " " + selection + ": " + entries.size());
+		log.info("#" + dbname + " " + selection + ": " + entries.size());
 		for (Entry ent : entries)
 			System.out.println(ent.getPdbid());
 	}

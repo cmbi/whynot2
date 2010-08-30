@@ -6,24 +6,27 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.CommentDAO;
-import nl.ru.cmbi.whynot.model.Annotation;
-import nl.ru.cmbi.whynot.model.Comment;
-import nl.ru.cmbi.whynot.util.SpringUtil;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import nl.ru.cmbi.whynot.hibernate.GenericDAO.CommentDAO;
+import nl.ru.cmbi.whynot.model.Annotation;
+import nl.ru.cmbi.whynot.model.Comment;
+import nl.ru.cmbi.whynot.util.SpringUtil;
+
 @Service
 @Transactional
 public class Backuper {
+	private static final Logger	log	= LoggerFactory.getLogger(Backuper.class);
+
 	public static void main(String[] args) throws BeansException, IOException {
-		Logger.getLogger(Backuper.class).info("Backup start.");
-		((Backuper) SpringUtil.getContext().getBean("backuper")).backup();
-		Logger.getLogger(Backuper.class).info("Backup done.");
+		log.info("Backup start.");
+		SpringUtil.getContext().getBean(Backuper.class).backup();
+		log.info("Backup done.");
 	}
 
 	@Autowired
@@ -46,6 +49,6 @@ public class Backuper {
 			}
 		}
 		pw.close();
-		Logger.getLogger(getClass()).info("Backup complete: " + file.getAbsolutePath());
+		log.info("Backup complete: " + file.getAbsolutePath());
 	}
 }

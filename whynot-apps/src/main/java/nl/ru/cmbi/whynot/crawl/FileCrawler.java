@@ -7,17 +7,20 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Entry;
 import nl.ru.cmbi.whynot.model.File;
 
-import org.apache.log4j.Logger;
-
 public class FileCrawler {
-	private Databank	databank;
-	private EntryDAO	entrydao;
-	private Pattern		pattern;
+	private static final Logger	log	= LoggerFactory.getLogger(FileCrawler.class);
+
+	private Databank			databank;
+	private EntryDAO			entrydao;
+	private Pattern				pattern;
 
 	public FileCrawler(Databank db, EntryDAO entdao) {
 		databank = db;
@@ -60,7 +63,7 @@ public class FileCrawler {
 				entry.setFile(new File(crawlfile));
 			}
 
-		Logger.getLogger(getClass()).info(databank.getName() + ": Adding " + added + " new Entries");
+		log.info(databank.getName() + ": Adding " + added + " new Entries");
 	}
 
 	/**
@@ -71,6 +74,7 @@ public class FileCrawler {
 		SortedSet<java.io.File> directories = new TreeSet<java.io.File>();
 		directories.add(directory); // Add this
 		for (java.io.File subdir : directory.listFiles(new FileFilter() {
+			@Override
 			public boolean accept(java.io.File pathname) {
 				//Sometimes entries are directories: Do not crawl these directories
 				return !pattern.matcher(pathname.getAbsolutePath()).matches() && pathname.isDirectory();

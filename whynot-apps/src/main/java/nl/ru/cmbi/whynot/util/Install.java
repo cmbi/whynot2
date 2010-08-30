@@ -1,20 +1,23 @@
 package nl.ru.cmbi.whynot.util;
 
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
-import nl.ru.cmbi.whynot.model.Databank;
-import nl.ru.cmbi.whynot.model.Databank.CrawlType;
-
-import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
+import nl.ru.cmbi.whynot.model.Databank;
+import nl.ru.cmbi.whynot.model.Databank.CrawlType;
+
 @Service
 @Transactional
 public class Install {
+	private static final Logger	log	= LoggerFactory.getLogger(Install.class);
+
 	public static void main(String[] args) throws Exception {
 		AnnotationSessionFactoryBean asfb = (AnnotationSessionFactoryBean) SpringUtil.getContext().getBean("&sessionFactory");
 		asfb.dropDatabaseSchema();
@@ -32,7 +35,7 @@ public class Install {
 		Session s = sf.getCurrentSession();
 		s.createSQLQuery("grant usage on schema public to whynotuser;").executeUpdate();
 		s.createSQLQuery("grant select on table annotation, comment, databank, entry, file to whynotuser;").executeUpdate();
-		Logger.getLogger(getClass()).info("User rights set.");
+		log.info("User rights set.");
 	}
 
 	@Autowired
@@ -57,6 +60,6 @@ public class Install {
 		dbdao.makePersistent(sfr = new Databank("STRUCTUREFACTORS", pdb, CrawlType.FILE, ".*/r([\\w]{4})sf\\.ent", "http://www.pdb.org/", "ftp://ftp.wwpdb.org/pub/pdb/data/structures/all/structure_factors/r${PDBID}sf.ent.gz"));
 		dbdao.makePersistent(new Databank("PDB_REDO", sfr, CrawlType.FILE, ".*/[\\w]{2}/([\\d][\\w]{3})", "http://www.cmbi.ru.nl/pdb_redo/", "http://www.cmbi.ru.nl/pdb_redo/cgi-bin/redir2.pl?pdbCode=${PDBID}"));
 
-		Logger.getLogger(getClass()).info("Databanks stored.");
+		log.info("Databanks stored.");
 	}
 }

@@ -1,13 +1,13 @@
 package nl.ru.cmbi.whynot;
 
-import nl.ru.cmbi.whynot.crawl.Crawler;
-
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import nl.ru.cmbi.whynot.crawl.Crawler;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:/spring.xml" })

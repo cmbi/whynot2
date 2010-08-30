@@ -1,15 +1,5 @@
 package nl.ru.cmbi.whynot;
 
-import nl.ru.cmbi.whynot.about.AboutPage;
-import nl.ru.cmbi.whynot.comment.CommentPage;
-import nl.ru.cmbi.whynot.databank.DatabankPage;
-import nl.ru.cmbi.whynot.databank.ListInitializer;
-import nl.ru.cmbi.whynot.entries.EntriesPage;
-import nl.ru.cmbi.whynot.error.MyExceptionErrorPage;
-import nl.ru.cmbi.whynot.home.HomePage;
-import nl.ru.cmbi.whynot.search.ResultsPage;
-import nl.ru.cmbi.whynot.statistics.StatisticsPage;
-
 import org.apache.wicket.Request;
 import org.apache.wicket.RequestCycle;
 import org.apache.wicket.Response;
@@ -19,6 +9,16 @@ import org.apache.wicket.protocol.http.WebRequest;
 import org.apache.wicket.protocol.http.WebResponse;
 import org.apache.wicket.settings.IExceptionSettings;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
+
+import nl.ru.cmbi.whynot.about.AboutPage;
+import nl.ru.cmbi.whynot.comment.CommentPage;
+import nl.ru.cmbi.whynot.databank.DatabankPage;
+import nl.ru.cmbi.whynot.databank.ListInitializer;
+import nl.ru.cmbi.whynot.entries.EntriesPage;
+import nl.ru.cmbi.whynot.error.MyExceptionErrorPage;
+import nl.ru.cmbi.whynot.home.HomePage;
+import nl.ru.cmbi.whynot.search.ResultsPage;
+import nl.ru.cmbi.whynot.statistics.StatisticsPage;
 
 public class WicketApplication extends WebApplication {
 	@Override

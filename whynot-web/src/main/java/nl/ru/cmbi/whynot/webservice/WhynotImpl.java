@@ -5,15 +5,15 @@ import java.util.List;
 
 import javax.jws.WebService;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 import nl.ru.cmbi.whynot.model.Annotation;
 import nl.ru.cmbi.whynot.model.Databank;
-import nl.ru.cmbi.whynot.model.Entry;
 import nl.ru.cmbi.whynot.model.Databank.CollectionType;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import nl.ru.cmbi.whynot.model.Entry;
 
 @Service
 @WebService(endpointInterface = "nl.ru.cmbi.whynot.webservice.Whynot")

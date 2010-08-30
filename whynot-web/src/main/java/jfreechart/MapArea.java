@@ -14,7 +14,6 @@ import org.apache.wicket.model.IModel;
  * to the area as well as a regular tooltip.
  * 
  * @author Jonny Wray
- *
  */
 public class MapArea extends WebMarkupContainer {
 	private String	shape;
@@ -24,12 +23,18 @@ public class MapArea extends WebMarkupContainer {
 	/**
 	 * Construct the map area
 	 * 
-	 * @param id Component identifier
-	 * @param model Model
-	 * @param shape The specific area shape
-	 * @param coords The coordinates of the area as a comma separated list
-	 * @param tooltipText The tooltip text, or null to not include it
-	 * @param linkCallback The link callback function called when the area is click, or null to have no link functionality
+	 * @param id
+	 *            Component identifier
+	 * @param model
+	 *            Model
+	 * @param shape
+	 *            The specific area shape
+	 * @param coords
+	 *            The coordinates of the area as a comma separated list
+	 * @param tooltipText
+	 *            The tooltip text, or null to not include it
+	 * @param linkCallback
+	 *            The link callback function called when the area is click, or null to have no link functionality
 	 */
 	public MapArea(String id, IModel<Void> model, String shape, String coords, String tooltipText, final IAjaxLink linkCallback) {
 		super(id, model);
@@ -52,14 +57,19 @@ public class MapArea extends WebMarkupContainer {
 	}
 
 	/**
-	* Construct the map area
-	* 
-	* @param id Component identifier
-	* @param shape The specific area shape
-	* @param coords The coordinates of the area as a comma separated list
-	* @param tooltipText The tooltip text, or null to not include it
-	* @param linkCallback The link callback function called when the area is click, or null to have no link functionality
-	*/
+	 * Construct the map area
+	 * 
+	 * @param id
+	 *            Component identifier
+	 * @param shape
+	 *            The specific area shape
+	 * @param coords
+	 *            The coordinates of the area as a comma separated list
+	 * @param tooltipText
+	 *            The tooltip text, or null to not include it
+	 * @param linkCallback
+	 *            The link callback function called when the area is click, or null to have no link functionality
+	 */
 	public MapArea(String id, String shape, String coords, String tooltipText, final IAjaxLink linkCallback) {
 		this(id, null, shape, coords, tooltipText, linkCallback);
 	}

@@ -1,9 +1,7 @@
 package nl.ru.cmbi.whynot;
 
 import java.awt.Desktop;
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
@@ -24,35 +22,18 @@ public class StartWhyNot {
 		WebAppContext bb = new WebAppContext();
 		bb.setServer(server);
 		bb.setContextPath("/");
-		bb.setWar("src/main/webapp");
-
+		bb.setWar("target");
 		server.addHandler(bb);
 
-		try {
-			System.out.println(">>> STARTING EMBEDDED JETTY SERVER, PRESS ANY KEY TO STOP");
-			server.start();
+		System.out.println(">>> STARTING EMBEDDED JETTY SERVER, PRESS ANY KEY TO STOP");
+		server.start();
 
-			//Launch browser
-			if (Desktop.isDesktopSupported())
-				if (Desktop.getDesktop().isSupported(Desktop.Action.BROWSE))
-					try {
-						Desktop.getDesktop().browse(new URI("http://localhost:8081/"));
-					}
-					catch (IOException ioe) {
-						ioe.printStackTrace();
-					}
-					catch (URISyntaxException use) {
-						use.printStackTrace();
-					}
+		//Launch browser
+		Desktop.getDesktop().browse(new URI("http://localhost:" + connector.getPort() + bb.getContextPath()));
 
-			System.in.read();
-			System.out.println(">>> STOPPING EMBEDDED JETTY SERVER");
-			server.stop();
-			server.join();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			System.exit(100);
-		}
+		System.in.read();
+		System.out.println(">>> STOPPING EMBEDDED JETTY SERVER");
+		server.stop();
+		server.join();
 	}
 }

@@ -2,8 +2,6 @@ package nl.ru.cmbi.whynot.entries;
 
 import java.util.List;
 
-import nl.ru.cmbi.whynot.model.Entry;
-
 import org.apache.wicket.markup.html.WebResource;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ResourceLink;
@@ -16,6 +14,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.protocol.http.WebResponse;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.resource.StringResourceStream;
+
+import nl.ru.cmbi.whynot.model.Entry;
 
 public class EntriesPanel extends Panel {
 	public EntriesPanel(String id, final String source, final IModel<List<Entry>> entrylist) {

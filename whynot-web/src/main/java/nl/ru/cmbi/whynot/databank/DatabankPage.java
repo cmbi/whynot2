@@ -2,11 +2,6 @@ package nl.ru.cmbi.whynot.databank;
 
 import java.util.Arrays;
 
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
-import nl.ru.cmbi.whynot.home.HomePage;
-import nl.ru.cmbi.whynot.model.Databank;
-import nl.ru.cmbi.whynot.panels.PieChartPanel;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.extensions.ajax.markup.html.AjaxLazyLoadPanel;
@@ -15,6 +10,11 @@ import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+
+import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
+import nl.ru.cmbi.whynot.home.HomePage;
+import nl.ru.cmbi.whynot.model.Databank;
+import nl.ru.cmbi.whynot.panels.PieChartPanel;
 
 public class DatabankPage extends HomePage {
 	@SpringBean

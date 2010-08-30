@@ -3,15 +3,16 @@ package nl.ru.cmbi.whynot.error;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import nl.ru.cmbi.whynot.feedback.FeedbackPanelWrapper;
-
 import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 
+import nl.ru.cmbi.whynot.feedback.FeedbackPanelWrapper;
+
 public class MyExceptionErrorPage extends WebPage {
 	/**
 	 * Print feedback & stacktrace.
+	 * 
 	 * @param page
 	 * @param e
 	 */

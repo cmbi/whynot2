@@ -5,10 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import nl.ru.cmbi.whynot.model.Annotation;
-import nl.ru.cmbi.whynot.model.Comment;
-import nl.ru.cmbi.whynot.model.Entry;
-
 import org.apache.wicket.markup.html.WebResource;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ResourceLink;
@@ -19,6 +15,10 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.protocol.http.WebResponse;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.resource.StringResourceStream;
+
+import nl.ru.cmbi.whynot.model.Annotation;
+import nl.ru.cmbi.whynot.model.Comment;
+import nl.ru.cmbi.whynot.model.Entry;
 
 public class CommentsPanel extends Panel {
 	public CommentsPanel(String id, final String source, final IModel<List<Entry>> entrylist) {

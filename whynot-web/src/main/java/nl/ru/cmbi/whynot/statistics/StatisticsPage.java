@@ -3,6 +3,11 @@ package nl.ru.cmbi.whynot.statistics;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.spring.injection.annot.SpringBean;
+
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.AnnotationDAO;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.CommentDAO;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
@@ -11,11 +16,6 @@ import nl.ru.cmbi.whynot.hibernate.GenericDAO.FileDAO;
 import nl.ru.cmbi.whynot.home.HomePage;
 import nl.ru.cmbi.whynot.model.Annotation;
 import nl.ru.cmbi.whynot.model.File;
-
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.spring.injection.annot.SpringBean;
 
 public class StatisticsPage extends HomePage {
 	@SpringBean

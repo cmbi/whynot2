@@ -10,7 +10,6 @@ import org.apache.wicket.markup.repeater.RepeatingView;
  * repeating mapped areas.
  * 
  * @author Jonny Wray
- *
  */
 public class DynamicImageMap extends WebMarkupContainer {
 	private String			mapName;

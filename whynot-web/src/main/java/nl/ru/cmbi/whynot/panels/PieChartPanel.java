@@ -5,13 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jfreechart.MappedChart;
-import nl.ru.cmbi.whynot.databank.ListInitializer;
-import nl.ru.cmbi.whynot.entries.EntriesPage;
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
-import nl.ru.cmbi.whynot.model.Databank;
-import nl.ru.cmbi.whynot.model.Entry;
-import nl.ru.cmbi.whynot.model.Databank.CollectionType;
 
 import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -28,6 +21,14 @@ import org.jfree.chart.entity.ChartEntity;
 import org.jfree.chart.plot.PiePlot3D;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.ui.RectangleInsets;
+
+import nl.ru.cmbi.whynot.databank.ListInitializer;
+import nl.ru.cmbi.whynot.entries.EntriesPage;
+import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
+import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
+import nl.ru.cmbi.whynot.model.Databank;
+import nl.ru.cmbi.whynot.model.Databank.CollectionType;
+import nl.ru.cmbi.whynot.model.Entry;
 
 public class PieChartPanel extends Panel {
 	@SpringBean

@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
  * rendering information to allow image map creation
  * 
  * @author Jonny Wray
- *
  */
 public class ChartImage extends Image {
 	private static final Logger				log	= LoggerFactory.getLogger(ChartImage.class);

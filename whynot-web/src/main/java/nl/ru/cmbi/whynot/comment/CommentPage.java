@@ -4,19 +4,19 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import nl.ru.cmbi.whynot.entries.EntriesPage;
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.AnnotationDAO;
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.CommentDAO;
-import nl.ru.cmbi.whynot.home.HomePage;
-import nl.ru.cmbi.whynot.model.Comment;
-import nl.ru.cmbi.whynot.model.Entry;
-
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+
+import nl.ru.cmbi.whynot.entries.EntriesPage;
+import nl.ru.cmbi.whynot.hibernate.GenericDAO.AnnotationDAO;
+import nl.ru.cmbi.whynot.hibernate.GenericDAO.CommentDAO;
+import nl.ru.cmbi.whynot.home.HomePage;
+import nl.ru.cmbi.whynot.model.Comment;
+import nl.ru.cmbi.whynot.model.Entry;
 
 public class CommentPage extends HomePage {
 	@SpringBean

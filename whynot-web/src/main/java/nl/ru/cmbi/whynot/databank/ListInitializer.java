@@ -2,11 +2,6 @@ package nl.ru.cmbi.whynot.databank;
 
 import java.util.List;
 
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
-import nl.ru.cmbi.whynot.model.Databank;
-import nl.ru.cmbi.whynot.model.Databank.CollectionType;
-import nl.ru.cmbi.whynot.webservice.Whynot;
-
 import org.apache.wicket.Application;
 import org.apache.wicket.IInitializer;
 import org.apache.wicket.Resource;
@@ -16,6 +11,11 @@ import org.apache.wicket.protocol.http.WebResponse;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.resource.StringResourceStream;
+
+import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
+import nl.ru.cmbi.whynot.model.Databank;
+import nl.ru.cmbi.whynot.model.Databank.CollectionType;
+import nl.ru.cmbi.whynot.webservice.Whynot;
 
 public class ListInitializer implements IInitializer {
 	public ListInitializer() {

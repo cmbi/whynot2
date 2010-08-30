@@ -1,11 +1,11 @@
 package nl.ru.cmbi.whynot.panels;
 
-import nl.ru.cmbi.whynot.model.Annotation;
-import nl.ru.cmbi.whynot.model.Entry;
-
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
+
+import nl.ru.cmbi.whynot.model.Annotation;
+import nl.ru.cmbi.whynot.model.Entry;
 
 public class AnnotationPanel extends Panel {
 	public AnnotationPanel(String id, Entry entry) {

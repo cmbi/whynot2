@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import nl.ru.cmbi.whynot.model.Entry;
-
 import org.apache.wicket.markup.html.WebResource;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ResourceLink;
@@ -14,6 +12,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.protocol.http.WebResponse;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.resource.StringResourceStream;
+
+import nl.ru.cmbi.whynot.model.Entry;
 
 public class PdbidPanel extends Panel {
 	public PdbidPanel(String id, final String source, final IModel<List<Entry>> entrylist) {

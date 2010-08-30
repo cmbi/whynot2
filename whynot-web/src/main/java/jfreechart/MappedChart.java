@@ -33,12 +33,12 @@ public abstract class MappedChart extends Panel {
 	}
 
 	/**
-	* The callback method that is called when a specific image map entity is 
-	* clicked on. 
-	* 
-	* @param target
-	* @param entity
-	*/
+	 * The callback method that is called when a specific image map entity is
+	 * clicked on.
+	 * 
+	 * @param target
+	 * @param entity
+	 */
 	protected abstract void onClickCallback(AjaxRequestTarget target, ChartEntity entity);
 
 	private DynamicImageMap constructImageMap(ChartImage image, String mapName) {

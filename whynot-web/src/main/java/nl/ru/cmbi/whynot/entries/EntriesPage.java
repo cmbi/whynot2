@@ -3,9 +3,6 @@ package nl.ru.cmbi.whynot.entries;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.ru.cmbi.whynot.home.HomePage;
-import nl.ru.cmbi.whynot.model.Entry;
-
 import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
 import org.apache.wicket.extensions.markup.html.tabs.ITab;
 import org.apache.wicket.extensions.markup.html.tabs.TabbedPanel;
@@ -13,6 +10,9 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+
+import nl.ru.cmbi.whynot.home.HomePage;
+import nl.ru.cmbi.whynot.model.Entry;
 
 public class EntriesPage extends HomePage {
 	@SuppressWarnings("unchecked")

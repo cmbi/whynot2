@@ -1,12 +1,5 @@
 package nl.ru.cmbi.whynot.search;
 
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
-import nl.ru.cmbi.whynot.home.HomePage;
-import nl.ru.cmbi.whynot.model.Databank;
-import nl.ru.cmbi.whynot.model.Entry;
-import nl.ru.cmbi.whynot.panels.AnnotationPanel;
-import nl.ru.cmbi.whynot.panels.FilePanel;
-
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -14,6 +7,13 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+
+import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
+import nl.ru.cmbi.whynot.home.HomePage;
+import nl.ru.cmbi.whynot.model.Databank;
+import nl.ru.cmbi.whynot.model.Entry;
+import nl.ru.cmbi.whynot.panels.AnnotationPanel;
+import nl.ru.cmbi.whynot.panels.FilePanel;
 
 public class ResultsPage extends HomePage {
 	@SpringBean

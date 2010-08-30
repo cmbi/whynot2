@@ -1,9 +1,9 @@
 package nl.ru.cmbi.whynot.panels;
 
-import nl.ru.cmbi.whynot.model.Entry;
-
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.panel.Panel;
+
+import nl.ru.cmbi.whynot.model.Entry;
 
 public class FilePanel extends Panel {
 	public FilePanel(String id, Entry entry) {

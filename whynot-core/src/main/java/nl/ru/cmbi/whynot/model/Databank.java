@@ -1,32 +1,34 @@
 package nl.ru.cmbi.whynot.model;
 
-import java.io.Serializable;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Setter;
+
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.LazyToOne;
 import org.hibernate.annotations.LazyToOneOption;
 import org.hibernate.annotations.NaturalId;
-import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotEmpty;
 import org.hibernate.validator.NotNull;
 
+@Data
 @Entity
-public class Databank implements Comparable<Databank>, Serializable {
+@EqualsAndHashCode(callSuper = false, of = "name")
+public class Databank extends DomainObject implements Comparable<Databank> {
 	public enum CollectionType {
 		PRESENT, VALID, OBSOLETE, MISSING, ANNOTATED, UNANNOTATED
 	}
@@ -35,41 +37,44 @@ public class Databank implements Comparable<Databank>, Serializable {
 		FILE, LINE
 	}
 
-	@Id
-	@GeneratedValue(generator = "hibseq")
-	@GenericGenerator(name = "hibseq", strategy = "seqhilo", parameters = { @Parameter(name = "max_lo", value = "50") })
-	Long						id;
-
 	@NaturalId
 	@NotEmpty
 	@Length(max = 50)
+	@Setter(AccessLevel.NONE)
 	private String				name;
 
 	@NotEmpty
 	@Length(max = 200)
+	@Setter(AccessLevel.NONE)
 	private String				reference;
+
 	@NotEmpty
 	@Length(max = 200)
+	@Setter(AccessLevel.NONE)
 	private String				filelink;
 
 	@OneToOne
 	@LazyToOne(LazyToOneOption.PROXY)
+	@Setter(AccessLevel.NONE)
 	private Databank			parent;
 
 	@NotEmpty
 	@Length(max = 50)
+	@Setter(AccessLevel.NONE)
 	private String				regex;
 
 	@NotNull
 	@Enumerated(EnumType.STRING)
+	@Setter(AccessLevel.NONE)
 	private CrawlType			crawltype;
 
 	@OneToMany(mappedBy = "databank", cascade = javax.persistence.CascadeType.ALL)
 	@Cascade(value = { CascadeType.DELETE_ORPHAN })
 	@Sort(type = SortType.NATURAL)
+	@Setter(AccessLevel.NONE)
 	private SortedSet<Entry>	entries	= new TreeSet<Entry>();
 
-	protected Databank() {}
+	protected Databank() {/* Hibernate requirement */}
 
 	public Databank(String name) {
 		this.name = name;
@@ -89,71 +94,8 @@ public class Databank implements Comparable<Databank>, Serializable {
 		this.crawltype = crawltype;
 	}
 
-	public Long getId() {
-		return id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public String getReference() {
-		return reference;
-	}
-
-	public String getFilelink() {
-		return filelink;
-	}
-
-	public Databank getParent() {
-		return parent;
-	}
-
-	public String getRegex() {
-		return regex;
-	}
-
-	public CrawlType getCrawltype() {
-		return crawltype;
-	}
-
-	public SortedSet<Entry> getEntries() {
-		return entries;
-	}
-
 	@Override
-	public String toString() {
-		return name + "," + reference + "," + filelink + "," + (parent != null ? parent.getName() : null) + "," + regex + "," + crawltype;
-	}
-
 	public int compareTo(Databank o) {
 		return name.compareTo(o.name);
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + (name == null ? 0 : name.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Databank other = (Databank) obj;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		}
-		else
-			if (!name.equals(other.name))
-				return false;
-		return true;
 	}
 }

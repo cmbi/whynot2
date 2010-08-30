@@ -1,9 +1,5 @@
 package nl.ru.cmbi.whynot;
 
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
-import nl.ru.cmbi.whynot.model.Databank;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,6 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
+
+import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
+import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
+import nl.ru.cmbi.whynot.model.Databank;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:/spring.xml" })

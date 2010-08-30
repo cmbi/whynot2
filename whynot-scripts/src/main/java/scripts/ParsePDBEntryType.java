@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
  * Adds annotation for comment for each PDBID read from
  * System.in that matches the specified Pattern.
  */
-public class ParsePDBEntryType { 
+public class ParsePDBEntryType {
 	public static void main(String... args) throws Exception {
 		if (args.length != 3)
 			throw new IllegalArgumentException("Expected arguments [DBNAME] [COMMENT] [PATTERN]");
@@ -45,6 +45,7 @@ public class ParsePDBEntryType {
 
 	/**
 	 * Reads the NMR entries from wwpdb.org's pdb_entry_type.txt.
+	 * 
 	 * @param pattern
 	 * @return
 	 * @throws MalformedURLException

@@ -12,7 +12,7 @@ import java.util.Scanner;
  * Adds annotation for comment for each PDBID read from
  * System.in that matches the specified Pattern.
  */
-public class GetDSSPErrors { 
+public class GetDSSPErrors {
 	public static void main(String... args) throws Exception {
 		Scanner scn = new Scanner(System.in);
 		String prevError = ""; //We don't want to print immediate doubles

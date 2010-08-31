@@ -43,7 +43,7 @@ public class Converter {
 	 * Try to read the file, and if necessary convert & optimize it.
 	 * 
 	 * @param file
-	 * @return
+	 * @return the optionally converted and/or optimized file
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 * @throws ParseException

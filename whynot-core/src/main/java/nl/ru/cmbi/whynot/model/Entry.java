@@ -11,6 +11,7 @@ import javax.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import org.hibernate.annotations.Cascade;
@@ -24,6 +25,7 @@ import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 
 @Data
+@NoArgsConstructor(access=AccessLevel.PROTECTED)
 @Entity
 @EqualsAndHashCode(callSuper = false, of = { "databank", "pdbid" })
 public class Entry extends DomainObject implements Comparable<Entry> {
@@ -51,8 +53,6 @@ public class Entry extends DomainObject implements Comparable<Entry> {
 	@Sort(type = SortType.NATURAL)
 	@Setter(AccessLevel.NONE)
 	private SortedSet<Annotation>	annotations	= new TreeSet<Annotation>();
-
-	protected Entry() {/* Hibernate requirement */}
 
 	public Entry(Databank db, String id) {
 		databank = db;

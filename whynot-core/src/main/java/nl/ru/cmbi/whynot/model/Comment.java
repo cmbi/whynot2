@@ -9,6 +9,7 @@ import javax.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -19,6 +20,7 @@ import org.hibernate.validator.Length;
 import org.hibernate.validator.NotEmpty;
 
 @Data
+@NoArgsConstructor(access=AccessLevel.PROTECTED)
 @Entity
 @EqualsAndHashCode(callSuper = false, of = "text")
 @ToString(exclude="annotations")
@@ -33,8 +35,6 @@ public class Comment extends DomainObject implements Comparable<Comment> {
 	@Sort(type = SortType.NATURAL)
 	@Setter(AccessLevel.NONE)
 	private SortedSet<Annotation>	annotations	= new TreeSet<Annotation>();
-
-	protected Comment() {/* Hibernate requirement */}
 
 	public Comment(String text) {
 		this.text = text;

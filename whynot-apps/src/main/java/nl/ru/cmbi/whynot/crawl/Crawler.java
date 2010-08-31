@@ -57,6 +57,8 @@ public class Crawler {
 	/**
 	 * Removes entries from databank if <li>file on path does not exist <li>timestamp differs from timestamp of file on
 	 * path <li>path does not match databank regex (which might have changed) <li>no file or parent entry file exists
+	 * 
+	 * @param name
 	 */
 	@Transactional
 	public void removeChanged(String name) {
@@ -95,7 +97,9 @@ public class Crawler {
 	 * the PDBID should be enclosed in () and be the explicitly matching group number 1
 	 * Note: Strongly expects removeChanged to have run before
 	 * 
-	 * @param file
+	 * @param dbname
+	 * @param path
+	 * @throws IOException
 	 */
 	@Transactional
 	public void addCrawled(String dbname, String path) throws IOException {

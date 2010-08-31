@@ -1,6 +1,7 @@
 package nl.ru.cmbi.whynot.search;
 
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -52,8 +53,15 @@ public class ResultsPage extends HomePage {
 					else
 						if (entry != null && !entry.getAnnotations().isEmpty())
 							item.add(new AnnotationPanel("result", entry));
-						else
-							item.add(new Label("result", ""));
+						else {
+							//As per Gert: Do not show blanks, but display not available & dependency 
+							StringBuilder msg = new StringBuilder("Not available");
+							Databank par = db.getParent();
+							msg.append(", depends on: ").append(par.getName());
+							Label lbl = new Label("result", msg.toString());
+							lbl.add(new SimpleAttributeModifier("class", "annotation"));
+							item.add(lbl);
+						}
 				}
 			};
 			add(lv);

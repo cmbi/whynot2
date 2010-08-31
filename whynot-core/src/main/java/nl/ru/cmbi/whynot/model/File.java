@@ -5,7 +5,6 @@ import javax.persistence.Entity;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import org.hibernate.annotations.NaturalId;
@@ -14,7 +13,6 @@ import org.hibernate.validator.NotEmpty;
 import org.hibernate.validator.NotNull;
 
 @Data
-@NoArgsConstructor(access=AccessLevel.PROTECTED)
 @Entity
 @EqualsAndHashCode(callSuper = false, of = { "path", "timestamp" })
 public class File extends DomainObject implements Comparable<File> {
@@ -28,6 +26,8 @@ public class File extends DomainObject implements Comparable<File> {
 	@NotNull
 	@Setter(AccessLevel.NONE)
 	private Long	timestamp;
+
+	protected File() {/*Hibernate requirement*/}
 
 	public File(String path, Long timestamp) {
 		this.path = path;

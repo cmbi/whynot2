@@ -132,8 +132,9 @@ public class Annotater {
 		scn.close();
 		log.info("COMMENT: " + comment.getText() + ": Adding " + added + " annotations");
 		File dest = new File(file.getAbsolutePath() + Annotater.append);
-		file.renameTo(dest);
-		return dest;
+		if (file.renameTo(dest))
+			return dest;
+		throw new FileNotFoundException(dest.getPath() + ": Could not rename file");
 	}
 
 	@Transactional
@@ -201,7 +202,7 @@ public class Annotater {
 
 					//Flush & GC
 					sf.getCurrentSession().flush();
-					System.gc();
+					System.gc();//NOPMD
 				}
 		}
 		scn.close();
@@ -210,8 +211,9 @@ public class Annotater {
 		log.info("COMMENT: " + comment.getText() + ": Removing " + removed + " annotations");
 
 		File dest = new File(file.getAbsolutePath() + Annotater.append);
-		file.renameTo(dest);
-		return dest;
+		if (file.renameTo(dest))
+			return dest;
+		throw new FileNotFoundException(dest.getPath() + ": Could not rename file");
 	}
 
 	@Transactional

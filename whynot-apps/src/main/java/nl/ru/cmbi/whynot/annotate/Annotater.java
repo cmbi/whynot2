@@ -202,7 +202,7 @@ public class Annotater {
 
 					//Flush & GC
 					sf.getCurrentSession().flush();
-					System.gc();//NOPMD
+					System.gc();
 				}
 		}
 		scn.close();

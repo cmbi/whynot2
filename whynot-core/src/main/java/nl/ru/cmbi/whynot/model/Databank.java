@@ -28,6 +28,7 @@ import org.hibernate.validator.NotNull;
 @Data
 @Entity
 @EqualsAndHashCode(callSuper = false, of = "name")
+@SuppressWarnings("unused")
 public class Databank extends DomainObject implements Comparable<Databank> {
 	public enum CollectionType {
 		PRESENT, VALID, OBSOLETE, MISSING, ANNOTATED, UNANNOTATED

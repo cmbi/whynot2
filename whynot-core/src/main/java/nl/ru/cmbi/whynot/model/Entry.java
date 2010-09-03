@@ -44,12 +44,14 @@ public class Entry extends DomainObject implements Comparable<Entry> {
 
 	@ManyToOne(cascade = CascadeType.ALL)
 	@LazyToOne(LazyToOneOption.PROXY)
+	@SuppressWarnings("unused")
 	private File					file;
 
 	@OneToMany(mappedBy = "entry", cascade = CascadeType.ALL)
 	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
 	@Sort(type = SortType.NATURAL)
 	@Setter(AccessLevel.NONE)
+	@SuppressWarnings("unused")
 	private SortedSet<Annotation>	annotations	= new TreeSet<Annotation>();
 
 	protected Entry() {/*Hibernate requirement*/}

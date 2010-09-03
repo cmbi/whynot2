@@ -32,6 +32,7 @@ public class Comment extends DomainObject implements Comparable<Comment> {
 	@OneToMany(mappedBy = "comment")
 	@Sort(type = SortType.NATURAL)
 	@Setter(AccessLevel.NONE)
+	@SuppressWarnings("unused")
 	private SortedSet<Annotation>	annotations	= new TreeSet<Annotation>();
 
 	protected Comment() {/*Hibernate requirement*/}

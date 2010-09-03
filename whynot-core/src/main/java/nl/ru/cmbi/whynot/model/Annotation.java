@@ -35,6 +35,7 @@ public class Annotation extends DomainObject implements Comparable<Annotation> {
 	private Entry	entry;
 
 	@Setter(AccessLevel.NONE)
+	@SuppressWarnings("unused")
 	private Long	timestamp;
 
 	protected Annotation() {/*Hibernate requirement*/}

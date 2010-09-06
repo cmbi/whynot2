@@ -3,8 +3,6 @@ package nl.ru.cmbi.whynot.list;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,8 +17,6 @@ import nl.ru.cmbi.whynot.util.SpringUtil;
 @Service
 @Transactional
 public class Lister {
-	private static final Logger	log	= LoggerFactory.getLogger(Lister.class);
-
 	public static void main(String... args) {
 		String dbname = "DATABASE";
 		String selection = "PRESENT|VALID|OBSOLETE|MISSING|ANNOTATED|UNANNOTATED";
@@ -63,7 +59,6 @@ public class Lister {
 			entries = entdao.getUnannotated(db);
 			break;
 		}
-		log.info("#" + dbname + " " + selection + ": " + entries.size());
 		for (Entry ent : entries)
 			System.out.println(ent.getPdbid());
 	}

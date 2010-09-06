@@ -43,9 +43,10 @@ public class Install {
 
 	public void storeDatabanks() {
 		//Link's to proper urls with ${PDBID}
-		Databank pdb, dssp, nmr, nrg, nrg_docr, sfr;
+		Databank pdb, pdbfinder, dssp, nmr, nrg, nrg_docr, sfr;
 		dbdao.makePersistent(pdb = new Databank("PDB", CrawlType.FILE, ".*/pdb([\\w]{4})\\.ent(\\.gz)?", "http://www.wwpdb.org/", "ftp://ftp.wwpdb.org/pub/pdb/data/structures/all/pdb/pdb${PDBID}.ent.gz"));
-		dbdao.makePersistent(new Databank("PDBFINDER", pdb, CrawlType.LINE, "ID           : ([\\w]{4})", "http://swift.cmbi.ru.nl/gv/pdbfinder/", "ftp://ftp.cmbi.ru.nl/pub/molbio/data/pdbfinder/PDBFIND.TXT.gz"));
+		dbdao.makePersistent(pdbfinder = new Databank("PDBFINDER", pdb, CrawlType.LINE, "ID           : ([\\w]{4})", "http://swift.cmbi.ru.nl/gv/pdbfinder/", "ftp://ftp.cmbi.ru.nl/pub/molbio/data/pdbfinder/PDBFIND.TXT.gz"));
+		dbdao.makePersistent(new Databank("PDBFINDER2", pdbfinder, CrawlType.LINE, "ID           : ([\\w]{4})", "http://swift.cmbi.ru.nl/gv/pdbfinder/", "ftp://ftp.cmbi.ru.nl/pub/molbio/data/pdbfinder2/PDBFIND2.TXT.gz"));
 		dbdao.makePersistent(new Databank("PDBREPORT", pdb, CrawlType.FILE, ".*pdbreport.*/([\\w]{4})", "http://swift.cmbi.ru.nl/gv/pdbreport/", "http://www.cmbi.ru.nl/pdbreport/cgi-bin/nonotes?PDBID=${PDBID}"));
 
 		dbdao.makePersistent(dssp = new Databank("DSSP", pdb, CrawlType.FILE, ".*/([\\w]{4})\\.dssp", "http://swift.cmbi.ru.nl/gv/dssp/", "ftp://ftp.cmbi.ru.nl/pub/molbio/data/dssp/${PDBID}.dssp"));

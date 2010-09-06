@@ -34,7 +34,7 @@ public class Entry extends DomainObject implements Comparable<Entry> {
 	@Index(name = "entry_databank_index")
 	@Setter(AccessLevel.NONE)
 	private Databank				databank;
-	
+
 	@NaturalId
 	@Length(max = 10)
 	@NotNull
@@ -67,5 +67,10 @@ public class Entry extends DomainObject implements Comparable<Entry> {
 		if (value != 0)
 			return value;
 		return pdbid.compareTo(o.pdbid);
+	}
+
+	@Override
+	public String toString() {
+		return databank.getName() + "," + pdbid;
 	}
 }

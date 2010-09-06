@@ -21,7 +21,7 @@ import org.hibernate.validator.NotEmpty;
 @Data
 @Entity
 @EqualsAndHashCode(callSuper = false, of = "text")
-@ToString(exclude="annotations")
+@ToString(of="text")
 public class Comment extends DomainObject implements Comparable<Comment> {
 	@NaturalId
 	@NotEmpty

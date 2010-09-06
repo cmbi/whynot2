@@ -13,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Setter;
+import lombok.ToString;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -29,6 +30,7 @@ import org.hibernate.validator.NotNull;
 @Entity
 @EqualsAndHashCode(callSuper = false, of = "name")
 @SuppressWarnings("unused")
+@ToString(exclude= {"entries"})
 public class Databank extends DomainObject implements Comparable<Databank> {
 	public enum CollectionType {
 		PRESENT, VALID, OBSOLETE, MISSING, ANNOTATED, UNANNOTATED

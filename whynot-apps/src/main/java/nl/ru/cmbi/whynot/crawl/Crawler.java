@@ -134,9 +134,9 @@ public class Crawler {
 
 			//Open URL
 			URLConnection con = new URL(path).openConnection();
-			path = path.substring(path.lastIndexOf('/') + 1);
-			path = path.replaceAll("[^\\w]", "");
-			File downloaded = new File("download/" + path);
+			String cache = path.substring(path.lastIndexOf('/') + 1);
+			cache = cache.replaceAll("[^\\w]", "");
+			File downloaded = new File("download/" + cache);
 			if (!downloaded.exists() || downloaded.lastModified() != con.getLastModified()) {
 				//Overwrite file
 				BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
@@ -149,7 +149,8 @@ public class Crawler {
 				downloaded.setLastModified(con.getLastModified());
 				log.info("Downloaded " + downloaded.getAbsolutePath());
 			}
-			path = downloaded.getAbsolutePath();
+			cache = downloaded.getAbsolutePath();
+			return new File(cache);
 		}
 		return new File(path);
 	}

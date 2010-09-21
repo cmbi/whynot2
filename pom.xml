@@ -25,6 +25,9 @@
 		<module>whynot-web</module>
 	</modules>
 	<properties>
+		<!-- Skip tests, as we're working with only one live database -->
+		<maven.test.skip>true</maven.test.skip>
+		
 		<slf4j.version>1.6.1</slf4j.version>
 		<spring.version>3.0.1.RELEASE</spring.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

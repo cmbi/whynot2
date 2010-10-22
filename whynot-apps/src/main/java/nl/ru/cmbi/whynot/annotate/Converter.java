@@ -50,6 +50,8 @@ public class Converter {
 	 */
 	public static File getFile(File file) throws FileNotFoundException, IOException, ParseException {
 		Scanner scnr = new Scanner(file);
+		if (!scnr.hasNextLine())
+			throw new ParseException("Comment files can not be empty: Must contain at least one line", 1);
 		String line = scnr.nextLine();
 		scnr.close();
 

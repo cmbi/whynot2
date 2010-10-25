@@ -51,9 +51,15 @@ public class Annotater {
 		Annotater commentParser = (Annotater) SpringUtil.getContext().getBean("annotater");
 		//Comment / Uncomment all files in directories
 		for (File file : dirComments.listFiles(commentFilter))
-			commentParser.comment(Converter.getFile(file));
+			if (file.length() == 0)
+				log.error("File {} is empty and should probably be removed: Skipping it for now.. ", file);
+			else
+				commentParser.comment(Converter.getFile(file));
 		for (File file : dirUncomments.listFiles(commentFilter))
-			commentParser.uncomment(Converter.getFile(file));
+			if (file.length() == 0)
+				log.error("File {} is empty and should probably be removed: Skipping it for now.. ", file);
+			else
+				commentParser.uncomment(Converter.getFile(file));
 
 		commentParser.removeUnusedComments();
 

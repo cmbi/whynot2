@@ -20,7 +20,7 @@ public class ResultsPage extends HomePage {
 	@SpringBean
 	protected EntryDAO	entrydao;
 
-	public ResultsPage(PageParameters parameters) {
+	public ResultsPage(final PageParameters parameters) {
 		if (parameters.containsKey("pdbid")) {
 			String[] pdbids = parameters.getStringArray("pdbid");
 			RepeatingView rv = new RepeatingView("resultslist");
@@ -39,12 +39,12 @@ public class ResultsPage extends HomePage {
 	}
 
 	public class ResultFragment extends Fragment {
-		public ResultFragment(String id, final String pdbid) {
+		public ResultFragment(final String id, final String pdbid) {
 			super(id, "resultfragment", ResultsPage.this);
 			add(new Label("pdbid", pdbid));
 			ListView<Databank> lv = new ListView<Databank>("databanklist", databankdao.getAll()) {
 				@Override
-				protected void populateItem(ListItem<Databank> item) {
+				protected void populateItem(final ListItem<Databank> item) {
 					Databank db = item.getModelObject();
 					item.add(new Label("databank", db.getName()));
 					Entry entry = entrydao.findByDatabankAndPdbid(db, pdbid);
@@ -54,13 +54,18 @@ public class ResultsPage extends HomePage {
 						if (entry != null && !entry.getAnnotations().isEmpty())
 							item.add(new AnnotationPanel("result", entry));
 						else {
-							//As per Gert: Do not show blanks, but display not available & dependency 
+							// As per Gert: Do not show blanks, but display not available & dependency
 							StringBuilder msg = new StringBuilder("Not available");
 							Databank par = db.getParent();
 							msg.append(", depends on: ").append(par.getName());
 							Label lbl = new Label("result", msg.toString());
 							lbl.add(new SimpleAttributeModifier("class", "annotation"));
 							item.add(lbl);
+
+							// TODO Feature requests Robbie:
+							// If source was created / added less than a week ago: "Too new / pending"
+							// If source is available, but older than a week: "Pending"
+							// If source is not available: "Not available, depends on XYZ"
 						}
 				}
 			};

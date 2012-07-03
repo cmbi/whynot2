@@ -11,7 +11,7 @@
 	<name>Web</name>
 	<properties>
 		<spring.version>3.0.1.RELEASE</spring.version>
-		<wicket.version>1.4.14</wicket.version>
+		<wicket.version>1.4.20</wicket.version>
 		<cxf.version>2.2.10</cxf.version>
 		<jetty.version>6.1.22</jetty.version>
 	</properties>

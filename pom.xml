@@ -1,5 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>nl.ru.cmbi.whynot</groupId>
 	<artifactId>whynot</artifactId>
@@ -11,13 +12,6 @@
 		<name>CMBI</name>
 		<url>www.cmbi.ru.nl</url>
 	</organization>
-	<!--<licenses>-->
-	<!--	<license>-->
-	<!--		<name>The Apache Software License, Version 2.0</name>-->
-	<!--		<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>-->
-	<!--		<distribution>repo</distribution>-->
-	<!--	</license>-->
-	<!--</licenses>-->
 	<modules>
 		<module>whynot-core</module>
 		<module>whynot-apps</module>
@@ -27,15 +21,24 @@
 	<properties>
 		<!-- Skip tests, as we're working with only one live database -->
 		<maven.test.skip>true</maven.test.skip>
-		
 		<slf4j.version>1.6.1</slf4j.version>
 		<spring.version>3.0.1.RELEASE</spring.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<ciManagement>
-		<system>Hudson</system>
-		<url>http://brs.nbic.nl/ci</url>
+		<system>Jenkins</system>
+		<url>http://ci.cmbi.ru.nl:8080/job/WhyNot/</url>
 	</ciManagement>
+	<distributionManagement>
+		<repository>
+			<id>brs-releases</id>
+			<url>http://brs.nbic.nl/repo/content/repositories/releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>brs-snapshots</id>
+			<url>http://brs.nbic.nl/repo/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
 	<scm>
 		<connection>scm:svn:https://svn.cmbi.ru.nl/whynot/trunk</connection>
 		<developerConnection>scm:svn:https://svn.cmbi.ru.nl/whynot/trunk</developerConnection>
@@ -48,6 +51,21 @@
 			<email>t.tebeek@cmbi.ru.nl</email>
 		</developer>
 	</developers>
+	<prerequisites>
+		<maven>2.2.1</maven>
+	</prerequisites>
+	<repositories>
+		<repository>
+			<id>brs-public</id>
+			<url>${repository.brs.public}</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 	<dependencies>
 		<!-- Logging -->
 		<dependency>
@@ -58,7 +76,6 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 		</dependency>
-
 		<!-- Spring -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -76,7 +93,6 @@
 			<groupId>cglib</groupId>
 			<artifactId>cglib</artifactId>
 		</dependency>
-
 		<!-- Testing -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -98,7 +114,6 @@
 				<artifactId>whynot-core</artifactId>
 				<version>${project.version}</version>
 			</dependency>
-		
 			<!-- Logging -->
 			<dependency>
 				<groupId>org.slf4j</groupId>
@@ -110,7 +125,6 @@
 				<artifactId>slf4j-log4j12</artifactId>
 				<version>${slf4j.version}</version>
 			</dependency>
-		
 			<!-- Spring -->
 			<dependency>
 				<groupId>org.springframework</groupId>
@@ -192,8 +206,8 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
+				<version>2.5</version>
 				<configuration>
-					<findbugsXmlOutput>true</findbugsXmlOutput>
 					<findbugsXmlWithMessages>true</findbugsXmlWithMessages>
 					<xmlOutput>true</xmlOutput>
 				</configuration>
@@ -201,10 +215,26 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
+				<version>2.7.1</version>
 				<configuration>
 					<targetJdk>1.6</targetJdk>
 					<ignoreAnnotations>false</ignoreAnnotations>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jxr-plugin</artifactId>
+				<version>2.3</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.1</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>2.4</version>
 			</plugin>
 		</plugins>
 	</reporting>

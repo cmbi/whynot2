@@ -3,6 +3,8 @@ package nl.ru.cmbi.whynot.hibernate;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
+import nl.ru.cmbi.whynot.model.DomainObject;
+
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -10,8 +12,6 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import nl.ru.cmbi.whynot.model.DomainObject;
 
 /**
  * Abstract base class for all other Domain Access Objects.
@@ -21,7 +21,7 @@ import nl.ru.cmbi.whynot.model.DomainObject;
  *            the type of DomainObject persisted in implementing DAO.
  */
 public abstract class GenericHibernateDAO<T extends DomainObject> implements GenericDAO<T> {
-	private Class<T>		persistentClass;
+	private final Class<T>	persistentClass;
 
 	@Autowired
 	private SessionFactory	sessionFactory;
@@ -40,12 +40,12 @@ public abstract class GenericHibernateDAO<T extends DomainObject> implements Gen
 
 	@Override
 	public long countAll() {
-		return (Integer) createCriteria().setProjection(Projections.rowCount()).uniqueResult();
+		return (Long) createCriteria().setProjection(Projections.rowCount()).uniqueResult();
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public T find(Long id) {
+	public T find(final Long id) {
 		return (T) createCriteria(Restrictions.idEq(id)).uniqueResult();
 	}
 
@@ -58,7 +58,7 @@ public abstract class GenericHibernateDAO<T extends DomainObject> implements Gen
 	/**
 	 * Use this inside subclasses as a convenience method.
 	 */
-	protected Criteria createCriteria(Criterion... criterion) {
+	protected Criteria createCriteria(final Criterion... criterion) {
 		Criteria crit = getSession().createCriteria(persistentClass);
 		for (Criterion c : criterion)
 			crit.add(c);
@@ -66,12 +66,12 @@ public abstract class GenericHibernateDAO<T extends DomainObject> implements Gen
 	}
 
 	@Override
-	public void makePersistent(T entity) {
+	public void makePersistent(final T entity) {
 		getSession().saveOrUpdate(entity);
 	}
 
 	@Override
-	public void makeTransient(T entity) {
+	public void makeTransient(final T entity) {
 		getSession().delete(entity);
 	}
 }

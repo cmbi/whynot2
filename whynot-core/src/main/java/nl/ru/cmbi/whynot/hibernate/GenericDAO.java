@@ -2,8 +2,6 @@ package nl.ru.cmbi.whynot.hibernate;
 
 import java.util.List;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import nl.ru.cmbi.whynot.model.Annotation;
 import nl.ru.cmbi.whynot.model.Comment;
 import nl.ru.cmbi.whynot.model.Databank;
@@ -11,11 +9,10 @@ import nl.ru.cmbi.whynot.model.DomainObject;
 import nl.ru.cmbi.whynot.model.Entry;
 import nl.ru.cmbi.whynot.model.File;
 
+import org.springframework.transaction.annotation.Transactional;
+
 /**
- * Data Access Object interfaces.
- * Naming convention:
- * Find - single
- * Get - multiple
+ * Data Access Object interfaces. Naming convention: Find - single Get - multiple
  * 
  * @param <T>
  *            Type of DomainObject accessible from implementing DAO.
@@ -23,77 +20,77 @@ import nl.ru.cmbi.whynot.model.File;
 public interface GenericDAO<T extends DomainObject> {
 	long countAll();
 
-	T find(Long id);
+	T find(final Long id);
 
 	List<T> getAll();
 
-	//Save / Delete
+	// Save / Delete
 	@Transactional
-	void makePersistent(T entity);
+	void makePersistent(final T entity);
 
 	@Transactional
-	void makeTransient(T entity);
+	void makeTransient(final T entity);
 
-	//Interfaces
+	// Interfaces
 	public interface AnnotationDAO extends GenericDAO<Annotation> {
-		long getLastUsed(Comment comment);
+		long getLastUsed(final Comment comment);
 
 		List<Annotation> getRecent();
 
-		int countWith(Comment comment);
+		long countWith(final Comment comment);
 
-		List<Entry> getEntriesForComment(Long l);
+		List<Entry> getEntriesForComment(final Long l);
 	}
 
 	public interface CommentDAO extends GenericDAO<Comment> {
-		Comment findByText(String text);
+		Comment findByText(final String text);
 	}
 
 	public interface DatabankDAO extends GenericDAO<Databank> {
-		Databank findByName(String name);
+		Databank findByName(final String name);
 	}
 
 	public interface EntryDAO extends GenericDAO<Entry> {
-		Entry findByDatabankAndPdbid(Databank databank, String pdbid);
+		Entry findByDatabankAndPdbid(final Databank databank, final String pdbid);
 
-		boolean contains(String pdbid);
+		boolean contains(final String pdbid);
 
-		//Collections
-		int countPresent(Databank db);
+		// Collections
+		long countPresent(final Databank db);
 
-		int countValid(Databank db);
+		long countValid(final Databank db);
 
-		int countObsolete(Databank db);
+		long countObsolete(final Databank db);
 
-		int countMissing(Databank db);
+		long countMissing(final Databank db);
 
-		int countAnnotated(Databank db);
+		long countAnnotated(final Databank db);
 
-		int counUnannotated(Databank db);
+		long counUnannotated(final Databank db);
 
-		List<Entry> getPresent(Databank db);
+		List<Entry> getPresent(final Databank db);
 
-		List<Entry> getValid(Databank db);
+		List<Entry> getValid(final Databank db);
 
-		List<Entry> getObsolete(Databank db);
-
-		/**
-		 * @param db
-		 * @return parents!
-		 */
-		List<Entry> getMissing(Databank db);
-
-		List<Entry> getAnnotated(Databank db);
+		List<Entry> getObsolete(final Databank db);
 
 		/**
 		 * @param db
 		 * @return parents!
 		 */
-		List<Entry> getUnannotated(Databank db);
+		List<Entry> getMissing(final Databank db);
+
+		List<Entry> getAnnotated(final Databank db);
+
+		/**
+		 * @param db
+		 * @return parents!
+		 */
+		List<Entry> getUnannotated(final Databank db);
 	}
 
 	public interface FileDAO extends GenericDAO<File> {
-		File findByPathAndTimestamp(String path, Long timestamp);
+		File findByPathAndTimestamp(final String path, final Long timestamp);
 
 		List<File> getRecent();
 	}

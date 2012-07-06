@@ -1,5 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+>
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>nl.ru.cmbi.whynot</groupId>
@@ -20,8 +21,7 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>whynot-core</artifactId>
 		</dependency>
-
-		<!--  Wicket -->
+		<!-- Wicket -->
 		<dependency>
 			<groupId>org.apache.wicket</groupId>
 			<artifactId>wicket</artifactId>
@@ -59,13 +59,11 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 		<!-- Spring -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
 		</dependency>
-
 		<!-- CXF -->
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
@@ -107,24 +105,27 @@
 			<artifactId>cxf-common-utilities</artifactId>
 			<version>${cxf.version}</version>
 		</dependency>
-		
 		<!-- JFreeChart -->
 		<dependency>
 			<groupId>org.jfree</groupId>
 			<artifactId>jfreechart</artifactId>
-			<version>1.0.13</version>
+			<version>1.0.14</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.lowagie</groupId>
+					<artifactId>itext</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>xml-apis</groupId>
+					<artifactId>xml-apis</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
-		<dependency>
-			<groupId>org.jfree</groupId>
-			<artifactId>jcommon</artifactId>
-			<version>1.0.16</version>
-		</dependency>
-
-		<!--  JETTY DEPENDENCIES FOR TESTING  -->
+		<!-- JETTY DEPENDENCIES FOR TESTING -->
 		<dependency>
 			<groupId>org.mortbay.jetty</groupId>
 			<artifactId>jetty</artifactId>
-			<version>6.1.22</version>
+			<version>6.1.26</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

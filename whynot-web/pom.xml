@@ -10,11 +10,13 @@
 	<artifactId>whynot-web</artifactId>
 	<packaging>war</packaging>
 	<name>Web</name>
+	<prerequisites>
+		<maven>2.2.1</maven>
+	</prerequisites>
 	<properties>
 		<spring.version>3.0.1.RELEASE</spring.version>
 		<wicket.version>1.4.20</wicket.version>
 		<cxf.version>2.2.10</cxf.version>
-		<jetty.version>6.1.22</jetty.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -145,50 +147,16 @@
 				<filtering>true</filtering>
 				<directory>src/main/resources</directory>
 			</resource>
-			<resource>
-				<directory>${basedir}/src/main/webapp/</directory>
-				<filtering>true</filtering>
-				<targetPath>${project.build.directory}/</targetPath>
-			</resource>
 		</resources>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>clean</phase>
-						<goals>
-							<goal>resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}/WEB-INF</outputDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<configuration>
-					<warName>${artifactId}-rv${scm.revision}</warName>
-					<webResources>
-						<resource>
-							<directory>${basedir}/src/main/webapp/WEB-INF</directory>
-							<filtering>true</filtering>
-							<targetPath>WEB-INF</targetPath>
-						</resource>
-					</webResources>
-				</configuration>
-			</plugin>
 			<!-- Jetty testing -->
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>
 				<artifactId>maven-jetty-plugin</artifactId>
+				<version>6.1.26</version>
 				<configuration>
 					<contextPath>metidb</contextPath>
 					<scanIntervalSeconds>10</scanIntervalSeconds>
-					<webApp>target/${artifactId}-rv${scm.revision}.war</webApp>
 					<connectors>
 						<connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
 							<port>8080</port>
@@ -196,6 +164,59 @@
 						</connector>
 					</connectors>
 				</configuration>
+			</plugin>
+			<!-- Hot deployment -->
+			<plugin>
+				<groupId>org.codehaus.cargo</groupId>
+				<artifactId>cargo-maven2-plugin</artifactId>
+				<version>1.2.2</version>
+				<executions>
+					<execution>
+						<id>cargo-redeploy</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>undeploy</goal>
+							<goal>deploy</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<container>
+						<containerId>glassfish3x</containerId>
+						<type>remote</type>
+					</container>
+					<configuration>
+						<type>runtime</type>
+						<properties>
+							<cargo.hostname>cmbi23.cmbi.ru.nl</cargo.hostname>
+							<cargo.servlet.port>8080</cargo.servlet.port>
+							<cargo.remote.username>admin</cargo.remote.username>
+							<cargo.remote.password>${cmbi23.glassfish.password}</cargo.remote.password>
+						</properties>
+					</configuration>
+					<deployer>
+						<deployables>
+							<!-- The project's artifact is automatically deployed if no deployable is defined. However, we define it here so that 
+								we can specify the context (we don't want the version to be included in the context). -->
+							<deployable>
+								<groupId>${project.groupId}</groupId>
+								<artifactId>${project.artifactId}</artifactId>
+								<type>war</type>
+								<properties>
+									<context>${project.artifactId}</context>
+								</properties>
+							</deployable>
+						</deployables>
+					</deployer>
+				</configuration>
+				<!-- The GlassFish remote deployer requires some additional dependencies. Read more on: http://cargo.codehaus.org/JSR88 -->
+				<dependencies>
+					<dependency>
+						<groupId>org.glassfish.main.deployment</groupId>
+						<artifactId>deployment-client</artifactId>
+						<version>3.1.2</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 		</plugins>
 	</build>

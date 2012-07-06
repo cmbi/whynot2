@@ -5,6 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jfreechart.MappedChart;
+import nl.ru.cmbi.whynot.databank.ListInitializer;
+import nl.ru.cmbi.whynot.entries.EntriesPage;
+import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
+import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
+import nl.ru.cmbi.whynot.model.Databank;
+import nl.ru.cmbi.whynot.model.Databank.CollectionType;
+import nl.ru.cmbi.whynot.model.Entry;
 
 import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -22,21 +29,13 @@ import org.jfree.chart.plot.PiePlot3D;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.ui.RectangleInsets;
 
-import nl.ru.cmbi.whynot.databank.ListInitializer;
-import nl.ru.cmbi.whynot.entries.EntriesPage;
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
-import nl.ru.cmbi.whynot.model.Databank;
-import nl.ru.cmbi.whynot.model.Databank.CollectionType;
-import nl.ru.cmbi.whynot.model.Entry;
-
 public class PieChartPanel extends Panel {
 	@SpringBean
 	protected DatabankDAO	databankdao;
 	@SpringBean
 	protected EntryDAO		entrydao;
 
-	public PieChartPanel(String id, final Databank db) {
+	public PieChartPanel(final String id, final Databank db) {
 		super(id);
 		final String dbname = db.getName();
 
@@ -48,7 +47,7 @@ public class PieChartPanel extends Panel {
 		long una = entrydao.counUnannotated(db);
 		long mis = entrydao.countMissing(db);
 
-		//Legend
+		// Legend
 		add(new LegendItemFragment("valid", dbname, CollectionType.VALID, val));
 		add(new LegendItemFragment("obsolete", dbname, CollectionType.OBSOLETE, obs));
 		add(new LegendItemFragment("present", dbname, CollectionType.PRESENT, pre));
@@ -57,11 +56,11 @@ public class PieChartPanel extends Panel {
 		add(new LegendItemFragment("unannotated", dbname, CollectionType.UNANNOTATED, una));
 		add(new LegendItemFragment("missing", dbname, CollectionType.MISSING, mis));
 
-		//Chart
+		// Chart
 		add(new MappedChart("chart", createPieChart(obs, val, ann, una), 250, 150) {
 			@Override
-			protected void onClickCallback(AjaxRequestTarget target, ChartEntity entity) {
-				//Determine selection
+			protected void onClickCallback(final AjaxRequestTarget target, final ChartEntity entity) {
+				// Determine selection
 				for (final CollectionType test : CollectionType.values())
 					if (entity.toString().toUpperCase().contains(test.toString()))
 						setResponsePage(new EntriesPage(dbname + " " + test.toString().toLowerCase(), getEntriesModel(dbname, test)));
@@ -69,15 +68,15 @@ public class PieChartPanel extends Panel {
 		});
 	}
 
-	private JFreeChart createPieChart(long obs, long val, long ann, long una) {
-		//Create a DataSet
+	private JFreeChart createPieChart(final long obs, final long val, final long ann, final long una) {
+		// Create a DataSet
 		DefaultPieDataset pieDataset = new DefaultPieDataset();
 		pieDataset.setValue("Obsolete", obs);
 		pieDataset.setValue("Valid", val);
 		pieDataset.setValue("Annotated", ann);
 		pieDataset.setValue("Unannotated", una);
 
-		//Create Chart
+		// Create Chart
 		JFreeChart chart = ChartFactory.createPieChart3D(null, pieDataset, false, true, false);
 		chart.setBackgroundPaint(Color.WHITE);
 		chart.setPadding(RectangleInsets.ZERO_INSETS);
@@ -86,7 +85,7 @@ public class PieChartPanel extends Panel {
 		plot.setForegroundAlpha(0.6f);
 		plot.setBackgroundPaint(Color.WHITE);
 		plot.setSectionPaint("Obsolete", new Color(184, 0, 0));
-		plot.setSectionPaint("Valid", new Color(0, 112, 184));//#0070B8
+		plot.setSectionPaint("Valid", new Color(0, 112, 184));// #0070B8
 		plot.setSectionPaint("Annotated", new Color(0, 184, 112));
 		plot.setSectionPaint("Unannotated", Color.YELLOW);
 		plot.setLabelGenerator(null);
@@ -96,9 +95,9 @@ public class PieChartPanel extends Panel {
 	}
 
 	private class LegendItemFragment extends Fragment {
-		public LegendItemFragment(String id, final String dbname, final CollectionType colType, long count) {
+		public LegendItemFragment(final String id, final String dbname, final CollectionType colType, final long count) {
 			super(id, "legenditemfragment", PieChartPanel.this);
-			//Entries
+			// Entries
 			final String clname = colType.name().toLowerCase();
 			Link<Void> lnk = new Link<Void>("entrylink") {
 				@Override
@@ -110,13 +109,13 @@ public class PieChartPanel extends Panel {
 			lnk.add(new Label("count", "" + count));
 			add(lnk);
 
-			//Resource
+			// Resource
 			ResourceReference reference = new ResourceReference(ListInitializer.class, dbname + '_' + colType.name().toUpperCase());
 			add(new ResourceLink<String>("resourcelink", reference));
 		}
 	}
 
-	private LoadableDetachableModel<List<Entry>> getEntriesModel(final String databank, final CollectionType test) {
+	LoadableDetachableModel<List<Entry>> getEntriesModel(final String databank, final CollectionType test) {
 		return new LoadableDetachableModel<List<Entry>>() {
 			@Override
 			protected List<Entry> load() {

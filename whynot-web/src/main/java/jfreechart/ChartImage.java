@@ -1,5 +1,7 @@
 package jfreechart;
 
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
 import org.apache.wicket.Resource;
@@ -12,37 +14,34 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Wicket Image constructed from a JFreeChart and exposing the
- * rendering information to allow image map creation
+ * Wicket Image constructed from a JFreeChart and exposing the rendering information to allow image map creation
  * 
  * @author Jonny Wray
  */
 public class ChartImage extends Image {
 	private static final Logger				log	= LoggerFactory.getLogger(ChartImage.class);
 
-	private int								width;
-	private int								height;
-	private JFreeChart						chart;
+	private final int						width;
+	private final int						height;
+	private final JFreeChart				chart;
 	private transient BufferedImage			image;
 	private transient ChartRenderingInfo	renderingInfo;
 
-	public ChartImage(String id, JFreeChart chart, int width, int height) {
+	public ChartImage(final String id, final JFreeChart chart, final int width, final int height) {
 		super(id);
 		this.width = width;
 		this.height = height;
 		this.chart = chart;
 	}
 
-	private BufferedImage createBufferedImage() {
+	BufferedImage createBufferedImage() {
 		if (image == null) {
 			renderingInfo = new ChartRenderingInfo();
-			try {
-				image = chart.createBufferedImage(width, height, renderingInfo);
-			}
-			catch (NoClassDefFoundError e) {
-				log.error(e.getMessage(), e);
-				image = null;
-			}
+			// Previously we used this, but it did not play well with headless servers because of the Swing component
+			// image = chart.createBufferedImage(width, height, renderingInfo);
+			image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+			Graphics2D graphics = (Graphics2D) image.getGraphics();
+			chart.draw(graphics, new Rectangle(width, height), renderingInfo);
 		}
 		return image;
 	}
@@ -65,7 +64,7 @@ public class ChartImage extends Image {
 			}
 
 			@Override
-			protected void setHeaders(WebResponse response) {
+			protected void setHeaders(final WebResponse response) {
 				if (isCacheable())
 					super.setHeaders(response);
 				else {

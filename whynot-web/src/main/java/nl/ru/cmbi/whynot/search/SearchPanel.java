@@ -8,7 +8,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.validation.validator.PatternValidator;
 
 public class SearchPanel extends Panel {
-	public SearchPanel(String id) {
+	public SearchPanel(final String id) {
 		super(id);
 
 		final TextField<String> tt = new TextField<String>("pdbid", new Model<String>());
@@ -18,7 +18,7 @@ public class SearchPanel extends Panel {
 			@Override
 			protected void onSubmit() {
 				PageParameters pp = new PageParameters();
-				pp.put("pdbid", tt.getConvertedInput().split("\\s+"));
+				pp.put("pdbid", tt.getConvertedInput().toLowerCase().split("\\s+"));
 				setResponsePage(ResultsPage.class, pp);
 			}
 		};

@@ -15,7 +15,7 @@
 	</prerequisites>
 	<properties>
 		<spring.version>3.0.1.RELEASE</spring.version>
-		<wicket.version>1.4.20</wicket.version>
+		<wicket.version>1.4.21</wicket.version>
 		<cxf.version>2.2.10</cxf.version>
 	</properties>
 	<dependencies>

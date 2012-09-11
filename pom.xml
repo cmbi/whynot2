@@ -32,11 +32,11 @@
 	<distributionManagement>
 		<repository>
 			<id>brs-releases</id>
-			<url>http://brs.nbic.nl/repo/content/repositories/releases</url>
+			<url>https://brs.nbic.nl/repo/content/repositories/releases</url>
 		</repository>
 		<snapshotRepository>
 			<id>brs-snapshots</id>
-			<url>http://brs.nbic.nl/repo/content/repositories/snapshots</url>
+			<url>https://brs.nbic.nl/repo/content/repositories/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 	<scm>

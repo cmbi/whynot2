@@ -1,16 +1,15 @@
 package nl.ru.cmbi.whynot;
 
-import org.junit.Ignore;
+import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
+import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
+import nl.ru.cmbi.whynot.model.Databank;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
-import nl.ru.cmbi.whynot.model.Databank;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:/spring.xml" })
@@ -22,8 +21,9 @@ public class CountTest {
 	@Autowired
 	private DatabankDAO	dbdao;
 
+	// TODO These are pretty poor tests
+
 	@Test
-	@Ignore
 	public void getXXXcount() {
 		Databank nrg = dbdao.findByName("DSSP");
 		System.err.println(entdao.countPresent(nrg));
@@ -35,8 +35,6 @@ public class CountTest {
 	}
 
 	@Test
-	@Ignore
-	@Deprecated
 	public void getXXXsize() {
 		Databank nrg = dbdao.findByName("DSSP");
 		System.err.println(entdao.getPresent(nrg).size());

@@ -10,8 +10,6 @@ import org.apache.wicket.markup.html.image.resource.DynamicImageResource;
 import org.apache.wicket.protocol.http.WebResponse;
 import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.JFreeChart;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Wicket Image constructed from a JFreeChart and exposing the rendering information to allow image map creation
@@ -19,8 +17,6 @@ import org.slf4j.LoggerFactory;
  * @author Jonny Wray
  */
 public class ChartImage extends Image {
-	private static final Logger				log	= LoggerFactory.getLogger(ChartImage.class);
-
 	private final int						width;
 	private final int						height;
 	private final JFreeChart				chart;

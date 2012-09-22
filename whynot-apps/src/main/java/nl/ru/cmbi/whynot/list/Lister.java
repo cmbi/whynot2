@@ -3,10 +3,6 @@ package nl.ru.cmbi.whynot.list;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 import nl.ru.cmbi.whynot.model.Databank;
@@ -14,10 +10,14 @@ import nl.ru.cmbi.whynot.model.Databank.CollectionType;
 import nl.ru.cmbi.whynot.model.Entry;
 import nl.ru.cmbi.whynot.util.SpringUtil;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 @Service
 @Transactional
 public class Lister {
-	public static void main(String... args) {
+	public static void main(final String... args) {
 		String dbname = "DATABASE";
 		String selection = "PRESENT|VALID|OBSOLETE|MISSING|ANNOTATED|UNANNOTATED";
 		if (args.length != 2 || !args[1].matches(selection))
@@ -33,12 +33,12 @@ public class Lister {
 	@Autowired
 	private EntryDAO	entdao;
 
-	public void list(String dbname, CollectionType selection) {
+	public void list(final String dbname, final CollectionType selection) {
 		Databank db = dbdao.findByName(dbname);
 		if (db == null)
 			throw new IllegalArgumentException("Unknown databank: " + dbname);
 
-		List<Entry> entries = new ArrayList<Entry>();
+		final List<Entry> entries;
 		switch (selection) {
 		case PRESENT:
 			entries = entdao.getPresent(db);
@@ -58,6 +58,8 @@ public class Lister {
 		case UNANNOTATED:
 			entries = entdao.getUnannotated(db);
 			break;
+		default:
+			entries = new ArrayList<Entry>();
 		}
 		for (Entry ent : entries)
 			System.out.println(ent.getPdbid());

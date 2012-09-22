@@ -32,16 +32,14 @@
 					</archive>
 				</configuration>
 			</plugin>
-	 		<plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<version>2.3</version>
-	 			<executions>
+				<artifactId>maven-shade-plugin</artifactId>
+				<executions>
 					<execution>
-						<id>copy-dependencies</id>
 						<phase>package</phase>
 						<goals>
-							<goal>copy-dependencies</goal>
+							<goal>shade</goal>
 						</goals>
 					</execution>
 				</executions>

@@ -19,13 +19,6 @@
 		<module>whynot-scripts</module>
 		<module>whynot-web</module>
 	</modules>
-	<properties>
-		<!-- Skip tests, as we're working with only one live database -->
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.test.skip>true</maven.test.skip>
-		<slf4j.version>1.6.6</slf4j.version>
-		<spring.version>3.1.1.RELEASE</spring.version>
-	</properties>
 	<ciManagement>
 		<system>Jenkins</system>
 		<url>http://ci.cmbi.ru.nl:8080/job/WhyNot/</url>
@@ -55,6 +48,27 @@
 	<prerequisites>
 		<maven>2.2.1</maven>
 	</prerequisites>
+	<properties>
+		<!-- Skip tests, as we're working with only one live database -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.test.skip>true</maven.test.skip>
+		<slf4j.version>1.6.6</slf4j.version>
+		<spring.version>3.1.1.RELEASE</spring.version>
+	</properties>
+	<profiles>
+		<profile>
+			<id>tbeek</id>
+			<activation>
+				<property>
+					<name>user.name</name>
+					<value>tbeek</value>
+				</property>
+			</activation>
+			<properties>
+				<maven.test.skip>false</maven.test.skip>
+			</properties>
+		</profile>
+	</profiles>
 	<repositories>
 		<!-- All the artifacts made through BRS -->
 		<repository>

@@ -13,7 +13,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Setter;
 
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.LazyToOne;
 import org.hibernate.annotations.LazyToOneOption;
@@ -47,22 +46,22 @@ public class Entry extends DomainObject implements Comparable<Entry> {
 	@SuppressWarnings("unused")
 	private File					file;
 
-	@OneToMany(mappedBy = "entry", cascade = CascadeType.ALL)
-	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
+	@OneToMany(mappedBy = "entry", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Sort(type = SortType.NATURAL)
 	@Setter(AccessLevel.NONE)
 	@SuppressWarnings("unused")
 	private SortedSet<Annotation>	annotations	= new TreeSet<Annotation>();
 
-	protected Entry() {/*Hibernate requirement*/}
+	protected Entry() {/* Hibernate requirement */
+	}
 
-	public Entry(Databank db, String id) {
+	public Entry(final Databank db, final String id) {
 		databank = db;
 		pdbid = id.toLowerCase();
 	}
 
 	@Override
-	public int compareTo(Entry o) {
+	public int compareTo(final Entry o) {
 		int value = databank.compareTo(o.databank);
 		if (value != 0)
 			return value;

@@ -1,5 +1,9 @@
 package nl.ru.cmbi.whynot.util;
 
+import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
+import nl.ru.cmbi.whynot.model.Databank;
+import nl.ru.cmbi.whynot.model.Databank.CrawlType;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
@@ -9,16 +13,12 @@ import org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBea
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
-import nl.ru.cmbi.whynot.model.Databank;
-import nl.ru.cmbi.whynot.model.Databank.CrawlType;
-
 @Service
 @Transactional
 public class Install {
 	private static final Logger	log	= LoggerFactory.getLogger(Install.class);
 
-	public static void main(String[] args) throws Exception {
+	public static void main(final String[] args) throws Exception {
 		AnnotationSessionFactoryBean asfb = (AnnotationSessionFactoryBean) SpringUtil.getContext().getBean("&sessionFactory");
 		asfb.dropDatabaseSchema();
 		asfb.createDatabaseSchema();
@@ -42,7 +42,8 @@ public class Install {
 	private DatabankDAO	dbdao;
 
 	public void storeDatabanks() {
-		//Link's to proper urls with ${PDBID}
+		// XXX Database dependencies, urls and file names should be stored in a configuration file instead, if not in DB
+		// Link's to proper urls with ${PDBID}
 		Databank pdb, pdbfinder, dssp, nmr, nrg, nrg_docr, sfr;
 		dbdao.makePersistent(pdb = new Databank("PDB", CrawlType.FILE, ".*/pdb([\\w]{4})\\.ent(\\.gz)?", "http://www.wwpdb.org/", "ftp://ftp.wwpdb.org/pub/pdb/data/structures/all/pdb/pdb${PDBID}.ent.gz"));
 		dbdao.makePersistent(pdbfinder = new Databank("PDBFINDER", pdb, CrawlType.LINE, "ID           : ([\\w]{4})", "http://swift.cmbi.ru.nl/gv/pdbfinder/", "ftp://ftp.cmbi.ru.nl/pub/molbio/data/pdbfinder/PDBFIND.TXT.gz"));

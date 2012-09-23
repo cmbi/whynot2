@@ -21,10 +21,10 @@ import org.springframework.beans.factory.annotation.Autowired;
  *            the type of DomainObject persisted in implementing DAO.
  */
 public abstract class GenericHibernateDAO<T extends DomainObject> implements GenericDAO<T> {
-	private final Class<T>	persistentClass;
+	protected final Class<T>	persistentClass;
 
 	@Autowired
-	private SessionFactory	sessionFactory;
+	private SessionFactory		sessionFactory;
 
 	/**
 	 * Retrieve type argument <T extends {@link DomainObject} and set it as persistentClass.
@@ -60,6 +60,13 @@ public abstract class GenericHibernateDAO<T extends DomainObject> implements Gen
 	 */
 	protected Criteria createCriteria(final Criterion... criterion) {
 		Criteria crit = getSession().createCriteria(persistentClass);
+		for (Criterion c : criterion)
+			crit.add(c);
+		return crit;
+	}
+
+	protected Criteria createCriteria(final String alias, final Criterion... criterion) {
+		Criteria crit = getSession().createCriteria(persistentClass, alias);
 		for (Criterion c : criterion)
 			crit.add(c);
 		return crit;

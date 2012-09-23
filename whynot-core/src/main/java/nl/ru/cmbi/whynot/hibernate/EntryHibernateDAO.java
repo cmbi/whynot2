@@ -7,10 +7,12 @@ import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Entry;
 
 import org.hibernate.Criteria;
+import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.type.StandardBasicTypes;
+import org.hibernate.criterion.Subqueries;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,89 +31,175 @@ public class EntryHibernateDAO extends GenericHibernateDAO<Entry> implements Ent
 	}
 
 	// Present
+	private Criteria presentCriteria(final Databank db) {
+		return createCriteria(Restrictions.eq("databank", db), Restrictions.isNotNull("file"));
+	}
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Entry> getPresent(final Databank db) {
-		return getSession().createFilter(db.getEntries(), "where this.file is not null").list();
+		return presentCriteria(db).addOrder(Order.asc("pdbid")).list();
 	}
 
 	@Override
 	public long countPresent(final Databank db) {
-		Criteria crit = createCriteria(Restrictions.eq("databank", db), Restrictions.isNotNull("file"));
-		return (Long) crit.setProjection(Projections.rowCount()).uniqueResult();
+		return (Long) presentCriteria(db).setProjection(Projections.rowCount()).uniqueResult();
 	}
 
 	// Valid
+	private Criteria validCriteria(final Databank db) {
+		// Start out with present entries
+		Criteria query = createCriteria("child");
+		query.add(Restrictions.eq("databank", db));
+		query.add(Restrictions.isNotNull("file"));
+
+		// Correlated subquery to retain those that have a present parent entry
+		DetachedCriteria sub = DetachedCriteria.forClass(persistentClass, "parent");
+		sub.add(Restrictions.eq("databank", db.getParent()));
+		sub.add(Restrictions.isNotNull("file"));
+		sub.add(Property.forName("child.pdbid").eqProperty("parent.pdbid"));
+
+		// Subqueries must have a projection set
+		sub.setProjection(Projections.id());
+		query.add(Subqueries.exists(sub));
+		return query;
+	}
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Entry> getValid(final Databank db) {
-		return getSession().createFilter(db.getEntries(), "where this.file is not null and (select par.file from this.databank.parent.entries par where par.pdbid = this.pdbid) is not null").list();
+		return validCriteria(db).addOrder(Order.asc("pdbid")).list();
 	}
 
 	@Override
 	public long countValid(final Databank db) {
-		Criteria crit = createCriteria(Restrictions.eq("databank", db), Restrictions.isNotNull("file"));
-		crit.add(Restrictions.sqlRestriction("(select parent.file_id from Entry parent where parent.pdbid = {alias}.pdbid and parent.databank_id = ?) is not null", db.getParent().getId(), StandardBasicTypes.LONG));
-		return (Long) crit.setProjection(Projections.rowCount()).uniqueResult();
+		Criteria query = validCriteria(db);
+
+		// Return rowcount
+		query.setProjection(Projections.rowCount());
+		return (Long) query.uniqueResult();
 	}
 
 	// Obsolete
+	private Criteria obsoleteCriteria(final Databank db) {
+		// Start out with present entries
+		Criteria query = createCriteria("child");
+		query.add(Restrictions.eq("databank", db));
+		query.add(Restrictions.isNotNull("file"));
+
+		// Correlated subquery to retain those that do not have a present parent entry
+		DetachedCriteria sub = DetachedCriteria.forClass(persistentClass, "parent");
+		sub.add(Restrictions.eq("databank", db.getParent()));
+		sub.add(Restrictions.isNotNull("file"));
+		sub.add(Property.forName("child.pdbid").eqProperty("parent.pdbid"));
+
+		// Subqueries must have a projection set
+		sub.setProjection(Projections.id());
+		query.add(Subqueries.notExists(sub));
+		return query;
+	}
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Entry> getObsolete(final Databank db) {
-		return getSession().createFilter(db.getEntries(), "where (select par.file from this.databank.parent.entries par where par.pdbid = this.pdbid) is null").list();
+		return obsoleteCriteria(db).addOrder(Order.asc("pdbid")).list();
 	}
 
 	@Override
 	public long countObsolete(final Databank db) {
-		Criteria crit = createCriteria(Restrictions.eq("databank", db));
-		crit.add(Restrictions.sqlRestriction("(select parent.file_id from Entry parent where parent.pdbid = {alias}.pdbid and parent.databank_id = ?) is null", db.getParent().getId(), StandardBasicTypes.LONG));
-		return (Long) crit.setProjection(Projections.rowCount()).uniqueResult();
+		return (Long) obsoleteCriteria(db).setProjection(Projections.rowCount()).uniqueResult();
 	}
 
 	// Annotated
+	private Criteria annotatedCriteria(final Databank db) {
+		// Start out with present entries
+		Criteria query = createCriteria("child");
+		query.add(Restrictions.eq("databank", db));
+		query.add(Restrictions.isNull("file"));
+		query.add(Restrictions.isNotEmpty("annotations"));
+
+		// Correlated subquery to retain those that have a present parent entry
+		DetachedCriteria sub = DetachedCriteria.forClass(persistentClass, "parent");
+		sub.add(Restrictions.eq("databank", db.getParent()));
+		sub.add(Restrictions.isNotNull("file"));
+		sub.add(Property.forName("child.pdbid").eqProperty("parent.pdbid"));
+
+		// Subqueries must have a projection set
+		sub.setProjection(Projections.id());
+		query.add(Subqueries.exists(sub));
+		return query;
+	}
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Entry> getAnnotated(final Databank db) {
-		return getSession().createFilter(db.getEntries(), "where this.annotations is not empty").list();
+		return annotatedCriteria(db).addOrder(Order.asc("pdbid")).list();
 	}
 
 	@Override
 	public long countAnnotated(final Databank db) {
-		Criteria crit = createCriteria(Restrictions.eq("databank", db), Restrictions.isNotEmpty("annotations"));
-		return (Long) crit.setProjection(Projections.rowCount()).uniqueResult();
+		return (Long) annotatedCriteria(db).setProjection(Projections.rowCount()).uniqueResult();
 	}
 
 	// Missing
+	private Criteria missingCriteria(final Databank child) {
+		// Start by selecting all existing parent entries
+		Criteria query = createCriteria("parent");
+		query.add(Restrictions.eq("databank", child.getParent()));
+		query.add(Restrictions.isNotNull("file"));
+
+		// Filter out those that have an existing child
+		DetachedCriteria sub = DetachedCriteria.forClass(persistentClass, "child");
+		sub.add(Restrictions.eq("databank", child));
+		sub.add(Restrictions.isNotNull("file"));
+		sub.add(Property.forName("child.pdbid").eqProperty("parent.pdbid"));
+
+		// Subqueries must have a projection set
+		sub.setProjection(Projections.id());
+		query.add(Subqueries.notExists(sub));
+
+		// FIXME Obsolete parent entries should (maybe) not result in missing child entries
+		return query;
+	}
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Entry> getMissing(final Databank child) {
-		// FIXME Obsolete parent entries should (maybe) not result in missing child entries
-		Criteria crit = createCriteria(Restrictions.eq("databank", child.getParent()), Restrictions.isNotNull("file"));
-		crit.add(Restrictions.sqlRestriction("(select child.file_id from Entry child where {alias}.pdbid = child.pdbid and child.databank_id = ?) is null", child.getId(), StandardBasicTypes.LONG));
-		return crit.addOrder(Order.asc("pdbid")).list();
+		return missingCriteria(child).addOrder(Order.asc("pdbid")).list();
 	}
 
 	@Override
 	public long countMissing(final Databank child) {
-		Criteria crit = createCriteria(Restrictions.eq("databank", child.getParent()), Restrictions.isNotNull("file"));
-		crit.add(Restrictions.sqlRestriction("(select child.file_id from Entry child where {alias}.pdbid = child.pdbid and child.databank_id = ?) is null", child.getId(), StandardBasicTypes.LONG));
-		return (Long) crit.setProjection(Projections.rowCount()).uniqueResult();
+		return (Long) missingCriteria(child).setProjection(Projections.rowCount()).uniqueResult();
 	}
 
 	// Unannotated
+	private Criteria unannotatedCriteria(final Databank child) {
+		// Start by selecting all existing parent entries
+		Criteria query = createCriteria("parent");
+		query.add(Restrictions.eq("databank", child.getParent()));
+		query.add(Restrictions.isNotNull("file"));
+
+		// Filter out those that have childs with either a file or annotation
+		DetachedCriteria sub = DetachedCriteria.forClass(persistentClass, "child");
+		sub.add(Property.forName("child.pdbid").eqProperty("parent.pdbid"));
+		sub.add(Restrictions.eq("databank", child));
+		sub.add(Restrictions.or(Restrictions.isNotNull("file"), Restrictions.isNotEmpty("annotations")));
+
+		// Subqueries must have a projection set
+		sub.setProjection(Projections.id());
+		query.add(Subqueries.notExists(sub));
+		return query;
+	}
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Entry> getUnannotated(final Databank child) {
-		Criteria crit = createCriteria(Restrictions.eq("databank", child.getParent()), Restrictions.isNotNull("file"));
-		crit.add(Restrictions.sqlRestriction("(select child from Entry child where {alias}.pdbid = child.pdbid and child.databank_id = ?) is null", child.getId(), StandardBasicTypes.LONG));
-		return crit.addOrder(Order.asc("pdbid")).list();
+		return unannotatedCriteria(child).addOrder(Order.asc("pdbid")).list();
 	}
 
 	@Override
 	public long counUnannotated(final Databank child) {
-		Criteria crit = createCriteria(Restrictions.eq("databank", child.getParent()), Restrictions.isNotNull("file"));
-		crit.add(Restrictions.sqlRestriction("(select child from Entry child where {alias}.pdbid = child.pdbid and child.databank_id = ?) is null", child.getId(), StandardBasicTypes.LONG));
-		return (Long) crit.setProjection(Projections.rowCount()).uniqueResult();
+		return (Long) unannotatedCriteria(child).setProjection(Projections.rowCount()).uniqueResult();
 	}
 }

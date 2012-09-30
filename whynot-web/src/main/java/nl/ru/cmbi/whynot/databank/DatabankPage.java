@@ -2,6 +2,11 @@ package nl.ru.cmbi.whynot.databank;
 
 import java.util.Arrays;
 
+import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
+import nl.ru.cmbi.whynot.home.HomePage;
+import nl.ru.cmbi.whynot.model.Databank;
+import nl.ru.cmbi.whynot.panels.PieChartPanel;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.extensions.ajax.markup.html.AjaxLazyLoadPanel;
@@ -10,12 +15,9 @@ import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.wicketstuff.annotation.mount.MountPath;
 
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
-import nl.ru.cmbi.whynot.home.HomePage;
-import nl.ru.cmbi.whynot.model.Databank;
-import nl.ru.cmbi.whynot.panels.PieChartPanel;
-
+@MountPath(path = "databanks")
 public class DatabankPage extends HomePage {
 	@SpringBean
 	protected EntryDAO	entrydao;
@@ -24,7 +26,7 @@ public class DatabankPage extends HomePage {
 		add(databankListView(databankdao.getAll().toArray(new Databank[0])));
 	}
 
-	public DatabankPage(PageParameters parameters) {
+	public DatabankPage(final PageParameters parameters) {
 		Databank db = null;
 		if (parameters.containsKey("name")) {
 			String name = parameters.getString("name");
@@ -39,15 +41,15 @@ public class DatabankPage extends HomePage {
 		}
 	}
 
-	public ListView<Databank> databankListView(Databank... databanks) {
+	public ListView<Databank> databankListView(final Databank... databanks) {
 		ListView<Databank> chartlist = new ListView<Databank>("chartlist", Arrays.asList(databanks)) {
 			@Override
-			protected void populateItem(ListItem<Databank> item) {
+			protected void populateItem(final ListItem<Databank> item) {
 				final Databank db = item.getModelObject();
 				item.add(new Label("name", db.getName()));
 				item.add(new AjaxLazyLoadPanel("chartpanel") {
 					@Override
-					public Component getLazyLoadComponent(String markupId) {
+					public Component getLazyLoadComponent(final String markupId) {
 						return new PieChartPanel(markupId, db);
 					}
 				});

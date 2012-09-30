@@ -3,12 +3,14 @@ package nl.ru.cmbi.whynot.error;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import nl.ru.cmbi.whynot.feedback.FeedbackPanelWrapper;
+
 import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
+import org.wicketstuff.annotation.mount.MountPath;
 
-import nl.ru.cmbi.whynot.feedback.FeedbackPanelWrapper;
-
+@MountPath(path = "error")
 public class MyExceptionErrorPage extends WebPage {
 	/**
 	 * Print feedback & stacktrace.
@@ -16,7 +18,7 @@ public class MyExceptionErrorPage extends WebPage {
 	 * @param page
 	 * @param e
 	 */
-	public MyExceptionErrorPage(Page page, RuntimeException e) {
+	public MyExceptionErrorPage(final Page page, final RuntimeException e) {
 		add(new FeedbackPanelWrapper("feedback"));
 
 		add(new Label("page", page == null ? "null" : page.toString()));

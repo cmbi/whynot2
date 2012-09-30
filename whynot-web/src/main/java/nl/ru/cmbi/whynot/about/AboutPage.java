@@ -2,4 +2,8 @@ package nl.ru.cmbi.whynot.about;
 
 import nl.ru.cmbi.whynot.home.HomePage;
 
-public class AboutPage extends HomePage {/* Static HTML only: No Java implementation */}
+import org.wicketstuff.annotation.mount.MountPath;
+
+@MountPath(path = "about")
+public class AboutPage extends HomePage {/* Static HTML only: No Java implementation */
+}

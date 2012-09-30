@@ -9,7 +9,11 @@ import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.webapp.WebAppContext;
 
 public class StartWhyNot {
-	public static void main(String[] args) throws Exception {
+	public static void main(final String[] args) throws Exception {
+		// Mock database and contents
+		DBMock.main(new String[0]);
+
+		// Setup server to host web app
 		Server server = new Server();
 		SocketConnector connector = new SocketConnector();
 
@@ -22,13 +26,13 @@ public class StartWhyNot {
 		WebAppContext bb = new WebAppContext();
 		bb.setServer(server);
 		bb.setContextPath("/");
-		bb.setWar("target");
+		bb.setWar("src/main/webapp");
 		server.addHandler(bb);
 
 		System.out.println(">>> STARTING EMBEDDED JETTY SERVER, PRESS ANY KEY TO STOP");
 		server.start();
 
-		//Launch browser
+		// Launch browser
 		Desktop.getDesktop().browse(new URI("http://localhost:" + connector.getPort() + bb.getContextPath()));
 
 		System.in.read();

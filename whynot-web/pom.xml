@@ -99,6 +99,12 @@
 			<artifactId>jcommon</artifactId>
 			<version>1.0.17</version>
 		</dependency>
+		<!-- String opertations -->
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+		</dependency>
 		<!-- JETTY DEPENDENCIES FOR TESTING -->
 		<dependency>
 			<groupId>org.mortbay.jetty</groupId>

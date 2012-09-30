@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DatabankHibernateDAO extends GenericHibernateDAO<Databank> implements DatabankDAO {
 	@Override
 	public Databank findByName(final String name) {
-		return (Databank) createCriteria(Restrictions.naturalId().set("name", name)).uniqueResult();
+		return (Databank) createCriteria(Restrictions.eq("name", name).ignoreCase()).uniqueResult();
 	}
 
 	@Override

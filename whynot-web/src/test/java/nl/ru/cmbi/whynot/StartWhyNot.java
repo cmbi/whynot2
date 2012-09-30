@@ -11,7 +11,7 @@ import org.mortbay.jetty.webapp.WebAppContext;
 public class StartWhyNot {
 	public static void main(final String[] args) throws Exception {
 		// Mock database and contents
-		DBMock.main(new String[0]);
+		// XXX DBMock.main(new String[0]);
 
 		// Setup server to host web app
 		Server server = new Server();

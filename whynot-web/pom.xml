@@ -23,13 +23,6 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>whynot-core</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>whynot-core</artifactId>
-			<classifier>test-jar</classifier>
-			<version>${project.version}</version>
-			<scope>test</scope>
-		</dependency>
 		<!-- Wicket -->
 		<dependency>
 			<groupId>org.apache.wicket</groupId>

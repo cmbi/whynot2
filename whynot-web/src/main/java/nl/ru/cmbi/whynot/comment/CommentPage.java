@@ -35,7 +35,7 @@ public class CommentPage extends HomePage {
 				final Comment com = item.getModelObject();
 				long count = annotationdao.countWith(com);
 				long latest = annotationdao.getLastUsed(com);
-				item.add(new Label("text", com.getText()));
+				item.add(new Label("text", com.getText()).setEscapeModelStrings(false));
 				Link<Void> lnk = new Link<Void>("entries") {
 					@Override
 					public void onClick() {

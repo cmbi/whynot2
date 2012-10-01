@@ -23,7 +23,6 @@
 	<!-- CXF -->
 	<!-- Define endpoint for CXF WebServices -->
 	<import resource="classpath:META-INF/cxf/cxf.xml" />
-	<import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
 	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
 	<!-- JAX-RS -->
 	<jaxrs:server address="/rs">

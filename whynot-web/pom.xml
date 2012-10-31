@@ -164,7 +164,7 @@
 						<type>runtime</type>
 						<properties>
 							<cargo.hostname>cmbi23.cmbi.ru.nl</cargo.hostname>
-							<cargo.servlet.port>8082</cargo.servlet.port>
+							<cargo.glassfish.adminPort>8482</cargo.glassfish.adminPort>
 							<cargo.remote.username>admin</cargo.remote.username>
 							<cargo.remote.password>${cmbi23.glassfish.whynot.password}</cargo.remote.password>
 						</properties>

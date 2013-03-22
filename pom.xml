@@ -75,18 +75,6 @@
 			</properties>
 		</profile>
 	</profiles>
-	<repositories>
-		<!-- All the artifacts made through BRS -->
-		<repository>
-			<id>brs-public</id>
-			<url>https://brs.nbic.nl/repo/content/groups/public/</url>
-		</repository>
-		<!-- Lombok Repository -->
-		<repository>
-			<id>projectlombok.org</id>
-			<url>http://projectlombok.org/mavenrepo</url>
-		</repository>
-	</repositories>
 	<dependencies>
 		<!-- Logging -->
 		<dependency>

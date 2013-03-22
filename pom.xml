@@ -26,17 +26,17 @@
     <distributionManagement>
         <repository>
             <id>cmbi-releases</id>
-            <url>https://ci.cmbi.ru.nl:8081/repo/content/repositories/releases</url>
+            <url>http://ci.cmbi.ru.nl:8081/repo/content/repositories/releases</url>
         </repository>
         <snapshotRepository>
             <id>cmbi-snapshots</id>
-            <url>https://ci.cmbi.ru.nl:8081/repo/content/repositories/snapshots</url>
+            <url>http://ci.cmbi.ru.nl:8081/repo/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
 	<repositories>
 		<repository>
 			<id>cmbi-public</id>
-			<url>https://ci.cmbi.ru.nl:8081/repo/content/groups/public/</url>
+			<url>http://ci.cmbi.ru.nl:8081/repo/content/groups/public/</url>
 		</repository>
 	</repositories>
 	<scm>

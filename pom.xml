@@ -19,20 +19,26 @@
 		<module>whynot-scripts</module>
 		<module>whynot-web</module>
 	</modules>
-	<ciManagement>
-		<system>Jenkins</system>
-		<url>http://ci.cmbi.ru.nl:8080/job/WhyNot/</url>
-	</ciManagement>
-	<distributionManagement>
+    <ciManagement>
+        <system>Jenkins</system>
+        <url>http://ci.cmbi.ru.nl:8080/</url>
+    </ciManagement>
+    <distributionManagement>
+        <repository>
+            <id>cmbi-releases</id>
+            <url>https://ci.cmbi.ru.nl:8081/repo/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>cmbi-snapshots</id>
+            <url>https://ci.cmbi.ru.nl:8081/repo/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+	<repositories>
 		<repository>
-			<id>brs-releases</id>
-			<url>https://brs.nbic.nl/repo/content/repositories/releases</url>
+			<id>cmbi-public</id>
+			<url>https://ci.cmbi.ru.nl:8081/repo/content/groups/public/</url>
 		</repository>
-		<snapshotRepository>
-			<id>brs-snapshots</id>
-			<url>https://brs.nbic.nl/repo/content/repositories/snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
+	</repositories>
 	<scm>
 		<connection>scm:svn:https://svn.cmbi.ru.nl/whynot/trunk</connection>
 		<developerConnection>scm:svn:https://svn.cmbi.ru.nl/whynot/trunk</developerConnection>

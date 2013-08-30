@@ -69,7 +69,7 @@ public class Install {
 		dbdao.makePersistent(new Databank("HSSP", dssp,
 				CrawlType.FILE, ".*/([\\w]{4})\\.hssp",
 				"http://swift.cmbi.ru.nl/gv/hssp/",
-				"ftp://ftp.cmbi.ru.nl/pub/molbio/data/hssp/${PDBID}.hssp"));
+				"ftp://ftp.cmbi.ru.nl/pub/molbio/data/hssp/${PDBID}.hssp.bz2"));
 
 		dbdao.makePersistent(nmr = new Databank("NMR", pdb,
 				CrawlType.LINE, "([\\w]{4})",

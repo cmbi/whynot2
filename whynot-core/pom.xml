@@ -12,9 +12,9 @@
 	<dependencies>
 		<!-- SchemaSpy -->
 		<dependency>
-			<groupId>net.sourceforge.schemaspy</groupId>
+      <groupId>org.jumpmind.symmetric.schemaspy</groupId>
 			<artifactId>schemaspy</artifactId>
-			<version>4.1.1</version>
+			<version>5.0.0</version>
 			<optional>true</optional>
 		</dependency>
 	</dependencies>

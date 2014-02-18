@@ -5,10 +5,6 @@ import java.io.InputStreamReader;
 import java.util.Scanner;
 
 /**
- * Expects 3 parameters:
- * 1: Databank name
- * 2: Comment to add to entries
- * 3: Pattern to match on line
  * Adds annotation for comment for each PDBID read from
  * System.in that matches the specified Pattern.
  */

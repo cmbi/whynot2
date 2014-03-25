@@ -1,19 +1,22 @@
 package nl.ru.cmbi.whynot.panels;
 
 import java.awt.Color;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
 import jfreechart.MappedChart;
-import nl.ru.cmbi.whynot.databank.ListInitializer;
 import nl.ru.cmbi.whynot.entries.EntriesPage;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Databank.CollectionType;
 import nl.ru.cmbi.whynot.model.Entry;
+import nl.ru.cmbi.whynot.webservice.Whynot;
 
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
@@ -21,7 +24,12 @@ import org.apache.wicket.markup.html.link.ResourceLink;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
+import org.apache.wicket.request.http.WebResponse;
+import org.apache.wicket.request.resource.ResourceReference;
+import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.entity.ChartEntity;
@@ -34,6 +42,8 @@ public class PieChartPanel extends Panel {
 	protected DatabankDAO	databankdao;
 	@SpringBean
 	protected EntryDAO		entrydao;
+	@SpringBean
+	private Whynot	whynot;
 
 	public PieChartPanel(final String id, final Databank db) {
 		super(id);
@@ -109,9 +119,28 @@ public class PieChartPanel extends Panel {
 			lnk.add(new Label("count", "" + count));
 			add(lnk);
 
-			// Resource
-			ResourceReference reference = new ResourceReference(ListInitializer.class, dbname + '_' + colType.name().toUpperCase());
-			add(new ResourceLink<String>("resourcelink", reference));
+			add(new Link("resourcelink")
+			{
+				@Override
+				public void onClick() {
+					AbstractResourceStreamWriter rstream = new AbstractResourceStreamWriter() {
+
+			            @Override
+			            public void write(OutputStream output) throws IOException {
+			            	
+			            	Writer writer = new OutputStreamWriter(output);
+
+							List<String> entries = whynot.getEntries(dbname, colType.toString());
+							for (String entry : entries) {
+								writer.write(entry);
+								writer.write('\n');
+							}
+			            }
+			        };
+			        ResourceStreamRequestHandler handler = new ResourceStreamRequestHandler(rstream, dbname + '_' + colType.name().toUpperCase() + ".txt");        
+			        getRequestCycle().scheduleRequestHandlerAfterCurrent(handler);
+				}
+			});
 		}
 	}
 

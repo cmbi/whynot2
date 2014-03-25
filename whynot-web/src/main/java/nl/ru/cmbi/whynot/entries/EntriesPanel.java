@@ -1,9 +1,11 @@
 package nl.ru.cmbi.whynot.entries;
 
 import java.util.List;
+import java.io.*;
 
-import org.apache.wicket.markup.html.WebResource;
+import org.apache.wicket.request.resource.AbstractResource;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.link.ResourceLink;
 import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -11,7 +13,9 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.markup.repeater.data.ListDataProvider;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.protocol.http.WebResponse;
+import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
+import org.apache.wicket.request.http.WebResponse;
+import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.resource.StringResourceStream;
 
@@ -22,23 +26,28 @@ public class EntriesPanel extends Panel {
 		super(id, entrylist);
 
 		//Download link
-		add(new ResourceLink<WebResource>("export", new WebResource() {
-			@Override
-			public IResourceStream getResourceStream() {
-				StringBuilder sb = new StringBuilder();
-				for (Entry entry : entrylist.getObject()) {
-					sb.append(entry.toString());
-					sb.append('\n');
-				}
-				return new StringResourceStream(sb, "text/plain");
-			}
+		add(new Link("export-entries") {
 
 			@Override
-			protected void setHeaders(WebResponse response) {
-				super.setHeaders(response);
-				response.setAttachmentHeader(source.replaceAll("[\\W]", "") + "_entries.txt");
+			public void onClick() {  
+			      
+				AbstractResourceStreamWriter rstream = new AbstractResourceStreamWriter() {
+
+		            @Override
+		            public void write(OutputStream output) throws IOException {
+			        
+		            	Writer writer = new OutputStreamWriter(output);
+						
+						for (Entry entry : entrylist.getObject()) {
+							writer.write(entry.toString());
+							writer.write('\n');
+						}
+		            }
+				};
+				ResourceStreamRequestHandler handler = new ResourceStreamRequestHandler(rstream, source.replaceAll("[\\W]", "") + "_entries.txt");        
+				getRequestCycle().scheduleRequestHandlerAfterCurrent(handler);
 			}
-		}.setCacheable(false)));
+		});
 
 		//List of PDBIDs
 		DataView<Entry> dv = new DataView<Entry>("entrylist", new ListDataProvider<Entry>(entrylist.getObject())) {

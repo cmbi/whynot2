@@ -1,10 +1,10 @@
 package nl.ru.cmbi.whynot.search;
 
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.validator.PatternValidator;
 
 public class SearchPanel extends Panel {
@@ -18,7 +18,7 @@ public class SearchPanel extends Panel {
 			@Override
 			protected void onSubmit() {
 				PageParameters pp = new PageParameters();
-				pp.put("pdbid", tt.getConvertedInput().toLowerCase().split("\\s+"));
+				pp.add("pdbid", tt.getConvertedInput().toLowerCase().split("\\s+"));
 				setResponsePage(ResultsPage.class, pp);
 			}
 		};

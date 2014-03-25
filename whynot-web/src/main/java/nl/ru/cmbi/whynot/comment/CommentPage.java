@@ -19,7 +19,7 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.wicketstuff.annotation.mount.MountPath;
 
-@MountPath(path = "comments")
+@MountPath("comments")
 public class CommentPage extends HomePage {
 	@SpringBean
 	AnnotationDAO		annotationdao;

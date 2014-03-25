@@ -1,5 +1,7 @@
 package nl.ru.cmbi.whynot.search;
 
+import java.util.List;
+
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
 import nl.ru.cmbi.whynot.home.HomePage;
 import nl.ru.cmbi.whynot.model.Databank;
@@ -7,28 +9,29 @@ import nl.ru.cmbi.whynot.model.Entry;
 import nl.ru.cmbi.whynot.panels.AnnotationPanel;
 import nl.ru.cmbi.whynot.panels.FilePanel;
 
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.repeater.RepeatingView;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.apache.wicket.util.string.StringValue;
 import org.wicketstuff.annotation.mount.MountPath;
 
-@MountPath(path = "search")
+@MountPath("search")
 public class ResultsPage extends HomePage {
 	@SpringBean
 	protected EntryDAO	entrydao;
 
 	public ResultsPage(final PageParameters parameters) {
-		if (parameters.containsKey("pdbid")) {
-			String[] pdbids = parameters.getStringArray("pdbid");
+		if (parameters.getNamedKeys().contains("pdbid")) {
+			List<StringValue> pdbids = parameters.getValues("pdbid");
 			RepeatingView rv = new RepeatingView("resultslist");
-			for (String pdbid : pdbids)
-				if (entrydao.contains(pdbid))
-					rv.add(new ResultFragment(rv.newChildId(), pdbid));
+			for (StringValue pdbid : pdbids)
+				if (entrydao.contains(pdbid.toString()))
+					rv.add(new ResultFragment(rv.newChildId(), pdbid.toString()));
 				else
 					warn("No data available for PDBID \"" + pdbid + "\"");
 			add(rv);
@@ -61,7 +64,7 @@ public class ResultsPage extends HomePage {
 							Databank par = db.getParent();
 							msg.append(", depends on: ").append(par.getName());
 							Label lbl = new Label("result", msg.toString());
-							lbl.add(new SimpleAttributeModifier("class", "annotation"));
+							lbl.add(new AttributeModifier("class", "annotation"));
 							item.add(lbl);
 
 							// TODO Feature requests Robbie:

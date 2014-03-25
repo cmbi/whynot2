@@ -4,15 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.io.*;
 
-import org.apache.wicket.markup.html.WebResource;
+import org.apache.wicket.extensions.markup.html.repeater.tree.DefaultNestedTree;
+import org.apache.wicket.Component;
+import org.apache.wicket.request.resource.AbstractResource;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.link.ResourceLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.protocol.http.WebResponse;
+import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
+import org.apache.wicket.request.http.WebResponse;
+import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.resource.StringResourceStream;
 
@@ -37,29 +43,35 @@ public class CommentsPanel extends Panel {
 			map.put(new Comment("Comments"), new ArrayList<Entry>());
 
 		//Download link
-		add(new ResourceLink<WebResource>("export", new WebResource() {
-			@Override
-			public IResourceStream getResourceStream() {
-				StringBuilder sb = new StringBuilder();
-				for (Comment com : map.keySet()) {
-					sb.append("COMMENT: ");
-					sb.append(com.getText());
-					sb.append('\n');
-					List<Entry> withAnnotation = map.get(com);
-					for (Entry entry : withAnnotation) {
-						sb.append(entry.toString());
-						sb.append('\n');
-					}
-				}
-				return new StringResourceStream(sb, "text/plain");
-			}
+		add(new Link("export-comments") {
 
 			@Override
-			protected void setHeaders(WebResponse response) {
-				super.setHeaders(response);
-				response.setAttachmentHeader(source.replaceAll("[\\W]", "") + "_comments.txt");
+			public void onClick() {
+				
+				AbstractResourceStreamWriter rstream = new AbstractResourceStreamWriter() {
+
+		            @Override
+		            public void write(OutputStream output) throws IOException {
+			        
+				        Writer writer = new OutputStreamWriter(output);
+				        
+						for (Comment com : map.keySet()) {
+							
+							writer.write("COMMENT: ");
+							writer.write(com.getText());
+							writer.write('\n');
+							List<Entry> withAnnotation = map.get(com);
+							for (Entry entry : withAnnotation) {
+								writer.write(entry.toString());
+								writer.write('\n');
+							}
+						}
+		            }
+				};
+		        ResourceStreamRequestHandler handler = new ResourceStreamRequestHandler(rstream, source.replaceAll("[\\W]", "") + "_comments.txt");        
+		        getRequestCycle().scheduleRequestHandlerAfterCurrent(handler);
 			}
-		}.setCacheable(false)));
+		});
 
 		//Comments
 		add(new ListView<Comment>("commentlist", new ArrayList<Comment>(map.keySet())) {

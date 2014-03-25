@@ -1,10 +1,14 @@
 package nl.ru.cmbi.whynot.entries;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.wicket.markup.html.WebResource;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.link.ResourceLink;
 import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -12,9 +16,12 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.markup.repeater.data.ListDataProvider;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.protocol.http.WebResponse;
+import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
+import org.apache.wicket.request.http.WebResponse;
+import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.resource.StringResourceStream;
+import org.apache.wicket.request.resource.AbstractResource;
 
 import nl.ru.cmbi.whynot.model.Entry;
 import nl.ru.cmbi.whynot.panels.FilePanel;
@@ -29,29 +36,32 @@ public class FilesPanel extends Panel {
 			if (ent.getFile() != null)
 				withFile.add(ent);
 
-		//Download link
-		add(new ResourceLink<WebResource>("export", new WebResource() {
+		add(new Link("export-files")
+		{
 			@Override
-			public IResourceStream getResourceStream() {
-				StringBuilder sb = new StringBuilder();
-				for (Entry entry : withFile) {
-					sb.append(entry.toString());
-					sb.append(',');
-					String href = entry.getDatabank().getFilelink();
-					href = href.replace("${PDBID}", entry.getPdbid());
-					href = href.replace("${PART}", entry.getPdbid().substring(1, 3));
-					sb.append(href);
-					sb.append('\n');
-				}
-				return new StringResourceStream(sb, "text/plain");
-			}
+			public void onClick() {
+				AbstractResourceStreamWriter rstream = new AbstractResourceStreamWriter() {
 
-			@Override
-			protected void setHeaders(WebResponse response) {
-				super.setHeaders(response);
-				response.setAttachmentHeader(source.replaceAll("[\\W]", "") + "_files.txt");
+		            @Override
+		            public void write(OutputStream output) throws IOException {
+				        
+				        Writer writer = new OutputStreamWriter(output);
+				        
+						for (Entry entry : withFile) {
+							writer.write(entry.toString());
+							writer.write(',');
+							String href = entry.getDatabank().getFilelink();
+							href = href.replace("${PDBID}", entry.getPdbid());
+							href = href.replace("${PART}", entry.getPdbid().substring(1, 3));
+							writer.write(href);
+							writer.write('\n');
+						}
+		            }
+		        };
+		        ResourceStreamRequestHandler handler = new ResourceStreamRequestHandler(rstream, source.replaceAll("[\\W]", "") + "_files.txt");        
+		        getRequestCycle().scheduleRequestHandlerAfterCurrent(handler);
 			}
-		}.setCacheable(false)));
+		});
 
 		add(new Label("text", "Files (" + withFile.size() + ")"));
 

@@ -15,7 +15,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.wicketstuff.annotation.mount.MountPath;
 
-@MountPath(path = "entries")
+@MountPath("entries")
 public class EntriesPage extends HomePage {
 	@SuppressWarnings("unchecked")
 	public EntriesPage() {

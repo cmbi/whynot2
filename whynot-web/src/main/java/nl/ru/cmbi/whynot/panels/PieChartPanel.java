@@ -1,10 +1,6 @@
 package nl.ru.cmbi.whynot.panels;
 
 import java.awt.Color;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,12 +20,9 @@ import org.apache.wicket.markup.html.link.ResourceLink;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
-import org.apache.wicket.request.http.WebResponse;
 import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.entity.ChartEntity;
@@ -118,29 +111,9 @@ public class PieChartPanel extends Panel {
 			lnk.add(new Label("label", clname));
 			lnk.add(new Label("count", "" + count));
 			add(lnk);
-
-			add(new Link("resourcelink")
-			{
-				@Override
-				public void onClick() {
-					AbstractResourceStreamWriter rstream = new AbstractResourceStreamWriter() {
-
-			            @Override
-			            public void write(OutputStream output) throws IOException {
-			            	
-			            	Writer writer = new OutputStreamWriter(output);
-
-							List<String> entries = whynot.getEntries(dbname, colType.toString());
-							for (String entry : entries) {
-								writer.write(entry);
-								writer.write('\n');
-							}
-			            }
-			        };
-			        ResourceStreamRequestHandler handler = new ResourceStreamRequestHandler(rstream, dbname + '_' + colType.name().toUpperCase() + ".txt");        
-			        getRequestCycle().scheduleRequestHandlerAfterCurrent(handler);
-				}
-			});
+			
+			ResourceReference reference = new SharedResourceReference(dbname + '_' + colType.name().toUpperCase());
+			add(new ResourceLink<String>("resourcelink", reference));
 		}
 	}
 

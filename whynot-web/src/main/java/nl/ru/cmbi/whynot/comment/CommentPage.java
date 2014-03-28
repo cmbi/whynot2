@@ -34,7 +34,7 @@ public class CommentPage extends HomePage {
 			protected void populateItem(final ListItem<Comment> item) {
 				final Comment com = item.getModelObject();
 				long count = annotationdao.countWith(com);
-				long latest = annotationdao.getLastUsed(com);
+				
 				item.add(new Label("text", com.getText()).setEscapeModelStrings(false));
 				Link<Void> lnk = new Link<Void>("entries") {
 					@Override
@@ -48,7 +48,13 @@ public class CommentPage extends HomePage {
 					}
 				};
 				item.add(lnk.add(new Label("count", "" + count)));
-				item.add(new Label("latest", sdf.format(new Date(latest))));
+				
+				String dateString="";
+				if(count>0) {
+					long latest = annotationdao.getLastUsed(com);
+					dateString = sdf.format(new Date(latest));
+				}
+				item.add(new Label("latest", dateString ));
 			}
 		};
 		add(commentlist);

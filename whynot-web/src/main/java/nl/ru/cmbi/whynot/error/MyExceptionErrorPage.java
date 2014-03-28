@@ -5,7 +5,6 @@ import java.io.StringWriter;
 
 import nl.ru.cmbi.whynot.feedback.FeedbackPanelWrapper;
 
-import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.request.component.IRequestablePage;

@@ -7,9 +7,6 @@ import java.awt.image.BufferedImage;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.request.resource.DynamicImageResource;
 import org.apache.wicket.request.resource.IResource;
-import org.apache.wicket.request.resource.AbstractResource.ResourceResponse;
-import org.apache.wicket.request.resource.IResource.Attributes;
-import org.apache.wicket.request.http.WebResponse;
 import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.JFreeChart;
 

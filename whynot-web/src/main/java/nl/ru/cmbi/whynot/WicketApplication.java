@@ -5,13 +5,16 @@ import nl.ru.cmbi.whynot.databank.ListInitializer;
 import nl.ru.cmbi.whynot.error.MyExceptionErrorPage;
 import nl.ru.cmbi.whynot.home.HomePage;
 
-import org.apache.wicket.Request;
-import org.apache.wicket.RequestCycle;
-import org.apache.wicket.Response;
+import org.apache.wicket.request.IRequestHandler;
+import org.apache.wicket.core.request.handler.IPageRequestHandler;
+import org.apache.wicket.core.request.handler.PageProvider;
+import org.apache.wicket.core.request.handler.RenderPageRequestHandler;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
-import org.apache.wicket.protocol.http.WebRequest;
-import org.apache.wicket.protocol.http.WebResponse;
+import org.apache.wicket.request.component.IRequestablePage;
+import org.apache.wicket.request.cycle.AbstractRequestCycleListener;
+import org.apache.wicket.request.cycle.PageRequestHandlerTracker;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.settings.IExceptionSettings;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 import org.springframework.context.ApplicationContext;
@@ -33,9 +36,22 @@ public class WicketApplication extends WebApplication implements ApplicationCont
 	protected void init() {
 		// Set headless property for JFreeChart image generation
 		System.setProperty("java.awt.headless", "true");
+		
+		getRequestCycleListeners().add(new AbstractRequestCycleListener() {
+			
+			@Override
+			public IRequestHandler onException(RequestCycle cycle, Exception e)
+			{
+				IPageRequestHandler handler = PageRequestHandlerTracker.getLastHandler(cycle);
+				
+				IRequestablePage lastPage = handler!=null? handler.getPage() : null;
+				
+				return new RenderPageRequestHandler(new PageProvider(new MyExceptionErrorPage(lastPage, e)));
+			}
+		});
 
 		// Spring
-		addComponentInstantiationListener(new SpringComponentInjector(this));
+		getComponentInstantiationListeners().add(new SpringComponentInjector(this));
 
 		// RequestLogger
 		// getRequestLoggerSettings().setRequestLoggerEnabled(true);
@@ -49,14 +65,9 @@ public class WicketApplication extends WebApplication implements ApplicationCont
 		// Annotation driven page mounting
 		String packge = this.getClass().getPackage().getName();
 		new AnnotatedMountScanner().scanPackage(packge).mount(this);
+		
+        // Register export lists as shared resources
+        new ListInitializer().init(this);
 
-		// Register export lists as shared resources
-		getSharedResources().putClassAlias(ListInitializer.class, "list");
-		new ListInitializer().init(this);
-	}
-
-	@Override
-	public RequestCycle newRequestCycle(final Request request, final Response response) {
-		return new MyRequestCycle(this, (WebRequest) request, (WebResponse) response);
 	}
 }

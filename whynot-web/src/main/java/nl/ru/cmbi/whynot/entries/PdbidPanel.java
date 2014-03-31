@@ -4,14 +4,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.wicket.markup.html.WebResource;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ResourceLink;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.protocol.http.WebResponse;
-import org.apache.wicket.util.resource.IResourceStream;
-import org.apache.wicket.util.resource.StringResourceStream;
+import org.apache.wicket.request.resource.ByteArrayResource;
 
 import nl.ru.cmbi.whynot.model.Entry;
 
@@ -24,23 +21,26 @@ public class PdbidPanel extends Panel {
 			pdbids.add(ent.getPdbid());
 
 		//Download link
-		add(new ResourceLink<WebResource>("export", new WebResource() {
-			@Override
-			public IResourceStream getResourceStream() {
-				StringBuilder sb = new StringBuilder();
-				for (String pdbid : pdbids) {
-					sb.append(pdbid);
-					sb.append('\n');
-				}
-				return new StringResourceStream(sb, "text/plain");
-			}
+        add(new ResourceLink<ByteArrayResource>("export-pdbids", new ByteArrayResource( "text/plain", null, source.replaceAll("[\\W]", "") + "_pdbids.txt" ) {
+        	
+            @Override
+            protected byte[] getData(Attributes attributes) {
+            	
+                StringBuilder sb = new StringBuilder();
+                for (String pdbid : pdbids) {
+                        sb.append(pdbid);
+                        sb.append('\n');
+                }
+                return sb.toString().getBytes();
+            }
 
-			@Override
-			protected void setHeaders(WebResponse response) {
-				super.setHeaders(response);
-				response.setAttachmentHeader(source.replaceAll("[\\W]", "") + "_pdbids.txt");
-			}
-		}.setCacheable(false)));
+            @Override
+            protected void configureResponse(ResourceResponse response, Attributes attributes) {
+				super.configureResponse(response, attributes);
+				
+				response.disableCaching();
+            }
+        }));
 
 		add(new Label("text", "Unique PDBIDs (" + pdbids.size() + ")"));
 

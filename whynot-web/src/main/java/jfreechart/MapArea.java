@@ -2,8 +2,6 @@ package jfreechart;
 
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.IAjaxCallDecorator;
-import org.apache.wicket.ajax.calldecorator.CancelEventIfNoAjaxDecorator;
 import org.apache.wicket.ajax.markup.html.IAjaxLink;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -46,11 +44,6 @@ public class MapArea extends WebMarkupContainer {
 				@Override
 				protected void onEvent(AjaxRequestTarget target) {
 					linkCallback.onClick(target);
-				}
-
-				@Override
-				protected IAjaxCallDecorator getAjaxCallDecorator() {
-					return new CancelEventIfNoAjaxDecorator();
 				}
 			});
 		setOutputMarkupId(true);

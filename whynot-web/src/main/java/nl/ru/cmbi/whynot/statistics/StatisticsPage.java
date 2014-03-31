@@ -18,7 +18,7 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.wicketstuff.annotation.mount.MountPath;
 
-@MountPath(path = "statistics")
+@MountPath("statistics")
 public class StatisticsPage extends HomePage {
 	@SpringBean
 	private AnnotationDAO	anndao;

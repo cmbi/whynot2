@@ -5,12 +5,12 @@ import java.io.StringWriter;
 
 import nl.ru.cmbi.whynot.feedback.FeedbackPanelWrapper;
 
-import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.request.component.IRequestablePage;
 import org.wicketstuff.annotation.mount.MountPath;
 
-@MountPath(path = "error")
+@MountPath("error")
 public class MyExceptionErrorPage extends WebPage {
 	/**
 	 * Print feedback & stacktrace.
@@ -18,7 +18,7 @@ public class MyExceptionErrorPage extends WebPage {
 	 * @param page
 	 * @param e
 	 */
-	public MyExceptionErrorPage(final Page page, final RuntimeException e) {
+	public MyExceptionErrorPage(final IRequestablePage page, final Exception e) {
 		add(new FeedbackPanelWrapper("feedback"));
 
 		add(new Label("page", page == null ? "null" : page.toString()));

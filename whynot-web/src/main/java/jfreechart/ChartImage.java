@@ -4,10 +4,9 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
-import org.apache.wicket.Resource;
 import org.apache.wicket.markup.html.image.Image;
-import org.apache.wicket.markup.html.image.resource.DynamicImageResource;
-import org.apache.wicket.protocol.http.WebResponse;
+import org.apache.wicket.request.resource.DynamicImageResource;
+import org.apache.wicket.request.resource.IResource;
 import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.JFreeChart;
 
@@ -49,25 +48,14 @@ public class ChartImage extends Image {
 	}
 
 	@Override
-	protected Resource getImageResource() {
+	protected IResource getImageResource() {
 		return new DynamicImageResource() {
 			@Override
-			protected byte[] getImageData() {
+			protected byte[] getImageData(Attributes attributes) {
 				BufferedImage bufferedImage = createBufferedImage();
 				if (bufferedImage == null)
 					return new byte[0];
 				return toImageData(bufferedImage);
-			}
-
-			@Override
-			protected void setHeaders(final WebResponse response) {
-				if (isCacheable())
-					super.setHeaders(response);
-				else {
-					response.setHeader("Pragma", "no-cache");
-					response.setHeader("Cache-Control", "no-cache");
-					response.setDateHeader("Expires", 0);
-				}
 			}
 		};
 	}

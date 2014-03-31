@@ -47,7 +47,7 @@ public class ParsePDBEntryType {
 	 * Reads the NMR entries from wwpdb.org's pdb_entry_type.txt.
 	 * 
 	 * @param pattern
-	 * @return
+	 * @return the list of pdb ids for entries that match the given pattern
 	 * @throws MalformedURLException
 	 * @throws IOException
 	 */

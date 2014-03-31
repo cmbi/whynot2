@@ -8,7 +8,7 @@ import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.panels.PieChartPanel;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.extensions.ajax.markup.html.AjaxLazyLoadPanel;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ExternalLink;
@@ -17,7 +17,7 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.wicketstuff.annotation.mount.MountPath;
 
-@MountPath(path = "databanks")
+@MountPath("databanks")
 public class DatabankPage extends HomePage {
 	@SpringBean
 	protected EntryDAO	entrydao;
@@ -28,8 +28,8 @@ public class DatabankPage extends HomePage {
 
 	public DatabankPage(final PageParameters parameters) {
 		Databank db = null;
-		if (parameters.containsKey("name")) {
-			String name = parameters.getString("name");
+		if (parameters.getNamedKeys().contains("name")) {
+			String name = parameters.get("name").toString();
 			db = databankdao.findByName(name);
 		}
 

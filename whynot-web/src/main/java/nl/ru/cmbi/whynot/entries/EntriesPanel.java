@@ -2,7 +2,7 @@ package nl.ru.cmbi.whynot.entries;
 
 import java.util.List;
 
-import org.apache.wicket.markup.html.WebResource;
+import org.apache.wicket.request.resource.ByteArrayResource;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ResourceLink;
 import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
@@ -11,34 +11,32 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.markup.repeater.data.ListDataProvider;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.protocol.http.WebResponse;
-import org.apache.wicket.util.resource.IResourceStream;
-import org.apache.wicket.util.resource.StringResourceStream;
 
 import nl.ru.cmbi.whynot.model.Entry;
 
 public class EntriesPanel extends Panel {
 	public EntriesPanel(String id, final String source, final IModel<List<Entry>> entrylist) {
 		super(id, entrylist);
-
+		
 		//Download link
-		add(new ResourceLink<WebResource>("export", new WebResource() {
-			@Override
-			public IResourceStream getResourceStream() {
-				StringBuilder sb = new StringBuilder();
-				for (Entry entry : entrylist.getObject()) {
-					sb.append(entry.toString());
-					sb.append('\n');
-				}
-				return new StringResourceStream(sb, "text/plain");
-			}
+        add(new ResourceLink<ByteArrayResource>("export-entries", new ByteArrayResource( "text/plain", null, source.replaceAll("[\\W]", "") + "_entries.txt") {
+            @Override
+            protected byte[] getData(Attributes attributes) {
+                StringBuilder sb = new StringBuilder();
+                for (Entry entry : entrylist.getObject()) {
+                        sb.append(entry.toString());
+                        sb.append('\n');
+                }
+                return sb.toString().getBytes();
+            }
 
-			@Override
-			protected void setHeaders(WebResponse response) {
-				super.setHeaders(response);
-				response.setAttachmentHeader(source.replaceAll("[\\W]", "") + "_entries.txt");
-			}
-		}.setCacheable(false)));
+            @Override
+            protected void configureResponse(ResourceResponse response, Attributes attributes) {
+				super.configureResponse(response, attributes);
+				
+				response.disableCaching();
+            }
+        }));
 
 		//List of PDBIDs
 		DataView<Entry> dv = new DataView<Entry>("entrylist", new ListDataProvider<Entry>(entrylist.getObject())) {

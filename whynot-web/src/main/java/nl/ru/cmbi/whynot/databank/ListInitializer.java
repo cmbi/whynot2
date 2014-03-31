@@ -4,13 +4,12 @@ import java.util.List;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.IInitializer;
-import org.apache.wicket.Resource;
-import org.apache.wicket.injection.web.InjectorHolder;
-import org.apache.wicket.markup.html.WebResource;
-import org.apache.wicket.protocol.http.WebResponse;
+import org.apache.wicket.injection.Injector;
+import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.request.resource.ByteArrayResource;
+import org.apache.wicket.request.resource.IResource;
+import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.apache.wicket.util.resource.IResourceStream;
-import org.apache.wicket.util.resource.StringResourceStream;
 
 import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
 import nl.ru.cmbi.whynot.model.Databank;
@@ -19,7 +18,13 @@ import nl.ru.cmbi.whynot.webservice.Whynot;
 
 public class ListInitializer implements IInitializer {
 	public ListInitializer() {
-		InjectorHolder.getInjector().inject(this);
+		Injector.get().inject(this);
+	}
+
+	@Override
+	public void destroy(Application application) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@SpringBean
@@ -27,15 +32,19 @@ public class ListInitializer implements IInitializer {
 
 	@Override
 	public void init(Application application) {
+		
 		//For each databank
 		for (Databank db : dbdao.getAll()) {
 			String dbname = db.getName();
 			//and all collection types
 			for (CollectionType ct : CollectionType.values()) {
 				//create a resource
-				Resource resource = getResource(dbname, ct);
+				IResource resource = getResource(dbname, ct);
 				//and register it with shared resources
-				application.getSharedResources().add(this.getClass(), dbname + '_' + ct, null, null, resource);
+				
+				final String resourceName=dbname + '_' + ct;
+				application.getSharedResources().add(resourceName,resource);
+				((WebApplication)application).mountResource("/resources/list/"+resourceName, new SharedResourceReference(resourceName));
 			}
 		}
 	}
@@ -43,24 +52,28 @@ public class ListInitializer implements IInitializer {
 	@SpringBean
 	private Whynot	whynot;
 
-	public Resource getResource(final String db, final CollectionType collectionType) {
-		return new WebResource() {
+	public IResource getResource(final String db, final CollectionType collectionType) {
+		
+		return new ByteArrayResource( "text/plain", null, db + '_' + collectionType ) {
+		
 			@Override
-			public IResourceStream getResourceStream() {
-				List<String> entries = whynot.getEntries(db, collectionType.toString());
-				StringBuilder sb = new StringBuilder();
-				for (String entry : entries) {
-					sb.append(entry.toString());
-					sb.append('\n');
-				}
-				return new StringResourceStream(sb, "text/plain");
-			}
+			protected byte[] getData(Attributes attributes) {
 
-			@Override
-			protected void setHeaders(WebResponse response) {
-				super.setHeaders(response);
-				response.setAttachmentHeader(db + '_' + collectionType);
+				List<String> entries = whynot.getEntries(db, collectionType.toString());
+                StringBuilder sb = new StringBuilder();
+                for (String entry : entries) {
+                    sb.append(entry.toString());
+                    sb.append('\n');
+                }
+                return sb.toString().getBytes();
 			}
-		}.setCacheable(false);
+				
+			@Override
+			protected void configureResponse(ResourceResponse response, Attributes attributes) {
+				super.configureResponse(response, attributes);
+				
+				response.disableCaching();
+			}
+		};
 	}
 }

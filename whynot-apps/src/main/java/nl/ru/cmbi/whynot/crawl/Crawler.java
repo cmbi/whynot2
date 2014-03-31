@@ -121,7 +121,7 @@ public class Crawler {
 	 * we first store a local copy with the same timestamp and return that.
 	 * 
 	 * @param path
-	 * @return
+	 * @return the file on the supplied path
 	 * @throws IOException
 	 * @throws MalformedURLException
 	 */

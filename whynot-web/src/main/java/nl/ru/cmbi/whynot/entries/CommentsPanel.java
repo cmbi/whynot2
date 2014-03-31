@@ -17,8 +17,7 @@ import org.apache.wicket.markup.html.link.ResourceLink;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 
-import nl.ru.cmbi.whynot.comment.CommentTreePanel;
-import nl.ru.cmbi.whynot.comment.CommentTreeProvider;
+import nl.ru.cmbi.whynot.entries.CommentTreeProvider.CommentTreeNode;
 import nl.ru.cmbi.whynot.model.Annotation;
 import nl.ru.cmbi.whynot.model.Comment;
 import nl.ru.cmbi.whynot.model.Entry;
@@ -70,16 +69,14 @@ public class CommentsPanel extends Panel {
 		}));
 		
 		//Comments
-		AbstractTree<String> tree = new NestedTree<String>("commenttree", new CommentTreeProvider(map))
+		AbstractTree<CommentTreeNode> tree = new NestedTree<CommentTreeNode>("commenttree", new CommentTreeProvider(map.keySet()))
 		{
             @Override
-            protected Component newContentComponent(String id, IModel<String> node) {
+            protected Component newContentComponent(String id, IModel<CommentTreeNode> node) {
             	
                 return new CommentTreePanel(id, node, map);
             }
 		};
-		
-		
 		
 		tree.add(new Behavior()
         {

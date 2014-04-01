@@ -1,14 +1,26 @@
 package nl.ru.cmbi.whynot;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+
 import lombok.Setter;
+import nl.ru.cmbi.whynot.databank.DatabankPage;
 import nl.ru.cmbi.whynot.databank.ListInitializer;
 import nl.ru.cmbi.whynot.error.MyExceptionErrorPage;
 import nl.ru.cmbi.whynot.home.HomePage;
+import nl.ru.cmbi.whynot.search.ResultsPage;
 
 import org.apache.wicket.request.IRequestHandler;
+import org.apache.wicket.request.Request;
+import org.apache.wicket.request.Url;
+import org.apache.wicket.request.Url.QueryParameter;
 import org.apache.wicket.core.request.handler.IPageRequestHandler;
 import org.apache.wicket.core.request.handler.PageProvider;
 import org.apache.wicket.core.request.handler.RenderPageRequestHandler;
+import org.apache.wicket.core.request.mapper.AbstractBookmarkableMapper;
+import org.apache.wicket.core.request.mapper.BookmarkableMapper;
+import org.apache.wicket.core.request.mapper.MountedMapper;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.component.IRequestablePage;
@@ -21,6 +33,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 import org.wicketstuff.annotation.scan.AnnotatedMountScanner;
+import org.apache.wicket.SystemMapper;
+
+import org.apache.wicket.request.mapper.mount.IMountedRequestMapper;
+import org.apache.wicket.request.mapper.parameter.IPageParametersEncoder;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.mapper.parameter.UrlPathPageParametersEncoder;
 
 @Component
 public class WicketApplication extends WebApplication implements ApplicationContextAware {
@@ -68,6 +86,44 @@ public class WicketApplication extends WebApplication implements ApplicationCont
 		
         // Register export lists as shared resources
         new ListInitializer().init(this);
+        
+        mount(new MountedMapper("/search", ResultsPage.class, new HybridPageParametersEncoder()));
+        mount(new MountedMapper("/databanks", DatabankPage.class, new HybridPageParametersEncoder()));
+	}
+	
+	private class HybridPageParametersEncoder implements IPageParametersEncoder {
+		
+		@Override
+		public PageParameters decodePageParameters(Url url)
+	    {
+	        PageParameters parameters = new PageParameters();
 
+	        int i = 0;
+	        for (Iterator<String> segment = url.getSegments().iterator(); segment.hasNext(); ) {
+	            String key = segment.next();
+	            String value = segment.next();
+
+	            parameters.add(key, value);
+	        }
+	        for (QueryParameter p : url.getQueryParameters() ) {
+
+	            parameters.add(p.getName(), p.getValue());
+	        }
+
+	        return parameters.isEmpty() ? null : parameters;
+	    }
+
+		@Override
+	    public Url encodePageParameters(PageParameters pageParameters)
+	    {
+	        Url url = new Url();
+
+	        for (PageParameters.NamedPair pair : pageParameters.getAllNamed()) {
+	            url.getSegments().add(pair.getKey());
+	            url.getSegments().add(pair.getValue());
+	        }
+
+	        return url;
+	    }
 	}
 }

@@ -98,8 +98,8 @@ public class WicketApplication extends WebApplication implements ApplicationCont
 	    {
 	        PageParameters parameters = new PageParameters();
 
-	        int i = 0;
 	        for (Iterator<String> segment = url.getSegments().iterator(); segment.hasNext(); ) {
+	        	
 	            String key = segment.next();
 	            String value = segment.next();
 

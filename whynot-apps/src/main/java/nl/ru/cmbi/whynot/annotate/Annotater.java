@@ -100,22 +100,21 @@ public class Annotater {
 				if (!databank.getName().equals(dbname)) {
 					databank = dbdao.findByName(dbname);
 					presentParents = entdao.getMissing(databank);
-					previouslyAnnotated = entdao.getAnnotated(databank);
 				}
 
 				//Skip if there's no present parent for missing entry
 				Entry parent = new Entry(databank.getParent(), pdbid);
 				if (!presentParents.contains(parent)) {
-					log.warn("Skipping annotation for " + dbname + "," + pdbid + ": No missing parent");
+					log.warn("Skipping annotation for " + dbname + "," + pdbid + ": No present parent");
 					continue;
 				}
 
 				//Create or find Entry
-				Entry entry = new Entry(databank, pdbid);
-				if (0 <= (index = previouslyAnnotated.indexOf(entry)))
-					entry = previouslyAnnotated.get(index);
-				else
+				Entry entry = entdao.findByDatabankAndPdbid(databank,pdbid);
+				if(entry==null) {
+					entry = new Entry(databank, pdbid);
 					databank.getEntries().add(entry);
+				}
 
 				//Add annotation
 				if (entry.getAnnotations().add(new Annotation(comment, entry, time)))

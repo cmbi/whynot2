@@ -44,7 +44,7 @@ public class Install {
 	public void storeDatabanks() {
 		// XXX Database dependencies, urls and file names should be stored in a configuration file instead, if not in DB
 		// Links to proper urls with ${PDBID}
-		Databank pdb, pdbfinder, dssp, nmr, nrg, nrg_docr, sfr;
+		Databank pdb, pdbfinder, dssp, nmr, nrg, nrg_docr, sfr, pdb_redo;
 		dbdao.makePersistent(pdb = new Databank("PDB",
 				CrawlType.FILE, ".*/pdb([\\w]{4})\\.ent(\\.gz)?",
 				"http://www.wwpdb.org/",
@@ -96,10 +96,32 @@ public class Install {
 				CrawlType.FILE, ".*/r([\\w]{4})sf\\.ent\\.gz",
 				"http://www.pdb.org/",
 				"ftp://ftp.wwpdb.org/pub/pdb/data/structures/all/structure_factors/r${PDBID}sf.ent.gz"));
-		dbdao.makePersistent(new Databank("PDB_REDO", sfr,
+		dbdao.makePersistent(pdb_redo = new Databank("PDB_REDO", sfr,
 				CrawlType.FILE, ".*/[\\w]{2}/([\\d][\\w]{3})",
 				"http://www.cmbi.ru.nl/pdb_redo/",
 				"http://www.cmbi.ru.nl/pdb_redo/cgi-bin/redir2.pl?pdbCode=${PDBID}"));
+
+		dbdao.makePersistent(new Databank("BDB", pdb,
+				CrawlType.FILE, ".*/([\\w]{4})\\.bdb",
+				"http://www.cmbi.ru.nl/bdb/",
+				"ftp://ftp.cmbi.ru.nl/pub/molbio/data/bdb/${PART}/${PDBID}/${PDBID}.bdb"));
+		
+		String[] whatifLisTypes = {
+			"acc","cal","cc1","cc2","cc3","chi","dsp","iod","sbh","sbr","ss1","ss2","tau","wat"
+		};
+		
+		for (String lis : whatifLisTypes) {
+
+			dbdao.makePersistent(pdbfinder = new Databank(String.format("WHATIF_PDB_%s", lis.toUpperCase()), pdb,
+					CrawlType.FILE, String.format(".*/([\\w]{4})\\.%s(\\.bz2)?",lis),
+					"http://swift.cmbi.ru.nl/whatif/",
+					String.format("ftp://ftp.cmbi.ru.nl/pub/molbio/data/wi-lists/pdb/%s/${PDBID}/${PDBID}.%s.bz2",lis,lis)));
+
+			dbdao.makePersistent(pdbfinder = new Databank(String.format("WHATIF_REDO_%s", lis.toUpperCase()), pdb_redo,
+					CrawlType.FILE, String.format(".*/([\\w]{4})\\.%s(\\.bz2)?",lis),
+					"http://swift.cmbi.ru.nl/whatif/",
+					String.format("ftp://ftp.cmbi.ru.nl/pub/molbio/data/wi-lists/redo/%s/${PDBID}/${PDBID}.%s.bz2",lis,lis)));
+		}
 
 		log.info("Databanks stored.");
 	}

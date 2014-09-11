@@ -30,40 +30,65 @@ public class Annotater {
 	private static final Logger	log	= LoggerFactory.getLogger(Annotater.class);
 
 	public static void main(String[] args) throws Exception {
-		log.info("Annotater start.");
-		File dirComments = new File("comment/");
-		File dirUncomments = new File("uncomment/");
-
-		//Make sure comment directories exist
-		if (!dirComments.isDirectory() && !dirComments.mkdir())
-			throw new FileNotFoundException(dirComments.getAbsolutePath());
-		if (!dirUncomments.isDirectory() && !dirUncomments.mkdir())
-			throw new FileNotFoundException(dirUncomments.getAbsolutePath());
-
-		//Any files not already done
-		FileFilter commentFilter = new FileFilter() {
-			@Override
-			public boolean accept(File pathname) {
-				return pathname.isFile() && !pathname.getName().contains(Annotater.append);
-			}
-		};
 
 		Annotater commentParser = (Annotater) SpringUtil.getContext().getBean("annotater");
-		//Comment / Uncomment all files in directories
-		for (File file : dirComments.listFiles(commentFilter))
-			if (file.length() == 0)
-				log.error("File {} is empty and should probably be removed: Skipping it for now.. ", file);
-			else
-				commentParser.comment(Converter.getFile(file));
-		for (File file : dirUncomments.listFiles(commentFilter))
-			if (file.length() == 0)
-				log.error("File {} is empty and should probably be removed: Skipping it for now.. ", file);
-			else
-				commentParser.uncomment(Converter.getFile(file));
-
-		commentParser.removeUnusedComments();
-
-		log.info("Annotater done.");
+		
+		if(args.length>0) {
+			
+			int i=0;
+			while((i+2)<=args.length) {
+			
+				File file = new File(args[i+1]);
+				if(args[i].equals("--comment")) {
+					
+					if(file.isFile())
+						commentParser.comment(Converter.getFile(file));
+				}
+				else if(args[i].equals("-uncomment")) {
+					
+					if(file.isFile())
+						commentParser.uncomment(Converter.getFile(file));
+				}
+				
+				i++;
+			}
+		}
+		else {
+		
+			log.info("Annotater start.");
+			File dirComments = new File("comment/");
+			File dirUncomments = new File("uncomment/");
+	
+			//Make sure comment directories exist
+			if (!dirComments.isDirectory() && !dirComments.mkdir())
+				throw new FileNotFoundException(dirComments.getAbsolutePath());
+			if (!dirUncomments.isDirectory() && !dirUncomments.mkdir())
+				throw new FileNotFoundException(dirUncomments.getAbsolutePath());
+	
+			//Any files not already done
+			FileFilter commentFilter = new FileFilter() {
+				@Override
+				public boolean accept(File pathname) {
+					return pathname.isFile() && !pathname.getName().contains(Annotater.append);
+				}
+			};
+	
+			//Comment / Uncomment all files in directories
+			for (File file : dirComments.listFiles(commentFilter))
+				if (file.length() == 0)
+					log.error("File {} is empty and should probably be removed: Skipping it for now.. ", file);
+				else
+					commentParser.comment(Converter.getFile(file));
+			for (File file : dirUncomments.listFiles(commentFilter))
+				if (file.length() == 0)
+					log.error("File {} is empty and should probably be removed: Skipping it for now.. ", file);
+				else
+					commentParser.uncomment(Converter.getFile(file));
+	
+			commentParser.removeUnusedComments();
+	
+			log.info("Annotater done.");
+		}
 	}
 
 	public static final String	append	= ".done";

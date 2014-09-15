@@ -111,7 +111,6 @@ public class Annotater {
 		log.info("Adding annotations in " + file.getName());
 		Comment comment = new Comment("Empty comment");
 		Databank databank = new Databank("Empty databank");
-		List<Entry> presentParents = new ArrayList<>();
 
 		int added = 0;
 		Long time = System.currentTimeMillis();
@@ -123,14 +122,12 @@ public class Annotater {
 				String dbname = m.group(1);
 				String pdbid = m.group(2).toLowerCase();
 				//Check if databank still the same as current
-				if (!databank.getName().equals(dbname)) {
+				if (!databank.getName().equals(dbname))
 					databank = dbdao.findByName(dbname);
-					presentParents = entdao.getMissing(databank);
-				}
 
 				//Skip if there's no present parent for missing entry
-				Entry parent = new Entry(databank.getParent(), pdbid);
-				if (!presentParents.contains(parent)) {
+				Entry parent = entdao.findByDatabankAndPdbid(databank.getParent(), pdbid);
+				if (parent == null || parent.getFile() == null) {
 					log.warn("Skipping annotation for " + dbname + "," + pdbid + ": No present parent");
 					continue;
 				}

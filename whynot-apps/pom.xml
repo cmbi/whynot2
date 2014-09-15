@@ -8,15 +8,12 @@
 	</parent>
 	<artifactId>whynot-apps</artifactId>
 	<name>Apps</name>
-
 	<dependencies>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>nl.ru.cmbi.whynot</groupId>
 			<artifactId>whynot-core</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -33,18 +30,18 @@
 				</configuration>
 			</plugin>
 			<plugin>
-                                <groupId>org.apache.maven.plugins</groupId>
-                                <artifactId>maven-dependency-plugin</artifactId>
-                                <executions>
-                                        <execution>
-                                                <id>copy-dependencies</id>
-                                                <phase>package</phase>
-                                                <goals>
-                                                        <goal>copy-dependencies</goal>
-                                                </goals>
-                                        </execution>
-                                </executions>
-                        </plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 </project>

@@ -18,9 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.FileDAO;
+import nl.ru.cmbi.whynot.hibernate.DatabankRepo;
+import nl.ru.cmbi.whynot.hibernate.EntryRepo;
+import nl.ru.cmbi.whynot.hibernate.FileRepo;
 import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Databank.CrawlType;
 import nl.ru.cmbi.whynot.model.Entry;
@@ -48,11 +48,11 @@ public class Crawler {
 	}
 
 	@Autowired
-	private DatabankDAO	dbdao;
+	private DatabankRepo	dbdao;
 	@Autowired
-	private EntryDAO	entrydao;
+	private EntryRepo	entrydao;
 	@Autowired
-	private FileDAO		filedao;
+	private FileRepo		filedao;
 
 	/**
 	 * Removes entries from databank if <li>file on path does not exist <li>timestamp differs from timestamp of file on
@@ -75,7 +75,7 @@ public class Crawler {
 			matchRegex && !regex.matcher(path).matches()) {
 				//Remove entry
 				databank.getEntries().remove(entry);
-				entrydao.makeTransient(entry);
+				entrydao.delete(entry);
 				removed++;
 			}
 		}
@@ -83,7 +83,7 @@ public class Crawler {
 			if (entry.getFile() == null) {
 				//Remove entry
 				databank.getEntries().remove(entry);
-				entrydao.makeTransient(entry);
+				entrydao.delete(entry);
 				removed++;
 			}
 		log.info(databank.getName() + ": Removing " + removed + " changed Entries");

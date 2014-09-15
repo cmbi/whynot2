@@ -8,17 +8,20 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 
-import org.hibernate.SessionFactory;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.AnnotationDAO;
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.CommentDAO;
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
+import nl.ru.cmbi.whynot.hibernate.AnnotationRepo;
+import nl.ru.cmbi.whynot.hibernate.CommentRepo;
+import nl.ru.cmbi.whynot.hibernate.DatabankRepo;
+import nl.ru.cmbi.whynot.hibernate.EntryRepo;
 import nl.ru.cmbi.whynot.model.Annotation;
 import nl.ru.cmbi.whynot.model.Comment;
 import nl.ru.cmbi.whynot.model.Databank;
@@ -29,50 +32,48 @@ import nl.ru.cmbi.whynot.util.SpringUtil;
 public class Annotater {
 	private static final Logger	log	= LoggerFactory.getLogger(Annotater.class);
 
-	public static void main(String[] args) throws Exception {
+	public static void main(final String[] args) throws Exception {
 
 		Annotater commentParser = (Annotater) SpringUtil.getContext().getBean("annotater");
-		
+
 		if(args.length>0) {
-			
+
 			int i=0;
-			while((i+2)<=args.length) {
-			
+			while(i+2<=args.length) {
+
 				File file = new File(args[i+1]);
 				if(args[i].equals("--comment")) {
-					
+
 					if(file.isFile())
 						commentParser.comment(Converter.getFile(file));
 				}
-				else if(args[i].equals("-uncomment")) {
-					
+				else if(args[i].equals("-uncomment"))
 					if(file.isFile())
 						commentParser.uncomment(Converter.getFile(file));
-				}
-				
+
 				i++;
 			}
 		}
 		else {
-		
+
 			log.info("Annotater start.");
 			File dirComments = new File("comment/");
 			File dirUncomments = new File("uncomment/");
-	
+
 			//Make sure comment directories exist
 			if (!dirComments.isDirectory() && !dirComments.mkdir())
 				throw new FileNotFoundException(dirComments.getAbsolutePath());
 			if (!dirUncomments.isDirectory() && !dirUncomments.mkdir())
 				throw new FileNotFoundException(dirUncomments.getAbsolutePath());
-	
+
 			//Any files not already done
 			FileFilter commentFilter = new FileFilter() {
 				@Override
-				public boolean accept(File pathname) {
+				public boolean accept(final File pathname) {
 					return pathname.isFile() && !pathname.getName().contains(Annotater.append);
 				}
 			};
-	
+
 			//Comment / Uncomment all files in directories
 			for (File file : dirComments.listFiles(commentFilter))
 				if (file.length() == 0)
@@ -84,28 +85,28 @@ public class Annotater {
 					log.error("File {} is empty and should probably be removed: Skipping it for now.. ", file);
 				else
 					commentParser.uncomment(Converter.getFile(file));
-	
+
 			commentParser.removeUnusedComments();
-	
+
 			log.info("Annotater done.");
 		}
 	}
 
 	public static final String	append	= ".done";
 	@Autowired
-	private AnnotationDAO		anndao;
+	private AnnotationRepo		anndao;
 	@Autowired
-	private CommentDAO			comdao;
+	private CommentRepo			comdao;
 	@Autowired
-	private DatabankDAO			dbdao;
+	private DatabankRepo			dbdao;
 	@Autowired
-	private EntryDAO			entdao;
+	private EntryRepo			entdao;
 
-	@Autowired
-	private SessionFactory		sf;
+	@PersistenceContext
+	private EntityManager		entityManager;
 
 	@Transactional
-	public File comment(File file) throws FileNotFoundException {
+	public File comment(final File file) throws FileNotFoundException {
 		log.info("Adding annotations in " + file.getName());
 		Comment comment = new Comment("Empty comment");
 		Databank databank = new Databank("Empty databank");
@@ -168,7 +169,7 @@ public class Annotater {
 	}
 
 	@Transactional
-	public File uncomment(File file) throws FileNotFoundException {
+	public File uncomment(final File file) throws FileNotFoundException {
 		log.info("Removing annotations in " + file.getName());
 		Comment comment = new Comment("Empty comment");
 		Databank databank = new Databank("Empty databank");
@@ -207,13 +208,13 @@ public class Annotater {
 				//Delete annotation
 				comment.getAnnotations().remove(ann);
 				entry.getAnnotations().remove(ann);
-				anndao.makeTransient(ann);
+				anndao.delete(ann);
 				removed++;
 
 				//Delete entry if now empty
 				if (entry.getAnnotations().isEmpty() && entry.getFile() == null) {
 					databank.getEntries().remove(entry);
-					entdao.makeTransient(entry);
+					entdao.delete(entry);
 				}
 			}
 			else
@@ -231,7 +232,7 @@ public class Annotater {
 					}
 
 					//Flush & GC
-					sf.getCurrentSession().flush();
+					((Session) entityManager.getDelegate()).flush();
 					System.gc();
 				}
 		}
@@ -248,10 +249,10 @@ public class Annotater {
 
 	@Transactional
 	public void removeUnusedComments() {
-		for (Comment comment : comdao.getAll())
+		for (Comment comment : comdao.findAll())
 			//Delete previous comment if now empty
 			if (comment.getAnnotations().isEmpty()) {
-				comdao.makeTransient(comment);
+				comdao.delete(comment);
 				log.info("Removing unused COMMENT: " + comment.getText());
 			}
 	}

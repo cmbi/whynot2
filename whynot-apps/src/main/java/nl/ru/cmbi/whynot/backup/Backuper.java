@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.CommentDAO;
+import nl.ru.cmbi.whynot.hibernate.CommentRepo;
 import nl.ru.cmbi.whynot.model.Annotation;
 import nl.ru.cmbi.whynot.model.Comment;
 import nl.ru.cmbi.whynot.util.SpringUtil;
@@ -30,7 +30,7 @@ public class Backuper {
 	}
 
 	@Autowired
-	private CommentDAO	comdao;
+	private CommentRepo	comdao;
 
 	public void backup() throws IOException {
 		File dirBackup = new File("backup/");
@@ -40,7 +40,7 @@ public class Backuper {
 
 		File file = new File("backup/" + System.currentTimeMillis() + ".backup");
 		PrintWriter pw = new PrintWriter(new FileWriter(file));
-		for (Comment com : comdao.getAll()) {
+		for (Comment com : comdao.findAll()) {
 			pw.println("COMMENT: " + com.getText());
 			for (Annotation ann : com.getAnnotations()) {
 				pw.print(ann.getEntry().getDatabank().getName());

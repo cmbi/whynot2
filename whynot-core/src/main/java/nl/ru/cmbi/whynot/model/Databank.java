@@ -4,13 +4,14 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.persistence.*;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
 
 import lombok.*;
 
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.LazyToOne;
+import org.hibernate.annotations.LazyToOneOption;
+import org.hibernate.annotations.NaturalId;
+import org.hibernate.annotations.SortNatural;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -60,7 +61,7 @@ public class Databank extends DomainObject implements Comparable<Databank> {
 	private CrawlType				crawltype;
 
 	@OneToMany(mappedBy = "databank", cascade = CascadeType.ALL, orphanRemoval = true)
-	@Sort(type = SortType.NATURAL)
+	@SortNatural
 	@Setter(AccessLevel.NONE)
 	private final SortedSet<Entry>	entries	= new TreeSet<Entry>();
 

@@ -9,8 +9,7 @@ import javax.persistence.OneToMany;
 import lombok.*;
 
 import org.hibernate.annotations.NaturalId;
-import org.hibernate.annotations.Sort;
-import org.hibernate.annotations.SortType;
+import org.hibernate.annotations.SortNatural;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -26,7 +25,7 @@ public class Comment extends DomainObject implements Comparable<Comment> {
 	private String					text;
 
 	@OneToMany(mappedBy = "comment")
-	@Sort(type = SortType.NATURAL)
+	@SortNatural
 	@Setter(AccessLevel.NONE)
 	@SuppressWarnings("unused")
 	private SortedSet<Annotation>	annotations	= new TreeSet<Annotation>();

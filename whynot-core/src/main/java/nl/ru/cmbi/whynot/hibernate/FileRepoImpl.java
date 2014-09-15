@@ -9,7 +9,6 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
 import nl.ru.cmbi.whynot.hibernate.DomainObjectRepository.FileRepoCustom;
@@ -29,11 +28,6 @@ public class FileRepoImpl implements FileRepoCustom {
 		for (Criterion c : criterion)
 			crit.add(c);
 		return crit;
-	}
-
-	@Override
-	public File findByPathAndTimestamp(final String path, final Long timestamp) {
-		return (File) createCriteria(Restrictions.naturalId().set("path", path).set("timestamp", timestamp)).uniqueResult();
 	}
 
 	@Override

@@ -40,11 +40,6 @@ public class EntryRepoImpl implements EntryRepoCustom {
 	}
 
 	@Override
-	public Entry findByDatabankAndPdbid(final Databank databank, final String pdbid) {
-		return (Entry) getSession().byNaturalId(persistentClass).using("databank", databank).using("pdbid", pdbid).getReference();
-	}
-
-	@Override
 	public boolean contains(final String pdbid) {
 		Criteria crit = createCriteria(Restrictions.naturalId().set("pdbid", pdbid));
 		crit.setProjection(Projections.rowCount());

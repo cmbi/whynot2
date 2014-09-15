@@ -8,8 +8,6 @@ import javax.validation.constraints.NotNull;
 
 import lombok.*;
 
-import org.hibernate.annotations.LazyToOne;
-import org.hibernate.annotations.LazyToOneOption;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.SortNatural;
 import org.hibernate.validator.constraints.Length;
@@ -46,7 +44,6 @@ public class Databank extends DomainObject implements Comparable<Databank> {
 	private String					filelink;
 
 	@OneToOne
-	@LazyToOne(LazyToOneOption.PROXY)
 	@Setter(AccessLevel.NONE)
 	private Databank				parent;
 

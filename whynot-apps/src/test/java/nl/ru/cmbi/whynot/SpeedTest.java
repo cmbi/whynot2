@@ -27,7 +27,7 @@ public class SpeedTest {
 	// Initial run after update to Spring Boot took 240 seconds; Any further changes may not add to this time
 	public void annotate() throws Exception {
 		log.info("Start");
-		annotator.comment(new File(WI_OPTIMIZED));
+		Annotater.comment(annotator, new File(WI_OPTIMIZED));
 		log.info("Stop");
 	}
 

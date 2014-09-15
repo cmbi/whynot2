@@ -36,20 +36,21 @@ public class Annotater {
 
 		Annotater commentParser = (Annotater) SpringUtil.getContext().getBean("annotater");
 
-		if(args.length>0) {
+		if (args.length > 0) {
 
-			int i=0;
-			while(i+2<=args.length) {
+			int i = 0;
+			while (i + 2 <= args.length) {
 
-				File file = new File(args[i+1]);
-				if(args[i].equals("--comment")) {
+				File file = new File(args[i + 1]);
+				if (args[i].equals("--comment")) {
 
-					if(file.isFile())
+					if (file.isFile())
 						commentParser.comment(Converter.getFile(file));
 				}
-				else if(args[i].equals("-uncomment"))
-					if(file.isFile())
-						commentParser.uncomment(Converter.getFile(file));
+				else
+					if (args[i].equals("-uncomment"))
+						if (file.isFile())
+							commentParser.uncomment(Converter.getFile(file));
 
 				i++;
 			}
@@ -98,7 +99,7 @@ public class Annotater {
 	@Autowired
 	private CommentRepo			comdao;
 	@Autowired
-	private DatabankRepo			dbdao;
+	private DatabankRepo		dbdao;
 	@Autowired
 	private EntryRepo			entdao;
 
@@ -136,7 +137,7 @@ public class Annotater {
 
 				//Create or find Entry
 				Entry entry = entdao.findByDatabankAndPdbid(databank, pdbid);
-				if(entry==null)
+				if (entry == null)
 					entry = entdao.save(new Entry(databank, pdbid));
 
 				//Add annotation
@@ -153,8 +154,9 @@ public class Annotater {
 
 					//Find comment
 					String text = m.group(1).trim();
-					if ((comment = comdao.findByText(text)) == null)
-						comment = new Comment(text);
+					comment = comdao.findByText(text);
+					if (comment == null)
+						comment = comdao.save(new Comment(text));
 				}
 		}
 		scn.close();

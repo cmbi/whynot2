@@ -42,7 +42,6 @@ public class AnnotationRepoImpl implements AnnotationRepoCustom {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<Annotation> getRecent() {
 		return createCriteria().addOrder(Order.desc("timestamp")).setMaxResults(10).list();
 	}
@@ -54,7 +53,6 @@ public class AnnotationRepoImpl implements AnnotationRepoCustom {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<Entry> getEntriesForComment(final Long comment) {
 		Query q = getSession().createQuery("select entry from Annotation where comment_id = ?").setLong(0, comment);
 		return q.list();

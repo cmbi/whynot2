@@ -152,7 +152,6 @@ public class EntryRepoImpl implements EntryRepoCustom {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<Entry> getAnnotated(final Databank db) {
 		return annotatedCriteria(db).addOrder(Order.asc("pdbid")).list();
 	}
@@ -184,7 +183,6 @@ public class EntryRepoImpl implements EntryRepoCustom {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<Entry> getMissing(final Databank child) {
 		return missingCriteria(child).addOrder(Order.asc("pdbid")).list();
 	}

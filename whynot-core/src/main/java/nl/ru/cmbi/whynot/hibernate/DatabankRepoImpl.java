@@ -3,29 +3,42 @@ package nl.ru.cmbi.whynot.hibernate;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
-import nl.ru.cmbi.whynot.model.Databank;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import nl.ru.cmbi.whynot.model.Databank;
+
 @Service
-public class DatabankHibernateDAO extends GenericHibernateDAO<Databank> implements DatabankDAO {
-	@Override
-	public Databank findByName(final String name) {
-		return (Databank) createCriteria(Restrictions.eq("name", name).ignoreCase()).uniqueResult();
+public class DatabankRepoImpl {
+	@PersistenceContext
+	private EntityManager	entityManager;
+
+	private Session getSession() {
+		return (Session) entityManager.getDelegate();
 	}
 
-	@Override
+
+	private Criteria createCriteria(final Criterion... criterion) {
+		Criteria crit = getSession().createCriteria(Databank.class);
+		for (Criterion c : criterion)
+			crit.add(c);
+		return crit;
+	}
+
 	@Transactional
-	public List<Databank> getAll() {
+	public List<Databank> findAll() {
 		// Get root databank PDB
-		Databank pdb = findByName("PDB");
+		Databank pdb = (Databank) createCriteria(Restrictions.eq("name", "PDB")).uniqueResult();
 
 		// Get all databanks
-		@SuppressWarnings("unchecked")
 		List<Databank> allDatabanks = createCriteria().addOrder(Order.asc("name")).list();
 
 		// Return databanks in hierachical order
@@ -33,7 +46,7 @@ public class DatabankHibernateDAO extends GenericHibernateDAO<Databank> implemen
 	}
 
 	private List<Databank> getDatabanksInTreeOrder(final Databank rootdb, final List<Databank> allDatabanks) {
-		List<Databank> children = new ArrayList<Databank>();
+		List<Databank> children = new ArrayList<>();
 		// Add root node
 		children.add(rootdb);
 		for (Databank child : allDatabanks)

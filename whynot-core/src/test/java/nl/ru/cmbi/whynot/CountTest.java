@@ -2,8 +2,8 @@ package nl.ru.cmbi.whynot;
 
 import java.io.IOException;
 
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
+import nl.ru.cmbi.whynot.hibernate.DatabankRepo;
+import nl.ru.cmbi.whynot.hibernate.EntryRepo;
 import nl.ru.cmbi.whynot.model.Databank;
 
 import org.junit.Assert;
@@ -21,10 +21,10 @@ public class CountTest {
 	private static final int	factor	= 100;
 
 	@Autowired
-	private EntryDAO			entdao;
+	private EntryRepo			entdao;
 
 	@Autowired
-	private DatabankDAO			dbdao;
+	private DatabankRepo			dbdao;
 
 	@Autowired
 	private DBMock				dbMock;

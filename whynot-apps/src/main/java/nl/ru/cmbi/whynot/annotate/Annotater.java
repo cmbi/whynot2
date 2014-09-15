@@ -118,44 +118,44 @@ public class Annotater {
 		Scanner scn = new Scanner(file);
 		while (scn.hasNextLine()) {
 			String line = scn.nextLine();
-			if ((m = Converter.patternEntry.matcher(line)).matches()) {
-				String dbname = m.group(1);
-				String pdbid = m.group(2).toLowerCase();
-				//Check if databank still the same as current
-				if (!databank.getName().equals(dbname))
-					databank = dbdao.findByName(dbname);
+			if ((m = Converter.patternCOMMENT.matcher(line)).matches()) {
+				//Comment stats
+				log.info("COMMENT: " + comment.getText() + ": Adding " + added + " annotations");
+				added = 0;
 
-				//Skip if there's no present parent for missing entry
-				Entry parent = entdao.findByDatabankAndPdbid(databank.getParent(), pdbid);
-				if (parent == null || parent.getFile() == null) {
-					log.warn("Skipping annotation for " + dbname + "," + pdbid + ": No present parent");
-					continue;
-				}
-
-				//Create or find Entry
-				Entry entry = entdao.findByDatabankAndPdbid(databank, pdbid);
-				if (entry == null)
-					entry = entdao.save(new Entry(databank, pdbid));
-
-				//Add annotation
-				if (anndao.findByCommentAndEntry(comment, entry) == null) {
-					anndao.save(new Annotation(comment, entry, time));
-					added++;
-				}
-				else
-					log.warn("Skipping annotation for " + dbname + "," + pdbid + ": Annotation already present");
+				//Find comment
+				String text = m.group(1).trim();
+				comment = comdao.findByText(text);
+				if (comment == null)
+					comment = comdao.save(new Comment(text));
 			}
 			else
-				if ((m = Converter.patternCOMMENT.matcher(line)).matches()) {
-					//Comment stats
-					log.info("COMMENT: " + comment.getText() + ": Adding " + added + " annotations");
-					added = 0;
+				if ((m = Converter.patternEntry.matcher(line)).matches()) {
+					String dbname = m.group(1);
+					String pdbid = m.group(2).toLowerCase();
+					//Check if databank still the same as current
+					if (!databank.getName().equals(dbname))
+						databank = dbdao.findByName(dbname);
 
-					//Find comment
-					String text = m.group(1).trim();
-					comment = comdao.findByText(text);
-					if (comment == null)
-						comment = comdao.save(new Comment(text));
+					//Skip if there's no present parent for missing entry
+					Entry parent = entdao.findByDatabankAndPdbid(databank.getParent(), pdbid);
+					if (parent == null || parent.getFile() == null) {
+						log.warn("Skipping annotation for " + dbname + "," + pdbid + ": No present parent");
+						continue;
+					}
+
+					//Create or find Entry
+					Entry entry = entdao.findByDatabankAndPdbid(databank, pdbid);
+					if (entry == null)
+						entry = entdao.save(new Entry(databank, pdbid));
+
+					//Add annotation
+					if (anndao.findByCommentAndEntry(comment, entry) == null) {
+						anndao.save(new Annotation(comment, entry, time));
+						added++;
+					}
+					else
+						log.warn("Skipping annotation for " + dbname + "," + pdbid + ": Annotation already present");
 				}
 		}
 		scn.close();

@@ -27,6 +27,8 @@ public interface DomainObjectRepository<T extends DomainObject> extends JpaRepos
 	}
 
 	public interface EntryRepoCustom {
+		Entry findByDatabankAndPdbid(final Databank databankName, final String pdbid);
+
 		boolean contains(final String pdbid);
 
 		// Collections

@@ -3,12 +3,12 @@ package nl.ru.cmbi.whynot.webservice;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import nl.ru.cmbi.whynot.hibernate.DatabankRepo;
 import nl.ru.cmbi.whynot.hibernate.EntryRepo;
@@ -16,10 +16,6 @@ import nl.ru.cmbi.whynot.model.Annotation;
 import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Databank.CollectionType;
 import nl.ru.cmbi.whynot.model.Entry;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 @Path("/")

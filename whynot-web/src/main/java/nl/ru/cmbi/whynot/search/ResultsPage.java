@@ -2,13 +2,6 @@ package nl.ru.cmbi.whynot.search;
 
 import java.util.List;
 
-import nl.ru.cmbi.whynot.hibernate.EntryRepo;
-import nl.ru.cmbi.whynot.home.HomePage;
-import nl.ru.cmbi.whynot.model.Databank;
-import nl.ru.cmbi.whynot.model.Entry;
-import nl.ru.cmbi.whynot.panels.AnnotationPanel;
-import nl.ru.cmbi.whynot.panels.FilePanel;
-
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -19,6 +12,13 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.string.StringValue;
 import org.wicketstuff.annotation.mount.MountPath;
+
+import nl.ru.cmbi.whynot.hibernate.EntryRepo;
+import nl.ru.cmbi.whynot.home.HomePage;
+import nl.ru.cmbi.whynot.model.Databank;
+import nl.ru.cmbi.whynot.model.Entry;
+import nl.ru.cmbi.whynot.panels.AnnotationPanel;
+import nl.ru.cmbi.whynot.panels.FilePanel;
 
 @MountPath("search")
 public class ResultsPage extends HomePage {

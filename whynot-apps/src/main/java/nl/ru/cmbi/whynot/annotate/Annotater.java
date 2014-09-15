@@ -110,10 +110,9 @@ public class Annotater {
 		log.info("Adding annotations in " + file.getName());
 		Comment comment = new Comment("Empty comment");
 		Databank databank = new Databank("Empty databank");
-		List<Entry> presentParents = new ArrayList<Entry>();
-		List<Entry> previouslyAnnotated = new ArrayList<Entry>();
+		List<Entry> presentParents = new ArrayList<>();
 
-		int added = 0, index = 0;
+		int added = 0;
 		long time = System.currentTimeMillis();
 		Matcher m;
 		Scanner scn = new Scanner(file);
@@ -136,7 +135,7 @@ public class Annotater {
 				}
 
 				//Create or find Entry
-				Entry entry = entdao.findByDatabankAndPdbid(databank,pdbid);
+				Entry entry = entdao.findByDatabankAndPdbid(databank, pdbid);
 				if(entry==null) {
 					entry = new Entry(databank, pdbid);
 					databank.getEntries().add(entry);
@@ -173,7 +172,7 @@ public class Annotater {
 		log.info("Removing annotations in " + file.getName());
 		Comment comment = new Comment("Empty comment");
 		Databank databank = new Databank("Empty databank");
-		List<Entry> previouslyAnnotated = new ArrayList<Entry>();
+		List<Entry> previouslyAnnotated = new ArrayList<>();
 
 		int removed = 0, index = 0;
 		Matcher m;

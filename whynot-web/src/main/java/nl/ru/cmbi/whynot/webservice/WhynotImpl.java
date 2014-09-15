@@ -10,8 +10,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
+import nl.ru.cmbi.whynot.hibernate.DatabankRepo;
+import nl.ru.cmbi.whynot.hibernate.EntryRepo;
 import nl.ru.cmbi.whynot.model.Annotation;
 import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Databank.CollectionType;
@@ -26,9 +26,9 @@ import org.springframework.stereotype.Service;
 @Produces(MediaType.APPLICATION_XML)
 public class WhynotImpl implements Whynot {
 	@Autowired
-	private DatabankDAO	databankdao;
+	private DatabankRepo	databankdao;
 	@Autowired
-	private EntryDAO	entrydao;
+	private EntryRepo	entrydao;
 
 	@GET
 	@Path("/annotations/{databank}/{pdbid}")

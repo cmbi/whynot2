@@ -114,7 +114,7 @@ public class Annotater {
 		List<Entry> presentParents = new ArrayList<>();
 
 		int added = 0;
-		long time = System.currentTimeMillis();
+		Long time = System.currentTimeMillis();
 		Matcher m;
 		Scanner scn = new Scanner(file);
 		while (scn.hasNextLine()) {
@@ -141,8 +141,10 @@ public class Annotater {
 					entry = entdao.save(new Entry(databank, pdbid));
 
 				//Add annotation
-				if (entry.getAnnotations().add(new Annotation(comment, entry, time)))
+				if (anndao.findByCommentAndEntry(comment, entry) == null) {
+					anndao.save(new Annotation(comment, entry, time));
 					added++;
+				}
 				else
 					log.warn("Skipping annotation for " + dbname + "," + pdbid + ": Annotation already present");
 			}

@@ -17,6 +17,8 @@ import nl.ru.cmbi.whynot.model.*;
 @NoRepositoryBean
 public interface DomainObjectRepository<T extends DomainObject> extends JpaRepository<T, Long>, JpaSpecificationExecutor<T> {
 	public interface AnnotationRepoCustom {
+		Annotation findByCommentAndEntry(final Comment comment, final Entry entry);
+
 		long getLastUsed(final Comment comment);
 
 		List<Annotation> getRecent();

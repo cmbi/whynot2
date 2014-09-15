@@ -24,6 +24,16 @@ public class AnnotationRepoImpl implements AnnotationRepoCustom {
 	@PersistenceContext
 	private EntityManager	entityManager;
 
+	@Override
+	public Annotation findByCommentAndEntry(final Comment comment, final Entry entry) {
+		Session session = (Session) entityManager.getDelegate();
+		return (Annotation) session
+				.byNaturalId(Annotation.class)
+				.using("entry", entry)
+				.using("comment", comment)
+				.getReference();
+	}
+
 	private Session getSession() {
 		return (Session) entityManager.getDelegate();
 	}

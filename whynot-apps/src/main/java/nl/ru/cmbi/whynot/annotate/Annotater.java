@@ -136,10 +136,8 @@ public class Annotater {
 
 				//Create or find Entry
 				Entry entry = entdao.findByDatabankAndPdbid(databank, pdbid);
-				if(entry==null) {
-					entry = new Entry(databank, pdbid);
-					databank.getEntries().add(entry);
-				}
+				if(entry==null)
+					entry = entdao.save(new Entry(databank, pdbid));
 
 				//Add annotation
 				if (entry.getAnnotations().add(new Annotation(comment, entry, time)))

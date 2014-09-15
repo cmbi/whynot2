@@ -23,7 +23,7 @@ public class SpeedTest {
 	@Autowired
 	private Annotater	annotator;
 
-	@Test(timeout = 250 * 1000)
+	@Test(timeout = 200 * 1000)
 	// Initial run after update to Spring Boot took 240 seconds; Any further changes may not add to this time
 	public void annotate() throws Exception {
 		log.info("Start");

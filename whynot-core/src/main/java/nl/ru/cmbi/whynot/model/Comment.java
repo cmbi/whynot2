@@ -6,17 +6,13 @@ import java.util.TreeSet;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
-import org.hibernate.validator.Length;
-import org.hibernate.validator.NotEmpty;
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotEmpty;
 
 @Data
 @Entity
@@ -37,12 +33,12 @@ public class Comment extends DomainObject implements Comparable<Comment> {
 
 	protected Comment() {/*Hibernate requirement*/}
 
-	public Comment(String text) {
+	public Comment(final String text) {
 		this.text = text;
 	}
 
 	@Override
-	public int compareTo(Comment o) {
+	public int compareTo(final Comment o) {
 		return text.compareTo(o.text);
 	}
 }

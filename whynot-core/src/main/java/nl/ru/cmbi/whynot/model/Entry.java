@@ -7,20 +7,15 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotNull;
 
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Setter;
 
-import org.hibernate.annotations.Index;
-import org.hibernate.annotations.LazyToOne;
-import org.hibernate.annotations.LazyToOneOption;
-import org.hibernate.annotations.NaturalId;
-import org.hibernate.annotations.Sort;
-import org.hibernate.annotations.SortType;
-import org.hibernate.validator.Length;
-import org.hibernate.validator.NotNull;
+import org.hibernate.annotations.*;
+import org.hibernate.validator.constraints.Length;
 
 @Data
 @Entity

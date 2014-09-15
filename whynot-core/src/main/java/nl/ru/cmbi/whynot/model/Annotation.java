@@ -2,6 +2,7 @@ package nl.ru.cmbi.whynot.model;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotNull;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -12,7 +13,6 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.NaturalId;
-import org.hibernate.validator.NotNull;
 
 @Data
 @Entity
@@ -40,14 +40,14 @@ public class Annotation extends DomainObject implements Comparable<Annotation> {
 
 	protected Annotation() {/*Hibernate requirement*/}
 
-	public Annotation(Comment comment, Entry entry, Long timestamp) {
+	public Annotation(final Comment comment, final Entry entry, final Long timestamp) {
 		this.comment = comment;
 		this.entry = entry;
 		this.timestamp = timestamp;
 	}
 
 	@Override
-	public int compareTo(Annotation o) {
+	public int compareTo(final Annotation o) {
 		int value = comment.compareTo(o.comment);
 		if (value != 0)
 			return value;

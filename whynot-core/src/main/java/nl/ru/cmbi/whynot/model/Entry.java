@@ -3,10 +3,7 @@ package nl.ru.cmbi.whynot.model;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 import lombok.AccessLevel;
@@ -14,35 +11,36 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Setter;
 
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.NaturalId;
+import org.hibernate.annotations.SortNatural;
 import org.hibernate.validator.constraints.Length;
 
 @Data
 @Entity
 @EqualsAndHashCode(callSuper = false, of = { "databank", "pdbid" })
+@Table(indexes = {
+		@Index(name = "entry_databank_index", columnList = "databank_id"),
+		@Index(name = "entry_pdbid_index", columnList = "pdbid")
+})
 public class Entry extends DomainObject implements Comparable<Entry> {
 	@NaturalId
 	@ManyToOne
 	@NotNull
-	@LazyToOne(LazyToOneOption.PROXY)
-	@Index(name = "entry_databank_index")
 	@Setter(AccessLevel.NONE)
 	private Databank				databank;
 
 	@NaturalId
 	@Length(max = 10)
 	@NotNull
-	@Index(name = "entry_pdbid_index")
 	@Setter(AccessLevel.NONE)
 	private String					pdbid;
 
 	@ManyToOne(cascade = CascadeType.ALL)
-	@LazyToOne(LazyToOneOption.PROXY)
 	@SuppressWarnings("unused")
 	private File					file;
 
 	@OneToMany(mappedBy = "entry", cascade = CascadeType.ALL, orphanRemoval = true)
-	@Sort(type = SortType.NATURAL)
+	@SortNatural
 	@Setter(AccessLevel.NONE)
 	@SuppressWarnings("unused")
 	private SortedSet<Annotation>	annotations	= new TreeSet<Annotation>();

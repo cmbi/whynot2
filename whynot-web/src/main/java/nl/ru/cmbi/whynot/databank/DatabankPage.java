@@ -2,7 +2,7 @@ package nl.ru.cmbi.whynot.databank;
 
 import java.util.Arrays;
 
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
+import nl.ru.cmbi.whynot.hibernate.EntryRepo;
 import nl.ru.cmbi.whynot.home.HomePage;
 import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.panels.PieChartPanel;
@@ -20,10 +20,10 @@ import org.wicketstuff.annotation.mount.MountPath;
 @MountPath("databanks")
 public class DatabankPage extends HomePage {
 	@SpringBean
-	protected EntryDAO	entrydao;
+	protected EntryRepo	entrydao;
 
 	public DatabankPage() {
-		add(databankListView(databankdao.getAll().toArray(new Databank[0])));
+		add(databankListView(databankdao.findAll().toArray(new Databank[0])));
 	}
 
 	public DatabankPage(final PageParameters parameters) {
@@ -37,7 +37,7 @@ public class DatabankPage extends HomePage {
 			add(databankListView(db));
 		else {
 			error("Could not find databank for parameter name.");
-			add(databankListView(databankdao.getAll().toArray(new Databank[0])));
+			add(databankListView(databankdao.findAll().toArray(new Databank[0])));
 		}
 	}
 

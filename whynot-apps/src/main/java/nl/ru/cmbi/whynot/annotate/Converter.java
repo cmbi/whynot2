@@ -26,7 +26,7 @@ public class Converter {
 	public static void main(String[] args) throws IOException, ParseException {
 		if (args.length != 1)
 			throw new IllegalArgumentException("Usage: converter FILENAME");
-		convert(new File(args[0]));
+		getFile(new File(args[0]));
 	}
 
 	//Old

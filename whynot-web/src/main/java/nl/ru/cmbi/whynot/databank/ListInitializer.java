@@ -11,7 +11,7 @@ import org.apache.wicket.request.resource.IResource;
 import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
+import nl.ru.cmbi.whynot.hibernate.DatabankRepo;
 import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Databank.CollectionType;
 import nl.ru.cmbi.whynot.webservice.Whynot;
@@ -28,13 +28,13 @@ public class ListInitializer implements IInitializer {
 	}
 
 	@SpringBean
-	private DatabankDAO	dbdao;
+	private DatabankRepo	dbdao;
 
 	@Override
 	public void init(Application application) {
 		
 		//For each databank
-		for (Databank db : dbdao.getAll()) {
+		for (Databank db : dbdao.findAll()) {
 			String dbname = db.getName();
 			//and all collection types
 			for (CollectionType ct : CollectionType.values()) {

@@ -9,8 +9,8 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.FileDAO;
+import nl.ru.cmbi.whynot.hibernate.EntryRepo;
+import nl.ru.cmbi.whynot.hibernate.FileRepo;
 import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Entry;
 import nl.ru.cmbi.whynot.model.File;
@@ -18,11 +18,11 @@ import nl.ru.cmbi.whynot.model.File;
 public class LineCrawler {
 	private static final Logger	log	= LoggerFactory.getLogger(LineCrawler.class);
 	private Databank			databank;
-	private EntryDAO			entrydao;
-	private FileDAO				filedao;
+	private EntryRepo			entrydao;
+	private FileRepo				filedao;
 	private Pattern				pattern;
 
-	public LineCrawler(Databank db, EntryDAO entdao, FileDAO fldao) {
+	public LineCrawler(Databank db, EntryRepo entdao, FileRepo fldao) {
 		databank = db;
 		entrydao = entdao;
 		filedao = fldao;

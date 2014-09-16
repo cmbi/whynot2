@@ -2,25 +2,46 @@ package nl.ru.cmbi.whynot.hibernate;
 
 import java.util.List;
 
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.criterion.*;
+import org.springframework.stereotype.Service;
+
+import nl.ru.cmbi.whynot.hibernate.DomainObjectRepository.EntryRepoCustom;
 import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Entry;
 
-import org.hibernate.Criteria;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Property;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.criterion.Subqueries;
-import org.springframework.stereotype.Service;
-
 @Service
-public class EntryHibernateDAO extends GenericHibernateDAO<Entry> implements EntryDAO {
+public class EntryRepoImpl implements EntryRepoCustom {
+	private static final Class<Entry>	persistentClass	= Entry.class;
+
+	@PersistenceContext
+	private EntityManager				entityManager;
+
+	private Session getSession() {
+		return (Session) entityManager.getDelegate();
+	}
+
+	private Criteria createCriteria(final Criterion... criterion) {
+		Criteria crit = getSession().createCriteria(persistentClass);
+		for (Criterion c : criterion)
+			crit.add(c);
+		return crit;
+	}
+
+	private Criteria createCriteria(final String alias, final Criterion... criterion) {
+		Criteria crit = getSession().createCriteria(persistentClass, alias);
+		for (Criterion c : criterion)
+			crit.add(c);
+		return crit;
+	}
+
 	@Override
 	public Entry findByDatabankAndPdbid(final Databank databank, final String pdbid) {
-		Criteria crit = createCriteria(Restrictions.naturalId().set("databank", databank).set("pdbid", pdbid));
-		return (Entry) crit.uniqueResult();
+		return (Entry) getSession().byNaturalId(persistentClass).using("databank", databank).using("pdbid", pdbid).getReference();
 	}
 
 	@Override
@@ -131,7 +152,6 @@ public class EntryHibernateDAO extends GenericHibernateDAO<Entry> implements Ent
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<Entry> getAnnotated(final Databank db) {
 		return annotatedCriteria(db).addOrder(Order.asc("pdbid")).list();
 	}
@@ -163,7 +183,6 @@ public class EntryHibernateDAO extends GenericHibernateDAO<Entry> implements Ent
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<Entry> getMissing(final Databank child) {
 		return missingCriteria(child).addOrder(Order.asc("pdbid")).list();
 	}

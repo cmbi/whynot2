@@ -5,9 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jfreechart.MappedChart;
+
 import nl.ru.cmbi.whynot.entries.EntriesPage;
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
+import nl.ru.cmbi.whynot.hibernate.DatabankRepo;
+import nl.ru.cmbi.whynot.hibernate.EntryRepo;
 import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Databank.CollectionType;
 import nl.ru.cmbi.whynot.model.Entry;
@@ -32,9 +33,9 @@ import org.jfree.ui.RectangleInsets;
 
 public class PieChartPanel extends Panel {
 	@SpringBean
-	protected DatabankDAO	databankdao;
+	protected DatabankRepo	databankdao;
 	@SpringBean
-	protected EntryDAO		entrydao;
+	protected EntryRepo		entrydao;
 	@SpringBean
 	private Whynot	whynot;
 

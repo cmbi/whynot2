@@ -1,6 +1,7 @@
 package nl.ru.cmbi.whynot.model;
 
 import javax.persistence.Entity;
+import javax.validation.constraints.NotNull;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -8,9 +9,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Setter;
 
 import org.hibernate.annotations.NaturalId;
-import org.hibernate.validator.Length;
-import org.hibernate.validator.NotEmpty;
-import org.hibernate.validator.NotNull;
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotEmpty;
 
 @Data
 @Entity

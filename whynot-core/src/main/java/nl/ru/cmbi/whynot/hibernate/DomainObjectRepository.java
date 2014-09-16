@@ -2,37 +2,23 @@ package nl.ru.cmbi.whynot.hibernate;
 
 import java.util.List;
 
-import nl.ru.cmbi.whynot.model.Annotation;
-import nl.ru.cmbi.whynot.model.Comment;
-import nl.ru.cmbi.whynot.model.Databank;
-import nl.ru.cmbi.whynot.model.DomainObject;
-import nl.ru.cmbi.whynot.model.Entry;
-import nl.ru.cmbi.whynot.model.File;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.repository.NoRepositoryBean;
 
-import org.springframework.transaction.annotation.Transactional;
+import nl.ru.cmbi.whynot.model.*;
 
 /**
  * Data Access Object interfaces. Naming convention: Find - single Get - multiple
- * 
+ *
  * @param <T>
  *            Type of DomainObject accessible from implementing DAO.
  */
-public interface GenericDAO<T extends DomainObject> {
-	long countAll();
+@NoRepositoryBean
+public interface DomainObjectRepository<T extends DomainObject> extends JpaRepository<T, Long>, JpaSpecificationExecutor<T> {
+	public interface AnnotationRepoCustom {
+		Annotation findByCommentAndEntry(final Comment comment, final Entry entry);
 
-	T find(final Long id);
-
-	List<T> getAll();
-
-	// Save / Delete
-	@Transactional
-	void makePersistent(final T entity);
-
-	@Transactional
-	void makeTransient(final T entity);
-
-	// Interfaces
-	public interface AnnotationDAO extends GenericDAO<Annotation> {
 		long getLastUsed(final Comment comment);
 
 		List<Annotation> getRecent();
@@ -42,16 +28,8 @@ public interface GenericDAO<T extends DomainObject> {
 		List<Entry> getEntriesForComment(final Long l);
 	}
 
-	public interface CommentDAO extends GenericDAO<Comment> {
-		Comment findByText(final String text);
-	}
-
-	public interface DatabankDAO extends GenericDAO<Databank> {
-		Databank findByName(final String name);
-	}
-
-	public interface EntryDAO extends GenericDAO<Entry> {
-		Entry findByDatabankAndPdbid(final Databank databank, final String pdbid);
+	public interface EntryRepoCustom {
+		Entry findByDatabankAndPdbid(final Databank databankName, final String pdbid);
 
 		boolean contains(final String pdbid);
 
@@ -89,9 +67,7 @@ public interface GenericDAO<T extends DomainObject> {
 		List<Entry> getUnannotated(final Databank db);
 	}
 
-	public interface FileDAO extends GenericDAO<File> {
-		File findByPathAndTimestamp(final String path, final Long timestamp);
-
+	public interface FileRepoCustom {
 		List<File> getRecent();
 	}
 }

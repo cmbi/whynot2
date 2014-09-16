@@ -2,9 +2,9 @@ package nl.ru.cmbi.whynot;
 
 import java.io.IOException;
 
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.CommentDAO;
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
+import nl.ru.cmbi.whynot.hibernate.CommentRepo;
+import nl.ru.cmbi.whynot.hibernate.DatabankRepo;
+import nl.ru.cmbi.whynot.hibernate.EntryRepo;
 import nl.ru.cmbi.whynot.model.Annotation;
 import nl.ru.cmbi.whynot.model.Comment;
 import nl.ru.cmbi.whynot.model.Databank;
@@ -31,13 +31,13 @@ public class DBMock {
 	public TemporaryFolder	folder	= new TemporaryFolder();
 
 	@Autowired
-	private DatabankDAO		dbdao;
+	private DatabankRepo		dbdao;
 
 	@Autowired
-	private CommentDAO		commentdao;
+	private CommentRepo		commentdao;
 
 	@Autowired
-	private EntryDAO		entdao;
+	private EntryRepo		entdao;
 
 	@Transactional
 	public void setupDatabase(final int factor) throws IOException {
@@ -46,8 +46,8 @@ public class DBMock {
 		Databank dssp = new Databank("DSSP", pdb, CrawlType.LINE, "[a-z0-9]{4}", "#", "#${PDBID}");
 
 		// Store in our in mem database
-		dbdao.makePersistent(pdb);
-		dbdao.makePersistent(dssp);
+		dbdao.save(pdb);
+		dbdao.save(dssp);
 
 		// Add some fake entries, that all reference the same file per databank
 		File pdbfile = new File(folder.newFile());
@@ -64,13 +64,13 @@ public class DBMock {
 		}
 		// Add comments for the first factor items
 		Comment comment = new Comment("Some comment");
-		commentdao.makePersistent(comment);
+		commentdao.save(comment);
 		Entry entry = new Entry(dssp, Integer.toString(0));
 		dssp.getEntries().add(entry);
 		Annotation annotation = new Annotation(comment, entry, System.currentTimeMillis());
 		entry.getAnnotations().add(annotation);
 
 		// Sanity check
-		Assert.assertEquals(22 * factor + 1 + 1, entdao.countAll());
+		Assert.assertEquals(22 * factor + 1 + 1, entdao.count());
 	}
 }

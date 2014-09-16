@@ -2,13 +2,6 @@ package nl.ru.cmbi.whynot.search;
 
 import java.util.List;
 
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
-import nl.ru.cmbi.whynot.home.HomePage;
-import nl.ru.cmbi.whynot.model.Databank;
-import nl.ru.cmbi.whynot.model.Entry;
-import nl.ru.cmbi.whynot.panels.AnnotationPanel;
-import nl.ru.cmbi.whynot.panels.FilePanel;
-
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -20,10 +13,17 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.string.StringValue;
 import org.wicketstuff.annotation.mount.MountPath;
 
+import nl.ru.cmbi.whynot.hibernate.EntryRepo;
+import nl.ru.cmbi.whynot.home.HomePage;
+import nl.ru.cmbi.whynot.model.Databank;
+import nl.ru.cmbi.whynot.model.Entry;
+import nl.ru.cmbi.whynot.panels.AnnotationPanel;
+import nl.ru.cmbi.whynot.panels.FilePanel;
+
 @MountPath("search")
 public class ResultsPage extends HomePage {
 	@SpringBean
-	protected EntryDAO	entrydao;
+	protected EntryRepo	entrydao;
 
 	public ResultsPage(final PageParameters parameters) {
 		if (parameters.getNamedKeys().contains("pdbid")) {
@@ -47,7 +47,7 @@ public class ResultsPage extends HomePage {
 		public ResultFragment(final String id, final String pdbid) {
 			super(id, "resultfragment", ResultsPage.this);
 			add(new Label("pdbid", pdbid));
-			ListView<Databank> lv = new ListView<Databank>("databanklist", databankdao.getAll()) {
+			ListView<Databank> lv = new ListView<Databank>("databanklist", databankdao.findAll()) {
 				@Override
 				protected void populateItem(final ListItem<Databank> item) {
 					Databank db = item.getModelObject();

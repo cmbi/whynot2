@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 import nl.ru.cmbi.whynot.databank.DatabankPage;
 import nl.ru.cmbi.whynot.feedback.FeedbackPanelWrapper;
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
+import nl.ru.cmbi.whynot.hibernate.DatabankRepo;
 import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.search.SearchPanel;
 import nl.ru.cmbi.whynot.util.Utils;
@@ -27,12 +27,12 @@ public class HomePage extends WebPage {
 	Logger log = LoggerFactory.getLogger(HomePage.class);
 	
 	@SpringBean
-	protected DatabankDAO	databankdao;
+	protected DatabankRepo	databankdao;
 
 	public HomePage() {
 		add(new FeedbackPanelWrapper("feedback"));
 		add(new SearchPanel("search"));
-		add(new DatabankHierarchyFragment("hierarchy", databankdao.findByName("PDB"), databankdao.getAll()));
+		add(new DatabankHierarchyFragment("hierarchy", databankdao.findByName("PDB"), databankdao.findAll()));
 	}
 
 	public class DatabankHierarchyFragment extends Fragment {

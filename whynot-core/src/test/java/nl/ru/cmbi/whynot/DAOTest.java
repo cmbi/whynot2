@@ -1,7 +1,7 @@
 package nl.ru.cmbi.whynot;
 
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.DatabankDAO;
-import nl.ru.cmbi.whynot.hibernate.GenericDAO.EntryDAO;
+import nl.ru.cmbi.whynot.hibernate.DatabankRepo;
+import nl.ru.cmbi.whynot.hibernate.EntryRepo;
 import nl.ru.cmbi.whynot.model.Databank;
 
 import org.junit.Before;
@@ -17,9 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class DAOTest {
 	@Autowired
-	private DatabankDAO	dbdao;
+	private DatabankRepo	dbdao;
 	@Autowired
-	private EntryDAO	entdao;
+	private EntryRepo	entdao;
 
 	private Databank	dssp;
 

@@ -3,19 +3,21 @@ package nl.ru.cmbi.whynot.list;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+
+import nl.ru.cmbi.whynot.WhynotApplication;
 import nl.ru.cmbi.whynot.hibernate.DatabankRepo;
 import nl.ru.cmbi.whynot.hibernate.EntryRepo;
 import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Databank.CollectionType;
 import nl.ru.cmbi.whynot.model.Entry;
-import nl.ru.cmbi.whynot.util.SpringUtil;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-@Service
-@Transactional
+@Configuration
+@Import(WhynotApplication.class)
 public class Lister {
 	public static void main(final String... args) {
 		String dbname = "DATABASE";
@@ -23,15 +25,17 @@ public class Lister {
 		if (args.length != 2 || !args[1].matches(selection))
 			throw new IllegalArgumentException("Usage: lister " + dbname + " " + selection);
 
-		Lister lister = SpringUtil.getContext().getBean(Lister.class);
-		lister.list(args[0], CollectionType.valueOf(args[1]));
+		try (ConfigurableApplicationContext applicationContext = SpringApplication.run(Lister.class)) {
+			Lister lister = applicationContext.getBean(Lister.class);
+			lister.list(args[0], CollectionType.valueOf(args[1]));
+		}
 	}
 
 	@Autowired
 	private DatabankRepo	dbdao;
 
 	@Autowired
-	private EntryRepo	entdao;
+	private EntryRepo		entdao;
 
 	public void list(final String dbname, final CollectionType selection) {
 		Databank db = dbdao.findByName(dbname);
@@ -59,7 +63,7 @@ public class Lister {
 			entries = entdao.getUnannotated(db);
 			break;
 		default:
-			entries = new ArrayList<Entry>();
+			entries = new ArrayList<>();
 		}
 		for (Entry ent : entries)
 			System.out.println(ent.getPdbid());

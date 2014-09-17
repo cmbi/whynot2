@@ -1,45 +1,43 @@
 package nl.ru.cmbi.whynot.crawl;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.regex.Pattern;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import nl.ru.cmbi.whynot.WhynotApplication;
 import nl.ru.cmbi.whynot.hibernate.DatabankRepo;
 import nl.ru.cmbi.whynot.hibernate.EntryRepo;
 import nl.ru.cmbi.whynot.hibernate.FileRepo;
 import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Databank.CrawlType;
 import nl.ru.cmbi.whynot.model.Entry;
-import nl.ru.cmbi.whynot.util.SpringUtil;
 
 @Service
+@Slf4j
 public class Crawler {
-	private static final Logger	log	= LoggerFactory.getLogger(Crawler.class);
-
-	public static void main(String[] args) throws Exception {
+	public static void main(final String[] args) throws Exception {
 		if (args.length == 2) {
 			log.info("Crawler start.");
-			Crawler crawler = (Crawler) SpringUtil.getContext().getBean("crawler");
 
-			//Should run before addCrawled
-			crawler.removeChanged(args[0]);
+			try (ConfigurableApplicationContext applicationContext = SpringApplication.run(WhynotApplication.class)) {
+				Crawler crawler = applicationContext.getBean(Crawler.class);
 
-			//Should run after removeChanged
-			crawler.addCrawled(args[0], args[1]);
+				//Should run before addCrawled
+				crawler.removeChanged(args[0]);
+
+				//Should run after removeChanged
+				crawler.addCrawled(args[0], args[1]);
+			}
 
 			log.info("Crawler done.");
 		}
@@ -50,18 +48,18 @@ public class Crawler {
 	@Autowired
 	private DatabankRepo	dbdao;
 	@Autowired
-	private EntryRepo	entrydao;
+	private EntryRepo		entrydao;
 	@Autowired
 	private FileRepo		filedao;
 
 	/**
 	 * Removes entries from databank if <li>file on path does not exist <li>timestamp differs from timestamp of file on
 	 * path <li>path does not match databank regex (which might have changed) <li>no file or parent entry file exists
-	 * 
+	 *
 	 * @param name
 	 */
 	@Transactional
-	public void removeChanged(String name) {
+	public void removeChanged(final String name) {
 		Databank databank = dbdao.findByName(name);
 		Pattern regex = Pattern.compile(databank.getRegex());
 		boolean matchRegex = databank.getCrawltype() == CrawlType.FILE;
@@ -71,8 +69,8 @@ public class Crawler {
 			File file = new File(path);
 			//Check if file still exists
 			if (!file.exists() || file.lastModified() != entry.getFile().getTimestamp() ||
-			//Check if file still matches regex
-			matchRegex && !regex.matcher(path).matches()) {
+					//Check if file still matches regex
+					matchRegex && !regex.matcher(path).matches()) {
 				//Remove entry
 				databank.getEntries().remove(entry);
 				entrydao.delete(entry);
@@ -90,19 +88,18 @@ public class Crawler {
 	}
 
 	/**
-	 * Adds all FileEntries in the given file or directory and subdirectories to database.
-	 * Takes great care to delete old files when possible and to clear present annotations. <br/>
+	 * Adds all FileEntries in the given file or directory and subdirectories to database. Takes great care to delete
+	 * old files when possible and to clear present annotations. <br/>
 	 * <br/>
-	 * Extracts the PDBID from the filename/line using regular expression group matching:
-	 * the PDBID should be enclosed in () and be the explicitly matching group number 1
-	 * Note: Strongly expects removeChanged to have run before
-	 * 
+	 * Extracts the PDBID from the filename/line using regular expression group matching: the PDBID should be enclosed
+	 * in () and be the explicitly matching group number 1 Note: Strongly expects removeChanged to have run before
+	 *
 	 * @param dbname
 	 * @param path
 	 * @throws IOException
 	 */
 	@Transactional
-	public void addCrawled(String dbname, String path) throws IOException {
+	public void addCrawled(final String dbname, final String path) throws IOException {
 		Databank db = dbdao.findByName(dbname);
 		switch (db.getCrawltype()) {
 		case FILE:
@@ -117,15 +114,15 @@ public class Crawler {
 	}
 
 	/**
-	 * Gets the file on the supplied path. If the path starts with http://
-	 * we first store a local copy with the same timestamp and return that.
-	 * 
+	 * Gets the file on the supplied path. If the path starts with http:// we first store a local copy with the same
+	 * timestamp and return that.
+	 *
 	 * @param path
 	 * @return the file on the supplied path
 	 * @throws IOException
 	 * @throws MalformedURLException
 	 */
-	private static File getFile(String path) throws IOException, MalformedURLException {
+	private static File getFile(final String path) throws IOException, MalformedURLException {
 		if (path.startsWith("http://")) {
 			File dirDownload = new File("download/");
 			//Make sure download directory exist

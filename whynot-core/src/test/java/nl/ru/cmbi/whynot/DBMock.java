@@ -2,17 +2,6 @@ package nl.ru.cmbi.whynot;
 
 import java.io.IOException;
 
-import nl.ru.cmbi.whynot.hibernate.CommentRepo;
-import nl.ru.cmbi.whynot.hibernate.DatabankRepo;
-import nl.ru.cmbi.whynot.hibernate.EntryRepo;
-import nl.ru.cmbi.whynot.model.Annotation;
-import nl.ru.cmbi.whynot.model.Comment;
-import nl.ru.cmbi.whynot.model.Databank;
-import nl.ru.cmbi.whynot.model.Databank.CrawlType;
-import nl.ru.cmbi.whynot.model.Entry;
-import nl.ru.cmbi.whynot.model.File;
-import nl.ru.cmbi.whynot.util.SpringUtil;
-
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
@@ -20,8 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import nl.ru.cmbi.whynot.hibernate.CommentRepo;
+import nl.ru.cmbi.whynot.hibernate.DatabankRepo;
+import nl.ru.cmbi.whynot.hibernate.EntryRepo;
+import nl.ru.cmbi.whynot.model.*;
+import nl.ru.cmbi.whynot.model.Databank.CrawlType;
+import nl.ru.cmbi.whynot.util.SpringUtil;
+
 @Service
-public class DBMock {
+public class DBMock { //FIXME Convert to data.sql
 	public static void main(final String[] args) throws Exception {
 		DBMock dbMock = SpringUtil.getContext().getBean(DBMock.class);
 		dbMock.setupDatabase(1);

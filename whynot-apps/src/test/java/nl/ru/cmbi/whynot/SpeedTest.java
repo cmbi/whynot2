@@ -15,7 +15,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import nl.ru.cmbi.whynot.annotate.Annotater;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
+@SpringApplicationConfiguration(classes = WhynotApplication.class)
 @Slf4j
 public class SpeedTest {
 	private static final String	WI_OPTIMIZED	= "src/test/resources/wi.optimized.txt";

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import nl.ru.cmbi.whynot.WhynotApplication;
 import nl.ru.cmbi.whynot.hibernate.DatabankRepo;
@@ -35,6 +36,7 @@ public class Lister {
 	@Autowired
 	private EntryRepo		entdao;
 
+	@Transactional(readOnly = true)
 	public void list(final String dbname, final CollectionType selection) {
 		Databank db = dbdao.findByName(dbname);
 		if (db == null)

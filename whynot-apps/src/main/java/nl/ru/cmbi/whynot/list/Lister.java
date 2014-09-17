@@ -6,8 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.stereotype.Component;
 
 import nl.ru.cmbi.whynot.WhynotApplication;
 import nl.ru.cmbi.whynot.hibernate.DatabankRepo;
@@ -16,8 +15,7 @@ import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Databank.CollectionType;
 import nl.ru.cmbi.whynot.model.Entry;
 
-@Configuration
-@Import(WhynotApplication.class)
+@Component
 public class Lister {
 	public static void main(final String... args) {
 		String dbname = "DATABASE";
@@ -25,7 +23,7 @@ public class Lister {
 		if (args.length != 2 || !args[1].matches(selection))
 			throw new IllegalArgumentException("Usage: lister " + dbname + " " + selection);
 
-		try (ConfigurableApplicationContext applicationContext = SpringApplication.run(Lister.class)) {
+		try (ConfigurableApplicationContext applicationContext = SpringApplication.run(WhynotApplication.class)) {
 			Lister lister = applicationContext.getBean(Lister.class);
 			lister.list(args[0], CollectionType.valueOf(args[1]));
 		}

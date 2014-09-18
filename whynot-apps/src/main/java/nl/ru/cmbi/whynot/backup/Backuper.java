@@ -1,31 +1,31 @@
 package nl.ru.cmbi.whynot.backup;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import nl.ru.cmbi.whynot.WhynotApplication;
 import nl.ru.cmbi.whynot.hibernate.CommentRepo;
 import nl.ru.cmbi.whynot.model.Annotation;
 import nl.ru.cmbi.whynot.model.Comment;
-import nl.ru.cmbi.whynot.util.SpringUtil;
 
 @Service
 @Transactional
 public class Backuper {
 	private static final Logger	log	= LoggerFactory.getLogger(Backuper.class);
 
-	public static void main(String[] args) throws BeansException, IOException {
+	public static void main(final String[] args) throws BeansException, IOException {
 		log.info("Backup start.");
-		SpringUtil.getContext().getBean(Backuper.class).backup();
+		try (ConfigurableApplicationContext applicationContext = SpringApplication.run(WhynotApplication.class)) {
+			applicationContext.getBean(Backuper.class).backup();
+		}
 		log.info("Backup done.");
 	}
 

@@ -23,9 +23,10 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Utility class to access the SpringContext if necessary (should hardly ever be used).
- * 
+ *
  * @author tbeek
  */
+@Deprecated
 public class SpringUtil {
 	private static final Logger			log	= LoggerFactory.getLogger(SpringUtil.class);
 
@@ -33,7 +34,7 @@ public class SpringUtil {
 
 	/**
 	 * Provide access to the Spring ApplicationContext to retrieve initial bean(s) from static void main functions.
-	 * 
+	 *
 	 * @return initialized Spring ApplicationContext
 	 */
 	public static ApplicationContext getContext() {

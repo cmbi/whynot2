@@ -7,6 +7,4 @@ import nl.ru.cmbi.whynot.hibernate.DomainObjectRepository;
 
 @Configuration
 @EnableJpaRepositories(basePackageClasses = { DomainObjectRepository.class })
-public class DatabaseConfig {
-
-}
+public class DatabaseConfig {}

@@ -7,28 +7,26 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import nl.ru.cmbi.whynot.hibernate.EntryRepo;
 import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Entry;
 import nl.ru.cmbi.whynot.model.File;
 
+@Slf4j
 public class FileCrawler {
-	private static final Logger	log	= LoggerFactory.getLogger(FileCrawler.class);
-
 	private Databank			databank;
 	private EntryRepo			entrydao;
 	private Pattern				pattern;
 
-	public FileCrawler(Databank db, EntryRepo entdao) {
+	public FileCrawler(final Databank db, final EntryRepo entdao) {
 		databank = db;
 		entrydao = entdao;
 		pattern = Pattern.compile(db.getRegex());
 	}
 
-	public void crawl(java.io.File crawldir) {
+	public void crawl(final java.io.File crawldir) {
 		//Cache old Entries
 		List<Entry> annotatedEntries = entrydao.getAnnotated(databank);
 		List<Entry> presentEntries = entrydao.getPresent(databank);
@@ -70,12 +68,12 @@ public class FileCrawler {
 	 * Creates set of directories containing argument and all recursive
 	 * subdirectories in argument, excluding directories that match entryfilter
 	 */
-	private SortedSet<java.io.File> dirAndAllSubdirs(java.io.File directory) {
+	private SortedSet<java.io.File> dirAndAllSubdirs(final java.io.File directory) {
 		SortedSet<java.io.File> directories = new TreeSet<java.io.File>();
 		directories.add(directory); // Add this
 		for (java.io.File subdir : directory.listFiles(new FileFilter() {
 			@Override
-			public boolean accept(java.io.File pathname) {
+			public boolean accept(final java.io.File pathname) {
 				//Sometimes entries are directories: Do not crawl these directories
 				return !pattern.matcher(pathname.getAbsolutePath()).matches() && pathname.isDirectory();
 			}

@@ -2,21 +2,21 @@ package nl.ru.cmbi.whynot;
 
 import java.io.IOException;
 
-import nl.ru.cmbi.whynot.hibernate.DatabankRepo;
-import nl.ru.cmbi.whynot.hibernate.EntryRepo;
-import nl.ru.cmbi.whynot.model.Databank;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import nl.ru.cmbi.whynot.hibernate.DatabankRepo;
+import nl.ru.cmbi.whynot.hibernate.EntryRepo;
+import nl.ru.cmbi.whynot.model.Databank;
+
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/spring.xml" })
+@SpringApplicationConfiguration(classes = WhynotApplication.class)
 public class CountTest {
 	private static final int	factor	= 100;
 

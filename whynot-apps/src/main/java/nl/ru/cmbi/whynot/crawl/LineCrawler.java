@@ -6,8 +6,7 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import nl.ru.cmbi.whynot.hibernate.EntryRepo;
 import nl.ru.cmbi.whynot.hibernate.FileRepo;
@@ -15,21 +14,21 @@ import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Entry;
 import nl.ru.cmbi.whynot.model.File;
 
+@Slf4j
 public class LineCrawler {
-	private static final Logger	log	= LoggerFactory.getLogger(LineCrawler.class);
 	private Databank			databank;
 	private EntryRepo			entrydao;
 	private FileRepo				filedao;
 	private Pattern				pattern;
 
-	public LineCrawler(Databank db, EntryRepo entdao, FileRepo fldao) {
+	public LineCrawler(final Databank db, final EntryRepo entdao, final FileRepo fldao) {
 		databank = db;
 		entrydao = entdao;
 		filedao = fldao;
 		pattern = Pattern.compile(db.getRegex());
 	}
 
-	public void crawl(java.io.File crawlfile) throws IOException {
+	public void crawl(final java.io.File crawlfile) throws IOException {
 		//Cache old Entries
 		List<Entry> annotatedEntries = entrydao.getAnnotated(databank);
 		List<Entry> presentEntries = entrydao.getPresent(databank);

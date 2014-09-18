@@ -12,13 +12,16 @@ import java.util.regex.Matcher;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.hibernate.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import nl.ru.cmbi.whynot.WhynotApplication;
 import nl.ru.cmbi.whynot.hibernate.AnnotationRepo;
 import nl.ru.cmbi.whynot.hibernate.CommentRepo;
 import nl.ru.cmbi.whynot.hibernate.DatabankRepo;
@@ -27,15 +30,13 @@ import nl.ru.cmbi.whynot.model.Annotation;
 import nl.ru.cmbi.whynot.model.Comment;
 import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Entry;
-import nl.ru.cmbi.whynot.util.SpringUtil;
 
 @Service
+@Slf4j
 public class Annotater {
-	private static final Logger	log	= LoggerFactory.getLogger(Annotater.class);
-
 	public static void main(final String[] args) throws Exception {
-
-		Annotater commentParser = (Annotater) SpringUtil.getContext().getBean("annotater");
+		ConfigurableApplicationContext applicationContext = SpringApplication.run(WhynotApplication.class);
+		Annotater commentParser = applicationContext.getBean(Annotater.class);
 
 		if (args.length > 0) {
 

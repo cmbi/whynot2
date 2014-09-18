@@ -8,8 +8,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ComponentScan
 @EnableAutoConfiguration
-public class Application {
+public class WhynotApplication {
 	public static void main(final String[] args) throws Exception {
-		SpringApplication.run(Application.class, args);
+		SpringApplication.run(WhynotApplication.class, args);
 	}
 }

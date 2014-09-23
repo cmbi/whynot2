@@ -38,6 +38,10 @@ public class Comment extends DomainObject implements Comparable<Comment> {
 
 	@Override
 	public int compareTo(final Comment o) {
+
+		if(o==null)
+			return 1;
+
 		return text.compareTo(o.text);
 	}
 }

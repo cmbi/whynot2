@@ -37,6 +37,14 @@
 			<id>cmbi-public</id>
 			<url>http://ci.cmbi.ru.nl:8081/nexus/content/groups/public/</url>
 		</repository>
+		<repository>
+			<id>sonatype</id>
+			<url>https://repository.sonatype.org/content/groups/forge/</url>
+		</repository>
+		<repository>
+			<id>sonatype-releases</id>
+			<url>https://oss.sonatype.org/content/repositories/releases/</url>
+		</repository>
 	</repositories>
 	<scm>
 		<connection>scm:git:git@github.com:cmbi/whynot.git</connection>

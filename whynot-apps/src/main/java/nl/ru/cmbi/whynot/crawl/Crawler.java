@@ -21,6 +21,7 @@ import nl.ru.cmbi.whynot.hibernate.FileRepo;
 import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Databank.CrawlType;
 import nl.ru.cmbi.whynot.model.Entry;
+import nl.ru.cmbi.whynot.model.File;
 
 @Service
 @Slf4j
@@ -74,14 +75,15 @@ public class Crawler {
 		int removed = 0, updated = 0;
 
 		log.debug("getting present entries for "+databank.getName());
-		for (Entry entry : entrydao.getPresent(databank)) {
 
-			log.debug("present entry "+entry.toString());
+		nl.ru.cmbi.whynot.model.File prevFileEnt = null;
+		java.io.File prevFile = null;
+		for (Entry entry : entrydao.getPresent(databank)) {
 
 			Entry parentEntry = entrydao.findByDatabankAndPdbid(databank.getParent(), entry.getPdbid());
 
 			String path = entry.getFile().getPath();
-			File file = new File(path);
+			java.io.File file = new java.io.File(path);
 			//Check if file still exists
 			if (!file.exists() || parentEntry == null || parentEntry.getFile() == null ||
 					//Check if file still matches regex
@@ -98,8 +100,21 @@ public class Crawler {
 
 				log.debug("update");
 
-				//filedao.makeTransient( entry.getFile() );
-				entry.setFile( new nl.ru.cmbi.whynot.model.File( file ) );
+				nl.ru.cmbi.whynot.model.File fileEnt;
+				if( file.equals(prevFile) ) {
+
+					fileEnt = prevFileEnt ;
+				}
+				else {
+					fileEnt = filedao.findFile( file );
+					if (fileEnt == null)
+						fileEnt = new nl.ru.cmbi.whynot.model.File( file );
+				}
+				prevFile = file;
+				prevFileEnt = fileEnt;
+
+				//filedao.delete( entry.getFile() );
+				entry.setFile( fileEnt );
 				updated++;
 			}
 		}
@@ -159,9 +174,9 @@ public class Crawler {
 	 * @throws IOException
 	 * @throws MalformedURLException
 	 */
-	private static File getFile(final String path) throws IOException, MalformedURLException {
+	private static java.io.File getFile(final String path) throws IOException, MalformedURLException {
 		if (path.startsWith("http://")) {
-			File dirDownload = new File("download/");
+			java.io.File dirDownload = new java.io.File("download/");
 			//Make sure download directory exist
 			if (!dirDownload.isDirectory() && !dirDownload.mkdir())
 				throw new FileNotFoundException(dirDownload.getAbsolutePath());
@@ -170,7 +185,7 @@ public class Crawler {
 			URLConnection con = new URL(path).openConnection();
 			String cache = path.substring(path.lastIndexOf('/') + 1);
 			cache = cache.replaceAll("[^\\w]", "");
-			File downloaded = new File("download/" + cache);
+			java.io.File downloaded = new java.io.File("download/" + cache);
 			if (!downloaded.exists() || downloaded.lastModified() != con.getLastModified()) {
 				//Overwrite file
 				BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
@@ -184,8 +199,8 @@ public class Crawler {
 				log.info("Downloaded " + downloaded.getAbsolutePath());
 			}
 			cache = downloaded.getAbsolutePath();
-			return new File(cache);
+			return new java.io.File(cache);
 		}
-		return new File(path);
+		return new java.io.File(path);
 	}
 }

@@ -6,14 +6,6 @@ import java.util.List;
 
 import jfreechart.MappedChart;
 
-import nl.ru.cmbi.whynot.entries.EntriesPage;
-import nl.ru.cmbi.whynot.hibernate.DatabankRepo;
-import nl.ru.cmbi.whynot.hibernate.EntryRepo;
-import nl.ru.cmbi.whynot.model.Databank;
-import nl.ru.cmbi.whynot.model.Databank.CollectionType;
-import nl.ru.cmbi.whynot.model.Entry;
-import nl.ru.cmbi.whynot.webservice.Whynot;
-
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
@@ -31,13 +23,18 @@ import org.jfree.chart.plot.PiePlot3D;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.ui.RectangleInsets;
 
+import nl.ru.cmbi.whynot.entries.EntriesPage;
+import nl.ru.cmbi.whynot.hibernate.DatabankRepo;
+import nl.ru.cmbi.whynot.hibernate.EntryRepo;
+import nl.ru.cmbi.whynot.model.Databank;
+import nl.ru.cmbi.whynot.model.Databank.CollectionType;
+import nl.ru.cmbi.whynot.model.Entry;
+
 public class PieChartPanel extends Panel {
 	@SpringBean
 	protected DatabankRepo	databankdao;
 	@SpringBean
 	protected EntryRepo		entrydao;
-	@SpringBean
-	private Whynot	whynot;
 
 	public PieChartPanel(final String id, final Databank db) {
 		super(id);

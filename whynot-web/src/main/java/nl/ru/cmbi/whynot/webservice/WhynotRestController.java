@@ -3,12 +3,10 @@ package nl.ru.cmbi.whynot.webservice;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import nl.ru.cmbi.whynot.hibernate.DatabankRepo;
 import nl.ru.cmbi.whynot.hibernate.EntryRepo;
@@ -17,31 +15,24 @@ import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Databank.CollectionType;
 import nl.ru.cmbi.whynot.model.Entry;
 
-@Service
-@Path("/")
-@Produces(MediaType.APPLICATION_XML)
-public class WhynotImpl implements Whynot {
+@RestController
+@RequestMapping("/webservice/")
+public class WhynotRestController {
 	@Autowired
 	private DatabankRepo	databankdao;
 	@Autowired
-	private EntryRepo	entrydao;
+	private EntryRepo		entrydao;
 
-	@GET
-	@Path("/annotations/{databank}/{pdbid}")
-	@Consumes(MediaType.TEXT_PLAIN)
-	@Produces(MediaType.TEXT_PLAIN)
-	public String annotations(@PathParam("databank") final String databank, @PathParam("pdbid") final String pdbid) {
-		return StringUtils.join(getAnnotations(databank, pdbid), '\n');
-	}
-
-	@Override
-	public List<String> getAnnotations(final String databank, final String pdbid) {
+	@RequestMapping(value = "annotations/{databank}/{pdbid}")
+	public List<String> annotations(
+			@PathVariable("databank") final String databank,
+			@PathVariable("pdbid") final String pdbid) {
 		Databank db = databankdao.findByName(databank);
 		if (db == null)
 			throw new IllegalArgumentException("Unknown databank: " + databank);
 
 		Entry entry = entrydao.findByDatabankAndPdbid(db, pdbid);
-		List<String> annotations = new ArrayList<String>();
+		List<String> annotations = new ArrayList<>();
 		if (entry != null)
 			for (Annotation ann : entry.getAnnotations())
 				annotations.add(ann.getComment().getText());
@@ -60,23 +51,16 @@ public class WhynotImpl implements Whynot {
 		return annotations;
 	}
 
-	@GET
-	@Path("/entries/{databank}/{selection}")
-	@Consumes(MediaType.TEXT_PLAIN)
-	@Produces(MediaType.TEXT_PLAIN)
-	public String entries(@PathParam("databank") final String databank, @PathParam("selection") final String selection) {
-		return StringUtils.join(getEntries(databank, selection), '\n');
-	}
-
-	@Override
-	public List<String> getEntries(final String databank, final String selection) {
+	@RequestMapping(value = "entries/{databank}/{selection}")
+	public List<String> entries(
+			@PathVariable("databank") final String databank,
+			@PathVariable("selection") final String selection) {
 		Databank db = databankdao.findByName(databank);
 		if (db == null)
 			throw new IllegalArgumentException("Unknown databank: " + databank);
 
 		CollectionType collection = CollectionType.valueOf(selection.toUpperCase());
-
-		List<Entry> entries = new ArrayList<Entry>();
+		final List<Entry> entries;
 		switch (collection) {
 		default:
 		case PRESENT:
@@ -99,7 +83,8 @@ public class WhynotImpl implements Whynot {
 			break;
 		}
 
-		List<String> pdbids = new ArrayList<String>();
+		// Concatenate to String
+		List<String> pdbids = new ArrayList<>();
 		for (Entry ent : entries)
 			pdbids.add(ent.getPdbid());
 		return pdbids;

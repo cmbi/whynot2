@@ -71,6 +71,11 @@
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 		</dependency>
+		<!-- Spring routes its logs over commons-logging: Reroute commons-logging to slf4j and Logback here -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+		</dependency>
 		<!-- Lombok for generated methods -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>

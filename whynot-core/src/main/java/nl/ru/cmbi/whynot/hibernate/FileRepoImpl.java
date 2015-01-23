@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import nl.ru.cmbi.whynot.hibernate.DomainObjectRepository.FileRepoCustom;
 import nl.ru.cmbi.whynot.model.File;
+import org.hibernate.criterion.Restrictions;
 
 @Service
 public class FileRepoImpl implements FileRepoCustom {
@@ -33,5 +34,11 @@ public class FileRepoImpl implements FileRepoCustom {
 	@Override
 	public List<File> getRecent() {
 		return createCriteria().addOrder(Order.desc("timestamp")).setMaxResults(10).list();
+	}
+
+	@Override
+	public File findFile( java.io.File file ) {
+
+		return (File) createCriteria(Restrictions.eq("path", file.getPath()), Restrictions.eq("timestamp", file.lastModified())).uniqueResult();
 	}
 }

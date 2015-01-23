@@ -19,8 +19,12 @@ import nl.ru.cmbi.whynot.model.Annotation;
 import nl.ru.cmbi.whynot.model.Comment;
 import nl.ru.cmbi.whynot.model.Entry;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class AnnotationRepoImpl implements AnnotationRepoCustom {
+
 	@PersistenceContext
 	private EntityManager	entityManager;
 
@@ -43,6 +47,16 @@ public class AnnotationRepoImpl implements AnnotationRepoCustom {
 		for (Criterion c : criterion)
 			crit.add(c);
 		return crit;
+	}
+
+	public void delete( Annotation a ) {
+
+		if( a!=null ) {
+
+			Query q	= getSession().createQuery("delete from Annotation where id = ?").setLong(0, a.getId());
+
+			q.executeUpdate();
+		}
 	}
 
 	@Override

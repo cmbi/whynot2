@@ -69,5 +69,7 @@ public interface DomainObjectRepository<T extends DomainObject> extends JpaRepos
 
 	public interface FileRepoCustom {
 		List<File> getRecent();
+
+		File findFile( java.io.File file );
 	}
 }

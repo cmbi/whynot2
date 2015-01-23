@@ -86,6 +86,9 @@ public class Databank extends DomainObject implements Comparable<Databank> {
 
 	@Override
 	public int compareTo(final Databank o) {
+		if(o==null)
+			return 1;
+
 		return name.compareTo(o.name);
 	}
 }

@@ -21,6 +21,7 @@ import nl.ru.cmbi.whynot.hibernate.FileRepo;
 import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Databank.CrawlType;
 import nl.ru.cmbi.whynot.model.Entry;
+import nl.ru.cmbi.whynot.model.File;
 
 @Service
 @Slf4j
@@ -30,13 +31,21 @@ public class Crawler {
 			log.info("Crawler start.");
 
 			try (ConfigurableApplicationContext applicationContext = SpringApplication.run(WhynotApplication.class)) {
+
+				log.debug("get bean");
 				Crawler crawler = applicationContext.getBean(Crawler.class);
+
+				log.debug("removing changed from "+args[0]);
 
 				//Should run before addCrawled
 				crawler.removeChanged(args[0]);
 
+				log.debug("adding crawled " + args[0] + " " + args[1] );
+
 				//Should run after removeChanged
 				crawler.addCrawled(args[0], args[1]);
+
+				applicationContext.close();
 			}
 
 			log.info("Crawler done.");
@@ -54,7 +63,7 @@ public class Crawler {
 
 	/**
 	 * Removes entries from databank if <li>file on path does not exist <li>timestamp differs from timestamp of file on
-	 * path <li>path does not match databank regex (which might have changed) <li>no file or parent entry file exists
+	 * path <li>path does not match databank regex (which might have changed) <li>no file or no parent entry file exists
 	 *
 	 * @param name
 	 */
@@ -63,28 +72,71 @@ public class Crawler {
 		Databank databank = dbdao.findByName(name);
 		Pattern regex = Pattern.compile(databank.getRegex());
 		boolean matchRegex = databank.getCrawltype() == CrawlType.FILE;
-		int removed = 0;
+		int removed = 0, updated = 0;
+
+		log.debug("getting present entries for "+databank.getName());
+
+		nl.ru.cmbi.whynot.model.File prevFileEnt = null;
+		java.io.File prevFile = null;
 		for (Entry entry : entrydao.getPresent(databank)) {
+
+			Entry parentEntry = entrydao.findByDatabankAndPdbid(databank.getParent(), entry.getPdbid());
+
 			String path = entry.getFile().getPath();
-			File file = new File(path);
+			java.io.File file = new java.io.File(path);
 			//Check if file still exists
-			if (!file.exists() || file.lastModified() != entry.getFile().getTimestamp() ||
+			if (!file.exists() || parentEntry == null || parentEntry.getFile() == null ||
 					//Check if file still matches regex
 					matchRegex && !regex.matcher(path).matches()) {
+
+				log.debug("remove");
+
+				//Remove entry
+				databank.getEntries().remove(entry);
+				entrydao.delete(entry);
+				removed++;
+			}
+			else if( file.lastModified() != entry.getFile().getTimestamp() ) {
+
+				log.debug("update");
+
+				nl.ru.cmbi.whynot.model.File fileEnt;
+				if( file.equals(prevFile) ) {
+
+					fileEnt = prevFileEnt ;
+				}
+				else {
+					fileEnt = filedao.findFile( file );
+					if (fileEnt == null)
+						fileEnt = new nl.ru.cmbi.whynot.model.File( file );
+				}
+				prevFile = file;
+				prevFileEnt = fileEnt;
+
+				//filedao.delete( entry.getFile() );
+				entry.setFile( fileEnt );
+				updated++;
+			}
+		}
+/*
+		log.debug("getting obsolete entries for "+databank.getName());
+		for (Entry entry : entrydao.getObsolete(databank)) {
+
+			log.debug("obsolete entry "+entry.toString());
+
+			if (entry.getFile() == null) {
+
+				log.debug("remove");
+
 				//Remove entry
 				databank.getEntries().remove(entry);
 				entrydao.delete(entry);
 				removed++;
 			}
 		}
-		for (Entry entry : entrydao.getObsolete(databank))
-			if (entry.getFile() == null) {
-				//Remove entry
-				databank.getEntries().remove(entry);
-				entrydao.delete(entry);
-				removed++;
-			}
+*/
 		log.info(databank.getName() + ": Removing " + removed + " changed Entries");
+		log.info(databank.getName() + ": Updating " + updated + " changed Entries");
 	}
 
 	/**
@@ -122,9 +174,9 @@ public class Crawler {
 	 * @throws IOException
 	 * @throws MalformedURLException
 	 */
-	private static File getFile(final String path) throws IOException, MalformedURLException {
+	private static java.io.File getFile(final String path) throws IOException, MalformedURLException {
 		if (path.startsWith("http://")) {
-			File dirDownload = new File("download/");
+			java.io.File dirDownload = new java.io.File("download/");
 			//Make sure download directory exist
 			if (!dirDownload.isDirectory() && !dirDownload.mkdir())
 				throw new FileNotFoundException(dirDownload.getAbsolutePath());
@@ -133,7 +185,7 @@ public class Crawler {
 			URLConnection con = new URL(path).openConnection();
 			String cache = path.substring(path.lastIndexOf('/') + 1);
 			cache = cache.replaceAll("[^\\w]", "");
-			File downloaded = new File("download/" + cache);
+			java.io.File downloaded = new java.io.File("download/" + cache);
 			if (!downloaded.exists() || downloaded.lastModified() != con.getLastModified()) {
 				//Overwrite file
 				BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
@@ -147,8 +199,8 @@ public class Crawler {
 				log.info("Downloaded " + downloaded.getAbsolutePath());
 			}
 			cache = downloaded.getAbsolutePath();
-			return new File(cache);
+			return new java.io.File(cache);
 		}
-		return new File(path);
+		return new java.io.File(path);
 	}
 }

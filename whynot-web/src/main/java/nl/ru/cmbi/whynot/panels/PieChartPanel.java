@@ -67,7 +67,7 @@ public class PieChartPanel extends Panel {
 				// Determine selection
 				for (final CollectionType test : CollectionType.values())
 					if (entity.toString().toUpperCase().contains(test.toString()))
-						setResponsePage(new EntriesPage(dbname + " " + test.toString().toLowerCase(), getEntriesModel(dbname, test)));
+						setResponsePage(new EntriesPage(dbname.toUpperCase() + " " + test.toString().toLowerCase(), getEntriesModel(dbname, test)));
 			}
 		});
 	}
@@ -106,7 +106,7 @@ public class PieChartPanel extends Panel {
 			Link<Void> lnk = new Link<Void>("entrylink") {
 				@Override
 				public void onClick() {
-					setResponsePage(new EntriesPage(dbname + " " + clname, getEntriesModel(dbname, colType)));
+					setResponsePage(new EntriesPage(dbname.toUpperCase() + " " + clname, getEntriesModel(dbname, colType)));
 				}
 			};
 			lnk.add(new Label("label", clname));

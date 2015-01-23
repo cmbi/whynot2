@@ -20,10 +20,16 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<!-- NotNull constraints on columns/fields -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>javax.el</groupId>
+			<artifactId>javax.el-api</artifactId>
+		</dependency>
+		<!-- Connect to live database -->
 		<dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>

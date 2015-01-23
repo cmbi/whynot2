@@ -12,6 +12,7 @@
 		<dependency>
 			<groupId>nl.ru.cmbi.whynot</groupId>
 			<artifactId>whynot-core</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 	<build>

@@ -59,12 +59,8 @@
 		</developer>
 	</developers>
 	<prerequisites>
-		<maven>2.2.1</maven>
+		<maven>3.0.5</maven>
 	</prerequisites>
-	<properties>
-		<!-- Spring platform version -->
-		<spring-platform.version>1.0.2.RELEASE</spring-platform.version>
-	</properties>
 	<dependencies>
 		<!-- Logging -->
 		<dependency>
@@ -94,15 +90,9 @@
 			<dependency>
 				<groupId>io.spring.platform</groupId>
 				<artifactId>platform-bom</artifactId>
-				<version>${spring-platform.version}</version>
+				<version>1.1.1.RELEASE</version>
 				<type>pom</type>
 				<scope>import</scope>
-			</dependency>
-			<!-- Internal WhyNot -->
-			<dependency>
-				<groupId>nl.ru.cmbi.whynot</groupId>
-				<artifactId>whynot-core</artifactId>
-				<version>${project.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

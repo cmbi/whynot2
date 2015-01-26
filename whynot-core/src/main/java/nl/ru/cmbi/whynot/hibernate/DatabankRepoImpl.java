@@ -13,6 +13,8 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.hibernate.criterion.Property;
+
 
 import nl.ru.cmbi.whynot.model.Databank;
 
@@ -33,16 +35,31 @@ public class DatabankRepoImpl {
 		return crit;
 	}
 
+    private Criteria createCriteria(final String alias, final Criterion... criterion) {
+        Criteria crit = getSession().createCriteria(Databank.class, alias);
+        for (Criterion c : criterion)
+            crit.add(c);
+        return crit;
+    }
+
+    public Databank getRoot() {
+    
+        Criteria c = createCriteria("db").createAlias("db.parent","parent")
+            .add(Property.forName("db.name").eqProperty("parent.name"));
+
+        return (Databank) c.uniqueResult();
+    }
+
 	@Transactional
 	public List<Databank> findAll() {
 		// Get root databank PDB
-		Databank pdb = (Databank) createCriteria(Restrictions.eq("name", "PDB")).uniqueResult();
+		Databank root = getRoot();
 
 		// Get all databanks
 		List<Databank> allDatabanks = createCriteria().addOrder(Order.asc("name")).list();
 
 		// Return databanks in hierachical order
-		return getDatabanksInTreeOrder(pdb, allDatabanks);
+		return getDatabanksInTreeOrder(root, allDatabanks);
 	}
 
 	private List<Databank> getDatabanksInTreeOrder(final Databank rootdb, final List<Databank> allDatabanks) {

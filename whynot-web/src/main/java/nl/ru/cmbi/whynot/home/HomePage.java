@@ -32,7 +32,7 @@ public class HomePage extends WebPage {
 	public HomePage() {
 		add(new FeedbackPanelWrapper("feedback"));
 		add(new SearchPanel("search"));
-		add(new DatabankHierarchyFragment("hierarchy", databankdao.findByName("MMCIF"), databankdao.findAll()));
+		add(new DatabankHierarchyFragment("hierarchy", databankdao.getRoot(), databankdao.findAll()));
 	}
 
 	public class DatabankHierarchyFragment extends Fragment {

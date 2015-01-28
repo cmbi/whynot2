@@ -49,10 +49,10 @@ public class Install {
 		// Links to proper urls with ${PDBID}
 		Databank mmcif, pdb, pdbfinder, dssp, nmr, nrg, nrg_docr, sfr, pdb_redo;
 		dbdao.save(mmcif = new Databank("MMCIF",
-				CrawlType.FILE, ".*/([\w]{4})\.cif(\.gz)?",
+				CrawlType.FILE, ".*/([\\w]{4})\\.cif(\\.gz)?",
 				"http://www.wwpdb.org/",
 				"ftp://ftp.wwpdb.org/pub/pdb/data/structures/divided/mmCIF/${PART}/${PDBID}.cif.gz"));
-		dbdao.save(pdb = new Databank("PDB",mmcif
+		dbdao.save(pdb = new Databank("PDB", mmcif,
 				CrawlType.FILE, ".*/pdb([\\w]{4})\\.ent(\\.gz)?",
 				"http://www.wwpdb.org/",
 				"ftp://ftp.wwpdb.org/pub/pdb/data/structures/all/pdb/pdb${PDBID}.ent.gz"));

@@ -47,8 +47,12 @@ public class Install {
 	public void storeDatabanks() {
 		// XXX Database dependencies, urls and file names should be stored in a configuration file instead, if not in DB
 		// Links to proper urls with ${PDBID}
-		Databank pdb, pdbfinder, dssp, nmr, nrg, nrg_docr, sfr, pdb_redo;
-		dbdao.save(pdb = new Databank("PDB",
+		Databank mmcif, pdb, pdbfinder, dssp, nmr, nrg, nrg_docr, sfr, pdb_redo;
+		dbdao.save(mmcif = new Databank("MMCIF",
+				CrawlType.FILE, ".*/([\w]{4})\.cif(\.gz)?",
+				"http://www.wwpdb.org/",
+				"ftp://ftp.wwpdb.org/pub/pdb/data/structures/divided/mmCIF/${PART}/${PDBID}.cif.gz"));
+		dbdao.save(pdb = new Databank("PDB",mmcif
 				CrawlType.FILE, ".*/pdb([\\w]{4})\\.ent(\\.gz)?",
 				"http://www.wwpdb.org/",
 				"ftp://ftp.wwpdb.org/pub/pdb/data/structures/all/pdb/pdb${PDBID}.ent.gz"));
@@ -95,7 +99,7 @@ public class Install {
 				"http://nmr.cmbi.ru.nl/cing/",
 				"http://nmr.cmbi.ru.nl/NRG-CING/data/${PART}/${PDBID}/${PDBID}.cing"));
 
-		dbdao.save(sfr = new Databank("STRUCTUREFACTORS", pdb,
+		dbdao.save(sfr = new Databank("STRUCTUREFACTORS", mmcif,
 				CrawlType.FILE, ".*/r([\\w]{4})sf\\.ent\\.gz",
 				"http://www.pdb.org/",
 				"ftp://ftp.wwpdb.org/pub/pdb/data/structures/all/structure_factors/r${PDBID}sf.ent.gz"));

@@ -56,13 +56,19 @@ public class ResultsPage extends HomePage {
 					if (entry != null && entry.getFile() != null)
 						item.add(new FilePanel("result", entry));
 					else
+					{
 						if (entry != null && !entry.getAnnotations().isEmpty())
 							item.add(new AnnotationPanel("result", entry));
 						else {
+							Databank par = db.getParent();
+							Entry parentEntry = entrydao.findByDatabankAndPdbid(par, pdbid);
+							
 							// As per Gert: Do not show blanks, but display not available & dependency
 							StringBuilder msg = new StringBuilder("Not available");
-							Databank par = db.getParent();
-							msg.append(", depends on: ").append(par.getName());
+							
+							if( parentEntry==null || parentEntry.getFile() == null )
+								msg.append(", depends on: ").append(par.getName());
+							
 							Label lbl = new Label("result", msg.toString());
 							lbl.add(new AttributeModifier("class", "annotation"));
 							item.add(lbl);
@@ -72,6 +78,7 @@ public class ResultsPage extends HomePage {
 							// If source is available, but older than a week: "Pending"
 							// If source is not available: "Not available, depends on XYZ"
 						}
+					}
 				}
 			};
 			add(lv);

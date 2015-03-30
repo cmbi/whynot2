@@ -32,7 +32,7 @@ public class WhynotRestController {
 			throw new IllegalArgumentException("Unknown databank: " + databank);
 
 		Entry entry = entrydao.findByDatabankAndPdbid(db, pdbid);
-		List<String> annotations = new ArrayList<>();
+		List<String> annotations = new ArrayList<String>();
 		if (entry != null)
 			for (Annotation ann : entry.getAnnotations())
 				annotations.add(ann.getComment().getText());
@@ -84,7 +84,7 @@ public class WhynotRestController {
 		}
 
 		// Concatenate to String
-		List<String> pdbids = new ArrayList<>();
+		List<String> pdbids = new ArrayList<String>();
 		for (Entry ent : entries)
 			pdbids.add(ent.getPdbid());
 		return pdbids;

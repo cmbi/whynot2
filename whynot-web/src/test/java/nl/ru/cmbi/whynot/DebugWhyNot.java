@@ -1,5 +1,8 @@
 package nl.ru.cmbi.whynot;
 
+import java.awt.Desktop;
+import java.net.URI;
+
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 

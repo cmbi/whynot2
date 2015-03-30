@@ -50,6 +50,6 @@ public class EntriesPage extends HomePage {
 				return new CommentsPanel(panelId, source, entrylist);
 			}
 		});
-		add(new TabbedPanel<>("tabs", tabs));
+		add(new TabbedPanel<ITab>("tabs", tabs));
 	}
 }

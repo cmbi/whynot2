@@ -63,7 +63,7 @@ public class DatabankRepoImpl {
 	}
 
 	private List<Databank> getDatabanksInTreeOrder(final Databank rootdb, final List<Databank> allDatabanks) {
-		List<Databank> children = new ArrayList<>();
+		List<Databank> children = new ArrayList<Databank>();
 		// Add root node
 		children.add(rootdb);
 		for (Databank child : allDatabanks)

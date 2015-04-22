@@ -30,7 +30,7 @@ public class LineCrawler {
 
 	public void crawl(final java.io.File crawlfile) throws IOException {
 		//Cache old Entries
-		List<Entry> annotatedEntries = entrydao.getAnnotated(databank);
+		List<Entry> missingEntries = entrydao.getMissing(databank);
 		List<Entry> presentEntries = entrydao.getPresent(databank);
 
 		//File to assign to new entries
@@ -45,23 +45,26 @@ public class LineCrawler {
 			//Skip lines that do not match
 			if (!(m = pattern.matcher(scn.nextLine())).matches())
 				continue;
+
 			Entry entry = new Entry(databank, m.group(1).toLowerCase());
 
 			//Skip present entries: No changes at this point if removeChanged ran before
-			if (presentEntries.contains(entry))
+			if (presentEntries.contains(entry)) {
 				continue;
+            }
 
 			//Find annotated entry
-			int oldEntryIndex = annotatedEntries.indexOf(entry);
+			int oldEntryIndex = missingEntries.indexOf(entry);
 			if (0 <= oldEntryIndex) {
-				entry = annotatedEntries.get(oldEntryIndex);
+				entry = missingEntries.get(oldEntryIndex);
 				//Delete annotations: We just found it!
 				entry.getAnnotations().clear();
 			}
-			else
+			else {
 				//Add new entry to databank
 				if (databank.getEntries().add(entry))
 					added++;
+            }
 
 			//Set new file
 			entry.setFile(file);

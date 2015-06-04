@@ -8,17 +8,15 @@ import javax.validation.constraints.NotNull;
 
 import lombok.*;
 
-import org.hibernate.annotations.NaturalId;
-import org.hibernate.annotations.SortNatural;
-import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.NotEmpty;
+import nl.ru.cmbi.whynot.mongo.DatabankRepo;
+import nl.ru.cmbi.whynot.mongo.EntryRepo;
+
+import org.bson.Document;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Data
-@Entity
-@EqualsAndHashCode(callSuper = false, of = "name")
 @SuppressWarnings("unused")
-@ToString(exclude = { "parent", "entries" })
-public class Databank extends DomainObject implements Comparable<Databank> {
+public class Databank implements Comparable<Databank> {
 	public enum CollectionType {
 		PRESENT, VALID, OBSOLETE, MISSING, ANNOTATED, UNANNOTATED
 	}
@@ -26,62 +24,113 @@ public class Databank extends DomainObject implements Comparable<Databank> {
 	public enum CrawlType {
 		FILE, LINE
 	}
+	
+	@Autowired
+	private static DatabankRepo dbdao;
+	@Autowired
+	private static EntryRepo entdao;
+	
 
-	@NaturalId
-	@NotEmpty
-	@Length(max = 50)
-	@Setter(AccessLevel.NONE)
-	private String					name;
-
-	@NotEmpty
-	@Length(max = 200)
-	@Setter(AccessLevel.NONE)
-	private String					reference;
-
-	@NotEmpty
-	@Length(max = 200)
-	@Setter(AccessLevel.NONE)
-	private String					filelink;
-
-	@OneToOne
-	@Setter(AccessLevel.NONE)
-	private Databank				parent;
-
-	@NotEmpty
-	@Length(max = 50)
-	@Setter(AccessLevel.NONE)
-	private String					regex;
-
-	@NotNull
-	@Enumerated(EnumType.STRING)
-	@Setter(AccessLevel.NONE)
-	private CrawlType				crawltype;
-
-	@OneToMany(mappedBy = "databank", cascade = CascadeType.ALL, orphanRemoval = true)
-	@SortNatural
-	@Setter(AccessLevel.NONE)
-	private final SortedSet<Entry>	entries	= new TreeSet<Entry>();
-
-	protected Databank() {/* Hibernate requirement */
+	public String getName() {
+		
+		String key = "name";
+		if(doc.containsKey(key))
+			return doc.get(key).toString();
+		else
+			return null;
 	}
 
-	@Deprecated
-	public Databank(final String name) {
-		this.name = name;
+	public String getReference() {
+
+		String key = "reference";
+		if(doc.containsKey(key))
+			return doc.get(key).toString();
+		else
+			return null;
+		
+	}
+
+	public String getFilelink() {
+
+		String key = "filelink";
+		if(doc.containsKey(key))
+			return doc.get(key).toString();
+		else
+			return null;
+		
+	}
+	
+	public String getParentName() {
+
+		String key = "parent_name";
+		if(doc.containsKey(key))
+			return doc.get(key).toString();
+		else
+			return null;
+	}
+
+	public Databank getParent() {
+
+		String key = "parent_name";
+		if(doc.containsKey(key))
+			return dbdao.findByName(doc.get(key).toString());
+		else
+			return null;
+	}
+	
+	public String getRegex() {
+
+		String key = "regex";
+		if(doc.containsKey(key))
+			return doc.get(key).toString();
+		else
+			return null;
+	}
+	
+	public CrawlType getCrawlType() {
+
+		String key = "crawltype", value;
+		if(doc.containsKey(key))
+		{
+			value = doc.get(key).toString();
+			for(CrawlType t : CrawlType.values()) {
+				if(t.toString().equals(value))
+					return t;
+			}
+			return null;
+		}
+		else
+			return null;
+		
+	}
+	
+	public SortedSet<Entry> getEntries() {
+		
+		return entdao.findByDatabankName(this.getName());
+	}
+
+	@NotNull
+	@Setter(AccessLevel.NONE)
+	private Document doc;
+	
+	public Databank(Document doc) {
+		
+		this.doc = doc;
 	}
 
 	public Databank(final String name, final CrawlType crawltype, final String regex, final String reference, final String filelink) {
 		this(name, null, crawltype, regex, reference, filelink);
-		parent = this;
 	}
 
 	public Databank(final String name, final Databank parent, final CrawlType crawltype, final String regex, final String reference, final String filelink) {
-		this.name = name;
-		this.reference = reference;
-		this.filelink = filelink;
-		this.parent = parent;
-		this.regex = regex;
-		this.crawltype = crawltype;
+
+		this.doc = new Document();
+		doc.put("name", name);
+		doc.put("reference", reference);
+		doc.put("filelink", filelink);
+		doc.put("parent_name", parent.getName());
+		doc.put("regex", regex);
+		doc.put("crawltype", crawltype.toString());
 	}
 
 	@Override
@@ -89,6 +138,6 @@ public class Databank extends DomainObject implements Comparable<Databank> {
 		if(o==null)
 			return 1;
 
-		return name.compareTo(o.name);
+		return getName().compareTo(o.getName());
 	}
 }

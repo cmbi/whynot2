@@ -2,9 +2,10 @@ package nl.ru.cmbi.whynot.databank;
 
 import java.util.Arrays;
 
-import nl.ru.cmbi.whynot.hibernate.EntryRepo;
 import nl.ru.cmbi.whynot.home.HomePage;
 import nl.ru.cmbi.whynot.model.Databank;
+import nl.ru.cmbi.whynot.mongo.DatabankRepo;
+import nl.ru.cmbi.whynot.mongo.EntryRepo;
 import nl.ru.cmbi.whynot.panels.PieChartPanel;
 
 import org.apache.wicket.Component;
@@ -19,8 +20,11 @@ import org.wicketstuff.annotation.mount.MountPath;
 
 @MountPath("databanks")
 public class DatabankPage extends HomePage {
+	
 	@SpringBean
 	protected EntryRepo	entrydao;
+	@SpringBean
+	protected DatabankRepo	databankdao;
 
 	public DatabankPage() {
 		add(databankListView(databankdao.findAll().toArray(new Databank[0])));

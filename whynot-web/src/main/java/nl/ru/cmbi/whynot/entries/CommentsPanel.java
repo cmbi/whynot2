@@ -18,8 +18,6 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 
 import nl.ru.cmbi.whynot.entries.CommentTreeProvider.CommentTreeNode;
-import nl.ru.cmbi.whynot.model.Annotation;
-import nl.ru.cmbi.whynot.model.Comment;
 import nl.ru.cmbi.whynot.model.Entry;
 
 public class CommentsPanel extends Panel {
@@ -27,16 +25,21 @@ public class CommentsPanel extends Panel {
 		super(id, entrylist);
 
 		//Filter list
-		final Map<Comment, List<Entry>> map = new TreeMap<Comment, List<Entry>>();
-		for (Entry ent : entrylist.getObject())
-			if (!ent.getAnnotations().isEmpty())
-				for (Annotation ann : ent.getAnnotations()) {
-					if (!map.containsKey(ann.getComment()))
-						map.put(ann.getComment(), new ArrayList<Entry>());
-					map.get(ann.getComment()).add(ent);
-				}
+		final Map<String, List<Entry>> map = new TreeMap<String, List<Entry>>();
+		for (Entry ent : entrylist.getObject()) {
+			
+			if (ent.getComment()!=null) {
+				
+				String comment = ent.getComment();
+				if (!map.containsKey(comment))
+					map.put(comment, new ArrayList<Entry>());
+				
+				map.get(comment).add(ent);
+			}
+		}
+				
 		if (map.isEmpty())
-			map.put(new Comment("Comments"), new ArrayList<Entry>());
+			map.put("Comments", new ArrayList<Entry>());
 
 		//Download link
 		add(new ResourceLink<ByteArrayResource>("export-comments", new ByteArrayResource( "text/plain", null, source.replaceAll("[\\W]", "") + "_comments.txt" ) {
@@ -45,10 +48,10 @@ public class CommentsPanel extends Panel {
 			protected byte[] getData(Attributes attributes) {
 			
 				StringBuilder sb = new StringBuilder();
-				for (Comment com : map.keySet()) {
+				for (String com : map.keySet()) {
 				
 					sb.append("COMMENT: ");
-					sb.append(com.getText());
+					sb.append(com);
 					sb.append('\n');
 					
 					List<Entry> withAnnotation = map.get(com);

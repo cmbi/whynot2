@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 
 import lombok.Data;
 
-import nl.ru.cmbi.whynot.model.Comment;
 import nl.ru.cmbi.whynot.model.Entry;
 
 import org.apache.wicket.extensions.markup.html.repeater.tree.ITreeProvider;
@@ -24,7 +23,7 @@ public class CommentTreeProvider implements ITreeProvider<CommentTreeProvider.Co
 	public class CommentTreeNode implements Serializable {
 		
 		private String title;
-		private List<Comment> members;
+		private List<String> members;
 		
 		private List<CommentTreeNode> children; 
 		
@@ -41,7 +40,7 @@ public class CommentTreeProvider implements ITreeProvider<CommentTreeProvider.Co
 		}
 	}
 	
-	private List<CommentTreeNode> buildTrees( String atRootString, Collection<Comment> comments ) {
+	private List<CommentTreeNode> buildTrees( String atRootString, Collection<String> comments ) {
 
 		Map<String,CommentTreeNode> rootMap = new HashMap<String,CommentTreeNode>();
 		
@@ -49,9 +48,9 @@ public class CommentTreeProvider implements ITreeProvider<CommentTreeProvider.Co
 		
 		final String prefix = atRootString + ":";
 		
-		for(Comment c : comments) {
+		for(String c : comments) {
 
-			String	fullText = removeTags( c.getText() ), 
+			String	fullText = removeTags( c ), 
 					rootText = fullText;
 			
 			if(prefix.length()>1 && !fullText.startsWith(prefix)) {
@@ -123,34 +122,29 @@ public class CommentTreeProvider implements ITreeProvider<CommentTreeProvider.Co
 	
 	private Collection<CommentTreeNode> roots ; // must be serializable
 	
-	public CommentTreeProvider(Collection<Comment> comments) {
+	public CommentTreeProvider(Collection<String> comments) {
 		
 		this.roots = buildTrees( "", comments );
 	}
 
-	@Override
 	public void detach() {
 	}
 
-	@Override
 	public Iterator<? extends CommentTreeNode> getChildren(CommentTreeNode node) {
 		
 		return node.getChildren().iterator();
 	}
 
-	@Override
 	public Iterator<? extends CommentTreeNode> getRoots() {
 		
 		return this.roots.iterator();
 	}
 
-	@Override
 	public boolean hasChildren(CommentTreeNode node) {
 		
 		return node.getChildren().size()>0;
 	}
 
-	@Override
 	public IModel<CommentTreeNode> model(CommentTreeNode node) {
 		
 		return new Model<CommentTreeNode>(node);

@@ -40,6 +40,14 @@ public class DatabankRepoImpl implements DatabankRepo {
 		
 		return new Databank(doc);
 	}
+	
+	public Databank getParent(Databank db)
+	{
+		if(db==null)
+			return null;
+			
+		return findByName(db.getParentName());
+	}
 
     public Databank getRoot() {
     	
@@ -68,12 +76,17 @@ public class DatabankRepoImpl implements DatabankRepo {
 		return getDatabanksInTreeOrder(root, allDatabanks);
 	}
 
+	public long countAll() {
+		
+		return databanksCollection.count();
+	}
+
 	private List<Databank> getDatabanksInTreeOrder(final Databank rootdb, final Collection<Databank> allDatabanks) {
 		List<Databank> children = new ArrayList<Databank>();
 		// Add root node
 		children.add(rootdb);
 		for (Databank child : allDatabanks)
-			if (!rootdb.equals(child) && child.getParent().equals(rootdb))
+			if (!rootdb.equals(child) && rootdb.equals(getParent(child)))
 				// Recursively add child itself and grandchildren
 				children.addAll(getDatabanksInTreeOrder(child, allDatabanks));
 		return children;

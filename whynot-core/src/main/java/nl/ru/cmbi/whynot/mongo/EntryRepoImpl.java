@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -25,6 +26,7 @@ import com.mongodb.client.model.Filters;
 
 import nl.ru.cmbi.whynot.model.Databank;
 import nl.ru.cmbi.whynot.model.Entry;
+import nl.ru.cmbi.whynot.model.Entry.File;
 
 @Service
 public class EntryRepoImpl implements EntryRepo {
@@ -54,6 +56,9 @@ public class EntryRepoImpl implements EntryRepo {
 		Document doc = entriesCollection.find(
 				Filters.and(Filters.eq("pdbid", pdbid), Filters.eq("databank_name", databank.getName()))).first();
 		
+		if(doc==null)
+			return null;
+		
 		return new Entry(doc);
 	}
 
@@ -82,10 +87,9 @@ public class EntryRepoImpl implements EntryRepo {
 	private Bson getAnnotatedCriteria(final String dbname) {
 		
 		return Filters.and(
-				Filters.or(
-					Filters.exists("filepath", false),
-					Filters.exists("mtime", false)),
+				Filters.exists("filepath", false),
 				Filters.exists("comment", true),
+				Filters.exists("mtime", true),
 				Filters.eq("databank_name", dbname));
 	}
 	
@@ -115,6 +119,28 @@ public class EntryRepoImpl implements EntryRepo {
 		return entriesCollection.count(getPresentCriteria(db.getName()));
 	}
 
+	public long countAllPresent() {
+
+		return entriesCollection.count(Filters.and(
+				Filters.exists("filepath", true),
+				Filters.exists("mtime", true)));
+	}
+
+	public List<File> getRecentFiles() {
+		
+		List<File> files = new ArrayList<File>();
+		for(Document doc : entriesCollection.find(
+				Filters.and(
+						Filters.exists("filepath", true),
+						Filters.exists("mtime", true)))
+				.sort(new BasicDBObject("mtime" , -1)).limit(10))
+		{
+			Entry e = new Entry(doc);
+			files.add(e.getFile());
+		}
+		return files;
+	}
+
 	public List<Entry> getValid(final Databank db) {
 		
 		BasicDBObject fields = new BasicDBObject();
@@ -122,11 +148,14 @@ public class EntryRepoImpl implements EntryRepo {
 		
 		SortedSet<String> parents = getParents(db);
 		
+		// Fill valid list for the root databank
+		boolean isRoot = (db.getParentName()==null);
+		
 		List<Entry> children = new ArrayList<Entry>();
 		for(Document doc : entriesCollection.find(getPresentCriteria(db.getName()))) {
 			
 			Entry e = new Entry(doc);
-			if(parents.contains(e.getPDBID()))
+			if(isRoot || parents.contains(e.getPdbid()))
 				children.add(e);
 		}
 		
@@ -140,11 +169,14 @@ public class EntryRepoImpl implements EntryRepo {
 		
 		SortedSet<String> parents = getParents(db);
 		
+		// Fill valid list for the root databank
+		boolean isRoot = (db.getParentName()==null);
+		
 		int count = 0;
 		for(Document doc : entriesCollection.find(getPresentCriteria(db.getName()))
 				.projection(new BasicDBObject("pdbid",1))) {
 			
-			if(parents.contains(doc.getString("pdbid")))
+			if(isRoot || parents.contains(doc.getString("pdbid")))
 				count ++;
 		}
 		
@@ -152,17 +184,22 @@ public class EntryRepoImpl implements EntryRepo {
 	}
 
 	public List<Entry> getObsolete(final Databank db) {
+
+		List<Entry> children = new ArrayList<Entry>();
+		
+		// Empty obsolete list for the root databank
+		if(db.getParentName()==null)
+			return children;
 		
 		BasicDBObject fields = new BasicDBObject();
 		fields.put("pdbid", 1);
 
 		SortedSet<String> parents = getParents(db);
 		
-		List<Entry> children = new ArrayList<Entry>();
 		for(Document doc : entriesCollection.find(getPresentCriteria(db.getName()))) {
 			
 			Entry e = new Entry(doc);
-			if(!parents.contains(e.getPDBID()))
+			if(!parents.contains(e.getPdbid()))
 				children.add(e);
 		}
 		
@@ -170,6 +207,10 @@ public class EntryRepoImpl implements EntryRepo {
 	}
 
 	public long countObsolete(final Databank db) {
+		
+		// Empty obsolete list for the root databank
+		if(db.getParentName()==null)
+			return 0;
 		
 		BasicDBObject fields = new BasicDBObject();
 		fields.put("pdbid", 1);
@@ -180,7 +221,7 @@ public class EntryRepoImpl implements EntryRepo {
 		for(Document doc : entriesCollection.find(getPresentCriteria(db.getName()))
 				.projection(new BasicDBObject("pdbid",1))) {
 			
-			if(parents.contains(doc.getString("pdbid")))
+			if(!parents.contains(doc.getString("pdbid")))
 				count ++;
 		}
 		
@@ -202,6 +243,15 @@ public class EntryRepoImpl implements EntryRepo {
 		return entriesCollection.count(getAnnotatedCriteria(db.getName()));
 	}
 
+	public long countAllAnnotated() {
+		
+		return entriesCollection.count(
+						Filters.and(
+						Filters.exists("filepath", false),
+						Filters.exists("mtime", true),
+						Filters.exists("comment", true)));
+	}
+
 	public List<Entry> getMissing(final Databank db) {
 		
 		SortedSet<String> present = new TreeSet<String>();
@@ -215,7 +265,7 @@ public class EntryRepoImpl implements EntryRepo {
 				.projection(new BasicDBObject("pdbid",1))) {
 			
 			Entry e = new Entry(doc);
-			missing.put(e.getPDBID(), e);
+			missing.put(e.getPdbid(), e);
 		}
 		
 		List<Entry> entries = new ArrayList<Entry>();
@@ -270,23 +320,61 @@ public class EntryRepoImpl implements EntryRepo {
 		return count;
 	}
 	
-	public List<Entry> findByComment(final Databank db, final String comment)
+	public List<String> listComments()
 	{
-		List<Entry> entries = new ArrayList<Entry>();
+		List<String> comments = new ArrayList<String>();
+		for(String s : entriesCollection.distinct("comment", String.class).filter(Filters.ne("comment", null)))
+		{
+			comments.add(s);
+		}
+		return comments;
+	}
+	
+	public long getLastAnnotation(final String comment)
+	{
+		Document doc = entriesCollection.find(
+				Filters.and(Filters.eq("comment", comment), Filters.exists("mtime")))
+				.projection(new BasicDBObject( "mtime" , 1 ))
+				.sort(new BasicDBObject( "mtime" , -1 )).first();
+		
+		if(doc==null)
+			return 0;
+		
+		// convert seconds to milliseconds
+		return Math.round(1000 * doc.getDouble("mtime"));
+	}
+
+	public List<Entry> getRecentlyAnnotated() {
+		
+		List<Entry> annotations = new ArrayList<Entry>();
 		for(Document doc : entriesCollection.find(
 				Filters.and(
-					Filters.eq("database_name", db.getName()),
-					Filters.eq("comment", comment)))) {
+					Filters.exists("comment", true),
+					Filters.exists("mtime", true)))
+			.sort(new BasicDBObject("mtime" , -1)).limit(10))
+		{
+			annotations.add(new Entry(doc));
+		}
+		return annotations;
+	}
+	
+	public List<Entry> findWithComment(final String comment)
+	{
+		List<Entry> entries = new ArrayList<Entry>();
+		for(Document doc : entriesCollection.find(Filters.eq("comment", comment))) {
 			
 			entries.add(new Entry(doc));
 		}
 		return entries;
 		
 	}
-	public long countByComment(final Databank db, final String comment)
+	public long countWithComment(final String comment)
 	{
-		return entriesCollection.count(Filters.and(
-										Filters.eq("database_name", db.getName()),
-										Filters.eq("comment", comment)));
+		return entriesCollection.count(Filters.eq("comment", comment));
+	}
+
+	public long countAll() {
+		
+		return entriesCollection.count();
 	}
 }

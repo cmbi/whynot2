@@ -1,5 +1,6 @@
 package nl.ru.cmbi.whynot.model;
 
+import java.io.Serializable;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -16,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @Data
 @SuppressWarnings("unused")
-public class Databank implements Comparable<Databank> {
+public class Databank implements Serializable, Comparable<Databank> {
 	public enum CollectionType {
 		PRESENT, VALID, OBSOLETE, MISSING, ANNOTATED, UNANNOTATED
 	}
@@ -35,7 +36,7 @@ public class Databank implements Comparable<Databank> {
 		
 		String key = "name";
 		if(doc.containsKey(key))
-			return doc.get(key).toString();
+			return doc.getString(key);
 		else
 			return null;
 	}
@@ -44,7 +45,7 @@ public class Databank implements Comparable<Databank> {
 
 		String key = "reference";
 		if(doc.containsKey(key))
-			return doc.get(key).toString();
+			return doc.getString(key);
 		else
 			return null;
 		
@@ -54,26 +55,17 @@ public class Databank implements Comparable<Databank> {
 
 		String key = "filelink";
 		if(doc.containsKey(key))
-			return doc.get(key).toString();
+			return doc.getString(key);
 		else
 			return null;
 		
 	}
-	
+
 	public String getParentName() {
 
 		String key = "parent_name";
 		if(doc.containsKey(key))
-			return doc.get(key).toString();
-		else
-			return null;
-	}
-
-	public Databank getParent() {
-
-		String key = "parent_name";
-		if(doc.containsKey(key))
-			return dbdao.findByName(doc.get(key).toString());
+			return doc.getString(key);
 		else
 			return null;
 	}
@@ -82,7 +74,7 @@ public class Databank implements Comparable<Databank> {
 
 		String key = "regex";
 		if(doc.containsKey(key))
-			return doc.get(key).toString();
+			return doc.getString(key);
 		else
 			return null;
 	}

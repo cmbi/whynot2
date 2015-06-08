@@ -5,6 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jfreechart.MappedChart;
+import nl.ru.cmbi.whynot.entries.EntriesPage;
+import nl.ru.cmbi.whynot.model.Databank;
+import nl.ru.cmbi.whynot.model.Databank.CollectionType;
+import nl.ru.cmbi.whynot.model.Entry;
+import nl.ru.cmbi.whynot.mongo.DatabankRepo;
+import nl.ru.cmbi.whynot.mongo.EntryRepo;
+import nl.ru.cmbi.whynot.webservice.Whynot;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
@@ -23,18 +30,13 @@ import org.jfree.chart.plot.PiePlot3D;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.ui.RectangleInsets;
 
-import nl.ru.cmbi.whynot.entries.EntriesPage;
-import nl.ru.cmbi.whynot.hibernate.DatabankRepo;
-import nl.ru.cmbi.whynot.hibernate.EntryRepo;
-import nl.ru.cmbi.whynot.model.Databank;
-import nl.ru.cmbi.whynot.model.Databank.CollectionType;
-import nl.ru.cmbi.whynot.model.Entry;
-
 public class PieChartPanel extends Panel {
 	@SpringBean
-	protected DatabankRepo	databankdao;
+	protected DatabankRepo databankdao;
 	@SpringBean
-	protected EntryRepo		entrydao;
+	protected EntryRepo entrydao;
+	@SpringBean
+	private Whynot	whynot;
 
 	public PieChartPanel(final String id, final Databank db) {
 		super(id);
@@ -45,7 +47,7 @@ public class PieChartPanel extends Panel {
 		long pre = entrydao.countPresent(db);
 
 		long ann = entrydao.countAnnotated(db);
-		long una = entrydao.counUnannotated(db);
+		long una = entrydao.countUnannotated(db);
 		long mis = entrydao.countMissing(db);
 
 		// Legend
@@ -64,7 +66,7 @@ public class PieChartPanel extends Panel {
 				// Determine selection
 				for (final CollectionType test : CollectionType.values())
 					if (entity.toString().toUpperCase().contains(test.toString()))
-						setResponsePage(new EntriesPage(dbname.toUpperCase() + " " + test.toString().toLowerCase(), getEntriesModel(dbname, test)));
+						setResponsePage(new EntriesPage(dbname + " " + test.toString().toLowerCase(), getEntriesModel(dbname, test)));
 			}
 		});
 	}
@@ -103,7 +105,7 @@ public class PieChartPanel extends Panel {
 			Link<Void> lnk = new Link<Void>("entrylink") {
 				@Override
 				public void onClick() {
-					setResponsePage(new EntriesPage(dbname.toUpperCase() + " " + clname, getEntriesModel(dbname, colType)));
+					setResponsePage(new EntriesPage(dbname + " " + clname, getEntriesModel(dbname, colType)));
 				}
 			};
 			lnk.add(new Label("label", clname));

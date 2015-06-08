@@ -2,7 +2,7 @@ package nl.ru.cmbi.whynot.model;
 
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.io.File;
+import java.io.Serializable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -20,10 +20,23 @@ import org.hibernate.annotations.SortNatural;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Data
-public class Entry implements Comparable<Entry> {
+public class Entry implements Serializable, Comparable<Entry> {
 	
-	@Autowired
-	private static DatabankRepo dbdao;
+	@Data
+	public class File {
+
+		@Setter(AccessLevel.NONE)
+		private String path;
+		
+		@Setter(AccessLevel.NONE)
+		private long mtime;
+		
+		public File(String path, long mtime) {
+			
+			this.path = path;
+			this.mtime = mtime;
+		}
+	}
 	
 	@NotNull
 	@Setter(AccessLevel.NONE)
@@ -37,17 +50,8 @@ public class Entry implements Comparable<Entry> {
 		else
 			return null;
 	}
-	
-	public Databank getDatabank() {
-		
-		String key = "databank_name";
-		if(doc.containsKey(key))
-			return dbdao.findByName(doc.get(key).toString());
-		else
-			return null;
-	}
 
-	public String getPDBID() {
+	public String getPdbid() {
 		
 		String key = "pdbid";
 		if(doc.containsKey(key))
@@ -55,12 +59,25 @@ public class Entry implements Comparable<Entry> {
 		else
 			return null;
 	}
+	
+	public long getLastModified() {
+
+		String key = "mtime";
+		if(doc.containsKey(key))
+			// convert seconds to milliseconds
+			return Math.round(1000 * doc.getDouble(key));
+		else
+			return 0;
+	}
 
 	public File getFile() {
 		
-		String key = "filepath";
-		if(doc.containsKey(key))
-			return new File(doc.get(key).toString());
+		if(doc.containsKey("filepath") && doc.containsKey("mtime"))
+		{
+			// convert seconds to milliseconds
+			File f = new File(doc.get("filepath").toString(), Math.round(1000 * doc.getDouble("mtime")));
+			return f;
+		}
 		else
 			return null;
 	}
@@ -91,11 +108,11 @@ public class Entry implements Comparable<Entry> {
 		int value = getDatabankName().compareTo(o.getDatabankName());
 		if (value != 0)
 			return value;
-		return getPDBID().compareTo(o.getPDBID());
+		return getPdbid().compareTo(o.getPdbid());
 	}
 
 	@Override
 	public String toString() {
-		return getDatabankName() + "," + getPDBID();
+		return getDatabankName() + "," + getPdbid();
 	}
 }

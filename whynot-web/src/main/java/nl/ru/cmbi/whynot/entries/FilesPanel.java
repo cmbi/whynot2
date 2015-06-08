@@ -12,11 +12,17 @@ import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.markup.repeater.data.ListDataProvider;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.resource.ByteArrayResource;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 
 import nl.ru.cmbi.whynot.model.Entry;
+import nl.ru.cmbi.whynot.mongo.DatabankRepo;
 import nl.ru.cmbi.whynot.panels.FilePanel;
 
 public class FilesPanel extends Panel {
+	
+	@SpringBean
+	private DatabankRepo dbdao;
+	
 	public FilesPanel(String id, final String source, final IModel<List<Entry>> entrylist) {
 		super(id, entrylist);
 
@@ -36,7 +42,7 @@ public class FilesPanel extends Panel {
                 for (Entry entry : withFile) {
                     sb.append(entry.toString());
                     sb.append(',');
-                    String href = entry.getDatabank().getFilelink();
+                    String href = dbdao.findByName(entry.getDatabankName()).getFilelink();
                     href = href.replace("${PDBID}", entry.getPdbid());
                     href = href.replace("${PART}", entry.getPdbid().substring(1, 3));
                     sb.append(href);

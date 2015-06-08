@@ -45,26 +45,8 @@ public class CountTest {
 	}
 
 	@Test
-	public void obsolete() {
-		long countObsolete = entdao.countObsolete(dssp);
-		Assert.assertTrue(countObsolete > 0);
-	}
-
-	@Test
-	public void missing() {
-		long countMissing = entdao.countMissing(dssp);
-		Assert.assertTrue(countMissing > 0);
-	}
-
-	@Test
 	public void annotated() {
 		long countAnnotated = entdao.countAnnotated(dssp);
 		Assert.assertTrue(countAnnotated > 0);
-	}
-
-	@Test
-	public void unannotated() {
-		long countUnannotated = entdao.countUnannotated(dssp);
-		Assert.assertTrue(countUnannotated > 0);
 	}
 }

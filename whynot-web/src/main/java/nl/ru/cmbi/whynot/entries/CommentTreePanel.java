@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import nl.ru.cmbi.whynot.entries.CommentTreeProvider.CommentTreeNode;
-import nl.ru.cmbi.whynot.model.Comment;
 import nl.ru.cmbi.whynot.model.Entry;
 import nl.ru.cmbi.whynot.panels.MoreLessPanel;
 
@@ -19,7 +18,7 @@ public class CommentTreePanel extends Panel {
 	private List<Entry> shownEntries = new ArrayList<Entry>();
 	private String toggleText = "";
 	
-    public CommentTreePanel(String id, IModel<CommentTreeNode> model, Map<Comment, List<Entry>> map)
+    public CommentTreePanel(String id, IModel<CommentTreeNode> model, Map<String, List<Entry>> map)
     {
         super(id, new CompoundPropertyModel<CommentTreeNode>(model));
 
@@ -27,14 +26,14 @@ public class CommentTreePanel extends Panel {
     	String commentText = node.getTitle();
 		
 		final List<Entry> entries = new ArrayList<Entry>();
-		for(Comment c : node.getMembers()) {
+		for(String c : node.getMembers()) {
 			
 			entries.addAll(map.get(c));
 		}
 		
 		if(node.getChildren().size()<=0) {
 			
-			commentText = node.getMembers().get(0).getText();
+			commentText = node.getMembers().get(0);
 		}
 		
 		add( new Label("text", String.format("%s (%d)", commentText, entries.size() )).setEscapeModelStrings(false) );

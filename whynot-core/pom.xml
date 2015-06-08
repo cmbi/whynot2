@@ -29,7 +29,7 @@
 		<!-- mongo dependencies -->
 	    <dependency>
 	        <groupId>org.mongodb</groupId>
-	        <artifactId>mongo-java-driver</artifactId>
+	        <artifactId>mongodb-driver</artifactId>
 	        <version>3.0.0</version>
 	    </dependency>
 	</dependencies>

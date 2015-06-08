@@ -14,8 +14,6 @@
 	</organization>
 	<modules>
 		<module>whynot-core</module>
-		<module>whynot-apps</module>
-		<module>whynot-scripts</module>
 		<module>whynot-web</module>
 	</modules>
 	<ciManagement>

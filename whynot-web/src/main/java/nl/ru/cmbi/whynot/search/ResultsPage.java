@@ -2,6 +2,14 @@ package nl.ru.cmbi.whynot.search;
 
 import java.util.List;
 
+import nl.ru.cmbi.whynot.home.HomePage;
+import nl.ru.cmbi.whynot.model.Databank;
+import nl.ru.cmbi.whynot.model.Entry;
+import nl.ru.cmbi.whynot.mongo.DatabankRepo;
+import nl.ru.cmbi.whynot.mongo.EntryRepo;
+import nl.ru.cmbi.whynot.panels.AnnotationPanel;
+import nl.ru.cmbi.whynot.panels.FilePanel;
+
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -13,18 +21,14 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.string.StringValue;
 import org.wicketstuff.annotation.mount.MountPath;
 
-import nl.ru.cmbi.whynot.hibernate.EntryRepo;
-import nl.ru.cmbi.whynot.home.HomePage;
-import nl.ru.cmbi.whynot.model.Databank;
-import nl.ru.cmbi.whynot.model.Entry;
-import nl.ru.cmbi.whynot.panels.AnnotationPanel;
-import nl.ru.cmbi.whynot.panels.FilePanel;
-
 @MountPath("search")
 public class ResultsPage extends HomePage {
 	@SpringBean
-	protected EntryRepo	entrydao;
+	protected EntryRepo entrydao;
 
+	@SpringBean
+	protected DatabankRepo dbdao;
+	
 	public ResultsPage(final PageParameters parameters) {
 		if (parameters.getNamedKeys().contains("pdbid")) {
 			List<StringValue> pdbids = parameters.getValues("pdbid");
@@ -56,19 +60,13 @@ public class ResultsPage extends HomePage {
 					if (entry != null && entry.getFile() != null)
 						item.add(new FilePanel("result", entry));
 					else
-					{
-						if (entry != null && !entry.getAnnotations().isEmpty())
+						if (entry != null && entry.getComment()!=null)
 							item.add(new AnnotationPanel("result", entry));
 						else {
-							Databank par = db.getParent();
-							Entry parentEntry = entrydao.findByDatabankAndPdbid(par, pdbid);
-							
 							// As per Gert: Do not show blanks, but display not available & dependency
 							StringBuilder msg = new StringBuilder("Not available");
-							
-							if( parentEntry==null || parentEntry.getFile() == null )
-								msg.append(", depends on: ").append(par.getName());
-							
+							Databank par = dbdao.getParent(db);
+							msg.append(", depends on: ").append(par.getName());
 							Label lbl = new Label("result", msg.toString());
 							lbl.add(new AttributeModifier("class", "annotation"));
 							item.add(lbl);
@@ -78,7 +76,6 @@ public class ResultsPage extends HomePage {
 							// If source is available, but older than a week: "Pending"
 							// If source is not available: "Not available, depends on XYZ"
 						}
-					}
 				}
 			};
 			add(lv);

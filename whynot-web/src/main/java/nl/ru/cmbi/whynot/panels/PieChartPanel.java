@@ -11,7 +11,7 @@ import nl.ru.cmbi.whynot.model.Databank.CollectionType;
 import nl.ru.cmbi.whynot.model.Entry;
 import nl.ru.cmbi.whynot.mongo.DatabankRepo;
 import nl.ru.cmbi.whynot.mongo.EntryRepo;
-import nl.ru.cmbi.whynot.webservice.Whynot;
+import nl.ru.cmbi.whynot.mongo.WhynotRepo;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
@@ -36,7 +36,7 @@ public class PieChartPanel extends Panel {
 	@SpringBean
 	protected EntryRepo entrydao;
 	@SpringBean
-	private Whynot	whynot;
+	private WhynotRepo	whynot;
 
 	public PieChartPanel(final String id, final Databank db) {
 		super(id);

@@ -125,7 +125,6 @@ public class Databank implements Serializable, Comparable<Databank> {
 		doc.put("crawltype", crawltype.toString());
 	}
 
-	@Override
 	public int compareTo(final Databank o) {
 		if(o==null)
 			return 1;

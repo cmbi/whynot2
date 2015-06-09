@@ -27,7 +27,7 @@ public class StatisticsPage extends HomePage {
 	public StatisticsPage() {
 		// Counts
 		add(new Label("annotations", "" + entdao.countAllAnnotated()));
-		add(new Label("comments", "" + entdao.listComments().size()));
+		add(new Label("comments", "" + entdao.countComments()));
 		add(new Label("databanks", "" + dbdao.countAll()));
 		add(new Label("entries", "" + entdao.countAll()));
 		add(new Label("files", "" + entdao.countAllPresent()));

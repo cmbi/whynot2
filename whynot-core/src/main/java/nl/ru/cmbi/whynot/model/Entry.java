@@ -103,7 +103,6 @@ public class Entry implements Serializable, Comparable<Entry> {
 		this.doc.put("pdbid", id.toLowerCase());
 	}
 
-	@Override
 	public int compareTo(final Entry o) {
 		int value = getDatabankName().compareTo(o.getDatabankName());
 		if (value != 0)

@@ -377,4 +377,9 @@ public class EntryRepoImpl implements EntryRepo {
 		
 		return entriesCollection.count();
 	}
+
+	public long countComments() {
+		
+		return entriesCollection.count(Filters.exists("comment", true));
+	}
 }

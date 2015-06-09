@@ -45,4 +45,6 @@ public interface EntryRepo {
 	long countWithComment(final String text);
 
 	long countAll();
+
+	long countComments();
 }

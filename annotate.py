@@ -9,6 +9,9 @@ from time import time
 
 def parse_comment(lines, entry):
 
+    if len(lines) < 2:
+        return ''
+
     if not lines[0].startswith('COMMENT:'):
         print lines[0], 'does not have comment'
         return ''

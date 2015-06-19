@@ -57,6 +57,9 @@ def get_entries_with_pdbid(databank_name, pdbid):
 def get_obsolete_entries(databank_name):
 
     databank = storage.find_one('databanks', {'name': databank_name})
+    if not databank:
+        raise Exception("no such databank: " + databank_name)
+
     if 'parent_name' in databank:
 
         obsolete=[]
@@ -71,6 +74,9 @@ def get_obsolete_entries(databank_name):
 def get_valid_entries(databank_name):
 
     databank = storage.find_one('databanks',{'name': databank_name})
+    if not databank:
+        raise Exception("no such databank: " + databank_name)
+
     if 'parent_name' in databank:
 
         valid=[]

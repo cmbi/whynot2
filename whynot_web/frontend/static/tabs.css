@@ -1,0 +1,19 @@
+/* TAB PANEL STYLES */
+div.tab-row ul {height:20px; background:transparent url(tab_bottom.gif) repeat-x scroll center bottom;}
+div.tab-row li {padding-left:0px;}
+div.tab-row a:link, div.tab-row a:visited {
+	float: left;
+	background: #f3f3f3;
+	line-height: 14px;
+	font-weight: bold;
+	padding: 2px 10px 2px 10px;
+	margin-right: 4px;
+	border: 1px solid #ccc;
+	text-decoration: none;
+	color: #666;}
+div.tab-row a:hover {background: #fff;}
+div.tab-row li.selected a, div.tab-row a:visited.active {
+	border-bottom: 1px solid #fff;
+	background: #fff;
+	color: #000;}
+div.tab-panel {clear: both;}

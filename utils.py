@@ -25,11 +25,27 @@ def download(url,destdir):
     open(destpath,'w').write(urlopen(url).read())
     return destpath
 
-def entries_by_pdbid(entries):
+def entries_by_databank (entries):
 
-    d={}
+    d = {}
     for entry in entries:
-        d[entry['pdbid']] = entry
+        d [entry['databank_name']] = entry
+
+    return d
+
+def databanks_by_name (databanks):
+
+    d = {}
+    for databank in databanks:
+        d [databank ['name']] = databank
+
+    return d
+
+def entries_by_pdbid (entries):
+
+    d = {}
+    for entry in entries:
+        d [entry['pdbid']] = entry
 
     return d
 
@@ -42,19 +58,64 @@ def update_entries(entries):
         else:
             insert.append(entry)
 
-    if len(insert)>0:
-        print 'now inserting %i entries' % len(insert)
-        storage.insert('entries',insert)
+    if len (insert) > 0:
+        print 'now inserting %i entries' % len (insert)
+        storage.insert ('entries', insert)
 
-def get_entries_with_comment(databank_name, comment):
+def search_results_for (pdbid):
 
-    return storage.find('entries',{'databank_name':databank_name, 'comment':comment})
+    part = pdbid [1:3]
 
-def get_entries_with_pdbid(databank_name, pdbid):
+    entries = entries_by_databank (storage.find ('entries', {'pdbid': pdbid}))
+    databanks = databanks_by_name (storage.find ('databanks', {}))
 
-    return storage.find('entries',{'databank_name':databank_name, 'pdbid':pdbid})
+    results = {}
+    for databank_name in databanks.keys():
 
-def get_obsolete_entries(databank_name):
+        databank = databanks [databank_name]
+
+        if databank_name in entries:
+
+            entry = entries [databank_name]
+
+            if 'filepath' in entry:
+                results [databank_name] = databank ['filelink'].replace ('${PDBID}', pdbid).replace ('${PART}', part)
+            elif 'comment' in entry:
+                results [databank_name] = entry ['comment']
+        else:
+            results [databank_name] = 'Not available'
+
+            parent_name = databank ['parent_name']
+            if parent_name not in entries or 'comment' in entries [parent_name]:
+                results [databank_name] += ', depends on %s' % parent_name
+
+    return results
+
+def get_databank_hierarchy (name = None):
+
+    if name is None:
+        databanks = storage.find ('databanks', {'parent_name': {'$exists': False}}, {'name': 1, '_id': 0})
+    else:
+        databanks = storage.find ('databanks', {'parent_name': name}, {'name': 1, '_id': 0})
+
+    tree = {}
+    for databank in databanks:
+        name = databank ['name']
+        branch = get_databank_hierarchy (name)
+
+        tree [name] = branch
+
+    return tree
+
+def get_entries_with_comment (databank_name, comment):
+
+    return storage.find ('entries', {'databank_name': databank_name, 'comment': comment})
+
+def get_entries_with_pdbid (databank_name, pdbid):
+
+    return storage.find ('entries', {'databank_name': databank_name, 'pdbid': pdbid})
+
+def get_obsolete_entries (databank_name):
 
     databank = storage.find_one('databanks', {'name': databank_name})
     if not databank:

@@ -1,0 +1,118 @@
+{% extends "home/HomePage.html" %}
+
+{% macro gotos_header(identifier, length, items_per_page) %}
+{% set num_pages = (length / items_per_page | round(0, 'ceil'))|int %}
+<div>
+    <a class="first" onclick="setPage({{ identifier }}, 0);" title="Go to first page">&lt;&lt;</a>
+    <a class="prev" onclick="setPage({{ identifier }}, --page_index[{{ identifier }}]);" title="Go to previous page">&lt;</a>
+
+    {% for page_index in range(num_pages) %}
+    <span class="goto">
+        <a class onclick="setPage({{ identifier }},{{ page_index }});" title="Go to page {{ page_index + 1 }}"><span>1</span></a>
+    </span>
+    {% endfor %}
+
+    <a class="next" onclick="setPage({{ identifier }}, ++page_index[{{ identifier }}]);" title="Go to next page">&gt;</a>
+    <a class="last" onclick="setPage({{ identifier }}, {{ length / items_per_page }});" title="Go to last page">&gt;&gt;</a>
+</div>
+{% endmacro %}
+
+</html>
+<head>
+{% block head %}
+{{ super() }}
+    <link href="{{ url_for('static', filename='tabs.css') }}" rel="stylesheet" />
+
+<script type="text/javascript">
+function selectTab (id)
+{
+    $('.selector').removeClass ("selected");
+    $('#select-' + id).addClass ("selected");
+    $('.tab-panel').hide();
+    $('#' + id).show();
+}
+
+var page_index = {"entries":0};
+
+function setPage (tab, index)
+{
+    $('.' + tab + '-page').hide();
+    $('#' + tab + '-page' + index).show();
+    page_index[tab] = index;
+}
+
+</script>
+{% endblock %}
+</head>
+
+<body>
+{% block content %}
+    <h1>{{ source }} ({{ entries|length }})</h1>
+    <span>
+        <div class="tab-row">
+            <ul>
+                <li id="select-pdbids" class="selector selected">
+                    <a href="#" onclick="selectTab('pdbids');">
+                        <span>PDBIDs</span>
+                    </a>
+                </li>
+                <li id="select-entries" class="selector">
+                    <a href="#" onclick="selectTab('entries');">
+                        <span>Entries</span>
+                    </a>
+                </li>
+                <li id="select-files" class="selector">
+                    <a href="#" onclick="selectTab('files');">
+                        <span>Files</span>
+                    </a>
+                </li>
+                <li id="select-comments" class="selector">
+                    <a href="#" onclick="selectTab('comments');">
+                        <span>Comments</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div id="pdbids" class="tab-panel">
+            <a href="{{ url_for('dashboard.list', listing='PDBIDs', databank=databank, collection=collection) }}" class="download">Download as file</a>
+            <h1>Unique PDBIDs ({{ entries|length }})</h1>
+            <p style="font-family:monospace;">
+{% for entry in entries %}
+{{ entry['pdbid'] }}
+{% endfor %}
+            </p>
+        </div>
+        <div id="entries" class="tab-panel" style="display:none;" >
+            <a href="{{ url_for('dashboard.list', listing='entries', databank=databank, collection=collection) }}" class="download">Download as file</a>
+            <p style="font-family:monospace;">
+{% for entry in entries %}
+{{ entry['databank_name'],entry['pdbid'] }}
+{% endfor %}
+            </p>
+        </div>
+        <div id="files" class="tab-panel" style="display:none;" >
+            <a href="{{ url_for('dashboard.list', listing='files', databank=databank, collection=collection) }}" class="download">Download as file</a>
+            <h1>Files ({{ files|length }})</h1>
+            <p style="font-family:monospace;">
+{% for file in files %}
+    <a href="{{ file.url }}" class="file">{{ file.name }}</a>
+{% endfor %}
+            </p>
+        </div>
+        <div id="files" class="tab-panel" style="display:none;" >
+            <a href="{{ url_for('dashboard.list', listing='comments', databank=databank, collection=collection) }}" class="download">Download as file</a>
+{% for comment in comments %}
+            <h1>{{ comment.text }} ({{ comment.entries|length}})</h1>
+            <div style="font-family:monospace;">
+                <p>
+{% for entry in comment.entries %}
+{{ entry['databank_name'],entry['pdbid'] }}
+{% endfor %}
+                </p>
+            </div>
+{% endfor %}
+        </div>
+    </span>
+{% endblock %}
+</body>
+</html>

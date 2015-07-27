@@ -1,0 +1,35 @@
+ul.feedbackPanel li {
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	margin: 2px;
+	padding-left:0px;}
+
+li.feedbackPanelFATAL:before {
+	content: url(image/cancel.png);
+	vertical-align:middle;}
+li.feedbackPanelERROR:before {
+	content: url(image/exclamation.png);
+	vertical-align:middle;}
+li.feedbackPanelWARNING:before {
+	content: url(image/error.png);
+	vertical-align:middle;}
+li.feedbackPanelINFO:before {
+	content: url(image/information.png);
+	vertical-align:middle;}
+
+li.feedbackPanelFATAL {
+	border: 1px solid #cdcdcd;
+	background: #191919;
+	color: #ffffff;}
+li.feedbackPanelERROR {
+	border: 1px solid #cd0a0a;
+	background: #c81900;
+	color: #ffffff;}
+li.feedbackPanelWARNING {
+	border: 1px solid #cd6a0a;
+	background: #c86920;
+	color: #ffffff;}
+li.feedbackPanelINFO {
+	border: 1px solid #fed22f;
+	background: #ffe45c;
+	color: #363636;}

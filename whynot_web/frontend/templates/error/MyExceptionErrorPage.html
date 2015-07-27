@@ -1,0 +1,25 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en" 
+	xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+<head>
+	<title>Why Not?</title>
+	<!-- "Bright Blue" by Christopher Robinson: http://www.edg3.co.uk/ -->
+	<link rel="stylesheet" href="brightblue.css" type="text/css" media="screen" />
+</head>
+
+<body>
+	<div id="header">
+		<h1><a href="./">Why <span>Not?</span></a></h1>
+	</div>
+	<div id="content">
+		<div id="feedback" wicket:id="feedback"></div>
+		<div id="main">
+			<h1>Error</h1>
+			<p>An internal error occurred. Please notify an administrator (t.tebeek@cmbi.ru.nl) and/or try again later.</p>
+			<h3 wicket:id="page"></h3>
+			<pre wicket:id="stacktrace"></pre>
+			<p><wicket:link><img src="img.jpg" style="float:right" /></wicket:link></p>
+		</div>
+	</div>
+</body>
+</html>

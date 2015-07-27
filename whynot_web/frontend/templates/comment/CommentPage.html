@@ -1,0 +1,20 @@
+<html xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+<body>
+<wicket:extend>
+	<h1>Comments</h1>
+	<table>
+	<tr>
+		<th>Comment</th>
+		<th class="number">Entries</th>
+		<th class="date">Last used</th>
+	</tr>
+	<tr wicket:id="commentlist">
+		<td><span wicket:id="text" class="comment"></span></td>
+		<td class="number"><a href="#" wicket:id="entries">
+			<span wicket:id="count"></span></a></td>
+		<td wicket:id="latest" class="date">latest</td>
+	</tr>
+	</table>
+</wicket:extend>
+</body>
+</html>

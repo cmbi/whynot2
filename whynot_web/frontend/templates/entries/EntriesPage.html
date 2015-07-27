@@ -1,118 +1,221 @@
 {% extends "home/HomePage.html" %}
 
-{% macro gotos_header(identifier, length, items_per_page) %}
-{% set num_pages = (length / items_per_page | round(0, 'ceil'))|int %}
-<div>
-    <a class="first" onclick="setPage({{ identifier }}, 0);" title="Go to first page">&lt;&lt;</a>
-    <a class="prev" onclick="setPage({{ identifier }}, --page_index[{{ identifier }}]);" title="Go to previous page">&lt;</a>
+{% set show_max_entries_per_comment = 100 %}
+{% set items_per_page = 2000 %}
+{% set num_pages = {'entries' : ((( entries | length | float) / items_per_page) | round(0, 'ceil')) | int,
+                    'pdbids' : ((( entries | length | float) / items_per_page) | round(0, 'ceil')) | int,
+                    'files' : ((( files | length | float) / items_per_page) | round(0, 'ceil')) | int} %}
 
-    {% for page_index in range(num_pages) %}
-    <span class="goto">
-        <a class onclick="setPage({{ identifier }},{{ page_index }});" title="Go to page {{ page_index + 1 }}"><span>1</span></a>
+{% macro page_browser (identifier, length, items_per_page) %}
+<div id="browse-{{ identifier }}">
+    <span class="first" title="Go to first page"><em>&lt;&lt;</em></span>
+    <span class="prev" title="Go to previous page"><em>&lt;</em></span>
+
+    {% for page_index in range( num_pages [identifier] ) %}
+    <span class="goto goto-{{ page_index + 1 }}" title="Go to page {{ page_index + 1 }}">
+    {% if page_index == 0 %}
+        <em><span>1</span></em>
+    {% else %}
+        <a href="#" onclick="setPage('{{ identifier }}',{{ page_index }});"><span>{{ page_index + 1 }}</span></a>
+    {% endif %}
     </span>
     {% endfor %}
 
-    <a class="next" onclick="setPage({{ identifier }}, ++page_index[{{ identifier }}]);" title="Go to next page">&gt;</a>
-    <a class="last" onclick="setPage({{ identifier }}, {{ length / items_per_page }});" title="Go to last page">&gt;&gt;</a>
+    <span class="next" title="Go to next page">
+    {% if num_pages [identifier] > 1 %}
+        <a href="#" onclick="setPage('{{ identifier }}', 1);">&gt;</a>
+    {% else %}
+        <em>&gt;</em>
+    {% endif %}
+    </span>
+    <span class="last" title="Go to last page">
+    {% if num_pages [identifier] > 0 %}
+        <a href="#" onclick="setPage ('{{ identifier }}', {{ num_pages [identifier] - 1}});">&gt;&gt;</a>
+    {% else %}
+        <em>&gt;&gt;</em>
+    {% endif %}
+    </span>
 </div>
 {% endmacro %}
-
-</html>
-<head>
-{% block head %}
-{{ super() }}
+{% block header %}
     <link href="{{ url_for('static', filename='tabs.css') }}" rel="stylesheet" />
 
-<script type="text/javascript">
-function selectTab (id)
-{
-    $('.selector').removeClass ("selected");
-    $('#select-' + id).addClass ("selected");
-    $('.tab-panel').hide();
-    $('#' + id).show();
-}
+    <script type="text/javascript">
 
-var page_index = {"entries":0};
+    function toggleMoreComments (comment_id)
+    {
+        morecomments_visible [comment_id] = !morecomments_visible [comment_id];
+        if (morecomments_visible [comment_id])
+        {
+            $('#more-comments-'+comment_id).show();
+            $('#comments-'+comment_id).hide();
+        }
+        else
+        {
+            $('#more-comments-'+comment_id).hide();
+            $('#comments-'+comment_id).show();
+        }
+    }
 
-function setPage (tab, index)
-{
-    $('.' + tab + '-page').hide();
-    $('#' + tab + '-page' + index).show();
-    page_index[tab] = index;
-}
+    function selectTab (id)
+    {
+        $('.selector').removeClass ("selected");
+        $('#select-' + id).addClass ("selected");
+        $('.tab-panel').hide();
+        $('#' + id).show();
+    }
 
-</script>
+    function disableBrowseButtons (selection)
+    {
+        $(selection).each (function (i) {
+            $(this).replaceWith ('<em>' + $(this).html() + '</em>');
+        });
+    }
+
+    function enableBrowseButtons (selection, tab, nr)
+    {
+        $(selection).each (function (i) {
+            $(this).replaceWith ('<a href=\"#\" onclick=\"setPage(\'' + tab + '\', ' + nr + ');\">' + $(this).html() + '</a>');
+        });
+    }
+
+    var page_index = {'entries':0, 'files':0, 'pdbids':0},
+        max_length = {'entries':{{ num_pages ['entries'] }}, 'files':{{ num_pages['files'] }}, 'pdbids':{{ num_pages ['entries'] }}};
+
+    function setPage (tab, index)
+    {
+        $('.' + tab + '-page').hide();
+        $('#' + tab + '-page-' + index).show();
+
+        // enable current:
+        enableBrowseButtons ('#browse-' + tab + ' > .goto-' + (page_index [tab] + 1) + ' > *', tab, page_index [tab]);
+
+        page_index [tab] = index;
+
+        // disable new
+        disableBrowseButtons ('#browse-' + tab + ' > .goto-' + (index + 1) + ' > *');
+
+        // if this is the first, then prev and first will be disabled, else enabled
+        if (index == 0)
+        {
+            disableBrowseButtons ('#browse-' + tab + ' > .first > *');
+            disableBrowseButtons ('#browse-' + tab + ' > .prev > *');
+        }
+        else
+        {
+            enableBrowseButtons ('#browse-' + tab + ' > .first > *', tab, 0);
+            enableBrowseButtons ('#browse-' + tab + ' > .prev > *', tab, index - 1);
+        }
+
+        // if this is the last, then next and last will be disabled, else enabled
+        if ((index + 1) == max_length [tab])
+        {
+            disableBrowseButtons ('#browse-' + tab + ' > .last > *');
+            disableBrowseButtons ('#browse-' + tab + ' > .next > *');
+        }
+        else
+        {
+            enableBrowseButtons ('#browse-' + tab + ' > .next > *', tab, index + 1);
+            enableBrowseButtons ('#browse-' + tab + ' > .last > *', tab, max_length [tab] - 1);
+        }
+    }
+    </script>
 {% endblock %}
-</head>
-
-<body>
 {% block content %}
     <h1>{{ source }} ({{ entries|length }})</h1>
     <span>
         <div class="tab-row">
             <ul>
                 <li id="select-pdbids" class="selector selected">
-                    <a href="#" onclick="selectTab('pdbids');">
-                        <span>PDBIDs</span>
-                    </a>
+                    <a href="#" onclick="selectTab('pdbids');"><span>PDBIDs</span></a>
                 </li>
                 <li id="select-entries" class="selector">
-                    <a href="#" onclick="selectTab('entries');">
-                        <span>Entries</span>
-                    </a>
+                    <a href="#" onclick="selectTab('entries');"><span>Entries</span></a>
                 </li>
                 <li id="select-files" class="selector">
-                    <a href="#" onclick="selectTab('files');">
-                        <span>Files</span>
-                    </a>
+                    <a href="#" onclick="selectTab('files');"><span>Files</span></a>
                 </li>
                 <li id="select-comments" class="selector">
-                    <a href="#" onclick="selectTab('comments');">
-                        <span>Comments</span>
-                    </a>
+                    <a href="#" onclick="selectTab('comments');"><span>Comments</span></a>
                 </li>
             </ul>
         </div>
         <div id="pdbids" class="tab-panel">
             <a href="{{ url_for('dashboard.list', listing='PDBIDs', databank=databank, collection=collection) }}" class="download">Download as file</a>
-            <h1>Unique PDBIDs ({{ entries|length }})</h1>
-            <p style="font-family:monospace;">
-{% for entry in entries %}
-{{ entry['pdbid'] }}
-{% endfor %}
+            {% if entries|length > 0 %}<h1>Unique PDBIDs ({{ entries|length }})</h1>{% endif %}
+            {{ page_browser ('pdbids', entries|length, 2000) }}
+
+            {% for page_index in range( num_pages ['pdbids'] ) %}
+            <p class="pdbids-page" id="pdbids-page-{{ page_index }}" style="font-family:monospace;">
+                {% for i in range (page_index * items_per_page, (page_index + 1) * items_per_page) %}
+                {% if i < (entries | length) %}
+                {{ entries [i].pdbid }}
+                {% endif %}
+                {% endfor %}
             </p>
+            {% endfor %}
         </div>
         <div id="entries" class="tab-panel" style="display:none;" >
             <a href="{{ url_for('dashboard.list', listing='entries', databank=databank, collection=collection) }}" class="download">Download as file</a>
-            <p style="font-family:monospace;">
-{% for entry in entries %}
-{{ entry['databank_name'],entry['pdbid'] }}
-{% endfor %}
+            {% if entries|length > 0 %}<h1>Entries ({{ entries|length }})</h1>{% endif %}
+            {{ page_browser ('entries', entries|length, 2000) }}
+
+            {% for page_index in range( num_pages ['entries'] ) %}
+            <p class="entries-page" id="entries-page-{{ page_index }}" style="font-family:monospace;">
+                {% for i in range (page_index * items_per_page, (page_index + 1) * items_per_page) %}
+                {% if i < (entries | length) %}
+                {{ "%s,%s" % (entries[i].databank_name,entries[i].pdbid) }}
+                {% endif %}
+                {% endfor %}
             </p>
+            {% endfor %}
         </div>
         <div id="files" class="tab-panel" style="display:none;" >
             <a href="{{ url_for('dashboard.list', listing='files', databank=databank, collection=collection) }}" class="download">Download as file</a>
-            <h1>Files ({{ files|length }})</h1>
-            <p style="font-family:monospace;">
-{% for file in files %}
-    <a href="{{ file.url }}" class="file">{{ file.name }}</a>
-{% endfor %}
+            {% if files|length > 0 %}<h1>Files ({{ files|length }})</h1>{% endif %}
+            {{ page_browser ('files', files|length, 2000) }}
+
+            {% for page_index in range( num_pages ['files'] ) %}
+            <p class="files-page" id="files-page-{{ page_index }}" style="font-family:monospace;">
+                {% for i in range (page_index * items_per_page, (page_index + 1) * items_per_page) %}
+                {% if i < (files | length) %}
+                    <a href="{{ files[i].url }}" class="file">{{ files[i].name }}</a>
+                {% endif %}
+                {% endfor %}
             </p>
+            {% endfor %}
         </div>
-        <div id="files" class="tab-panel" style="display:none;" >
+        <div id="comments" class="tab-panel" style="display:none;" >
             <a href="{{ url_for('dashboard.list', listing='comments', databank=databank, collection=collection) }}" class="download">Download as file</a>
-{% for comment in comments %}
-            <h1>{{ comment.text }} ({{ comment.entries|length}})</h1>
+
+<script type="text/javascript">
+    var morecomments_visible = {};
+    {% for text, comment_entries in comments.iteritems () %}
+        morecomments_visible [{{ loop.index }}] = false;
+    {% endfor %}
+</script>
+{% for text, comment_entries in comments.iteritems () %}
+            {% set comment_id = loop.index %}
+            <h1>{{ text }} ({{ comment_entries|length }})</h1>
             <div style="font-family:monospace;">
-                <p>
-{% for entry in comment.entries %}
-{{ entry['databank_name'],entry['pdbid'] }}
-{% endfor %}
-                </p>
+                {% if comment_entries|length > show_max_entries_per_comment %}
+                    <p id="comments-{{ comment_id }}">
+                    {% for i in range (show_max_entries_per_comment) %}{{ comment_entries [i] }}
+                    {% endfor %}
+                    </p>
+                    <p id="more-comments-{{ comment_id }}" style="display:none;">
+                    {% for line in comment_entries %}{{ line }}
+                    {% endfor %}
+                    </p>
+                    <a id="more-{{ comment_id }}" onclick="toggleMoreComments ({{ comment_id }});" href="#"><span>&lt;more&gt;</span></a>
+                {% else %}
+                    <p>
+                    {% for line in comment_entries %}{{ line }}
+                    {% endfor %}
+                    </p>
+                {% endif %}
             </div>
 {% endfor %}
         </div>
     </span>
 {% endblock %}
-</body>
-</html>

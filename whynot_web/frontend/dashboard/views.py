@@ -4,7 +4,7 @@ from copy import deepcopy
 from sets import Set
 
 from flask import Blueprint, jsonify, render_template, request, redirect, url_for
-from utils import get_databank_hierarchy, search_results_for
+from utils import get_databank_hierarchy, search_results_for, get_entries_from_collection, get_file_link
 
 _log = logging.getLogger(__name__)
 
@@ -50,12 +50,33 @@ def databanks (name):
 @bp.route('/entries/')
 def entries ():
 
+    collection = request.args.get('collection')
+    databank_name = request.args.get('databank')
+
     source = 'No entries selected'
     entries = []
     files = []
-    comments = []
+    comments = {}
 
-    return render_template ('entries/EntriesPage.html', db_tree=db_tree, source=source, entries=entries, files=files, comments=comments)
+    if len (collection) > 0 and len (databank_name) > 0:
+
+        databank = storage.find_one ('databanks', {'databank_name':databank_name})
+
+        entries = get_entries_from_collection (databank_name, collection)
+
+        source = "%s %s" % (databank_name, collection) 
+
+        for entry in entries:
+            if 'filepath' in entry:
+                files.append (get_file_link (databank, entry ['pdbid']))
+            elif 'comment' in entry:
+                if entry ['comment'] not in comments:
+                    comments [entry ['comment']] = []
+                comments [entry ['comment']].append ('%s,%s' % (entry ['databank_name'], entry ['pdbid']))
+
+    return render_template ('entries/EntriesPage.html', db_tree=db_tree,
+                            collection=collection, databank_name=databank_name,
+                            source=source, entries=entries, files=files, comments=comments)
 
 @bp.route('/statistics/')
 def statistics ():

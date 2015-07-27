@@ -62,6 +62,12 @@ def update_entries(entries):
         print 'now inserting %i entries' % len (insert)
         storage.insert ('entries', insert)
 
+def get_file_link (databank, pdbid):
+
+    part = pdbid [1:3]
+
+    return databank ['filelink'].replace ('${PDBID}', pdbid).replace ('${PART}', part)
+
 def search_results_for (pdbid):
 
     part = pdbid [1:3]
@@ -79,7 +85,7 @@ def search_results_for (pdbid):
             entry = entries [databank_name]
 
             if 'filepath' in entry:
-                results [databank_name] = databank ['filelink'].replace ('${PDBID}', pdbid).replace ('${PART}', part)
+                results [databank_name] = get_file_link (databank, pdbid)
             elif 'comment' in entry:
                 results [databank_name] = entry ['comment']
         else:
@@ -106,6 +112,31 @@ def get_databank_hierarchy (name = None):
         tree [name] = branch
 
     return tree
+
+def get_entries_from_collection (databank_name, collection):
+
+    collection = collection.lower ()
+
+    if collection == 'obsolete':
+        return get_obsolete_entries (databank_name)
+
+    elif collection == 'valid':
+        return get_valid_entries (databank_name)
+
+    elif collection == 'missing':
+        return get_missing_entries (databank_name)
+
+    elif collection == 'present':
+        return get_present_entries (databank_name)
+
+    elif collection == 'annotated':
+        return get_annotated_entries (databank_name)
+
+    elif collection == 'unannotated':
+        return get_unannotated_entries (databank_name)
+
+    else:
+        return []
 
 def get_entries_with_comment (databank_name, comment):
 

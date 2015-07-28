@@ -1,30 +1,105 @@
 {% extends "home/HomePage.html" %}
 {% block header %}
 <link href="{{ url_for('static', filename='databank.css') }}" rel="stylesheet" />
+
+<script type="text/javascript">
+
+function piechart (counts)
+{
+    var total = counts ['present'] + counts ['missing'],
+
+        angle = 0.0,
+        radius = 100.0,
+        cx = 110.0, cy = 110.0,
+
+        svg = "<svg width=\"220\" height=\"220\">";
+
+    for (var collection in ['valid', 'obsolete', 'annotated', 'unannotated'])
+    {
+        var part = float (counts [collection]) / total,
+            angleStart = angle,
+            angleEnd = angle + part * 2 * Math.PI,
+
+            xStart = cx + radius * Math.sin (angleStart),
+            xEnd = cx +  radius * Math.sin (angleEnd),
+
+            yStart = cy - radius * Math.cos (angleStart),
+            yEnd = cy - radius * Math.cos (angleEnd),
+
+            large_arc = (part > 0.5)? 1: 0,
+            path = "", tag = "",
+
+            param = "stroke=\"black\" stroke-width=\"1\" class=\"" + collection + "\"";
+
+            angle = engleEnd;
+
+        if (part >= 1.0)
+        {
+            tag = "<circle cx=\"" + cx + "\" cy=\"" + cy + "\" r=\" + radius + \" " + param + "/>";
+        }
+        else if (path <= 0.0)
+        {
+            continue;
+        }
+        else
+        {
+            path += "M " + cx + "," + cy + " L " + xStart + "," + yStart + " ";
+            path += "A " + radius + "," + radius + " 0 " + large_arc + " 0 " + xEnd + "," + yEnd + " ";
+            path += "Z"; // close at center
+
+            tag = "<path d=\"" + path + "\"" + param + "/>"";
+        }
+        svg += tag;
+    }
+    svg += "</svg>";
+
+    return svg;
+}
+
+function load_legend (databank_name)
+{
+    // Request the collection sizes, replace the tag when ready
+    $.ajax({
+        type: 'POST',
+        url: "{{ url_for('dashboard.count', databank_name='DDDDDD') }}".replace("DDDDDD", databank_name),
+        success: function (counts, status)
+        {
+            var html = "<ul class=\"legend\">";
+            for (var collection in ['valid', 'obsolete', 'present', 'annotated', 'unannotated', 'missing'])
+            {
+                var count = counts [collection];
+
+                html += "<li class=\"" + collection + "\">";
+
+                html += "<a href=\"{{ url_for('dashboard.resources', list='LLLLLL') }}\"><img src=\"{{ url_for('static', filename='image/page_white_go.png') }}\"></a>"
+                        .replace("LLLLLL", databank_name + '_' + collection.toUpperCase());
+
+                html += "<a href=\"{{ url_for('dashboard.entries', databank='DDDDDD', collection='CCCCCC') }}\">"
+                        .replace ("DDDDDD", databank_name)
+                        .replace ("CCCCCC", collection)
+                        + "<span class=\"count\">" + count + "</span><span>" + collection + "</span></a>";
+
+                html += "</li>";
+            }
+            html += "</ul>" + piechart (counts);
+
+            $("#display-" + databank_name).html (html);
+
+            // Completely remove the loading tag
+            $("#loading-" + databank_name).replaceWith ("");
+        }
+    });
+}
+
+</script>
 {% endblock %}
 
 {% block content %}
 {% for databank in databanks %}
 <div style="clear:both;">
     <h1>{{ databank['name'] }}</h1>
-    <div>
-        <ul class="legend">
-        {% for collection in ['valid', 'obsolete', 'present', 'annotated', 'unannotated', 'missing'] %}
-
-            {% set count = databank ['counts'][collection] %}
-            <li class="{{ collection }}">
-                <a href="{{ url_for('dashboard.resources', list='%s_%s' % (databank ['name'], collection|upper)) }}">
-                    <img src="{{ url_for('static', filename='image/page_white_go.png') }}">
-                </a>
-                <a href="{{ url_for('dashboard.entries', databank=databank ['name'], collection=collection) }}">
-                    <span class="count">{{ count }}</span>
-                    <span>{{ collection }}</span>
-                </a>
-            </li>
-        {% endfor %}
-        </ul>
-    </div>
-    <div><img alt="Loading..." src="{{ url_for('static', filename='image/indicator.gif') }}"></div>
+    <div id="display-{{ databank['name'] }}"></div>
+    <div id="loading-{{ databank['name'] }}"><img alt="Loading..." src="{{ url_for('static', filename='image/indicator.gif') }}"></div>
     <a href="{{ databank['reference'] }}"><span>{{ databank['reference'] }}</span></a>
 </div>
 {% endfor %}

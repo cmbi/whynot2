@@ -9,11 +9,11 @@ ul.legend li {
 ul.legend li .count {float:right;}
 ul.legend img {float:right;}
 
-.valid {color: #0070b8;}
-.obsolete {color: #b80000;}
+.valid {color: #0070b8; fill: #0070b8;}
+.obsolete {color: #b80000; fill: #b80000;}
 
-.annotated {color: #00b870;}
-.unannotated {color: yellow;}
+.annotated {color: #00b870; fill: #00b870;}
+.unannotated {color: yellow; fill: yellow;}
 
 .present, .missing{
 	margin-bottom:10px;

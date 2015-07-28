@@ -43,6 +43,11 @@ def about ():
 def comment ():
     return render_template ('comment/CommentPage.html', db_tree=db_tree)
 
+@bp.route('/count/<databank_name>/')
+def count (databank_name):
+
+    return jsonify (count_summary (databank_name))
+
 @bp.route('/databanks/')
 @bp.route('/databanks/name/<name>/')
 def databanks (name=None):
@@ -51,10 +56,6 @@ def databanks (name=None):
         databanks = storage.find ('databanks', {})
     else:
         databanks = [ storage.find_one ('databanks', {'name': name}) ]
-
-    for databank in databanks:
-
-        databank ['counts'] = count_summary (databank ['name'])
 
     return render_template ('databank/DatabankPage.html', db_tree=db_tree, databanks=databanks)
 

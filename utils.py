@@ -208,12 +208,12 @@ def get_missing_entries(databank_name):
 
     return missing
 
-def get_annotated_entries(databank_name):
+def get_annotated_entries (databank_name):
 
     return storage.find('entries', {'databank_name': databank_name, '$and': [{'comment': {'$exists': True}}, {'mtime': {'$exists': True}}],
                                     'filepath': {'$exists': False}})
 
-def get_unannotated_entries(databank_name):
+def get_unannotated_entries (databank_name):
 
     unannotated = []
     for entry in get_missing_entries(databank_name):
@@ -221,3 +221,104 @@ def get_unannotated_entries(databank_name):
             unannotated.append(entry)
 
     return unannotated
+
+p_tag_enclosed = re.compile("\\<(\\w+)(\\s+.+?|\\s+\".+?\")*\\>(.*)\\<\\/\\1\\>")
+p_single_tag = re.compile("\\<\\w+(\\s+\\w+\\=.+)*\\/\\>")
+
+def remove_tags (s):
+
+    while True:
+
+        m = p_tag_enclosed.search (s)
+        if m:
+            s = s[:m.begin()] + m.group (3) + s [m.end():]
+        else:
+            break
+
+    while True:
+
+        m = p_single_tag.search (s)
+        if m:
+            s = s[:m.begin()] + s [m.end():]
+        else:
+            break
+
+    return s
+
+class comment_node (object):
+
+    def __init__(self, title):
+
+        self.title = title
+        self.entries = []
+        self.subtree = {}
+
+    def list_entries (self):
+
+        entries = self.entries
+        for child in self.subtree.values ():
+            entries.extend (child.list_entries())
+
+        return entries
+
+def build_tree (root_string, comments_entries_dict):
+
+    tree = {}
+
+    prefix = root_string + ':'
+
+    for key in comments_entries_dict:
+
+        full_text = remove_tags (key)
+
+        if full_text.startswith (prefix):
+
+            i = full_text.find (':', len (prefix))
+            if i == -1:
+                root_text = full_text
+            else:
+                root_text = full_text [:i]
+
+            if root_text not in tree:
+
+                tree [root_text] = comment_node (root_string)
+                tree [root_text].subtree = build_tree (root_text, comments_entries_dict)
+
+                if len (tree [root_text].subtree) <= 0:
+                    tree [root_text].entries = comments_entries_dict [key]
+
+    return tree
+
+def remove_unbranched_comment_nodes (tree):
+
+    for key in tree:
+
+        if len (tree [key].subtree) == 1:
+
+            subtree = tree [key].subtree
+            tree.pop (key)
+            key = subtree.keys () [0]
+            tree [key] = subtree [key]
+
+        tree [key].subtree = remove_unbranched_comment_nodes (tree [key].subtree)
+
+    return tree
+
+def comments_to_tree (comments_entries_dict):
+
+    tree = {}
+    for key in comments_entries_dict:
+
+        full_text = remove_tags (key)
+
+        if ':' in full_text:
+
+            prfx = full_text [:full_text.find (':')]
+            tree [prfx] = comment_node (prfx)
+            tree [prfx].subtree = build_tree (prfx, comments_entries_dict)
+
+        else:
+            tree [full_text] = comment_node (full_text)
+            tree [full_text].entries = comments_entries_dict [key]
+
+    return remove_unbranched_comment_nodes (tree)

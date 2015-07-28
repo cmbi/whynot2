@@ -1,0 +1,81 @@
+.tree-theme-human div.tree-subtree {
+    margin:0 0 0 18px;
+    padding:0;
+}
+.tree-theme-human div.tree-branch {
+    margin:0;
+    padding:0;
+}
+.tree-theme-human span.tree-junction {
+    display:block;
+    float:left;
+    width:18px;
+}
+.tree-theme-human a.tree-junction-expanded {
+
+    display:block;
+    float:left;
+    width:18px;
+    background-image:url(image/tree.gif);
+    background-position:-18px center;
+    background-repeat:no-repeat;
+    text-decoration:none;
+}
+.tree-theme-human a.tree-junction-expanded:hover {
+    background-position:-54px center;
+}
+.tree-theme-human a.tree-junction-collapsed {
+    display:block;
+    float:left;
+    width:18px;
+    background-image:url(image/tree.gif);
+    background-position:0 center;
+    background-repeat:no-repeat;
+    text-decoration:none;
+}
+.tree-theme-human a.tree-junction-collapsed:hover {
+    background-position:-36px center;
+}
+.tree-theme-human span.tree-content {
+    display:block;
+    margin-left:18px;
+}
+.tree-theme-human table {
+    border-spacing:0;
+    border-collapse:collapse;
+}
+.tree-theme-human tr.selected {
+    background-color:#fad184;
+}
+.tree-theme-human td {
+    margin:0;
+    padding:0;
+}
+.tree-theme-human span.tree-content a {
+    color:black;
+    text-decoration:none;
+}
+.tree-theme-human span.tree-content a:hover {
+    text-decoration:underline;
+}
+.tree-theme-human span.tree-content .selected {
+    background-color:#fad184;
+}
+.tree-theme-human .tree-folder-closed {
+    padding-left:18px;
+    background-image:url(folder.gif);
+    background-position:0 50%;
+    background-repeat:no-repeat;
+}
+.tree-theme-human .tree-folder-open {
+    padding-left:18px;
+    background-image:url(folder.gif);
+    background-position:0 50%;
+    background-repeat:no-repeat;
+}
+.tree-theme-human .tree-folder-other {
+    padding-left:18px;
+    background-image:url(folder-other.gif);
+    background-position:0 50%;
+    background-repeat:no-repeat;
+}

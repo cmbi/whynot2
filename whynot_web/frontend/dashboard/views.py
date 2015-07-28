@@ -4,7 +4,7 @@ from copy import deepcopy
 from sets import Set
 
 from flask import Blueprint, jsonify, render_template, request, redirect, url_for
-from utils import get_databank_hierarchy, search_results_for, get_entries_from_collection, get_file_link
+from utils import get_databank_hierarchy, search_results_for, get_entries_from_collection, get_file_link, comments_to_tree
 
 _log = logging.getLogger(__name__)
 
@@ -73,6 +73,8 @@ def entries ():
                 if entry ['comment'] not in comments:
                     comments [entry ['comment']] = []
                 comments [entry ['comment']].append ('%s,%s' % (entry ['databank_name'], entry ['pdbid']))
+
+        comments = comments_to_tree (comments)
 
     return render_template ('entries/EntriesPage.html', db_tree=db_tree,
                             collection=collection, databank_name=databank_name,

@@ -37,23 +37,100 @@
     </span>
 </div>
 {% endmacro %}
+
+{% macro comment_trees (dict,depth) %}
+
+{% for text, node in dict.iteritems () %}
+<div class="tree-branch tree-branch-mid">
+    {% set comment_id = '%i_%i' % (depth, loop.index) %}
+    <div class="tree-node">
+
+        {% if node.subtree|length > 0 %}
+        <a id="tree-junction-{{ comment_id }}" class="tree-junction-collapsed" onclick="toggleTree ('{{ comment_id }}');">&nbsp;</a>
+        {% endif %}
+
+        <span class="tree-content">
+            {{ comment_tree_node (text, node.list_entries (), comment_id ) }}
+        </span>
+    </div>
+    {% if node.subtree|length > 0 %}
+    <div id="tree-subtree-{{ comment_id }}" class="tree-subtree" style="display:none;">
+        {{ comment_trees (node.subtree, depth + 1) }}
+    </div>
+    {% endif %}
+</div>
+{% endfor %}
+
+{% endmacro %}
+
+{% macro comment_tree_node (text, entries, comment_id) %}
+
+    <h1>{{ text }} ({{ entries|length }})</h1>
+    <div style="font-family:monospace;">
+        {% if entries|length > show_max_entries_per_comment %}
+            <p id="comments-{{ comment_id }}">
+            {% for i in range (show_max_entries_per_comment) %}{{ entries [i] }}
+            {% endfor %}
+            </p>
+            <p id="more-comments-{{ comment_id }}" style="display:none;">
+            {% for line in entries %}{{ line }}
+            {% endfor %}
+            </p>
+            <a id="more-{{ comment_id }}" onclick="toggleMoreComments ('{{ comment_id }}');"><span>&lt;more&gt;</span></a>
+        {% else %}
+            <p>
+            {% for line in entries %}{{ line }}
+            {% endfor %}
+            </p>
+        {% endif %}
+    </div>
+{% endmacro %}
+
 {% block header %}
     <link href="{{ url_for('static', filename='tabs.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='tree.css') }}" rel="stylesheet" />
+
+    <style>
+        a[id^='more-']:hover {
+            cursor:pointer;
+        }
+    </style>
 
     <script type="text/javascript">
 
+    var morecomments_visible = {};
+
+    function toggleTree (comment_id)
+    {
+        if ($('#tree-junction-' + comment_id).prop ('class') == 'tree-junction-expanded')
+        {
+            $('#tree-junction-' + comment_id).prop ('class', 'tree-junction-collapsed');
+            $('#tree-subtree-' + comment_id).hide ();
+        }
+        else
+        {
+            $('#tree-junction-' + comment_id).prop ('class', 'tree-junction-expanded');
+            $('#tree-subtree-' + comment_id).show ();
+        }
+    }
+
     function toggleMoreComments (comment_id)
     {
+        if (morecomments_visible [comment_id] === undefined)
+            morecomments_visible [comment_id] = false;
+
         morecomments_visible [comment_id] = !morecomments_visible [comment_id];
         if (morecomments_visible [comment_id])
         {
             $('#more-comments-'+comment_id).show();
             $('#comments-'+comment_id).hide();
+            $('#more-'+comment_id+" > span").text ("<less>");
         }
         else
         {
             $('#more-comments-'+comment_id).hide();
             $('#comments-'+comment_id).show();
+            $('#more-'+comment_id+" > span").text ("<more>");
         }
     }
 
@@ -141,12 +218,12 @@
             </ul>
         </div>
         <div id="pdbids" class="tab-panel">
-            <a href="{{ url_for('dashboard.list', listing='PDBIDs', databank=databank, collection=collection) }}" class="download">Download as file</a>
+            <a href="{{ url_for('dashboard.list', listing='PDBIDs', databank=databank_name, collection=collection) }}" class="download">Download as file</a>
             {% if entries|length > 0 %}<h1>Unique PDBIDs ({{ entries|length }})</h1>{% endif %}
             {{ page_browser ('pdbids', entries|length, 2000) }}
 
             {% for page_index in range( num_pages ['pdbids'] ) %}
-            <p class="pdbids-page" id="pdbids-page-{{ page_index }}" style="font-family:monospace;">
+            <p class="pdbids-page" id="pdbids-page-{{ page_index }}" style="font-family:monospace;{% if page_index > 0 %}display:none{% endif %}">
                 {% for i in range (page_index * items_per_page, (page_index + 1) * items_per_page) %}
                 {% if i < (entries | length) %}
                 {{ entries [i].pdbid }}
@@ -156,12 +233,12 @@
             {% endfor %}
         </div>
         <div id="entries" class="tab-panel" style="display:none;" >
-            <a href="{{ url_for('dashboard.list', listing='entries', databank=databank, collection=collection) }}" class="download">Download as file</a>
+            <a href="{{ url_for('dashboard.list', listing='entries', databank=databank_name, collection=collection) }}" class="download">Download as file</a>
             {% if entries|length > 0 %}<h1>Entries ({{ entries|length }})</h1>{% endif %}
             {{ page_browser ('entries', entries|length, 2000) }}
 
             {% for page_index in range( num_pages ['entries'] ) %}
-            <p class="entries-page" id="entries-page-{{ page_index }}" style="font-family:monospace;">
+            <p class="entries-page" id="entries-page-{{ page_index }}" style="font-family:monospace;{% if page_index > 0 %}display:none{% endif %}">
                 {% for i in range (page_index * items_per_page, (page_index + 1) * items_per_page) %}
                 {% if i < (entries | length) %}
                 {{ "%s,%s" % (entries[i].databank_name,entries[i].pdbid) }}
@@ -171,12 +248,12 @@
             {% endfor %}
         </div>
         <div id="files" class="tab-panel" style="display:none;" >
-            <a href="{{ url_for('dashboard.list', listing='files', databank=databank, collection=collection) }}" class="download">Download as file</a>
+            <a href="{{ url_for('dashboard.list', listing='files', databank=databank_name, collection=collection) }}" class="download">Download as file</a>
             {% if files|length > 0 %}<h1>Files ({{ files|length }})</h1>{% endif %}
             {{ page_browser ('files', files|length, 2000) }}
 
             {% for page_index in range( num_pages ['files'] ) %}
-            <p class="files-page" id="files-page-{{ page_index }}" style="font-family:monospace;">
+            <p class="files-page" id="files-page-{{ page_index }}" style="font-family:monospace;{% if page_index > 0 %}display:none{% endif %}">
                 {% for i in range (page_index * items_per_page, (page_index + 1) * items_per_page) %}
                 {% if i < (files | length) %}
                     <a href="{{ files[i].url }}" class="file">{{ files[i].name }}</a>
@@ -186,36 +263,13 @@
             {% endfor %}
         </div>
         <div id="comments" class="tab-panel" style="display:none;" >
-            <a href="{{ url_for('dashboard.list', listing='comments', databank=databank, collection=collection) }}" class="download">Download as file</a>
+            <a href="{{ url_for('dashboard.list', listing='comments', databank=databank_name, collection=collection) }}" class="download">Download as file</a>
 
-<script type="text/javascript">
-    var morecomments_visible = {};
-    {% for text, comment_entries in comments.iteritems () %}
-        morecomments_visible [{{ loop.index }}] = false;
-    {% endfor %}
-</script>
-{% for text, comment_entries in comments.iteritems () %}
-            {% set comment_id = loop.index %}
-            <h1>{{ text }} ({{ comment_entries|length }})</h1>
-            <div style="font-family:monospace;">
-                {% if comment_entries|length > show_max_entries_per_comment %}
-                    <p id="comments-{{ comment_id }}">
-                    {% for i in range (show_max_entries_per_comment) %}{{ comment_entries [i] }}
-                    {% endfor %}
-                    </p>
-                    <p id="more-comments-{{ comment_id }}" style="display:none;">
-                    {% for line in comment_entries %}{{ line }}
-                    {% endfor %}
-                    </p>
-                    <a id="more-{{ comment_id }}" onclick="toggleMoreComments ({{ comment_id }});" href="#"><span>&lt;more&gt;</span></a>
-                {% else %}
-                    <p>
-                    {% for line in comment_entries %}{{ line }}
-                    {% endfor %}
-                    </p>
-                {% endif %}
+            <div class="tree-theme-human">
+                <div>
+                    {{ comment_trees (comments, 0) }}
+                </div>
             </div>
-{% endfor %}
         </div>
     </span>
 {% endblock %}

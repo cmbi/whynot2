@@ -218,7 +218,7 @@
             </ul>
         </div>
         <div id="pdbids" class="tab-panel">
-            <a href="{{ url_for('dashboard.list', listing='PDBIDs', databank=databank_name, collection=collection) }}" class="download">Download as file</a>
+            <a target="_blank" href="{{ url_for('dashboard.list', listing='PDBIDs', databank=databank_name, collection=collection) }}" class="download">Download as file</a>
             {% if entries|length > 0 %}<h1>Unique PDBIDs ({{ entries|length }})</h1>{% endif %}
             {{ page_browser ('pdbids', entries|length, 2000) }}
 
@@ -233,7 +233,7 @@
             {% endfor %}
         </div>
         <div id="entries" class="tab-panel" style="display:none;" >
-            <a href="{{ url_for('dashboard.list', listing='entries', databank=databank_name, collection=collection) }}" class="download">Download as file</a>
+            <a target="_blank" href="{{ url_for('dashboard.list', listing='entries', databank=databank_name, collection=collection) }}" class="download">Download as file</a>
             {% if entries|length > 0 %}<h1>Entries ({{ entries|length }})</h1>{% endif %}
             {{ page_browser ('entries', entries|length, 2000) }}
 
@@ -248,7 +248,7 @@
             {% endfor %}
         </div>
         <div id="files" class="tab-panel" style="display:none;" >
-            <a href="{{ url_for('dashboard.list', listing='files', databank=databank_name, collection=collection) }}" class="download">Download as file</a>
+            <a target="_blank" href="{{ url_for('dashboard.list', listing='files', databank=databank_name, collection=collection) }}" class="download">Download as file</a>
             {% if files|length > 0 %}<h1>Files ({{ files|length }})</h1>{% endif %}
             {{ page_browser ('files', files|length, 2000) }}
 
@@ -263,7 +263,7 @@
             {% endfor %}
         </div>
         <div id="comments" class="tab-panel" style="display:none;" >
-            <a href="{{ url_for('dashboard.list', listing='comments', databank=databank_name, collection=collection) }}" class="download">Download as file</a>
+            <a target="_blank" href="{{ url_for('dashboard.list', listing='comments', databank=databank_name, collection=collection) }}" class="download">Download as file</a>
 
             <div class="tree-theme-human">
                 <div>

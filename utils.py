@@ -322,3 +322,4 @@ def comments_to_tree (comments_entries_dict):
             tree [full_text].entries = comments_entries_dict [key]
 
     return remove_unbranched_comment_nodes (tree)
+

@@ -3,8 +3,9 @@ import os
 from copy import deepcopy
 from sets import Set
 
-from flask import Blueprint, jsonify, render_template, request, redirect, url_for
-from utils import get_databank_hierarchy, search_results_for, get_entries_from_collection, get_file_link, comments_to_tree
+from flask import Response, Blueprint, jsonify, render_template, request, redirect, url_for
+from utils import (get_databank_hierarchy, search_results_for, get_entries_from_collection,
+                   get_file_link, comments_to_tree)
 
 _log = logging.getLogger(__name__)
 
@@ -109,4 +110,39 @@ def statistics ():
 
 @bp.route('/list/')
 def list ():
-    return ''
+
+    collection = request.args.get('collection')
+    databank_name = request.args.get('databank')
+    listing = request.args.get('listing')
+
+    if len (collection) <= 0 or len (databank_name) <= 0 or len (listing) <= 0:
+        return ''
+
+    listing = listing.lower ()
+
+    entries = get_entries_from_collection (databank_name, collection)
+
+    text = ''
+    if listing == 'comments':
+
+        d = {}
+        for entry in entries:
+            if 'comment' in entry:
+                c = entry ['comment']
+                if c not in d:
+                    d [c] = ''
+                d [c] += '%s,%s\n' % (entry['databank_name'], entry['pdbid'])
+
+        for comment in d:
+            text += comment + ":\n" + d [comment]
+    else:
+        for entry in entries:
+
+            if listing == 'pdbids':
+                text += entry ['pdbid'] + '\n'
+            elif listing == 'entries':
+                text += '%s,%s\n' % (entry['databank_name'], entry ['pdbid'])
+            elif listing == 'files' and 'filepath' in entry:
+                text += entry ['filepath'] + '\n'
+
+    return Response(text, mimetype='text/plain')

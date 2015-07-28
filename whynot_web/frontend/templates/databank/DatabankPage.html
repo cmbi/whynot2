@@ -1,16 +1,31 @@
-<html xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
-<body>
-<wicket:head>
-	<wicket:link><link href="databank.css" rel="stylesheet" /></wicket:link>
-</wicket:head>
-<wicket:extend>
-	<wicket:container wicket:id="chartlist">
-		<div style="clear:both;">
-			<h1 wicket:id="name"></h1>
-			<p wicket:id="chartpanel"></p>
-			<a href="#" wicket:id="reference"><span wicket:id="href"></span></a>
-		</div>
-	</wicket:container>
-</wicket:extend>
-</body>
-</html>
+{% extends "home/HomePage.html" %}
+{% block header %}
+<link href="{{ url_for('static', filename='databank.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block content %}
+{% for databank in databanks %}
+<div style="clear:both;">
+    <h1>{{ databank['name'] }}</h1>
+    <div>
+        <ul class="legend">
+        {% for collection in ['valid', 'obsolete', 'present', 'annotated', 'unannotated', 'missing'] %}
+
+            {% set count = databank ['counts'][collection] %}
+            <li class="{{ collection }}">
+                <a href="{{ url_for('dashboard.resources', list='%s_%s' % (databank ['name'], collection|upper)) }}">
+                    <img src="{{ url_for('static', filename='image/page_white_go.png') }}">
+                </a>
+                <a href="{{ url_for('dashboard.entries', databank=databank ['name'], collection=collection) }}">
+                    <span class="count">{{ count }}</span>
+                    <span>{{ collection }}</span>
+                </a>
+            </li>
+        {% endfor %}
+        </ul>
+    </div>
+    <div><img alt="Loading..." src="{{ url_for('static', filename='image/indicator.gif') }}"></div>
+    <a href="{{ databank['reference'] }}"><span>{{ databank['reference'] }}</span></a>
+</div>
+{% endfor %}
+{% endblock %}

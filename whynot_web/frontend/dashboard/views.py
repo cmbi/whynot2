@@ -5,7 +5,7 @@ from sets import Set
 
 from flask import Response, Blueprint, jsonify, render_template, request, redirect, url_for
 from utils import (get_databank_hierarchy, search_results_for, get_entries_from_collection,
-                   get_file_link, comments_to_tree)
+                   get_file_link, comments_to_tree, count_summary)
 
 _log = logging.getLogger(__name__)
 
@@ -45,8 +45,18 @@ def comment ():
 
 @bp.route('/databanks/')
 @bp.route('/databanks/name/<name>/')
-def databanks (name):
-    return render_template ('databank/DatabankPage.html', db_tree=db_tree, dbname=name)
+def databanks (name=None):
+
+    if name is None:
+        databanks = storage.find ('databanks', {})
+    else:
+        databanks = [ storage.find_one ('databanks', {'name': name}) ]
+
+    for databank in databanks:
+
+        databank ['counts'] = count_summary (databank ['name'])
+
+    return render_template ('databank/DatabankPage.html', db_tree=db_tree, databanks=databanks)
 
 @bp.route('/entries/')
 def entries ():
@@ -59,23 +69,28 @@ def entries ():
     files = []
     comments = {}
 
-    if len (collection) > 0 and len (databank_name) > 0:
+    if collection and databank_name:
 
-        databank = storage.find_one ('databanks', {'databank_name':databank_name})
+        databank = storage.find_one ('databanks', {'name':databank_name})
 
-        entries = get_entries_from_collection (databank_name, collection)
+        if databank:
 
-        source = "%s %s" % (databank_name, collection) 
+            entries = get_entries_from_collection (databank_name, collection)
 
-        for entry in entries:
-            if 'filepath' in entry:
-                files.append (get_file_link (databank, entry ['pdbid']))
-            elif 'comment' in entry:
-                if entry ['comment'] not in comments:
-                    comments [entry ['comment']] = []
-                comments [entry ['comment']].append ('%s,%s' % (entry ['databank_name'], entry ['pdbid']))
+            source = "%s %s" % (databank_name, collection) 
 
-        comments = comments_to_tree (comments)
+            for entry in entries:
+                if 'filepath' in entry:
+
+                    f = {'name': os.path.basename (entry ['filepath']),
+                         'url': get_file_link (databank, entry ['pdbid'])}
+                    files.append (f)
+                elif 'comment' in entry:
+                    if entry ['comment'] not in comments:
+                        comments [entry ['comment']] = []
+                    comments [entry ['comment']].append ('%s,%s' % (entry ['databank_name'], entry ['pdbid']))
+
+            comments = comments_to_tree (comments)
 
     return render_template ('entries/EntriesPage.html', db_tree=db_tree,
                             collection=collection, databank_name=databank_name,
@@ -108,6 +123,10 @@ def statistics ():
                             total_annotations=na,
                             total_comments=len(comments))
 
+@bp.route('/resources/list/<list>/')
+def resources (listing):
+    return ''
+
 @bp.route('/list/')
 def list ():
 
@@ -115,7 +134,7 @@ def list ():
     databank_name = request.args.get('databank')
     listing = request.args.get('listing')
 
-    if len (collection) <= 0 or len (databank_name) <= 0 or len (listing) <= 0:
+    if type (collection) != str or type (databank_name) != str or type (listing) != str:
         return ''
 
     listing = listing.lower ()

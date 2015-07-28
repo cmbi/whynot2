@@ -2,6 +2,7 @@ import os, re
 
 from urllib2 import urlopen
 from storage import storage
+from sets import Set
 
 def parse_regex(mongoRegex):
 
@@ -161,9 +162,9 @@ def get_obsolete_entries (databank_name):
                 obsolete.append(entry)
         return obsolete
     else:
-        return get_present_entries(databank_name)
+        return []
 
-def get_valid_entries(databank_name):
+def get_valid_entries (databank_name):
 
     databank = storage.find_one('databanks',{'name': databank_name})
     if not databank:
@@ -179,6 +180,63 @@ def get_valid_entries(databank_name):
         return valid
     else:
         return get_present_entries(databank_name)
+
+def count_summary (databank_name):
+
+    databank = storage.find_one('databanks',{'name': databank_name})
+    if not databank:
+        raise Exception("no such databank: " + databank_name)
+
+    projection = {'pdbid':1, '_id':0}
+
+    count = {}
+
+    pdbids = Set ()
+    for entry in storage.find ('entries', {'databank_name': databank_name,'filepath': {'$exists': True}}, projection):
+        pdbids.add (entry ['pdbid'])
+
+    count ['present'] = len (pdbids)
+
+    if 'parent_name' in databank:
+
+        parent_name = databank ['parent_name']
+
+        parent_pdbids = Set()
+        missing_pdbids = Set ()
+
+        parent_entries = storage.find ('entries', {'databank_name': parent_name,'filepath': {'$exists': True}}, projection)
+        comment_entries = storage.find('entries', {'databank_name': databank_name, 'comment': {'$exists': True}}, projection)
+
+        for entry in parent_entries:
+            parent_pdbids.add (entry ['pdbid'])
+            if entry ['pdbid'] not in pdbids:
+                missing_pdbids.add (entry ['pdbid'])
+
+
+        count ['missing'] = len (missing_pdbids)
+        count ['annotated'] = 0
+        for entry in comment_entries:
+            if entry ['pdbid'] in missing_pdbids:
+                count ['annotated'] += 1
+
+        count ['unannotated'] = count ['missing'] - count ['annotated']
+
+        count ['obsolete'] = 0
+        for pdbid in pdbids:
+            if pdbid not in parent_pdbids:
+                count ['obsolete'] += 1
+
+        count ['valid'] = count ['present'] - count ['obsolete']
+
+    else: # no parent
+
+        count ['missing'] = 0
+        count ['valid'] = count ['present']
+        count ['obsolete'] = 0
+        count ['annotated'] = 0
+        count ['unannotated'] = 0
+
+    return count
 
 def get_present_entries(databank_name):
 
@@ -208,11 +266,11 @@ def get_missing_entries(databank_name):
 
     return missing
 
+
 def get_annotated_entries (databank_name):
 
     return storage.find('entries', {'databank_name': databank_name, '$and': [{'comment': {'$exists': True}}, {'mtime': {'$exists': True}}],
                                     'filepath': {'$exists': False}})
-
 def get_unannotated_entries (databank_name):
 
     unannotated = []

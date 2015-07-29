@@ -6,11 +6,14 @@ from sets import Set
 
 from flask import Response, Blueprint, jsonify, render_template, request, redirect, url_for
 from utils import (get_databank_hierarchy, search_results_for, get_entries_from_collection,
-                   get_entries_with_comment, get_file_link, comments_to_tree, count_summary, comment_summary)
+                   get_all_entries_with_comment, get_entries_with_comment, 
+                   get_file_link, comments_to_tree, count_summary, comment_summary)
 
 _log = logging.getLogger(__name__)
 
 bp = Blueprint('dashboard', __name__)
+
+date_format = '%d/%m/%Y %H:%M'
 
 from storage import storage
 
@@ -45,7 +48,7 @@ def comment ():
     comments = comment_summary ()
 
     for comment in comments:
-        comment ['latest'] = strftime ('%d/%m/%Y %H:%M', gmtime (comment ['mtime']))
+        comment ['latest'] = strftime (date_format, gmtime (comment ['mtime']))
 
     return render_template ('comment/CommentPage.html', db_tree=db_tree, nav_disabled='comments', comments=comments)
 
@@ -72,47 +75,44 @@ def entries ():
     databank_name = request.args.get('databank')
     comment_text = request.args.get('comment')
 
-    source = 'No entries selected'
+    title = 'No entries selected'
     entries = []
     files = []
     comments = {}
 
-    if collection and databank_name:
+    if databank_name and collection:
 
-        databank = storage.find_one ('databanks', {'name':databank_name})
+        entries = get_entries_from_collection (databank_name, collection)
+        title = "%s %s" % (databank_name, collection)
 
-        if databank:
+    elif databank_name and comment_text:
 
-            print 'get_entries_from_collection', databank_name,collection
-
-            entries = get_entries_from_collection (databank_name, collection)
-
-            source = "%s %s" % (databank_name, collection)
-
-            print '>', len (entries)
+        entries = get_entries_with_comment (databank_name, comment_text)
+        title = comment_text
 
     elif comment_text:
 
-        source = comment_text
+        entries = get_all_entries_with_comment (comment_text)
+        title = comment_text
 
-        entries = get_entries_with_comment (comment_text)
-
+    databank = storage.find_one ('databanks', {'name': databank_name})
     for entry in entries:
-        if 'filepath' in entry:
+        if databank and 'filepath' in entry:
 
             f = {'name': os.path.basename (entry ['filepath']),
                  'url': get_file_link (databank, entry ['pdbid'])}
             files.append (f)
+
         elif 'comment' in entry:
             if entry ['comment'] not in comments:
                 comments [entry ['comment']] = []
             comments [entry ['comment']].append ('%s,%s' % (entry ['databank_name'], entry ['pdbid']))
 
-    comments = comments_to_tree (comments)
+    comment_tree = comments_to_tree (comments)
 
     return render_template ('entries/EntriesPage.html', db_tree=db_tree, nav_disabled='entries',
                             collection=collection, databank_name=databank_name, comment=comment_text,
-                            source=source, entries=entries, files=files, comments=comments)
+                            title=title, entries=entries, files=files, comment_tree=comment_tree)
 
 @bp.route('/statistics/')
 def statistics ():
@@ -122,16 +122,32 @@ def statistics ():
     ne = 0
     na = 0
     nf = 0
+    nc = 0
 
-    comments = Set ()
+    files = {}
+    annotations = {}
+    unique_comments = Set ()
     for entry in storage.find ('entries', {}):
         ne += 1
         if 'mtime' in entry:
             if 'filepath' in entry:
                 nf += 1
+                files [entry ['mtime']] = entry ['filepath']
             elif 'comment' in entry:
                 na += 1
-                comments.add (entry['comment'])
+                unique_comments.add (entry['comment'])
+                annotations [entry ['mtime']] = {'comment': entry['comment'], 'pdbid':entry ['pdbid'], 'databank_name':entry['databank_name']}
+
+    recent_files = []
+    for t in files.keys ()[-10:]:
+        f = {'path':files [t], 'date': strftime (date_format, gmtime (t))}
+        recent_files.append (f)
+
+    recent_annotations = []
+    for t in annotations.keys ()[-10:]:
+        a = annotations [t]
+        a ['date'] = strftime (date_format, gmtime (t))
+        recent_annotations.append (a)
 
     return render_template ('statistics/StatisticsPage.html',
                             nav_disabled='statistics',
@@ -140,32 +156,47 @@ def statistics ():
                             total_entries=ne,
                             total_files=nf,
                             total_annotations=na,
-                            total_comments=len(comments))
+                            total_comments=len(unique_comments),
+                            annotations=recent_annotations,
+                            files=recent_files)
 
-@bp.route('/resources/list/<listing>/')
-def resources (listing):
+
+@bp.route('/resources/list/<tolist>/')
+def resources (tolist):
+
+    # TODO: output
+    if '_' in tolist:
+        pass
+
     return Response('', mimetype='text/plain')
 
 @bp.route('/list/')
 def list ():
 
-    collection = request.args.get('collection')
-    databank_name = request.args.get('databank')
-    comment_text = request.args.get('comment')
-    listing = request.args.get('listing')
+    # TODO: speed up this method
+
+    collection = request.args.get ('collection')
+    databank_name = request.args.get ('databank')
+    comment_text = request.args.get ('comment')
+    listing = request.args.get ('listing')
 
     if not listing:
         return ''
 
     listing = listing.lower ()
 
+    entries = []
     if databank_name and collection:
 
         entries = get_entries_from_collection (databank_name, collection)
 
+    elif databank_name and comment_text:
+
+        entries = get_entries_with_comment (databank_name, comment_text)
+
     elif comment_text:
 
-        entries = get_entries_with_comment (comment_text)
+        entries = get_all_entries_with_comment (comment_text)
 
     text = ''
     if listing == 'comments':

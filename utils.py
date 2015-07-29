@@ -139,6 +139,10 @@ def get_entries_from_collection (databank_name, collection):
     else:
         return []
 
+def get_all_entries_with_comment (comment):
+
+    return storage.find ('entries', {'comment': comment})
+
 def get_entries_with_comment (databank_name, comment):
 
     return storage.find ('entries', {'databank_name': databank_name, 'comment': comment})

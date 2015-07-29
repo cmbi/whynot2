@@ -70,6 +70,8 @@ def create_app(settings=None):
 
     # Register blueprints
     from whynot_web.frontend.dashboard.views import bp as dashboard_bp
-    app.register_blueprint(dashboard_bp)
+    from whynot_web.frontend.dashboard.rs import bp as rs_bp
+    app.register_blueprint (dashboard_bp)
+    app.register_blueprint (rs_bp)
 
     return app

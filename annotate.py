@@ -83,12 +83,15 @@ for entry in get_unannotated_entries('HSSP'):
     if not os.path.isfile(inputfile):
         inputfile = '/data/mmCIF/%s.cif.gz' % pdbid
 
-    line = commands.getoutput('/usr/bin/timeout 1s /usr/local/bin/mkhssp -a1 %s /tmp/%s.hssp.bz2 2>&1 >/dev/null' % (inputfile,pdbid))
-    line = line.strip()
-    if line in ['Not enough sequences in PDB file of length 25', 'No hits found', 'empty protein, or no valid complete residues']:
-        entry['comment'] = line
-        entry['mtime'] = time()
-        entries_update.append(entry)
+    errfile = '/data/scratch/whynot2/hssp/%s.err' % pdbid
+    #line = commands.getoutput('/usr/local/bin/mkhssp -a1 -i %s -o /tmp/%s.hssp.bz2 2>&1 >/dev/null' % (inputfile,pdbid))
+    if os.path.isfile (errfile):
+        line = open (errfile, 'r').read ()
+        line = line.strip()
+        if line in ['Not enough sequences in PDB file of length 25', 'No hits found', 'empty protein, or no valid complete residues']:
+            entry['comment'] = line
+            entry['mtime'] = time()
+            entries_update.append(entry)
 
 for dbname in ['DSSP', 'DSSP_REDO']:
     for entry in get_unannotated_entries(dbname):
@@ -154,10 +157,7 @@ for lis in ['acc', 'cal', 'cc1', 'cc2', 'cc3', 'chi', 'dsp', 'iod', 'sbh', 'sbr'
     for src in ['pdb', 'redo']:
         dbname = 'WHATIF_%s_%s' % (src.upper(), lis)
 
-        print 'checking', dbname
         for entry in get_missing_entries(dbname):
-
-            print 'checking',entry['pdbid']
 
             pdbid = entry['pdbid']
             whynotfile = '/data/wi-lists/%s/%s/%s/%s.%s.whynot' % (src, lis, pdbid, pdbid, lis)

@@ -37,11 +37,11 @@ def search (pdbid):
 
 @bp.route('/about/')
 def about ():
-    return render_template ('about/AboutPage.html', db_tree=db_tree)
+    return render_template ('about/AboutPage.html', db_tree=db_tree, nav_disabled='about')
 
 @bp.route('/comment/')
 def comment ():
-    return render_template ('comment/CommentPage.html', db_tree=db_tree)
+    return render_template ('comment/CommentPage.html', db_tree=db_tree, nav_disabled='comments')
 
 @bp.route('/count/<databank_name>/')
 def count (databank_name):
@@ -57,7 +57,7 @@ def databanks (name=None):
     else:
         databanks = [ storage.find_one ('databanks', {'name': name}) ]
 
-    return render_template ('databank/DatabankPage.html', db_tree=db_tree, databanks=databanks)
+    return render_template ('databank/DatabankPage.html', db_tree=db_tree, nav_disabled='databanks', databanks=databanks)
 
 @bp.route('/entries/')
 def entries ():
@@ -93,7 +93,7 @@ def entries ():
 
             comments = comments_to_tree (comments)
 
-    return render_template ('entries/EntriesPage.html', db_tree=db_tree,
+    return render_template ('entries/EntriesPage.html', db_tree=db_tree, nav_disabled='entries',
                             collection=collection, databank_name=databank_name,
                             source=source, entries=entries, files=files, comments=comments)
 
@@ -117,6 +117,7 @@ def statistics ():
                 comments.add (entry['comment'])
 
     return render_template ('statistics/StatisticsPage.html',
+                            nav_disabled='statistics',
                             db_tree=db_tree,
                             total_databanks=ndb,
                             total_entries=ne,
@@ -167,6 +168,3 @@ def list ():
 
     return Response(text, mimetype='text/plain')
 
-@app.errorhandler(500)
-def internal_error (e):
-    return render_template('error/MyExceptionErrorPage.html', error=str(e), stack=''), 500

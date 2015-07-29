@@ -5,7 +5,7 @@ from sets import Set
 
 from flask import Response, Blueprint, jsonify, render_template, request, redirect, url_for
 from utils import (get_databank_hierarchy, search_results_for, get_entries_from_collection,
-                   get_file_link, comments_to_tree, count_summary)
+                   get_entries_with_comment, get_file_link, comments_to_tree, count_summary)
 
 _log = logging.getLogger(__name__)
 
@@ -41,7 +41,8 @@ def about ():
 
 @bp.route('/comment/')
 def comment ():
-    return render_template ('comment/CommentPage.html', db_tree=db_tree, nav_disabled='comments')
+    comments = []
+    return render_template ('comment/CommentPage.html', db_tree=db_tree, nav_disabled='comments', comments=comments)
 
 @bp.route('/count/<databank_name>/')
 def count (databank_name):
@@ -64,6 +65,7 @@ def entries ():
 
     collection = request.args.get('collection')
     databank_name = request.args.get('databank')
+    comment_text = request.args.get('comment')
 
     source = 'No entries selected'
     entries = []
@@ -80,18 +82,24 @@ def entries ():
 
             source = "%s %s" % (databank_name, collection) 
 
-            for entry in entries:
-                if 'filepath' in entry:
+    elif comment_text:
 
-                    f = {'name': os.path.basename (entry ['filepath']),
-                         'url': get_file_link (databank, entry ['pdbid'])}
-                    files.append (f)
-                elif 'comment' in entry:
-                    if entry ['comment'] not in comments:
-                        comments [entry ['comment']] = []
-                    comments [entry ['comment']].append ('%s,%s' % (entry ['databank_name'], entry ['pdbid']))
+        source = comment_text
 
-            comments = comments_to_tree (comments)
+        entries = get_entries_with_comment (comment_text)
+
+    for entry in entries:
+        if 'filepath' in entry:
+
+            f = {'name': os.path.basename (entry ['filepath']),
+                 'url': get_file_link (databank, entry ['pdbid'])}
+            files.append (f)
+        elif 'comment' in entry:
+            if entry ['comment'] not in comments:
+                comments [entry ['comment']] = []
+            comments [entry ['comment']].append ('%s,%s' % (entry ['databank_name'], entry ['pdbid']))
+
+    comments = comments_to_tree (comments)
 
     return render_template ('entries/EntriesPage.html', db_tree=db_tree, nav_disabled='entries',
                             collection=collection, databank_name=databank_name,

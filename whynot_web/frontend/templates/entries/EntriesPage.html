@@ -29,7 +29,7 @@
     {% endif %}
     </span>
     <span class="last" title="Go to last page">
-    {% if num_pages [identifier] > 0 %}
+    {% if num_pages [identifier] > 1 %}
         <a href="#" onclick="setPage ('{{ identifier }}', {{ num_pages [identifier] - 1}});">&gt;&gt;</a>
     {% else %}
         <em>&gt;&gt;</em>
@@ -199,7 +199,7 @@
     </script>
 {% endblock %}
 {% block content %}
-    <h1>{{ source }} ({{ entries|length }})</h1>
+    <h1>{{ title }} ({{ entries|length }})</h1>
     <span>
         <div class="tab-row">
             <ul>
@@ -218,7 +218,7 @@
             </ul>
         </div>
         <div id="pdbids" class="tab-panel">
-            <a target="_blank" href="{{ url_for('dashboard.list', listing='PDBIDs', databank=databank_name, collection=collection) }}" class="download">Download as file</a>
+            <a target="_blank" href="{{ url_for('dashboard.list', listing='PDBIDs', comment=comment, databank=databank_name, collection=collection) }}" class="download">Download as file</a>
             {% if entries|length > 0 %}<h1>Unique PDBIDs ({{ entries|length }})</h1>{% endif %}
             {{ page_browser ('pdbids', entries|length, 2000) }}
 
@@ -233,7 +233,7 @@
             {% endfor %}
         </div>
         <div id="entries" class="tab-panel" style="display:none;" >
-            <a target="_blank" href="{{ url_for('dashboard.list', listing='entries', databank=databank_name, collection=collection) }}" class="download">Download as file</a>
+            <a target="_blank" href="{{ url_for('dashboard.list', listing='entries', comment=comment, databank=databank_name, collection=collection) }}" class="download">Download as file</a>
             {% if entries|length > 0 %}<h1>Entries ({{ entries|length }})</h1>{% endif %}
             {{ page_browser ('entries', entries|length, 2000) }}
 
@@ -248,7 +248,7 @@
             {% endfor %}
         </div>
         <div id="files" class="tab-panel" style="display:none;" >
-            <a target="_blank" href="{{ url_for('dashboard.list', listing='files', databank=databank_name, collection=collection) }}" class="download">Download as file</a>
+            <a target="_blank" href="{{ url_for('dashboard.list', listing='files', comment=comment, databank=databank_name, collection=collection) }}" class="download">Download as file</a>
             {% if files|length > 0 %}<h1>Files ({{ files|length }})</h1>{% endif %}
             {{ page_browser ('files', files|length, 2000) }}
 
@@ -263,11 +263,11 @@
             {% endfor %}
         </div>
         <div id="comments" class="tab-panel" style="display:none;" >
-            <a target="_blank" href="{{ url_for('dashboard.list', listing='comments', databank=databank_name, collection=collection) }}" class="download">Download as file</a>
+            <a target="_blank" href="{{ url_for('dashboard.list', listing='comments', comment=comment, databank=databank_name, collection=collection) }}" class="download">Download as file</a>
 
             <div class="tree-theme-human">
                 <div>
-                    {{ comment_trees (comments, 0) }}
+                    {{ comment_trees (comment_tree, 0) }}
                 </div>
             </div>
         </div>

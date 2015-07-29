@@ -87,7 +87,7 @@ function load_legend (databank_name)
 
                 html += "<li class=\"" + collection + "\">";
 
-                html += "<a href=\"{{ url_for('dashboard.resources', listing='LLLLLL') }}\"><img src=\"{{ url_for('static', filename='image/page_white_go.png') }}\"></a>"
+                html += "<a href=\"{{ url_for('dashboard.resources', tolist='LLLLLL') }}\"><img src=\"{{ url_for('static', filename='image/page_white_go.png') }}\"></a>"
                         .replace("LLLLLL", databank_name + '_' + collection.toUpperCase());
 
                 html += "<a href=\"{{ url_for('dashboard.entries', databank='DDDDDD', collection='CCCCCC') }}\">"

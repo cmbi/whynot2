@@ -12,45 +12,57 @@ function piechart (counts)
         radius = 100.0,
         cx = 110.0, cy = 110.0,
 
-        svg = "<svg width=\"220\" height=\"220\">";
+        svg = "<svg width=\"220\" height=\"220\">",
 
-    for (var collection in ['valid', 'obsolete', 'annotated', 'unannotated'])
+        collections = ['valid', 'obsolete', 'annotated', 'unannotated'];
+
+    if (total > 0)
     {
-        var part = float (counts [collection]) / total,
-            angleStart = angle,
-            angleEnd = angle + part * 2 * Math.PI,
-
-            xStart = cx + radius * Math.sin (angleStart),
-            xEnd = cx +  radius * Math.sin (angleEnd),
-
-            yStart = cy - radius * Math.cos (angleStart),
-            yEnd = cy - radius * Math.cos (angleEnd),
-
-            large_arc = (part > 0.5)? 1: 0,
-            path = "", tag = "",
-
-            param = "stroke=\"black\" stroke-width=\"1\" class=\"" + collection + "\"";
-
-            angle = engleEnd;
-
-        if (part >= 1.0)
+        for (var i in collections)
         {
-            tag = "<circle cx=\"" + cx + "\" cy=\"" + cy + "\" r=\" + radius + \" " + param + "/>";
-        }
-        else if (path <= 0.0)
-        {
-            continue;
-        }
-        else
-        {
-            path += "M " + cx + "," + cy + " L " + xStart + "," + yStart + " ";
-            path += "A " + radius + "," + radius + " 0 " + large_arc + " 0 " + xEnd + "," + yEnd + " ";
-            path += "Z"; // close at center
+            var collection = collections [i],
+                part = counts [collection] / total,
+                angleStart = angle,
+                angleEnd = angle + part * 2 * Math.PI,
 
-            tag = "<path d=\"" + path + "\"" + param + "/>"";
+                xStart = cx + radius * Math.sin (angleStart),
+                xEnd = cx +  radius * Math.sin (angleEnd),
+
+                yStart = cy - radius * Math.cos (angleStart),
+                yEnd = cy - radius * Math.cos (angleEnd),
+
+                large_arc = (part > 0.5)? 1: 0,
+
+                path = "", tag = "",
+
+                param = "stroke=\"none\" class=\"" + collection + "\"";
+
+                angle = angleEnd,
+
+                title = collection + " (" + counts [collection] + ", " + (100 * part).toFixed (0) + "%)";
+
+            if (part >= 1.0)
+            {
+                tag = "<circle cx=\"" + cx + "\" cy=\"" + cy + "\" r=\"" + radius + "\" " + param + ">"
+                      + "<title>" + title + "</title></circle>";
+            }
+            else if (part <= 0.0)
+            {
+                continue;
+            }
+            else
+            {
+                path += "M " + cx + "," + cy + " L " + xStart + "," + yStart + " ";
+                path += "A " + radius + "," + radius + " 0 " + large_arc + " 1 " + xEnd + "," + yEnd + " ";
+                path += "Z"; // close at center
+
+                tag = "<path d=\"" + path + "\"" + param + ">"
+                      + "<title>" + title + "</title></path>";
+            }
+            svg += tag;
         }
-        svg += tag;
     }
+    svg += "<circle cx=\"" + cx + "\" cy=\"" + cy + "\" r=\"" + radius + "\" stroke=\"black\" stroke-width=\"1\" fill=\"none\" />";
     svg += "</svg>";
 
     return svg;
@@ -60,14 +72,18 @@ function load_legend (databank_name)
 {
     // Request the collection sizes, replace the tag when ready
     $.ajax({
-        type: 'POST',
+        type: 'GET',
         url: "{{ url_for('dashboard.count', databank_name='DDDDDD') }}".replace("DDDDDD", databank_name),
         success: function (counts, status)
         {
-            var html = "<ul class=\"legend\">";
-            for (var collection in ['valid', 'obsolete', 'present', 'annotated', 'unannotated', 'missing'])
+            var html = "<ul class=\"legend\">",
+
+                collections = ['valid', 'obsolete', 'present', 'annotated', 'unannotated', 'missing'];
+
+            for (var i in collections)
             {
-                var count = counts [collection];
+                var collection = collections [i],
+                    count = counts [collection];
 
                 html += "<li class=\"" + collection + "\">";
 
@@ -90,6 +106,10 @@ function load_legend (databank_name)
         }
     });
 }
+
+{% for databank in databanks %}
+load_legend ("{{ databank['name'] }}");
+{% endfor %}
 
 </script>
 {% endblock %}

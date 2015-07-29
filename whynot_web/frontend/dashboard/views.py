@@ -125,8 +125,8 @@ def statistics ():
                             total_comments=len(comments))
 
 @bp.route('/resources/list/<list>/')
-def resources (listing):
-    return ''
+def resources (list):
+    return Response('', mimetype='text/plain')
 
 @bp.route('/list/')
 def list ():
@@ -166,3 +166,7 @@ def list ():
                 text += entry ['filepath'] + '\n'
 
     return Response(text, mimetype='text/plain')
+
+@app.errorhandler(500)
+def internal_error (e):
+    return render_template('error/MyExceptionErrorPage.html', error=str(e), stack=''), 500

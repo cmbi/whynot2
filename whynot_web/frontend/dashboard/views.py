@@ -1,11 +1,12 @@
 import logging
 import os
+from time import strftime, gmtime
 from copy import deepcopy
 from sets import Set
 
 from flask import Response, Blueprint, jsonify, render_template, request, redirect, url_for
 from utils import (get_databank_hierarchy, search_results_for, get_entries_from_collection,
-                   get_entries_with_comment, get_file_link, comments_to_tree, count_summary)
+                   get_entries_with_comment, get_file_link, comments_to_tree, count_summary, comment_summary)
 
 _log = logging.getLogger(__name__)
 
@@ -41,7 +42,11 @@ def about ():
 
 @bp.route('/comment/')
 def comment ():
-    comments = []
+    comments = comment_summary ()
+
+    for comment in comments:
+        comment ['latest'] = strftime ('%d/%m/%Y %H:%M', gmtime (comment ['mtime']))
+
     return render_template ('comment/CommentPage.html', db_tree=db_tree, nav_disabled='comments', comments=comments)
 
 @bp.route('/count/<databank_name>/')
@@ -78,9 +83,13 @@ def entries ():
 
         if databank:
 
+            print 'get_entries_from_collection', databank_name,collection
+
             entries = get_entries_from_collection (databank_name, collection)
 
-            source = "%s %s" % (databank_name, collection) 
+            source = "%s %s" % (databank_name, collection)
+
+            print '>', len (entries)
 
     elif comment_text:
 
@@ -102,7 +111,7 @@ def entries ():
     comments = comments_to_tree (comments)
 
     return render_template ('entries/EntriesPage.html', db_tree=db_tree, nav_disabled='entries',
-                            collection=collection, databank_name=databank_name,
+                            collection=collection, databank_name=databank_name, comment=comment_text,
                             source=source, entries=entries, files=files, comments=comments)
 
 @bp.route('/statistics/')
@@ -133,8 +142,8 @@ def statistics ():
                             total_annotations=na,
                             total_comments=len(comments))
 
-@bp.route('/resources/list/<list>/')
-def resources (list):
+@bp.route('/resources/list/<listing>/')
+def resources (listing):
     return Response('', mimetype='text/plain')
 
 @bp.route('/list/')
@@ -142,14 +151,21 @@ def list ():
 
     collection = request.args.get('collection')
     databank_name = request.args.get('databank')
+    comment_text = request.args.get('comment')
     listing = request.args.get('listing')
 
-    if type (collection) != str or type (databank_name) != str or type (listing) != str:
+    if not listing:
         return ''
 
     listing = listing.lower ()
 
-    entries = get_entries_from_collection (databank_name, collection)
+    if databank_name and collection:
+
+        entries = get_entries_from_collection (databank_name, collection)
+
+    elif comment_text:
+
+        entries = get_entries_with_comment (comment_text)
 
     text = ''
     if listing == 'comments':

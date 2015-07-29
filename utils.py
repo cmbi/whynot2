@@ -181,6 +181,21 @@ def get_valid_entries (databank_name):
     else:
         return get_present_entries(databank_name)
 
+def comment_summary ():
+
+    comments = {}
+    for entry in storage.find ('entries', {'comment': {'$exists': True}, 'mtime': {'$exists': True}}, {'mtime':1, 'comment':1, '_id':0}):
+        text = entry ['comment']
+
+        if text not in comments:
+            comments [text] = {'text':text, 'n_entries': 0, 'mtime': entry ['mtime']}
+
+        comments [text]['n_entries'] += 1
+        if comments [text]['mtime'] < entry ['mtime']:
+            comments [text]['mtime'] = entry ['mtime']
+
+    return comments.values ()
+
 def count_summary (databank_name):
 
     databank = storage.find_one('databanks',{'name': databank_name})
@@ -269,8 +284,7 @@ def get_missing_entries(databank_name):
 
 def get_annotated_entries (databank_name):
 
-    return storage.find('entries', {'databank_name': databank_name, '$and': [{'comment': {'$exists': True}}, {'mtime': {'$exists': True}}],
-                                    'filepath': {'$exists': False}})
+    return storage.find('entries', {'databank_name': databank_name, 'comment': {'$exists': True}, 'filepath': {'$exists': False}})
 def get_unannotated_entries (databank_name):
 
     unannotated = []

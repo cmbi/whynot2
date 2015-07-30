@@ -241,7 +241,7 @@ def entries_file ():
             elif listing == 'entries':
                 text += '%s,%s\n' % (entry['databank_name'], entry ['pdbid'])
             elif listing == 'files' and 'filepath' in entry:
-                text += entry ['filepath'] + '\n'
+                text += '%s,%s,%s\n' % (entry['databank_name'], entry ['pdbid'], entry ['filepath'])
 
     response = Response (text, mimetype='text/plain')
     response.headers["Content-Disposition"] = "attachment; filename=%s" % ('%s_%s' % (name, listing))

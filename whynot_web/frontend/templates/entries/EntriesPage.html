@@ -220,7 +220,7 @@
         <div id="pdbids" class="tab-panel">
             <a href="{{ url_for('dashboard.entries_file', listing='PDBIDs', comment=comment, databank=databank_name, collection=collection) }}" class="download">Download as file</a>
             {% if entries|length > 0 %}<h1>Unique PDBIDs ({{ entries|length }})</h1>{% endif %}
-            {{ page_browser ('pdbids', entries|length, 2000) }}
+            {% if num_pages ['pdbids'] > 1 %}{{ page_browser ('pdbids', entries|length, 2000) }}{% endif %}
 
             {% for page_index in range( num_pages ['pdbids'] ) %}
             <p class="pdbids-page" id="pdbids-page-{{ page_index }}" style="font-family:monospace;{% if page_index > 0 %}display:none{% endif %}">
@@ -235,7 +235,7 @@
         <div id="entries" class="tab-panel" style="display:none;" >
             <a href="{{ url_for('dashboard.entries_file', listing='entries', comment=comment, databank=databank_name, collection=collection) }}" class="download">Download as file</a>
             {% if entries|length > 0 %}<h1>Entries ({{ entries|length }})</h1>{% endif %}
-            {{ page_browser ('entries', entries|length, 2000) }}
+            {% if num_pages ['entries'] > 1 %}{{ page_browser ('entries', entries|length, 2000) }}{% endif %}
 
             {% for page_index in range( num_pages ['entries'] ) %}
             <p class="entries-page" id="entries-page-{{ page_index }}" style="font-family:monospace;{% if page_index > 0 %}display:none{% endif %}">
@@ -250,7 +250,7 @@
         <div id="files" class="tab-panel" style="display:none;" >
             <a href="{{ url_for('dashboard.entries_file', listing='files', comment=comment, databank=databank_name, collection=collection) }}" class="download">Download as file</a>
             {% if files|length > 0 %}<h1>Files ({{ files|length }})</h1>{% endif %}
-            {{ page_browser ('files', files|length, 2000) }}
+            {% if num_pages ['files'] > 1 %}{{ page_browser ('files', files|length, 2000) }}{% endif %}
 
             {% for page_index in range( num_pages ['files'] ) %}
             <p class="files-page" id="files-page-{{ page_index }}" style="font-family:monospace;{% if page_index > 0 %}display:none{% endif %}">

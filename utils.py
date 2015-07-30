@@ -60,7 +60,6 @@ def update_entries(entries):
             insert.append(entry)
 
     if len (insert) > 0:
-        print 'now inserting %i entries' % len (insert)
         storage.insert ('entries', insert)
 
 def get_file_link (databank, pdbid):
@@ -307,7 +306,7 @@ def remove_tags (s):
 
         m = p_tag_enclosed.search (s)
         if m:
-            s = s[:m.begin()] + m.group (3) + s [m.end():]
+            s = s[:m.start()] + m.group (3) + s [m.end():]
         else:
             break
 
@@ -315,7 +314,7 @@ def remove_tags (s):
 
         m = p_single_tag.search (s)
         if m:
-            s = s[:m.begin()] + s [m.end():]
+            s = s[:m.start()] + s [m.end():]
         else:
             break
 
@@ -351,14 +350,19 @@ def build_tree (root_string, comments_entries_dict):
 
             i = full_text.find (':', len (prefix))
             if i == -1:
+                # No further subdivision possible
                 root_text = full_text
             else:
                 root_text = full_text [:i]
 
             if root_text not in tree:
 
+                title = root_text
+                if root_text == full_text:
+                    title = key # with tags
+
                 tree [root_text] = comment_node (root_string)
-                tree [root_text].subtree = build_tree (root_text, comments_entries_dict)
+                tree [root_text].subtree = build_tree (title, comments_entries_dict)
 
                 if len (tree [root_text].subtree) <= 0:
                     tree [root_text].entries = comments_entries_dict [key]
@@ -394,8 +398,8 @@ def comments_to_tree (comments_entries_dict):
             tree [prfx].subtree = build_tree (prfx, comments_entries_dict)
 
         else:
-            tree [full_text] = comment_node (full_text)
-            tree [full_text].entries = comments_entries_dict [key]
+            tree [key] = comment_node (key)
+            tree [key].entries = comments_entries_dict [key]
 
     return remove_unbranched_comment_nodes (tree)
 

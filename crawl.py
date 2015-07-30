@@ -49,7 +49,7 @@ def crawl_files(databank, path):
 def crawl_lines(databank, path):
 
     present_entries_bypdbid = entries_by_pdbid(get_present_entries(databank['name']))
-    missing_entries_bypdbid = entries_by_pdbid(get_missing_entries(databank['name']))
+    record_pdbids = entries_by_pdbid(storage.find('entries',{'databank_name':databank['name']}, {'pdbid':1}))
     pattern = parse_regex(databank['regex'])
 
     mtime = time()
@@ -85,7 +85,8 @@ def crawl_lines(databank, path):
         }
         if entry['pdbid'] in present_entries_bypdbid:
             continue
-        if entry['pdbid'] in missing_entries_bypdbid:
+
+        if entry['pdbid'] in record_pdbids:
             storage.update('entries', {'databank_name':databank['name'], 'pdbid':entry['pdbid']}, entry)
         else:
             storage.insert('entries', entry)

@@ -77,12 +77,14 @@ if len (sys.argv) > 1:
 
 whynotdir = os.path.dirname (sys.argv [0])
 commentsdir = os.path.join (whynotdir, 'comments')
-for filename in os.path.listdir (commentsdir):
 
-    if filename.endswith ('.txt'):
+if os.path.isdir (commentsdir):
+    for filename in os.listdir (commentsdir):
 
-        filepath = os.path.join (commentsdir, filename)
-        annotate_from_file (filepath)
+        if filename.endswith ('.txt'):
+
+            filepath = os.path.join (commentsdir, filename)
+            annotate_from_file (filepath)
 
 pdbidscarbonly=[]
 pdbidsnuconly=[]

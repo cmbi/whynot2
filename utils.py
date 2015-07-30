@@ -4,6 +4,45 @@ from urllib2 import urlopen
 from storage import storage
 from sets import Set
 
+class top_highest (object):
+
+    def __init__ (self, size):
+
+        self.size = size
+        self.d = {}
+        self.order = []
+
+    def add (self, number, obj):
+
+        if len (self.order) > 0 and  number < self.order [0]:
+            return # no place in list
+
+        # Place the number in the ordered list
+        i = 0
+        while i < len (self.order):
+
+            if number < self.order [i]:
+                self.order.insert (i, number)
+                break
+
+            i += 1
+
+        if i >= len (self.order): # larger than any of them
+            self.order.append (number)
+
+        self.d [number] = obj
+
+        if len (self.order) > self.size:
+            self.order = self.order [:-self.size]
+
+    def get (self):
+
+        l = []
+        for k in self.order:
+            l.append (self.d [k])
+
+        return l
+
 def parse_regex(mongoRegex):
 
     return re.compile(mongoRegex.pattern.replace('\\\\','\\'))
@@ -14,7 +53,7 @@ def read_http(url):
     stream = urlopen(url)
     while True:
         data = stream.read()
-        if len(data) <= 0:
+        if len (data) <= 0:
             break
         s += data
 

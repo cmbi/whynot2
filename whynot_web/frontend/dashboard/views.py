@@ -6,8 +6,8 @@ from sets import Set
 
 from flask import Response, Blueprint, jsonify, render_template, request, redirect, url_for
 from utils import (get_databank_hierarchy, search_results_for, get_entries_from_collection,
-                   get_all_entries_with_comment, get_entries_with_comment, 
-                   get_file_link, comments_to_tree, count_summary, comment_summary)
+                   get_all_entries_with_comment, get_entries_with_comment, remove_tags,
+                   get_file_link, comments_to_tree, count_summary, comment_summary, top_highest)
 
 _log = logging.getLogger(__name__)
 
@@ -127,29 +127,31 @@ def statistics ():
     nf = 0
     nc = 0
 
-    files = {}
-    annotations = {}
     unique_comments = Set ()
-    for entry in storage.find ('entries', {'mtime':{'$exists':True}}):
+    recent_files = top_highest (10)
+    recent_annotations = top_highest (10)
+    for entry in storage.find ('entries', {}):
+
         ne += 1
-        if 'filepath' in entry:
-            nf += 1
-            files [entry ['mtime']] = entry ['filepath']
-        elif 'comment' in entry:
-            na += 1
-            unique_comments.add (entry['comment'])
-            annotations [entry ['mtime']] = {'comment': entry['comment'], 'pdbid':entry ['pdbid'], 'databank_name':entry['databank_name']}
+        if 'mtime' in entry:
+            if 'filepath' in entry:
+                nf += 1
+                recent_files.add (entry ['mtime'], entry)
+            elif 'comment' in entry:
+                na += 1
+                unique_comments.add (entry ['comment'])
+                recent_annotations.add (entry ['mtime'], entry)
 
-    recent_files = []
-    for t in files.keys ()[-10:]:
-        f = {'path':files [t], 'date': strftime (date_format, gmtime (t))}
-        recent_files.append (f)
+    # Perform time-consuming operations only on the last 10 files and annotations
+    files = []
+    for f in recent_files.get ():
+        files.append ({'path': f['filepath'], 'date': strftime (date_format, gmtime (f['mtime']))})
 
-    recent_annotations = []
-    for t in annotations.keys ()[-10:]:
-        a = annotations [t]
-        a ['date'] = strftime (date_format, gmtime (t))
-        recent_annotations.append (a)
+    annotations = []
+    for a in recent_annotations.get ():
+        annotations.append ({'comment': a ['comment'], 'pdbid': a ['pdbid'],
+                             'databank_name': a ['databank_name'],
+                             'date':  strftime (date_format, gmtime (a['mtime']))})
 
     nc = len (unique_comments)
 
@@ -161,8 +163,8 @@ def statistics ():
                             total_files=nf,
                             total_annotations=na,
                             total_comments=nc,
-                            annotations=recent_annotations,
-                            files=recent_files)
+                            annotations=annotations,
+                            files=files)
 
 
 @bp.route('/resources/list/<tolist>/')

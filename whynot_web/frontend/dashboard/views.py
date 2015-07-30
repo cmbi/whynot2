@@ -104,6 +104,7 @@ def entries ():
             files.append (f)
 
         elif 'comment' in entry:
+
             if entry ['comment'] not in comments:
                 comments [entry ['comment']] = []
             comments [entry ['comment']].append ('%s,%s' % (entry ['databank_name'], entry ['pdbid']))
@@ -117,6 +118,8 @@ def entries ():
 @bp.route('/statistics/')
 def statistics ():
 
+    #TODO: speed up this method
+
     ndb = storage.count ('databanks', {})
 
     ne = 0
@@ -127,16 +130,15 @@ def statistics ():
     files = {}
     annotations = {}
     unique_comments = Set ()
-    for entry in storage.find ('entries', {}):
+    for entry in storage.find ('entries', {'mtime':{'$exists':True}}):
         ne += 1
-        if 'mtime' in entry:
-            if 'filepath' in entry:
-                nf += 1
-                files [entry ['mtime']] = entry ['filepath']
-            elif 'comment' in entry:
-                na += 1
-                unique_comments.add (entry['comment'])
-                annotations [entry ['mtime']] = {'comment': entry['comment'], 'pdbid':entry ['pdbid'], 'databank_name':entry['databank_name']}
+        if 'filepath' in entry:
+            nf += 1
+            files [entry ['mtime']] = entry ['filepath']
+        elif 'comment' in entry:
+            na += 1
+            unique_comments.add (entry['comment'])
+            annotations [entry ['mtime']] = {'comment': entry['comment'], 'pdbid':entry ['pdbid'], 'databank_name':entry['databank_name']}
 
     recent_files = []
     for t in files.keys ()[-10:]:
@@ -149,6 +151,8 @@ def statistics ():
         a ['date'] = strftime (date_format, gmtime (t))
         recent_annotations.append (a)
 
+    nc = len (unique_comments)
+
     return render_template ('statistics/StatisticsPage.html',
                             nav_disabled='statistics',
                             db_tree=db_tree,
@@ -156,7 +160,7 @@ def statistics ():
                             total_entries=ne,
                             total_files=nf,
                             total_annotations=na,
-                            total_comments=len(unique_comments),
+                            total_comments=nc,
                             annotations=recent_annotations,
                             files=recent_files)
 
@@ -164,11 +168,18 @@ def statistics ():
 @bp.route('/resources/list/<tolist>/')
 def resources (tolist):
 
-    # TODO: output
-    if '_' in tolist:
-        pass
+    if '_' not in tolist:
+        return ''
 
-    return Response('', mimetype='text/plain')
+    # TODO: speed up this method
+
+    databank_name, collection = tolist.split ('_')
+
+    text = ''
+    for entry in get_entries_from_collection (databank_name, collection):
+        text += entry ['pdbid'] + '\n'
+
+    return Response (text, mimetype='text/plain')
 
 @bp.route('/list/')
 def list ():
@@ -178,6 +189,8 @@ def list ():
     collection = request.args.get ('collection')
     databank_name = request.args.get ('databank')
     comment_text = request.args.get ('comment')
+
+    # listing determines what is shown per entry (pdb ids, databank names, comments, file names, etc.)
     listing = request.args.get ('listing')
 
     if not listing:

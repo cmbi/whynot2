@@ -173,7 +173,9 @@ def resources (tolist):
 
     # TODO: speed up this method
 
-    databank_name, collection = tolist.split ('_')
+    last = tolist.rfind ('_')
+    databank_name = tolist [:last]
+    collection = tolist [last + 1:]
 
     text = ''
     for entry in get_entries_from_collection (databank_name, collection):

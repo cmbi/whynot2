@@ -73,7 +73,7 @@ def crawl_lines(databank, path):
 
     for line in h:
 
-        m = pattern.match(line)
+        m = pattern.search(line)
         if not m:
             continue
 

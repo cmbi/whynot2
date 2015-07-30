@@ -31,7 +31,7 @@ pdbidsem=[]
 pdbidsdiff=[]
 
 entries_update=[]
-for line in []:#read_http('ftp://ftp.wwpdb.org/pub/pdb/derived_data/pdb_entry_type.txt').split('\n'):
+for line in read_http('ftp://ftp.wwpdb.org/pub/pdb/derived_data/pdb_entry_type.txt').split('\n'):
     if len(line.strip()) <= 0:
         continue
 
@@ -94,7 +94,7 @@ for entry in get_unannotated_entries('HSSP'):
             entries_update.append(entry)
 
 for dbname in ['DSSP', 'DSSP_REDO']:
-    for entry in get_unannotated_entries(dbname):
+    for entry in get_missing_entries (dbname):
 
         pdbid = entry['pdbid']
 

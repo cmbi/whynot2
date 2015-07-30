@@ -64,7 +64,7 @@ docs.append(createDatabank('STRUCTUREFACTORS','http://www.pdb.org/',
     re.compile(r'.*/r([\w]{4})sf\.ent\.gz'),FILE,'MMCIF'))
 docs.append(createDatabank('PDBREPORT','http://swift.cmbi.ru.nl/gv/pdbreport/',
     'http://www.cmbi.ru.nl/pdbreport/cgi-bin/nonotes?PDBID=${PDBID}',
-    re.compile(r'.*pdbreport.*/([\w]{4})/pdbout.txt'),FILE,'PDB'))
+    re.compile(r'.*pdbreport.*\/([\w]{4})\/pdbout\.txt'),FILE,'PDB'))
 docs.append(createDatabank('PDB_REDO','http://www.cmbi.ru.nl/pdb_redo/',
     'http://www.cmbi.ru.nl/pdb_redo/cgi-bin/redir2.pl?pdbCode=${PDBID}',
     re.compile(r'(\w{4})_final\.pdb'),FILE,'STRUCTUREFACTORS'))

@@ -181,10 +181,13 @@ def resources (tolist):
     for entry in get_entries_from_collection (databank_name, collection):
         text += entry ['pdbid'] + '\n'
 
-    return Response (text, mimetype='text/plain')
+    response = Response (text, mimetype='text/plain')
+    response.headers["Content-Disposition"] = "attachment; filename=%s" % tolist
 
-@bp.route('/list/')
-def list ():
+    return response
+
+@bp.route('/entries_file/')
+def entries_file ():
 
     # TODO: speed up this method
 
@@ -201,17 +204,21 @@ def list ():
     listing = listing.lower ()
 
     entries = []
+    name="0"
     if databank_name and collection:
 
         entries = get_entries_from_collection (databank_name, collection)
+        name = "%s%s" % (databank_name, collection)
 
     elif databank_name and comment_text:
 
         entries = get_entries_with_comment (databank_name, comment_text)
+        name = "%s%s" % (databank_name, comment_text)
 
     elif comment_text:
 
         entries = get_all_entries_with_comment (comment_text)
+        name = comment_text
 
     text = ''
     if listing == 'comments':
@@ -236,5 +243,8 @@ def list ():
             elif listing == 'files' and 'filepath' in entry:
                 text += entry ['filepath'] + '\n'
 
-    return Response(text, mimetype='text/plain')
+    response = Response (text, mimetype='text/plain')
+    response.headers["Content-Disposition"] = "attachment; filename=%s" % ('%s_%s' % (name, listing))
+
+    return response
 

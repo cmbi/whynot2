@@ -26,6 +26,9 @@ def crawl_files(databank, path):
 
     for root, dirs, files in os.walk(path):
         for f in files:
+            if os.path.splitext (f)[1] in ['.gif', '.html']:
+                continue # skip images and web pages to save time
+
             f = os.path.join(root,f)
 
             m = pattern.search(f)

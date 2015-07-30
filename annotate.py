@@ -7,6 +7,26 @@ from utils import entries_by_pdbid, get_unannotated_entries, get_missing_entries
 from storage import storage
 from time import time
 
+
+def parse_comments (lines):
+
+    if len(lines) < 2:
+        return {}
+
+    d = []
+    comment = None
+    for line in lines:
+        if line.startswith('COMMENT:'):
+            comment = line[8:].strip()
+
+        elif ',' in line:
+
+            databank_name, pdbid = line.strip ().replace (' ','').split (',')
+            d.append ((comment, databank_name, pdbid))
+
+    return d
+
+
 def parse_comment(lines, entry):
 
     if len(lines) < 2:
@@ -23,6 +43,29 @@ def parse_comment(lines, entry):
         else:
             print 'not on', line
     return ''
+
+
+if len (sys.argv) > 1:
+
+    # just parse the given whynot files
+
+    for path in sys.argv [1:]:
+
+        comments = parse_comments (open (path,'r').readlines ())
+
+        for text, databank_name, pdbid in comments:
+
+            entry = {'databank_name': databank_name, 'pdbid': pdbid,
+                     'comment': text, 'mtime': time()}
+
+            if storage.find_one ('entries', {'databank_name': databank_name, 'pdbid': pdbid}):
+
+                storage.update ('entries', {'databank_name': databank_name, 'pdbid': pdbid}, entry)
+            else:
+                storage.insert ('entries', entry)
+
+    sys.exit (0)
+
 
 pdbidscarbonly=[]
 pdbidsnuconly=[]
@@ -88,7 +131,7 @@ for entry in get_unannotated_entries('HSSP'):
     if os.path.isfile (errfile):
         line = open (errfile, 'r').read ()
         line = line.strip()
-        if line in ['Not enough sequences in PDB file of length 25', 'No hits found', 'empty protein, or no valid complete residues']:
+        if line in ['Not enough sequences in PDB file of length 25', 'multiple occurrences', 'No hits found', 'empty protein, or no valid complete residues']:
             entry['comment'] = line
             entry['mtime'] = time()
             entries_update.append(entry)
@@ -162,7 +205,7 @@ for lis in ['acc', 'cal', 'cc1', 'cc2', 'cc3', 'chi', 'dsp', 'iod', 'sbh', 'sbr'
             pdbid = entry['pdbid']
             whynotfile = '/data/wi-lists/%s/%s/%s/%s.%s.whynot' % (src, lis, pdbid, pdbid, lis)
             if not os.path.isfile(whynotfile):
-                print 'not found:', whynotfile
+#                print 'not found:', whynotfile
                 continue
 
             lines = open(whynotfile, 'r').readlines()

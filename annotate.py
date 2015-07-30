@@ -44,10 +44,7 @@ def parse_comment(lines, entry):
             print 'not on', line
     return ''
 
-
-if len (sys.argv) > 1:
-
-    # just parse the given whynot files
+def annotate_from_file (path):
 
     for path in sys.argv [1:]:
 
@@ -64,8 +61,28 @@ if len (sys.argv) > 1:
             else:
                 storage.insert ('entries', entry)
 
+
+if len (sys.argv) > 1:
+
+    # just parse the given whynot files
+
+    for path in sys.argv [1:]:
+
+        annotate_from_file (path)
+
     sys.exit (0)
 
+
+# Check the files in the comments directory too
+
+whynotdir = os.path.dirname (sys.argv [0])
+commentsdir = os.path.join (whynotdir, 'comments')
+for filename in os.path.listdir (commentsdir):
+
+    if filename.endswith ('.txt'):
+
+        filepath = os.path.join (commentsdir, filename)
+        annotate_from_file (filepath)
 
 pdbidscarbonly=[]
 pdbidsnuconly=[]

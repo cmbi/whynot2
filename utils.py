@@ -14,7 +14,7 @@ class top_highest (object):
 
     def add (self, number, obj):
 
-        if len (self.order) > 0 and  number < self.order [0]:
+        if len (self.order) >= self.size and number < self.order [0]:
             return # no place in list
 
         # Place the number in the ordered list
@@ -33,7 +33,7 @@ class top_highest (object):
         self.d [number] = obj
 
         if len (self.order) > self.size:
-            self.order = self.order [:-self.size]
+            self.order = self.order [-self.size:]
 
     def get (self):
 

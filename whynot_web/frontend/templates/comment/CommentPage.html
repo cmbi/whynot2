@@ -9,7 +9,7 @@
     </tr>
     {% for comment in comments %}
     <tr>
-        <td><span class="comment">{{ comment.text }}</span></td>
+        <td><span class="comment">{{ comment.text|safe }}</span></td>
         <td class="number"><a href="{{ url_for ('dashboard.entries',comment=comment.text) }}"><span>{{ comment.n_entries }}</span></a></td>
         <td class="date">{{ comment.latest}}</td>
     </tr>

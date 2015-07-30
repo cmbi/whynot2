@@ -14,7 +14,7 @@
 	<table>
     {% for annotation in annotations %}
 	<tr>
-		<td>{{ annotation['comment'] }}</td>
+		<td>{{ annotation['comment']|safe }}</td>
 		<td><span>{{ annotation['databank_name'] }}</span>,<span>{{ annotation['pdbid'] }}</span></td>
 		<td class="date">{{ annotation['date'] }}</td>
 	</tr>

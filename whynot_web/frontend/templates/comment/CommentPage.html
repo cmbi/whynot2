@@ -18,7 +18,7 @@ function load ()
                 var html = "<tr>";
                 html += "<td><span class=\"comment\">" + comment.text + "</span></td>";
                 html += "<td class=\"number\">" +
-                        "<a href=\"{{ url_for ('dashboard.entries',comment=TTTTTT) }}\">".replace ("TTTTTT", comment.text) +
+                        "<a href=\"{{ url_for ('dashboard.entries',comment='TTTTTT') }}\">".replace ("TTTTTT", encodeURI(comment.text)) +
                         "<span>" + comment.n_entries + "</span></a></td>";
                 html += "<td class=\"date\">" + comment.latest + "</td>";
                 html += "</tr>";

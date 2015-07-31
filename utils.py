@@ -130,9 +130,10 @@ def search_results_for (pdbid):
         else:
             results [databank_name] = 'Not available'
 
-            parent_name = databank ['parent_name']
-            if parent_name not in entries or 'comment' in entries [parent_name]:
-                results [databank_name] += ', depends on %s' % parent_name
+            if 'parent_name' in databank:
+                parent_name = databank ['parent_name']
+                if parent_name not in entries or 'comment' in entries [parent_name]:
+                    results [databank_name] += ', depends on %s' % parent_name
 
     return results
 

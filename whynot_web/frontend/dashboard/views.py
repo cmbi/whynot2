@@ -43,21 +43,28 @@ def search (pdbid):
 def about ():
     return render_template ('about/AboutPage.html', db_tree=db_tree, nav_disabled='about')
 
-@bp.route('/comment/')
-def comment ():
+@bp.route('/load_comments/')
+def load_comments ():
 
     # TODO: speed up this method
 
     comments = comment_summary ()
 
-    for comment in comments:
-        comment ['latest'] = strftime (date_format, gmtime (comment ['mtime']))
+    for i in range (len (comments)):
+        comments [i]['latest'] = strftime (date_format, gmtime (comments [i]['mtime']))
 
-    return render_template ('comment/CommentPage.html', db_tree=db_tree, nav_disabled='comments', comments=comments)
+    return jsonify ({'comments':comments})
+
+@bp.route('/comment/')
+def comment ():
+
+    return render_template ('comment/CommentPage.html', db_tree=db_tree, nav_disabled='comments')
 
 @bp.route('/count/<databank_name>/')
 def count (databank_name):
     "Called by the databank page, while the loading icon is displayed"
+
+    # TODO: speed up this method
 
     return jsonify (count_summary (databank_name))
 

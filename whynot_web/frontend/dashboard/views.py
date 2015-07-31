@@ -45,6 +45,9 @@ def about ():
 
 @bp.route('/comment/')
 def comment ():
+
+    # TODO: speed up this method
+
     comments = comment_summary ()
 
     for comment in comments:
@@ -54,6 +57,7 @@ def comment ():
 
 @bp.route('/count/<databank_name>/')
 def count (databank_name):
+    "Called by the databank page, while the loading icon is displayed"
 
     return jsonify (count_summary (databank_name))
 
@@ -115,8 +119,8 @@ def entries ():
                             collection=collection, databank_name=databank_name, comment=comment_text,
                             title=title, entries=entries, files=files, comment_tree=comment_tree)
 
-@bp.route('/statistics/')
-def statistics ():
+@bp.route('/load_statistics/')
+def load_statistics ():
 
     #TODO: speed up this method
 
@@ -155,17 +159,23 @@ def statistics ():
 
     nc = len (unique_comments)
 
+    statistics = {}
+    statistics ['total_databanks'] = ndb
+    statistics ['total_entries'] = ne
+    statistics ['total_files'] = nf
+    statistics ['total_annotations'] = na
+    statistics ['total_comments'] = nc
+    statistics ['annotations'] = annotations
+    statistics ['files'] = files
+
+    return jsonify (statistics)
+
+@bp.route('/statistics/')
+def statistics ():
+
     return render_template ('statistics/StatisticsPage.html',
                             nav_disabled='statistics',
-                            db_tree=db_tree,
-                            total_databanks=ndb,
-                            total_entries=ne,
-                            total_files=nf,
-                            total_annotations=na,
-                            total_comments=nc,
-                            annotations=annotations,
-                            files=files)
-
+                            db_tree=db_tree)
 
 @bp.route('/resources/list/<tolist>/')
 def resources (tolist):

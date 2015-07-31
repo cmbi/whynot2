@@ -66,6 +66,53 @@ def download(url,destdir):
     open(destpath,'w').write(urlopen(url).read())
     return destpath
 
+def has_annotated_parent (databank_name, pdbid):
+
+    parent = get_parent (databank_name, pdbid)
+    if parent:
+        return 'comment' in parent
+
+    return False
+
+def has_present_parent (databank_name, pdbid):
+
+    parent = get_parent (databank_name, pdbid)
+    if parent:
+        return 'filepath' in parent
+
+    return False
+
+def get_parent (databank_name, pdbid):
+
+    databank = storage.find_one('databanks', {'name': databank_name})
+    if not databank:
+        raise Exception ("no such databank: " + databank_name)
+
+    if 'parent_name' in databank:
+
+        parent_name = databank ['parent_name']
+
+        parent = storage.find_one('databanks', {'name': parent_name})
+        if not parent:
+            raise Exception ("no such databank: " + parent_name)
+
+        parent_entry = storage.find_one('entries', {'databank_name': parent_name, 'pdbid': pdbid})
+
+        return parent_entry
+
+    return None
+
+def get_parent_name (databank_name):
+
+    databank = storage.find_one('databanks', {'name': databank_name})
+    if not databank:
+        raise Exception("no such databank: " + databank_name)
+
+    if 'parent_name' in databank:
+        return databank ['parent_name']
+    else:
+        return ''
+
 def entries_by_databank (entries):
 
     d = {}

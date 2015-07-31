@@ -99,12 +99,12 @@ def entries ():
     elif databank_name and comment_text:
 
         entries = get_entries_with_comment (databank_name, comment_text)
-        title = comment_text
+        title = remove_tags (comment_text)
 
     elif comment_text:
 
         entries = get_all_entries_with_comment (comment_text)
-        title = comment_text
+        title = remove_tags (comment_text)
 
     databank = storage.find_one ('databanks', {'name': databank_name})
     for entry in entries:

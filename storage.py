@@ -89,12 +89,16 @@ class Storage(object):
         _log.info("Counting documents in '{}'".format(collection))
         return self._db[collection].count(selector)
 
-    def find(self, collection, selector, projection=None):
+    def find(self, collection, selector, projection=None, order=None):
         if self._db is None:
             raise Exception("Not connected to storage. Did you call connect()?")
 
         _log.info("Querying documents in '{}'".format(collection))
         cursor = self._db[collection].find(selector,projection)
+
+        if order:
+            cursor = cursor.sort (order)
+
         return [d for d in cursor]
 
     def find_one(self, collection, selector, projection=None):

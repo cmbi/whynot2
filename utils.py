@@ -2,6 +2,7 @@ import os, re
 
 from urllib2 import urlopen
 from storage import storage
+import pymongo
 from sets import Set
 
 class top_highest (object):
@@ -180,15 +181,15 @@ def get_entries_from_collection (databank_name, collection):
 
 def get_all_entries_with_comment (comment):
 
-    return storage.find ('entries', {'comment': comment})
+    return storage.find ('entries', {'comment': comment}, order=[("pdbid", pymongo.ASCENDING)])
 
 def get_entries_with_comment (databank_name, comment):
 
-    return storage.find ('entries', {'databank_name': databank_name, 'comment': comment})
+    return storage.find ('entries', {'databank_name': databank_name, 'comment': comment}, order=[("pdbid", pymongo.ASCENDING)])
 
 def get_entries_with_pdbid (databank_name, pdbid):
 
-    return storage.find ('entries', {'databank_name': databank_name, 'pdbid': pdbid})
+    return storage.find ('entries', {'databank_name': databank_name, 'pdbid': pdbid}, order=[("pdbid", pymongo.ASCENDING)])
 
 def get_obsolete_entries (databank_name):
 
@@ -298,7 +299,8 @@ def count_summary (databank_name):
 
 def get_present_entries(databank_name):
 
-    return storage.find('entries', {'databank_name': databank_name,'filepath': {'$exists': True}, 'mtime': {'$exists': True}})
+    return storage.find('entries', {'databank_name': databank_name,'filepath': {'$exists': True}, 'mtime': {'$exists': True}},
+                        order=[("pdbid", pymongo.ASCENDING)])
 
 def get_missing_entries(databank_name):
 
@@ -327,7 +329,8 @@ def get_missing_entries(databank_name):
 
 def get_annotated_entries (databank_name):
 
-    return storage.find('entries', {'databank_name': databank_name, 'comment': {'$exists': True}, 'filepath': {'$exists': False}})
+    return storage.find('entries', {'databank_name': databank_name, 'comment': {'$exists': True}, 'filepath': {'$exists': False}},
+                        order=[("pdbid", pymongo.ASCENDING)])
 def get_unannotated_entries (databank_name):
 
     unannotated = []

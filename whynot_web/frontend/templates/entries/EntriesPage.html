@@ -199,7 +199,7 @@
     </script>
 {% endblock %}
 {% block content %}
-    <h1>{{ title }} ({{ entries|length }})</h1>
+    <h1>{{ title|safe }} ({{ entries|length }})</h1>
     <span>
         <div class="tab-row">
             <ul>

@@ -76,10 +76,10 @@ for lis in ['dsp','iod','sbh','sbr','ss1','ss2','tau','acc','cal','wat','cc1','c
 
     docs.append(createDatabank('WHATIF_PDB_%s' % lis, 'http://swift.cmbi.ru.nl/whatif/',
         'ftp://ftp.cmbi.ru.nl/pub/molbio/data/wi-lists/pdb/%s/${PDBID}/${PDBID}.%s.bz2' % (lis, lis),
-        re.compile(r'.*/([\w]{4})\.' + lis + r'(\.bz2)?'),FILE,'PDB'))
+        re.compile(r'.*/([\w]{4})\.' + lis + r'(\.bz2)?$'),FILE,'PDB'))
     docs.append(createDatabank('WHATIF_REDO_%s' % lis, 'http://swift.cmbi.ru.nl/whatif/',
         'ftp://ftp.cmbi.ru.nl/pub/molbio/data/wi-lists/redo/%s/${PDBID}/${PDBID}.%s.bz2' % (lis, lis),
-        re.compile(r'.*/([\w]{4})\.' + lis + r'(\.bz2)?'),FILE,'PDB_REDO'))
+        re.compile(r'.*/([\w]{4})\.' + lis + r'(\.bz2)?$'),FILE,'PDB_REDO'))
 
 scenames = { 'ss2': 'sym-contacts', 'iod': 'ion-sites'}
 for lis in scenames:

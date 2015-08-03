@@ -137,18 +137,6 @@ def entries_by_pdbid (entries):
 
     return d
 
-def update_entries(entries):
-
-    insert=[]
-    for entry in entries:
-        if '_id' in entry:
-            storage.update('entries',{'_id':entry['_id']},(entry))
-        else:
-            insert.append(entry)
-
-    if len (insert) > 0:
-        storage.insert ('entries', insert)
-
 def get_file_link (databank, pdbid):
 
     part = pdbid [1:3]
@@ -318,11 +306,11 @@ def count_summary (databank_name):
             if entry ['pdbid'] not in pdbids:
                 missing_pdbids.add (entry ['pdbid'])
 
-
         count ['missing'] = len (missing_pdbids)
         count ['annotated'] = 0
         for entry in comment_entries:
             if entry ['pdbid'] in missing_pdbids:
+
                 count ['annotated'] += 1
 
         count ['unannotated'] = count ['missing'] - count ['annotated']

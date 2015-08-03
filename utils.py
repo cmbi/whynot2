@@ -439,7 +439,7 @@ def build_tree (root_string, comments_entries_dict):
                 if root_text == full_text:
                     title = key # with tags
 
-                tree [root_text] = comment_node (root_string)
+                tree [root_text] = comment_node (title)
                 tree [root_text].subtree = build_tree (title, comments_entries_dict)
 
                 if len (tree [root_text].subtree) <= 0:

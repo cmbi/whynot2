@@ -2,11 +2,11 @@
 
 import sys,os,commands
 
-from utils import entries_by_pdbid, get_unannotated_entries, get_missing_entries, update_entries, read_http
+from utils import entries_by_pdbid, get_unannotated_entries, get_missing_entries, read_http
 
 from storage import storage
 from time import time
-
+from sets import Set
 
 def parse_comments (lines):
 
@@ -16,6 +16,7 @@ def parse_comments (lines):
     d = []
     comment = None
     for line in lines:
+
         if line.startswith('COMMENT:'):
             comment = line[8:].strip()
 
@@ -44,23 +45,27 @@ def parse_comment(lines, entry):
             print 'not on', line
     return ''
 
+def update_entry (entry):
+
+    databank_name = entry ['databank_name']
+    pdbid = entry ['pdbid']
+
+    if storage.find_one ('entries', {'databank_name': databank_name, 'pdbid': pdbid}):
+
+        storage.update ('entries', {'databank_name': databank_name, 'pdbid': pdbid}, entry)
+    else:
+        storage.insert ('entries', entry)
+
 def annotate_from_file (path):
 
-    for path in sys.argv [1:]:
+    comments = parse_comments (open (path,'r').readlines ())
 
-        comments = parse_comments (open (path,'r').readlines ())
+    for text, databank_name, pdbid in comments:
 
-        for text, databank_name, pdbid in comments:
+        entry = {'databank_name': databank_name, 'pdbid': pdbid,
+                 'comment': text, 'mtime': time()}
 
-            entry = {'databank_name': databank_name, 'pdbid': pdbid,
-                     'comment': text, 'mtime': time()}
-
-            if storage.find_one ('entries', {'databank_name': databank_name, 'pdbid': pdbid}):
-
-                storage.update ('entries', {'databank_name': databank_name, 'pdbid': pdbid}, entry)
-            else:
-                storage.insert ('entries', entry)
-
+        update_entry (entry)
 
 if len (sys.argv) > 1:
 
@@ -76,7 +81,7 @@ if len (sys.argv) > 1:
 # Check the files in the comments directory too
 
 whynotdir = os.path.dirname (sys.argv [0])
-commentsdir = os.path.join (whynotdir, 'comments')
+commentsdir = os.path.join (whynotdir, 'comment')
 
 if os.path.isdir (commentsdir):
     for filename in os.listdir (commentsdir):
@@ -84,15 +89,17 @@ if os.path.isdir (commentsdir):
         if filename.endswith ('.txt'):
 
             filepath = os.path.join (commentsdir, filename)
+
             annotate_from_file (filepath)
 
-pdbidscarbonly=[]
-pdbidsnuconly=[]
-pdbidsnmr=[]
-pdbidsem=[]
-pdbidsdiff=[]
+pdbidscarbonly = Set ()
+pdbidsnuconly = Set ()
+pdbidsnmr = Set ()
+pdbidsem = Set ()
+pdbidsother = Set ()
+pdbidsdiff = Set ()
 
-entries_update=[]
+# Parse wwpdb entry type record
 for line in read_http('ftp://ftp.wwpdb.org/pub/pdb/derived_data/pdb_entry_type.txt').split('\n'):
     if len(line.strip()) <= 0:
         continue
@@ -100,42 +107,60 @@ for line in read_http('ftp://ftp.wwpdb.org/pub/pdb/derived_data/pdb_entry_type.t
     pdbid, content, method = line.split()
 
     if content=='nuc':
-        pdbidsnuconly.append(pdbid)
+        pdbidsnuconly.add(pdbid)
     elif content=='carb':
-        pdbidscarbonly.append(pdbid)
+        pdbidscarbonly.add(pdbid)
 
     if method=='diffraction':
-        pdbidsdiff.append(pdbid)
+        pdbidsdiff.add(pdbid)
     elif method=='NMR':
-        pdbidsnmr.append(pdbid)
+        pdbidsnmr.add(pdbid)
     elif method=='EM':
-        pdbidsem.append(pdbid)
+        pdbidsem.add(pdbid)
+    elif method=='other':
+        pdbidsother.add(pdbid)
 
 for entry in get_unannotated_entries('STRUCTUREFACTORS'):
 
     pdbid = entry['pdbid']
     if pdbid in pdbidsnmr:
+
         entry['comment'] = 'NMR experiment'
         entry['mtime'] = time()
+
     elif pdbid in pdbidsem:
+
         entry['comment'] = 'Electron microscopy experiment'
         entry['mtime'] = time()
 
+    elif pdbid in pdbidsother:
+
+        entry['comment'] = 'Not a Diffraction experiment'
+        entry['mtime'] = time()
+
     if 'comment' in entry:
-        entries_update.append(entry)
+        update_entry (entry)
 
 for entry in get_unannotated_entries('NMR'):
 
     pdbid = entry['pdbid']
     if pdbid in pdbidsdiff:
+
         entry['comment'] = 'Diffraction experiment'
         entry['mtime'] = time()
+
     elif pdbid in pdbidsem:
+
         entry['comment'] = 'Electron microscopy experiment'
         entry['mtime'] = time()
 
+    elif pdbid in pdbidsother:
+
+        entry['comment'] = 'Not an NMR experiment'
+        entry['mtime'] = time()
+
     if 'comment' in entry:
-        entries_update.append(entry)
+        update_entry (entry)
 
 for entry in get_unannotated_entries('HSSP'):
 
@@ -153,7 +178,7 @@ for entry in get_unannotated_entries('HSSP'):
         if line in ['Not enough sequences in PDB file of length 25', 'multiple occurrences', 'No hits found', 'empty protein, or no valid complete residues']:
             entry['comment'] = line
             entry['mtime'] = time()
-            entries_update.append(entry)
+            update_entry (entry)
 
 for dbname in ['DSSP', 'DSSP_REDO']:
     for entry in get_missing_entries (dbname):
@@ -177,7 +202,7 @@ for dbname in ['DSSP', 'DSSP_REDO']:
                 if not os.path.isfile(inputfile):
                     continue
 
-            lines = commands.getoutput('./dsspcmbi %s /tmp/%s.dssp 2>&1 >/dev/null' % (inputfile,pdbid)).split('\n')
+            lines = commands.getoutput('scripts/dsspcmbi %s /tmp/%s.dssp 2>&1 >/dev/null' % (inputfile,pdbid)).split('\n')
             statement = ''
             for line in lines:
 
@@ -198,7 +223,7 @@ for dbname in ['DSSP', 'DSSP_REDO']:
                         break
 
         if 'comment' in entry:
-            entries_update.append(entry)
+            update_entry (entry)
 
 for entry in get_missing_entries('BDB'):
 
@@ -211,15 +236,15 @@ for entry in get_missing_entries('BDB'):
     lines = open(whynotfile, 'r').readlines()
     comment = parse_comment(lines, entry)
     if len(comment) > 0:
-        entry['comment'] = comment
-        entry['mtime'] = time()
-        entries_update.append(entry)
+        entry ['comment'] = comment
+        entry ['mtime'] = time()
+        update_entry (entry)
 
 for lis in ['acc', 'cal', 'cc1', 'cc2', 'cc3', 'chi', 'dsp', 'iod', 'sbh', 'sbr', 'ss1', 'ss2', 'tau', 'wat']:
     for src in ['pdb', 'redo']:
         dbname = 'WHATIF_%s_%s' % (src.upper(), lis)
 
-        for entry in get_missing_entries(dbname):
+        for entry in get_missing_entries (dbname):
 
             pdbid = entry['pdbid']
             whynotfile = '/data/wi-lists/%s/%s/%s/%s.%s.whynot' % (src, lis, pdbid, pdbid, lis)
@@ -232,7 +257,7 @@ for lis in ['acc', 'cal', 'cc1', 'cc2', 'cc3', 'chi', 'dsp', 'iod', 'sbh', 'sbr'
             if len(comment) > 0:
                 entry['comment'] = comment
                 entry['mtime'] = time()
-                entries_update.append(entry)
+                update_entry (entry)
 
 for lis in ['iod', 'ss2']:
     for src in ['pdb', 'redo']:
@@ -251,6 +276,4 @@ for lis in ['iod', 'ss2']:
             if len(comment) > 0:
                 entry['comment'] = comment
                 entry['mtime'] = time()
-                entries_update.append(entry)
-
-update_entries(entries_update)
+                update_entry (entry)

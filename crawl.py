@@ -71,13 +71,15 @@ def remove_changed (databank, lines=[]):
 
         path = entry ['filepath']
         if databank ['crawltype'] == FILE and \
-                (os.path.getmtime (path) != entry['mtime'] or \
+                (not os.path.isfile (path) or \
+                 os.path.getmtime (path) != entry['mtime'] or \
                  not pattern.search (path)):
 
             storage.remove ('entries', {'databank_name': databank['name'], 'pdbid': entry['pdbid']})
 
         elif databank ['crawltype'] == LINE and \
-                (os.path.getmtime (path) != entry['mtime'] or \
+                (not os.path.isfile (path) or \
+                 os.path.getmtime (path) != entry['mtime'] or \
                  entry ['pdbid'] not in line_matches):
 
             storage.remove ('entries', {'databank_name': databank['name'], 'pdbid': entry['pdbid']})

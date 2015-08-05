@@ -46,7 +46,7 @@ docs.append(createDatabank('PDBFINDER2','http://swift.cmbi.ru.nl/gv/pdbfinder/',
     re.compile(r'ID           : ([\w]{4})'),LINE,'PDBFINDER'))
 docs.append(createDatabank('NMR','http://www.bmrb.wisc.edu/',
     'ftp://ftp.wwpdb.org/pub/pdb/data/structures/all/nmr_restraints/${PDBID}.mr.gz',
-    re.compile(r'.*/([\w]{4}).mr.gz'),LINE,'PDB'))
+    re.compile(r'.*/([\w]{4}).mr.gz'),FILE,'PDB'))
 docs.append(createDatabank('NRG','http://www.rcsb.org/pdb/statistics/holdings.do',
     'http://restraintsgrid.bmrb.wisc.edu/NRG/MRGridServlet?pdb_id=${PDBID}',
     re.compile(r'([0-9][0-9a-zA-Z]{3})'),LINE,'NMR'))

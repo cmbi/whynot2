@@ -4,6 +4,42 @@ from urllib2 import urlopen
 from storage import storage
 import pymongo
 from sets import Set
+from httplib import HTTPConnection
+
+def databanks_by_name (databanks):
+
+    d = {}
+    for databank in databanks:
+        d [databank ['name']] = databank
+
+    return d
+
+databanks = databanks_by_name (storage.find ('databanks', {}))
+
+databank_regexes = {}
+for name in databanks:
+    databank_regexes [name] = databanks [name]['regex'].try_compile ()
+
+def valid_path (databank_name, path):
+
+    if not databank_regexes [databank_name].search (path):
+        return False
+
+    if path.startswith ('http://') or path.startswith ('ftp://'):
+
+        host = path.split ('/')[2]
+        location = path [path.find ('/', path.find (host)):]
+
+        # Request just the head, it's faster
+        conn = HTTPConnection (host)
+        conn.request('HEAD', location)
+        response = conn.getresponse()
+        conn.close()
+
+        return response.status == 200
+
+    else:
+        return os.path.exists (path)
 
 class top_highest (object):
 
@@ -121,14 +157,6 @@ def entries_by_databank (entries):
 
     return d
 
-def databanks_by_name (databanks):
-
-    d = {}
-    for databank in databanks:
-        d [databank ['name']] = databank
-
-    return d
-
 def entries_by_pdbid (entries):
 
     d = {}
@@ -228,17 +256,17 @@ def get_entries_with_pdbid (databank_name, pdbid):
 
 def get_obsolete_entries (databank_name):
 
-    databank = storage.find_one('databanks', {'name': databank_name})
+    databank = storage.find_one ('databanks', {'name': databank_name})
     if not databank:
-        raise Exception("no such databank: " + databank_name)
+        raise Exception ("no such databank: " + databank_name)
 
     if 'parent_name' in databank:
 
-        obsolete=[]
-        parent_entries = entries_by_pdbid(get_present_entries(databank['parent_name']))
-        for entry in get_present_entries(databank_name):
-            if entry['pdbid'] not in parent_entries:
-                obsolete.append(entry)
+        obsolete = []
+        parent_entries = entries_by_pdbid (get_present_entries (databank ['parent_name']))
+        for entry in get_present_entries (databank_name):
+            if entry ['pdbid'] not in parent_entries:
+                obsolete.append (entry)
         return obsolete
     else:
         return []

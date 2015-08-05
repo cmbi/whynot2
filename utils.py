@@ -138,6 +138,10 @@ def get_parent (databank_name, pdbid):
 
     return None
 
+def get_entry (databank_name, pdbid):
+
+    return storage.find_one('entries', {'databank_name': databank_name, 'pdbid': pdbid})
+
 def get_parent_name (databank_name):
 
     databank = storage.find_one('databanks', {'name': databank_name})

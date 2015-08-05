@@ -1,5 +1,5 @@
 /* TAB PANEL STYLES */
-div.tab-row ul {height:20px; background:transparent url(tab_bottom.gif) repeat-x scroll center bottom;}
+div.tab-row ul {height:20px; background:transparent url(image/tab_bottom.gif) repeat-x scroll center bottom;}
 div.tab-row li {padding-left:0px;}
 div.tab-row a:link, div.tab-row a:visited {
 	float: left;

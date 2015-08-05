@@ -10,7 +10,7 @@ from sets import Set
 
 from httplib import HTTPConnection
 
-from utils import has_annotated_parent, has_present_parent, databanks_by_name, valid_path
+from utils import has_annotated_parent, has_present_parent, databanks_by_name, valid_path, get_entry
 
 databanks = databanks_by_name (storage.find ('databanks', {}))
 
@@ -95,7 +95,13 @@ for ID in files_psql:
     databank_name, pdbid = ID.split (',')
     path = files_psql [ID]
 
-    if ID not in files_mongo:
+    if ID in files_mongo:
+
+        if files_mongo [ID] != files_psql [ID] and \
+                not valid_path (databank_name, files_mongo [ID]):
+
+            print "different file path in mongo", ID, ':', files_mongo [ID], 'vs.', files_psql [ID]
+    else:
 
         if has_present_parent (databank_name, pdbid) and \
                 valid_path (databank_name, path):
@@ -107,7 +113,25 @@ for ID in comments_psql:
     databank_name, pdbid = ID.split (',')
     comment = comments_psql [ID]
 
-    if ID not in comments_mongo:
+    if ID in comments_mongo:
+
+        if comments_mongo [ID] != comments_psql [ID]:
+
+            # Ignore these:
+            if comments_mongo [ID].lower().startswith ("too many") and comments_psql [ID].lower().startswith ("more than 20"):
+
+                continue
+
+            if databank_name == 'DSSP_REDO':
+
+                DSSPID = 'DSSP,%s' % pdbid
+                if DSSPID in comments_psql and comments_psql [DSSPID].lower () == comments_mongo [ID].lower ():
+
+                    continue
+
+            print ID, ': mongo\'s comment differs: \'%s\' vs. \'%s\'' % (comments_mongo [ID], comments_psql [ID])
+
+    else:
 
         if has_present_parent (databank_name, pdbid):
 

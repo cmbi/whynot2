@@ -5,6 +5,18 @@ import re
 
 from defs import CRAWLTYPE_LINE as LINE, CRAWLTYPE_FILE as FILE
 
+# Each databank has:
+# - a name
+# - a crawltype, either LINE to obtain entries from lines in a single file, (like PDBFINDER) or
+#   FILE to presume that entries are files within a directory (like PDB)
+# - a filelink, a macro for generating a link to a file, given it's pdbid,
+#   part simply means: the 2nd and 3rd character of the pdbid
+# - a reference: link to a web page that explains the databank
+# - a regex: a pattern that filenames/lines should match to be included as an entry.
+# - a parent name: name of an other databank that it depends on. This field
+#   is not set for the root databank. Entries are considered missing if their parent
+#   has a certain pdbid entry, but the child has not. Obsolete is the opposite of missing.
+
 def createDatabank(name,reference,filelink,regex,crawltype,parent_name=None):
 
     doc = {

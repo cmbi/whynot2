@@ -8,6 +8,11 @@ from storage import storage
 from defs import CRAWLTYPE_LINE as LINE, CRAWLTYPE_FILE as FILE
 from utils import download, entries_by_pdbid, get_present_entries, get_missing_entries, read_http, parse_regex
 
+# Each entry has a pdbid and databank_name, this is what makes it unique.
+# An entry might also have a file path (present entries) or comment (annotated entries).
+# The mtime field tells when the file or comment was added. (number of seconds since january the 1st, 1970, 00:00:00)
+
+# This function is used for file crawling:
 def get_pathnames (path):
 
     if path.startswith ("ftp://"):
@@ -42,6 +47,7 @@ def get_pathnames (path):
     else:
         raise Exception ("invalid path to get files from: " + path)
 
+# This function is used for line crawling:
 def get_lines (path):
 
     if path.startswith ('http://') or path.startswith ('ftp://'):
@@ -67,6 +73,8 @@ def remove_changed (databank, lines=[]):
             if m:
                 line_matches [m.group (1)] = line
 
+    # Remove entries where the file's mtime has changed or where the
+    # actual file/line was removed or doesn't match the pattern anymore:
     for entry in get_present_entries (databank['name']):
 
         path = entry ['filepath']
@@ -86,17 +94,19 @@ def remove_changed (databank, lines=[]):
 
 def crawl_files (databank, pathnames):
 
-    present_entries_bypdbid = entries_by_pdbid (get_present_entries(databank['name']))
-    record_pdbids = entries_by_pdbid(storage.find('entries',{'databank_name':databank['name']}, {'pdbid':1}))
+    present_entries_bypdbid = entries_by_pdbid (get_present_entries (databank ['name']))
+    record_pdbids = entries_by_pdbid (storage.find ('entries', {'databank_name': databank ['name']}, {'pdbid':1}))
     pattern = parse_regex (databank['regex'])
 
     for f in pathnames:
 
+        # Only use files that match the databank's pattern.
         m = pattern.search(f)
         if not m:
             continue
 
-        mtime = time()
+        # For disk files take their mtimes, for urls take current time.
+        mtime = time ()
         if os.path.isfile (f):
             mtime = os.path.getmtime (f)
 
@@ -106,13 +116,13 @@ def crawl_files (databank, pathnames):
             'filepath': f,
             'mtime': mtime
         }
-        if entry['pdbid'] in present_entries_bypdbid:
+        if entry ['pdbid'] in present_entries_bypdbid:
             continue
 
-        if entry['pdbid'] in record_pdbids:
-            storage.update('entries', {'databank_name':databank['name'], 'pdbid':entry['pdbid']}, entry)
+        if entry ['pdbid'] in record_pdbids:
+            storage.update ('entries', {'databank_name': databank ['name'], 'pdbid': entry ['pdbid']}, entry)
         else:
-            storage.insert('entries', entry)
+            storage.insert ('entries', entry)
 
 def crawl_lines (databank, filepath, lines):
 
@@ -120,12 +130,14 @@ def crawl_lines (databank, filepath, lines):
     record_pdbids = entries_by_pdbid(storage.find('entries',{'databank_name':databank['name']}, {'pdbid':1}))
     pattern = parse_regex(databank['regex'])
 
+    # If it's a disk file take its mtime, for urls take current time.
     mtime = time()
     if os.path.isfile (filepath):
         mtime = os.path.getmtime (filepath)
 
     for line in lines:
 
+        # Only use lines that match the databank's pattern
         m = pattern.search (line)
         if not m:
             continue
@@ -155,7 +167,8 @@ databank = storage.find_one('databanks', {'name':databank_name, 'crawltype':{'$i
 if not databank:
     raise Exception('not found or unknown crawl type: ' + databank_name)
 
-if source.startswith('http://') or source.startswith('ftp://') or os.path.isfile(source):
+# On urls, we can only use the line crawler for now.
+if source.startswith('http://') or source.startswith('ftp://') or os.path.isfile (source):
 
     lines = get_lines (source)
 

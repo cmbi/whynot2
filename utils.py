@@ -20,6 +20,10 @@ databank_regexes = {}
 for name in databanks:
     databank_regexes [name] = databanks [name]['regex'].try_compile ()
 
+
+# Verifies that the path contains the regex that the databank prescribes.
+# For a file path, checks that the file exists
+# For an url, checks that the url points to a vallid location. (hssp response 200)
 def valid_path (databank_name, path):
 
     if not databank_regexes [databank_name].search (path):
@@ -41,6 +45,7 @@ def valid_path (databank_name, path):
     else:
         return os.path.exists (path)
 
+# A data structure that remembers the N highest objects added
 class top_highest (object):
 
     def __init__ (self, size):
@@ -49,25 +54,25 @@ class top_highest (object):
         self.d = {}
         self.order = []
 
-    def add (self, number, obj):
+    def add (self, rank, obj):
 
-        if len (self.order) >= self.size and number < self.order [0]:
+        if len (self.order) >= self.size and rank < self.order [0]:
             return # no place in list
 
-        # Place the number in the ordered list
+        # Place the rank number in the ordered list
         i = 0
         while i < len (self.order):
 
-            if number < self.order [i]:
-                self.order.insert (i, number)
+            if rank < self.order [i]:
+                self.order.insert (i, rank)
                 break
 
             i += 1
 
         if i >= len (self.order): # larger than any of them
-            self.order.append (number)
+            self.order.append (rank)
 
-        self.d [number] = obj
+        self.d [rank] = obj
 
         if len (self.order) > self.size:
             self.order = self.order [-self.size:]
@@ -80,26 +85,26 @@ class top_highest (object):
 
         return l
 
-def parse_regex(mongoRegex):
+def parse_regex (mongoRegex):
 
-    return re.compile(mongoRegex.pattern.replace('\\\\','\\'))
+    return re.compile (mongoRegex.pattern.replace ('\\\\', '\\'))
 
-def read_http(url):
+def read_http (url):
 
     s = ''
-    stream = urlopen(url)
+    stream = urlopen (url)
     while True:
-        data = stream.read()
+        data = stream.read ()
         if len (data) <= 0:
             break
         s += data
 
     return s
 
-def download(url,destdir):
+def download (url, destdir):
 
-    destpath = os.path.join(destdir,url.split('/')[-1])
-    open(destpath,'w').write(urlopen(url).read())
+    destpath = os.path.join (destdir, url.split ('/')[-1])
+    open (destpath,'w').write (urlopen(url).read ())
     return destpath
 
 def has_annotated_parent (databank_name, pdbid):
@@ -120,7 +125,7 @@ def has_present_parent (databank_name, pdbid):
 
 def get_parent (databank_name, pdbid):
 
-    databank = storage.find_one('databanks', {'name': databank_name})
+    databank = storage.find_one ('databanks', {'name': databank_name})
     if not databank:
         raise Exception ("no such databank: " + databank_name)
 
@@ -128,11 +133,11 @@ def get_parent (databank_name, pdbid):
 
         parent_name = databank ['parent_name']
 
-        parent = storage.find_one('databanks', {'name': parent_name})
+        parent = storage.find_one ('databanks', {'name': parent_name})
         if not parent:
             raise Exception ("no such databank: " + parent_name)
 
-        parent_entry = storage.find_one('entries', {'databank_name': parent_name, 'pdbid': pdbid})
+        parent_entry = storage.find_one ('entries', {'databank_name': parent_name, 'pdbid': pdbid})
 
         return parent_entry
 
@@ -140,13 +145,13 @@ def get_parent (databank_name, pdbid):
 
 def get_entry (databank_name, pdbid):
 
-    return storage.find_one('entries', {'databank_name': databank_name, 'pdbid': pdbid})
+    return storage.find_one ('entries', {'databank_name': databank_name, 'pdbid': pdbid})
 
 def get_parent_name (databank_name):
 
-    databank = storage.find_one('databanks', {'name': databank_name})
+    databank = storage.find_one ('databanks', {'name': databank_name})
     if not databank:
-        raise Exception("no such databank: " + databank_name)
+        raise Exception ("no such databank: " + databank_name)
 
     if 'parent_name' in databank:
         return databank ['parent_name']
@@ -175,6 +180,9 @@ def get_file_link (databank, pdbid):
 
     return databank ['filelink'].replace ('${PDBID}', pdbid).replace ('${PART}', part)
 
+# Searches all databanks for an entry with given pdb id.
+# Returns a dictionary with a key for every databank.
+# Value is either a link to a file, or a comment if the file is missing.
 def search_results_for (pdbid):
 
     part = pdbid [1:3]
@@ -205,9 +213,14 @@ def search_results_for (pdbid):
 
     return results
 
+# Each databank has a parent, except the root.
+# This function returns a dictionary of diectionaries.
+# Each key is a databank name, each value is a branch.
+# Branch is empty if a databank has no children.
 def get_databank_hierarchy (name = None):
 
     if name is None:
+
         databanks = storage.find ('databanks', {'parent_name': {'$exists': False}}, {'name': 1, '_id': 0})
     else:
         databanks = storage.find ('databanks', {'parent_name': name}, {'name': 1, '_id': 0})
@@ -248,16 +261,24 @@ def get_entries_from_collection (databank_name, collection):
 
 def get_all_entries_with_comment (comment):
 
+    # ordering was found to make it take longer!
+
     return storage.find ('entries', {'comment': comment}, order=[("pdbid", pymongo.ASCENDING)])
 
 def get_entries_with_comment (databank_name, comment):
+
+    # ordering was found to make it take longer!
 
     return storage.find ('entries', {'databank_name': databank_name, 'comment': comment}, order=[("pdbid", pymongo.ASCENDING)])
 
 def get_entries_with_pdbid (databank_name, pdbid):
 
+    # ordering was found to make it take longer!
+
     return storage.find ('entries', {'databank_name': databank_name, 'pdbid': pdbid}, order=[("pdbid", pymongo.ASCENDING)])
 
+
+# Obsolete entries are present entries of which the parent is NOT present.
 def get_obsolete_entries (databank_name):
 
     databank = storage.find_one ('databanks', {'name': databank_name})
@@ -275,6 +296,7 @@ def get_obsolete_entries (databank_name):
     else:
         return []
 
+# Valid entries are present entries of which the parent is ALSO present.
 def get_valid_entries (databank_name):
 
     databank = storage.find_one('databanks',{'name': databank_name})
@@ -292,6 +314,11 @@ def get_valid_entries (databank_name):
     else:
         return get_present_entries(databank_name)
 
+# Iterates through all existing comments.
+# Returns a list of dictionaries with each having:
+# - comment text
+# - number of entries that have the comment
+# - mtime, the last time the comment was annotated
 def comment_summary ():
 
     comments = {}
@@ -307,6 +334,8 @@ def comment_summary ():
 
     return comments.values ()
 
+# Counts present, missing, annotated, etc. entries for a single databank.
+# Returns a dictionary with six numbers.
 def count_summary (databank_name):
 
     databank = storage.find_one('databanks',{'name': databank_name})
@@ -345,6 +374,7 @@ def count_summary (databank_name):
 
                 count ['annotated'] += 1
 
+        # missing = annotated + unannotated
         count ['unannotated'] = count ['missing'] - count ['annotated']
 
         count ['obsolete'] = 0
@@ -354,7 +384,7 @@ def count_summary (databank_name):
 
         count ['valid'] = count ['present'] - count ['obsolete']
 
-    else: # no parent
+    else: # no parent, so nothing is missing or obsolete
 
         count ['missing'] = 0
         count ['valid'] = count ['present']
@@ -364,22 +394,30 @@ def count_summary (databank_name):
 
     return count
 
-def get_present_entries(databank_name):
+
+# An entry is considered present if it has a file path.
+def get_present_entries (databank_name, ordered=False):
+
+    # ordering was found to make it take longer!
 
     return storage.find('entries', {'databank_name': databank_name,'filepath': {'$exists': True}, 'mtime': {'$exists': True}},
                         order=[("pdbid", pymongo.ASCENDING)])
 
-def get_missing_entries(databank_name):
+
+# An entry is considered missing if no file was found for it, but its parent is present.
+# Missing entries are not neccesarily records in the database.
+# Its only the absence of the file that counts here.
+def get_missing_entries (databank_name):
 
     databank = storage.find_one('databanks',{'name':databank_name})
     if not databank:
-        raise Exception("no such databank: " + databank_name)
+        raise Exception ("no such databank: " + databank_name)
 
     # Needs a parent to determine what's missing
     if 'parent_name' not in databank:
         return []
 
-    entries = entries_by_pdbid(storage.find('entries', {'databank_name': databank_name}))
+    entries = entries_by_pdbid (storage.find('entries', {'databank_name': databank_name}))
 
     missing = []
     for entry in get_present_entries(databank['parent_name']):
@@ -394,10 +432,13 @@ def get_missing_entries(databank_name):
     return missing
 
 
+# Annotated entries are always missing and they have a comment.
 def get_annotated_entries (databank_name):
 
     return storage.find('entries', {'databank_name': databank_name, 'comment': {'$exists': True}, 'filepath': {'$exists': False}},
                         order=[("pdbid", pymongo.ASCENDING)])
+
+# Entries that are missing but not annotated:
 def get_unannotated_entries (databank_name):
 
     unannotated = []
@@ -410,6 +451,7 @@ def get_unannotated_entries (databank_name):
 p_tag_enclosed = re.compile("\\<(\\w+)(\\s+.+?|\\s+\".+?\")*\\>(.*)\\<\\/\\1\\>")
 p_single_tag = re.compile("\\<\\w+(\\s+\\w+\\=.+)*\\/\\>")
 
+# Removes xml tags from text, some comments have them.
 def remove_tags (s):
 
     while True:
@@ -494,12 +536,19 @@ def remove_unbranched_comment_nodes (tree):
 
     return tree
 
+# The comments_to_tree function builds a hierarchical data structure for the given comments.
+# Here, comments are split up in nodes, based on the colon characters they contain.
+# For example: the comments "Experimental method: SOLUTION NMR" and
+# "Experimental method: ELECTRON MICROSCOPY" both have the same parent,
+# namely "Experimental method"
 def comments_to_tree (comments_entries_dict):
 
     tree = {}
+
+    # keys are comments, values are entries
     for key in comments_entries_dict:
 
-        full_text = remove_tags (key)
+        full_text = remove_tags (key) # don't count colons in xml tags
 
         if ':' in full_text:
 

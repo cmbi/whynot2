@@ -8,6 +8,8 @@ from utils import (get_obsolete_entries, get_present_entries, get_valid_entries,
                    get_missing_entries, get_annotated_entries, get_unannotated_entries, get_entries_with_pdbid)
 from storage import storage
 
+# This is simply a commandline tool for quick listing of the database contents.
+
 usage='Usage: %s [DB] [present|missing|valid|obsolete|annotated|unannotated|comment:*|pdbid:????]'%sys.argv[0]
 if len(sys.argv) < 2:
     print usage

@@ -122,4 +122,4 @@ class Storage(object):
         _log.info("Creating index in '{}'".format(collection))
         return self._db[collection].create_index(selector)
 
-storage = Storage(uri='mongodb://cmbi4.cmbi.ru.nl', db_name='whynot',)
+storage = Storage(uri='mongodb://cmbi2.cmbi.ru.nl', db_name='whynot',)

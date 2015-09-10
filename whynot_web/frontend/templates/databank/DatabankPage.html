@@ -104,7 +104,16 @@ function load_legend (databank_name)
 
             // Completely remove the loading tag
             $("#loading-" + databank_name).replaceWith ("");
-        }
+        },
+
+	error: function (xhr, textStatus, errorThrown)
+	{
+		if (xhr.status == 502 || xhr.status == 503 || xhr.status == 504)
+		{
+			// random glitch, retry
+			load_legend (databank_name);
+		}
+	}
     });
 }
 

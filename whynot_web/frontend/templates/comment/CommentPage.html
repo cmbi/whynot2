@@ -5,6 +5,7 @@
 function load ()
 {
     $.ajax({
+	timeout: 0, // unlimited
         type: 'GET',
         url: "{{ url_for('dashboard.load_comments') }}",
         success: function (data, status)

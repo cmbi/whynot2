@@ -72,6 +72,7 @@ function load_legend (databank_name)
 {
     // Request the collection sizes, replace the tag when ready
     $.ajax({
+	timeout: 0, // unlimited
         type: 'GET',
         url: "{{ url_for('dashboard.count', databank_name='DDDDDD') }}".replace("DDDDDD", databank_name),
         success: function (counts, status)

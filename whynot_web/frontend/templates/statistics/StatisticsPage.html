@@ -4,6 +4,7 @@
 function load ()
 {
     $.ajax({
+	timeout: 0, // unlimited
         type: 'GET',
         url: "{{ url_for('dashboard.load_statistics') }}",
         success: function (statistics, status)

@@ -22,7 +22,11 @@ def annotations (databank_name, pdbid):
 
     entry = storage.find_one ('entries', {'pdbid': pdbid, 'databank_name': databank_name})
 
-    return Response (entry ['comment'], mimetype='text/plain')
+    comment = ''
+    if entry:
+        comment = entry ['comment']
+
+    return Response (comment, mimetype='text/plain')
 
 @bp.route ('/entries/<databank_name>/<collection>/')
 def entries (databank_name, collection):

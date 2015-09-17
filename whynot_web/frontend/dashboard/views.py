@@ -187,8 +187,8 @@ def statistics ():
 @bp.route('/resources/list/<tolist>/')
 def resources (tolist):
 
-    if '_' not in tolist:
-        return ''
+    if '_' not in tolist: # syntax error
+        return '', 400
 
     # TODO: speed up this method
 

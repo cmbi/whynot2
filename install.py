@@ -79,7 +79,7 @@ docs.append(createDatabank('PDBREPORT','http://swift.cmbi.ru.nl/gv/pdbreport/',
     re.compile(r'pdbreport\/\w{2}\/(\w{4})\/pdbout\.txt'),FILE,'PDB'))
 docs.append(createDatabank('PDB_REDO','http://www.cmbi.ru.nl/pdb_redo/',
     'http://www.cmbi.ru.nl/pdb_redo/cgi-bin/redir2.pl?pdbCode=${PDBID}',
-    re.compile(r'(\w{4})_final\.pdb'),FILE,'STRUCTUREFACTORS'))
+    re.compile(r'\/\w{2}\/\w{4}\/(\w{4})_final\.pdb'),FILE,'STRUCTUREFACTORS'))
 docs.append(createDatabank('DSSP_REDO','http://swift.cmbi.ru.nl/gv/dssp/',
     'ftp://ftp.cmbi.ru.nl/pub/molbio/data/dssp_redo/${PDBID}.dssp',
     re.compile(r'.*/([\w]{4})\.dssp'),FILE,'PDB_REDO'))

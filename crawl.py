@@ -6,7 +6,8 @@ from time import time
 from ftplib import FTP
 from storage import storage
 from defs import CRAWLTYPE_LINE as LINE, CRAWLTYPE_FILE as FILE
-from utils import download, entries_by_pdbid, get_present_entries, get_missing_entries, read_http, parse_regex
+from utils import (download, entries_by_pdbid, get_present_entries,
+                   get_missing_entries, read_http, parse_regex, valid_path)
 
 # Each entry has a pdbid and databank_name, this is what makes it unique.
 # An entry might also have a file path (present entries) or comment (annotated entries).
@@ -79,9 +80,8 @@ def remove_changed (databank, lines=[]):
 
         path = entry ['filepath']
         if databank ['crawltype'] == FILE and \
-                (not os.path.isfile (path) or \
-                 os.path.getmtime (path) != entry['mtime'] or \
-                 not pattern.search (path)):
+                (not valid_path (databank['name'], path) or \
+                 os.path.getmtime (path) != entry['mtime']):
 
             storage.remove ('entries', {'databank_name': databank['name'], 'pdbid': entry['pdbid']})
 

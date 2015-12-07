@@ -35,6 +35,12 @@ def index ():
 
 @bp.route('/search/pdbid/<pdbid>/')
 def search (pdbid):
+
+    # On old browsers, the pdb id might end up in the url parameters:
+    urlparam = request.args.get('pdbid', '')
+    if len (urlparam) == 4:
+	pdbid = urlparam
+
     results = search_results_for (pdbid)
 
     return render_template ('search/ResultsPage.html', db_tree=db_tree, db_order=db_order, pdbid=pdbid, results=results)

@@ -77,7 +77,8 @@
             </ul>
             <h1>Search</h1>
             <div id="search">
-                <form onsubmit="on_search (document.getElementById('pdbid_input').value); return false;">
+                <form action="{{ url_for ('dashboard.search', pdbid='xxxx') }}"
+		      onsubmit="on_search (document.getElementById('pdbid_input').value); return false;">
                     <p>
                         <input id="pdbid_input" type="text" value="" name="pdbid">
                     </p>

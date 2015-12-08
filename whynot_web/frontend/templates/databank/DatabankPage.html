@@ -12,7 +12,7 @@ function piechart (counts)
         radius = 100.0,
         cx = 110.0, cy = 110.0,
 
-        svg = "<svg width=\"220\" height=\"220\">",
+        svg = "<div style=\"width:240px\"><svg width=\"220\" height=\"220\">",
 
         collections = ['valid', 'obsolete', 'annotated', 'unannotated'];
 
@@ -63,16 +63,70 @@ function piechart (counts)
         }
     }
     svg += "<circle cx=\"" + cx + "\" cy=\"" + cy + "\" r=\"" + radius + "\" stroke=\"black\" stroke-width=\"1\" fill=\"none\" />";
-    svg += "</svg>";
+    svg += "The pie-chart cannot be shown because this browser doesn't support inline svg</svg></div>";
 
     return svg;
 }
 
 function load_legend (databank_name)
 {
+    if (!window.XMLHttpRequest)
+    {
+        alert ("This browser does not support Ajax, so this page cannot load fully!");
+        return;
+    }
+
+    var x = new XMLHttpRequest ();
+    x.open ("GET", "{{ url_for('dashboard.count', databank_name='DDDDDD') }}".replace("DDDDDD", databank_name), true);
+    x.onreadystatechange = function()
+    {
+        if (x.readyState != 4)
+            return
+
+        if (x.status == 200)
+        {
+            var html = "<ul class=\"legend\">",
+
+                collections = ['valid', 'obsolete', 'present', 'annotated', 'unannotated', 'missing'],
+                counts = JSON.parse (x.responseText);
+
+            for (var i in collections)
+            {
+                var collection = collections [i],
+                    count = counts [collection];
+
+                html += "<li class=\"" + collection + "\">";
+
+                html += "<a href=\"{{ url_for('dashboard.resources', tolist='LLLLLL') }}\"><img src=\"{{ url_for('static', filename='image/page_white_go.png') }}\"></a>"
+                        .replace("LLLLLL", databank_name + '_' + collection.toUpperCase());
+
+                html += "<a href=\"{{ url_for('dashboard.entries', databank='DDDDDD', collection='CCCCCC') }}\">"
+                        .replace ("DDDDDD", databank_name)
+                        .replace ("CCCCCC", collection)
+                        + "<span class=\"count\">" + count + "</span><span>" + collection + "</span></a>";
+
+                html += "</li>";
+            }
+
+            html += "</ul>" + piechart (counts);
+
+            document.getElementById("display-" + databank_name).innerHTML = html;
+
+            // Completely remove the loading tag
+            var loadingtag = document.getElementById("loading-" + databank_name);
+            loadingtag.parentNode.removeChild (loadingtag);
+        }
+        else if (x.status == 502 || x.status == 503 || x.status == 504)
+        {
+            // random glitch, retry
+            load_legend (databank_name);
+        }
+    }
+    x.send ();
+/*
     // Request the collection sizes, replace the tag when ready
     $.ajax({
-	timeout: 0, // unlimited
+    timeout: 0, // unlimited
         type: 'GET',
         url: "{{ url_for('dashboard.count', databank_name='DDDDDD') }}".replace("DDDDDD", databank_name),
         success: function (counts, status)
@@ -106,15 +160,16 @@ function load_legend (databank_name)
             $("#loading-" + databank_name).replaceWith ("");
         },
 
-	error: function (xhr, textStatus, errorThrown)
-	{
-		if (xhr.status == 502 || xhr.status == 503 || xhr.status == 504)
-		{
-			// random glitch, retry
-			load_legend (databank_name);
-		}
-	}
+    error: function (xhr, textStatus, errorThrown)
+    {
+        if (xhr.status == 502 || xhr.status == 503 || xhr.status == 504)
+        {
+            // random glitch, retry
+            load_legend (databank_name);
+        }
+    }
     });
+*/
 }
 
 {% for databank in databanks %}

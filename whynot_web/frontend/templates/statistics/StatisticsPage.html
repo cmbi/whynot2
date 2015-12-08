@@ -3,8 +3,65 @@
 <script type="text/javascript">
 function load ()
 {
-    $.ajax({
-	timeout: 0, // unlimited
+    if (!window.XMLHttpRequest)
+    {
+        alert ("Your browser does not support Ajax, so this page cannot load fully!");
+        return;
+    }
+
+    var x = new XMLHttpRequest ();
+    x.open ("GET", "{{ url_for('dashboard.load_statistics') }}", true);
+    x.onreadystatechange = function()
+    {
+        if (x.readyState != 4)
+            return
+
+        if (x.status == 200)
+        {
+            var statistics = JSON.parse (x.responseText);
+
+            document.getElementById ("total_databanks").innerHTML = statistics.total_databanks;
+            document.getElementById ("total_entries").innerHTML = statistics.total_entries;
+            document.getElementById ("total_files").innerHTML = statistics.total_files;
+            document.getElementById ("total_annotations").innerHTML = statistics.total_annotations;
+            document.getElementById ("total_comments").innerHTML = statistics.total_comments;
+
+            var htmlAnnotations = "";
+            for (var i = 0; i < statistics.annotations.length; i++)
+            {
+                var annotation = statistics.annotations [i];
+
+                htmlAnnotations += "<tr>";
+                htmlAnnotations += "<td>" + annotation.comment + "</td>";
+                htmlAnnotations += "<td><span>" + annotation.databank_name + "</span>,<span>" + annotation.pdbid + "</span></td>";
+                htmlAnnotations += "<td>" + annotation.date + "</td>";
+                htmlAnnotations += "</tr>";
+            }
+            document.getElementById ("annotations").innerHTML = htmlAnnotations;
+
+            var htmlFiles = "";
+            for (var i = 0; i < statistics.files.length; i++)
+            {
+                var file = statistics.files [i];
+
+                htmlFiles += "<tr>";
+                htmlFiles += "<td>" + file.path + "</td>";
+                htmlFiles += "<td>" + file.date + "</td>";
+                htmlFiles += "</tr>";
+            }
+            document.getElementById ("files").innerHTML = htmlFiles;
+
+            document.getElementById ("statistics").style.display = "block";
+
+            // Completely remove the loading tag
+            var loadingtag = document.getElementById ("loading-statistics");
+            loadingtag.parentNode.removeChild (loadingtag);
+        }
+    }
+    x.send ();
+/*
+    .ajax({
+    timeout: 0, // unlimited
         type: 'GET',
         url: "{{ url_for('dashboard.load_statistics') }}",
         success: function (statistics, status)
@@ -44,6 +101,7 @@ function load ()
             $("#loading-statistics").hide ();
         }
     });
+*/
 }
 
 load ();

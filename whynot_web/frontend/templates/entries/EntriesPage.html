@@ -102,15 +102,15 @@
 
     function toggleTree (comment_id)
     {
-        if ($('#tree-junction-' + comment_id).prop ('class') == 'tree-junction-expanded')
+        if (document.getElementById ('tree-junction-' + comment_id).setAttribute ('class') == 'tree-junction-expanded')
         {
-            $('#tree-junction-' + comment_id).prop ('class', 'tree-junction-collapsed');
-            $('#tree-subtree-' + comment_id).hide ();
+            document.getElementById ('tree-junction-' + comment_id).setAttribute ('class', 'tree-junction-collapsed');
+            document.getElementById ('tree-subtree-' + comment_id).style.display = "none";
         }
         else
         {
-            $('#tree-junction-' + comment_id).prop ('class', 'tree-junction-expanded');
-            $('#tree-subtree-' + comment_id).show ();
+            document.getElementById ('tree-junction-' + comment_id).setAttribute ('class', 'tree-junction-expanded');
+            document.getElementById ('tree-subtree-' + comment_id).style.display = "block";
         }
     }
 
@@ -122,38 +122,67 @@
         morecomments_visible [comment_id] = !morecomments_visible [comment_id];
         if (morecomments_visible [comment_id])
         {
-            $('#more-comments-'+comment_id).show();
-            $('#comments-'+comment_id).hide();
-            $('#more-'+comment_id+" > span").text ("<less>");
+            document.getElementById ('more-comments-'+comment_id).style.display = "block";
+            document.getElementById ('comments-'+comment_id).style.display = "none";
+            document.getElementById ('more-'+comment_id+" > span").text ("<less>");
         }
         else
         {
-            $('#more-comments-'+comment_id).hide();
-            $('#comments-'+comment_id).show();
-            $('#more-'+comment_id+" > span").text ("<more>");
+            document.getElementById ('more-comments-'+comment_id).style.display = "none";
+            document.getElementById ('comments-'+comment_id).style.display = "block";
+            document.getElementById ('more-'+comment_id+" > span").text ("<more>");
         }
     }
 
     function selectTab (id)
     {
-        $('.selector').removeClass ("selected");
-        $('#select-' + id).addClass ("selected");
-        $('.tab-panel').hide();
-        $('#' + id).show();
+        var selectors = document.getElementsByClassName ("selector");
+        for (var i = 0; i < selectors.length; i++)
+        {
+            var selector = selectors [i];
+            selector.className = selector.className.replace ("selected", "");
+        }
+        var selector = document.getElementById ('select-' + id);
+        selector.className = selector.className + " selected";
+
+        var tab_panels = document.getElementsByClassName ("tab-panel");
+        for (var i = 0; i < tab_panels.length; i++)
+        {
+            tab_panels [i].style.display = "none";
+        }
+        document.getElementById (id).style.display = "block";
     }
 
-    function disableBrowseButtons (selection)
+    function disableBrowseButtons (classname, tab, nr)
     {
-        $(selection).each (function (i) {
-            $(this).replaceWith ('<em>' + $(this).html() + '</em>');
-        });
+        var browsetag = document.getElementById ('browse-' + tab);
+
+        for (var i = 0; i < browsetag.children.length; i++)
+        {
+            var spantag =  browsetag.children [i];
+            if (spantag.className.indexOf (classname) < 0)
+                continue;
+
+            var text = spantag.children [0].innerHTML;
+
+            spantag.innerHTML = '<em>' + text + '</em>'
+        }
     }
 
-    function enableBrowseButtons (selection, tab, nr)
+    function enableBrowseButtons (classname, tab, nr)
     {
-        $(selection).each (function (i) {
-            $(this).replaceWith ('<a href=\"#\" onclick=\"setPage(\'' + tab + '\', ' + nr + ');\">' + $(this).html() + '</a>');
-        });
+        var browsetag = document.getElementById ('browse-' + tab);
+
+        for (var i = 0; i < browsetag.children.length; i++)
+        {
+            var spantag =  browsetag.children [i];
+            if (spantag.className.indexOf (classname) < 0)
+                continue;
+
+            var text = spantag.children [0].innerHTML;
+
+            spantag.innerHTML = '<a href=\"#\" onclick=\"setPage(\'' + tab + '\', ' + nr + ');\">' + text + '</a>'
+        }
     }
 
     var page_index = {'entries':0, 'files':0, 'pdbids':0},
@@ -161,39 +190,43 @@
 
     function setPage (tab, index)
     {
-        $('.' + tab + '-page').hide();
-        $('#' + tab + '-page-' + index).show();
+        var pages = document.getElementsByClassName (tab + '-page');
+        for (var i = 0; i < pages.length; i++)
+        {
+            pages [i].style.display = "none";
+        }
+        document.getElementById ('' + tab + '-page-' + index).style.display = "block";
 
-        // enable current:
-        enableBrowseButtons ('#browse-' + tab + ' > .goto-' + (page_index [tab] + 1) + ' > *', tab, page_index [tab]);
+        // enable previous page button
+        enableBrowseButtons ('goto-' + (page_index [tab] + 1), tab, page_index [tab]);
 
         page_index [tab] = index;
 
-        // disable new
-        disableBrowseButtons ('#browse-' + tab + ' > .goto-' + (index + 1) + ' > *');
+        // disable new page button
+        disableBrowseButtons ('goto-' + (index + 1), tab, index + 1);
 
         // if this is the first, then prev and first will be disabled, else enabled
         if (index == 0)
         {
-            disableBrowseButtons ('#browse-' + tab + ' > .first > *');
-            disableBrowseButtons ('#browse-' + tab + ' > .prev > *');
+            disableBrowseButtons ('first', tab, 0);
+            disableBrowseButtons ('prev', tab, index - 1);
         }
         else
         {
-            enableBrowseButtons ('#browse-' + tab + ' > .first > *', tab, 0);
-            enableBrowseButtons ('#browse-' + tab + ' > .prev > *', tab, index - 1);
+            enableBrowseButtons ('first', tab, 0);
+            enableBrowseButtons ('prev', tab, index - 1);
         }
 
         // if this is the last, then next and last will be disabled, else enabled
         if ((index + 1) == max_length [tab])
         {
-            disableBrowseButtons ('#browse-' + tab + ' > .last > *');
-            disableBrowseButtons ('#browse-' + tab + ' > .next > *');
+            disableBrowseButtons ('last', tab, max_length [tab] - 1);
+            disableBrowseButtons ('next', tab, index + 1);
         }
         else
         {
-            enableBrowseButtons ('#browse-' + tab + ' > .next > *', tab, index + 1);
-            enableBrowseButtons ('#browse-' + tab + ' > .last > *', tab, max_length [tab] - 1);
+            enableBrowseButtons ('next', tab, index + 1);
+            enableBrowseButtons ('last', tab, max_length [tab] - 1);
         }
     }
     </script>

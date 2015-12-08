@@ -100,6 +100,16 @@
 
     var morecomments_visible = {};
 
+    function has_class (str, classname)
+    {
+        var words = str.split (" ");
+        for (var i = 0; i < words.length; i++)
+            if (words [i] == classname)
+                return true;
+
+        return false;
+    }
+
     function toggleTree (comment_id)
     {
         if (document.getElementById ('tree-junction-' + comment_id).setAttribute ('class') == 'tree-junction-expanded')
@@ -160,7 +170,7 @@
         for (var i = 0; i < browsetag.children.length; i++)
         {
             var spantag =  browsetag.children [i];
-            if (spantag.className.indexOf (classname) < 0)
+            if (!has_class (spantag.className, classname))
                 continue;
 
             var text = spantag.children [0].innerHTML;
@@ -176,7 +186,7 @@
         for (var i = 0; i < browsetag.children.length; i++)
         {
             var spantag =  browsetag.children [i];
-            if (spantag.className.indexOf (classname) < 0)
+            if (!has_class (spantag.className, classname))
                 continue;
 
             var text = spantag.children [0].innerHTML;

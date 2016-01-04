@@ -9,6 +9,9 @@ from time import time
 from sets import Set
 
 
+dsspcmbi = os.path.join (os.path.dirname (sys.argv [0]), 'scripts/dsspcmbi')
+print dsspcmbi
+
 # whynot comment files look like this:
 # COMMENT: <text 1>
 # <databank name>, <pdbid 1>
@@ -36,6 +39,10 @@ def parse_comments (lines):
 
             databank_name, pdbid = line.strip ().replace (' ','').split (',')
             d.append ((comment, databank_name, pdbid))
+
+        elif len (line.strip ()) > 0:
+
+            raise Exception ("not the right format: \"%s\"" % line )
 
     return d
 
@@ -96,6 +103,7 @@ if len (sys.argv) > 1:
 
     for path in sys.argv [1:]:
 
+        print 'annotate', path
         annotate_from_file (path)
 
     sys.exit (0)
@@ -116,6 +124,7 @@ if os.path.isdir (commentsdir):
 
             filepath = os.path.join (commentsdir, filename)
 
+            print 'annotate', filepath
             annotate_from_file (filepath)
 
 # List the pdbids for pdb entries by category. For many missing entries,
@@ -262,7 +271,7 @@ for dbname in ['DSSP', 'DSSP_REDO']:
                     continue
 
             # Run dsspcmbi and catch stderr:
-            lines = commands.getoutput('scripts/dsspcmbi %s /tmp/%s.dssp 2>&1 >/dev/null' % (inputfile,pdbid)).split('\n')
+            lines = commands.getoutput('%s %s /tmp/%s.dssp 2>&1 >/dev/null' % (dsspcmbi, inputfile, pdbid)).split('\n')
             statement = ''
             for line in lines:
 

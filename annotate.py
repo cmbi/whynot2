@@ -10,7 +10,6 @@ from sets import Set
 
 
 dsspcmbi = os.path.join (os.path.dirname (sys.argv [0]), 'scripts/dsspcmbi')
-print dsspcmbi
 
 # whynot comment files look like this:
 # COMMENT: <text 1>

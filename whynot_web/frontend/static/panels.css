@@ -1,0 +1,4 @@
+.annotation {white-space: nowrap;}
+.annotation:before {content: url('image/page_white_delete.png');}
+.file{white-space: nowrap;}
+.file:before {content: url('image/page_white_go.png');}

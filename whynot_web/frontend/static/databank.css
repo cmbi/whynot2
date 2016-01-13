@@ -1,0 +1,20 @@
+ul.legend {
+	float:right;
+	width:150px;}
+ul.legend li {
+	list-style:square;
+	padding-left:0px;
+	font-size:16px;
+}
+ul.legend li .count {float:right;}
+ul.legend img {float:right;}
+
+.valid {color: #0070b8; fill: #0070b8;}
+.obsolete {color: #b80000; fill: #b80000;}
+
+.annotated {color: #00b870; fill: #00b870;}
+.unannotated {color: yellow; fill: yellow;}
+
+.present, .missing{
+	margin-bottom:10px;
+	text-decoration: overline;}

@@ -1,6 +1,6 @@
 import logging
 import os
-from time import strftime, gmtime
+from time import strftime, gmtime, time
 from copy import deepcopy
 from sets import Set
 
@@ -31,17 +31,24 @@ db_order = names_from_hierarchy (db_tree)
 
 @bp.route('/')
 def index ():
+
     return render_template ('home/HomePage.html', db_tree=db_tree)
 
 @bp.route('/search/pdbid/<pdbid>/')
 def search (pdbid):
+
+    _log.info ("request for pdbid " + pdbid)
 
     # On old browsers, the pdb id might end up in the url parameters:
     urlparam = request.args.get('pdbid', '')
     if len (urlparam) == 4:
 	pdbid = urlparam
 
+    start_time = time ()
     results = search_results_for (pdbid)
+    end_time = time ()
+
+    _log.info ("transaction finished in %d seconds" % (end_time - start_time))
 
     return render_template ('search/ResultsPage.html', db_tree=db_tree, db_order=db_order, pdbid=pdbid, results=results)
 
@@ -52,9 +59,15 @@ def about ():
 @bp.route('/load_comments/')
 def load_comments ():
 
+    _log.info ("request for comment summary")
+
     # TODO: speed up this method
 
+    start_time = time ()
     comments = comment_summary ()
+    end_time = time ()
+
+    _log.info ("transaction finished in %d seconds" % (end_time - start_time))
 
     for i in range (len (comments)):
         comments [i]['latest'] = strftime (date_format, gmtime (comments [i]['mtime']))
@@ -72,16 +85,28 @@ def count (databank_name):
 
     # TODO: speed up this method
 
-    return jsonify (count_summary (databank_name))
+    _log.info ("request for databank %s summary" % databank_name)
+
+    start_time = time ()
+    cs = count_summary (databank_name)
+    end_time = time ()
+
+    _log.info ("transaction finished in %d seconds" % (end_time - start_time))
+
+    return jsonify (cs)
 
 @bp.route('/databanks/')
 @bp.route('/databanks/name/<name>/')
 def databanks (name=None):
 
+    start_time = time ()
     if name is None:
         databanks = storage.find ('databanks', {})
     else:
         databanks = [ storage.find_one ('databanks', {'name': name}) ]
+    end_time = time ()
+
+    _log.info ("transaction finished in %d seconds" % (end_time - start_time))
 
     return render_template ('databank/DatabankPage.html', db_tree=db_tree, nav_disabled='databanks', databanks=databanks)
 
@@ -92,6 +117,8 @@ def entries ():
     databank_name = request.args.get('databank')
     comment_text = request.args.get('comment')
 
+    _log.info ("request for entries %s %s %s" % (collection, databank_name, comment_text))
+
     title = 'No entries selected'
     entries = []
     files = []
@@ -99,17 +126,32 @@ def entries ():
 
     if databank_name and collection:
 
+	start_time = time ()
         entries = get_entries_from_collection (databank_name, collection)
+	end_time = time ()
+
+	_log.info ("transaction finished in %d seconds" % (end_time - start_time))
+
         title = "%s %s" % (databank_name, collection)
 
     elif databank_name and comment_text:
 
+	start_time = time ()
         entries = get_entries_with_comment (databank_name, comment_text)
+	end_time = time ()
+
+	_log.info ("transaction finished in %d seconds" % (end_time - start_time))
+
         title = comment_text
 
     elif comment_text:
 
+	start_time = time ()
         entries = get_all_entries_with_comment (comment_text)
+	end_time = time ()
+
+        _log.info ("transaction finished in %d seconds" % (end_time - start_time))
+
         title = comment_text
 
     databank = storage.find_one ('databanks', {'name': databank_name})
@@ -134,6 +176,8 @@ def entries ():
 
 @bp.route('/load_statistics/')
 def load_statistics ():
+
+    _log.info ("request for statistics")
 
     #TODO: speed up this method
 
@@ -193,6 +237,8 @@ def statistics ():
 @bp.route('/resources/list/<tolist>/')
 def resources (tolist):
 
+    _log.info ("request for resources " + tolist)
+
     if '_' not in tolist: # syntax error
         return '', 400
 
@@ -222,6 +268,8 @@ def entries_file ():
 
     # listing determines what is shown per entry (pdb ids, databank names, comments, file names, etc.)
     listing = request.args.get ('listing')
+
+    _log.info ("request for entries file %s %s %s %s" % (collection, databank_name, comment_text, listing))
 
     if not listing:
         return ''

@@ -59,18 +59,6 @@ docs.append(createDatabank('PDBFINDER2','http://swift.cmbi.ru.nl/gv/pdbfinder/',
 docs.append(createDatabank('NMR','http://www.bmrb.wisc.edu/',
     'ftp://ftp.wwpdb.org/pub/pdb/data/structures/all/nmr_restraints/${PDBID}.mr.gz',
     re.compile(r'.*/([\w]{4}).mr.gz'),FILE,'PDB'))
-docs.append(createDatabank('NRG','http://www.rcsb.org/pdb/statistics/holdings.do',
-    'http://restraintsgrid.bmrb.wisc.edu/NRG/MRGridServlet?pdb_id=${PDBID}',
-    re.compile(r'([0-9][0-9a-zA-Z]{3})'),LINE,'NMR'))
-docs.append(createDatabank('NRG-DOCR','http://restraintsgrid.bmrb.wisc.edu/NRG/MRGridServlet',
-    'http://restraintsgrid.bmrb.wisc.edu/NRG/MRGridServlet?block_text_type=3-converted-DOCR&pdb_id=${PDBID}',
-    re.compile(r'([0-9][0-9a-zA-Z]{3})'),LINE,'NRG'))
-docs.append(createDatabank('RECOORD','http://www.ebi.ac.uk/msd-srv/docs/NMR/recoord/main.html',
-    'http://www.ebi.ac.uk/msd/NMR/recoord/entries/${PDBID}.html',
-    re.compile(r'.*/([\w]{4})_cns_w\.pdb'),FILE,'NRG'))
-docs.append(createDatabank('NRG-CING','http://nmr.cmbi.ru.nl/NRG-CING/',
-    'http://nmr.cmbi.ru.nl/NRG-CING/data/${PART}/${PDBID}/${PDBID}.cing',
-    re.compile(r'([0-9][0-9a-zA-Z]{3})'),LINE,'NMR'))
 docs.append(createDatabank('STRUCTUREFACTORS','http://www.pdb.org/',
     'ftp://ftp.wwpdb.org/pub/pdb/data/structures/divided/structure_factors/${PART}/r${PDBID}sf.ent.gz',
     re.compile(r'.*/r([\w]{4})sf\.ent\.gz'),FILE,'MMCIF'))

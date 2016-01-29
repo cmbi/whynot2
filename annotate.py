@@ -123,8 +123,9 @@ if os.path.isdir (commentsdir):
 
             filepath = os.path.join (commentsdir, filename)
 
-            print 'annotate', filepath
             annotate_from_file (filepath)
+
+            os.rename (filepath, filepath + ".done")
 
 # List the pdbids for pdb entries by category. For many missing entries,
 # the category is the reason why they are missing. We base the comment on that.

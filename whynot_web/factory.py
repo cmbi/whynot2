@@ -7,7 +7,6 @@ from storage import storage
 
 _log = logging.getLogger(__name__)
 
-
 def create_app(settings=None):
     _log.info("Creating app")
 
@@ -19,6 +18,15 @@ def create_app(settings=None):
         app.config.update(settings)
     else:  # pragma: no cover
         app.config.from_envvar('WHYNOT_SETTINGS')  # pragma: no cover
+
+    loglevel = logging.INFO
+    if app.config["DEBUG"]:
+	loglevel = logging.DEBUG
+
+    logging.basicConfig (filename=app.config["LOG_TO"],
+			 level=loglevel,
+			 format="%(levelname)s - %(asctime)s : %(message)s")
+
 
     # Ignore Flask's built-in logging
     # app.logger is accessed here so Flask tries to create it

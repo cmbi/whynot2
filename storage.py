@@ -12,6 +12,8 @@ class Storage(object):
         self._db_name = db_name
         self._client = None
         self._uri = uri
+        self._username = ''
+        self._password = ''
 
         if self._uri is not None and self._db_name is not None:
             self.connect()
@@ -40,15 +42,21 @@ class Storage(object):
     def uri(self, uri):
         self._uri = uri
 
-    def connect(self):
+    def connect (self):
+
         if self.uri is None or self._db_name is None:
             raise Exception("Storage hasn't been configured")
 
         _log.info("Connecting to '{}'".format(self.uri))
         self._client = MongoClient(self._uri)
         assert self._client is not None
+
         self._db = self._client[self._db_name]
         assert self._db is not None
+
+    def authenticate (self, username, passwd):
+
+        self._db.authenticate (username, passwd)
 
     def insert(self, collection, documents):
         if self._db is None:

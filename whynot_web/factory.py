@@ -21,22 +21,23 @@ def create_app(settings=None):
 
     loglevel = logging.INFO
     if app.config["DEBUG"]:
-	loglevel = logging.DEBUG
+        loglevel = logging.DEBUG
 
     logging.basicConfig (filename=app.config["LOG_TO"],
-			 level=loglevel,
-			 format="%(levelname)s - %(asctime)s : %(message)s")
+            level=loglevel,
+            format="%(levelname)s - %(asctime)s : %(message)s")
 
 
     # Ignore Flask's built-in logging
     # app.logger is accessed here so Flask tries to create it
     app.logger_name = "nowhere"
-    app.logger
 
     # Configure email logging. It is somewhat dubious to get _log from the
     # root package, but I can't see a better way. Having the email handler
     # configured at the root means all child loggers inherit it.
     from whynot_web import _log as root_logger
+
+    storage.authenticate ('whynotuser', 'oon6oo4J')
 
     if not app.debug and not app.testing:  # pragma: no cover
         # Only log to email during production.

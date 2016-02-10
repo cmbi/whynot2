@@ -160,15 +160,17 @@ if not len(sys.argv) == 3:
     print 'Usage: %s [databank name] [source]' % sys.argv[0]
     sys.exit(0)
 
-databank_name = sys.argv[1]
-source = sys.argv[2]
+databank_name = sys.argv [1]
+source = sys.argv [2]
 
-databank = storage.find_one('databanks', {'name':databank_name, 'crawltype':{'$in':[LINE,FILE]}})
+storage.authenticate ('whynotadmin', 'waivuy8N')
+
+databank = storage.find_one ('databanks', {'name':databank_name, 'crawltype':{'$in':[LINE,FILE]}})
 if not databank:
-    raise Exception('not found or unknown crawl type: ' + databank_name)
+    raise Exception ('not found or unknown crawl type: ' + databank_name)
 
 # On urls, we can only use the line crawler for now.
-if source.startswith('http://') or source.startswith('ftp://') or os.path.isfile (source):
+if source.startswith ('http://') or source.startswith ('ftp://') or os.path.isfile (source):
 
     lines = get_lines (source)
 

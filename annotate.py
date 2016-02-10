@@ -8,6 +8,7 @@ from storage import storage
 from time import time
 from sets import Set
 
+storage.authenticate ('whynotadmin', 'waivuy8N')
 
 dsspcmbi = os.path.join (os.path.dirname (sys.argv [0]), 'scripts/dsspcmbi')
 

@@ -26,11 +26,11 @@
         {
             if (pdbid.length <= 0)
                 set_feedback ('error', "'pdbid' is required.");
-            else if (!pdbid.match (/^[0-9][0-9a-zA-Z]{3}$/))
+	    else if (!pdbid.match (/^\s*[0-9][0-9a-zA-Z]{3}\s*$/))
                 set_feedback ('error', "Please enter a valid pdb id.");
             else
             {
-                $(location).attr('href', "{{ url_for ('dashboard.search', pdbid='xxxx') }}".replace("xxxx", pdbid) );
+		$(location).attr('href', "{{ url_for ('dashboard.search', pdbid='xxxx') }}".replace("xxxx", pdbid.replace(/\s/g,'')));
             }
         }
     </script>

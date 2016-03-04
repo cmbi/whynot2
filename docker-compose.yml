@@ -1,0 +1,9 @@
+whynot:
+    build: .
+    dockerfile: "Dockerfile"
+    ports:
+        - "15000:15000"
+mongo:
+    image: mongo
+    ports:
+        - "27017:27017"

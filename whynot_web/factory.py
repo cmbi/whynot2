@@ -6,6 +6,8 @@ from flask import Flask
 from storage import storage
 
 _log = logging.getLogger(__name__)
+sh = logging.StreamHandler()
+
 
 def create_app(settings=None):
     _log.info("Creating app")
@@ -19,35 +21,22 @@ def create_app(settings=None):
     else:  # pragma: no cover
         app.config.from_envvar('WHYNOT_SETTINGS')  # pragma: no cover
 
-    loglevel = logging.INFO
-    if app.config["DEBUG"]:
-        loglevel = logging.DEBUG
-
-    logging.basicConfig (filename=app.config["LOG_TO"],
-            level=loglevel,
-            format="%(levelname)s - %(asctime)s : %(message)s")
-
-
     # Ignore Flask's built-in logging
     # app.logger is accessed here so Flask tries to create it
     app.logger_name = "nowhere"
+    app.logger
 
-    # Configure email logging. It is somewhat dubious to get _log from the
-    # root package, but I can't see a better way. Having the email handler
-    # configured at the root means all child loggers inherit it.
-    from whynot_web import _log as root_logger
+    whynot_logger = logging.getLogger('whynot_web')
 
-    storage.authenticate ('whynotuser', 'oon6oo4J')
-
+    # Only log to email during production.
     if not app.debug and not app.testing:  # pragma: no cover
-        # Only log to email during production.
         mail_handler = SMTPHandler((app.config["MAIL_SERVER"],
-                                    app.config["MAIL_SMTP_PORT"]),
-                                    app.config["MAIL_FROM"],
-                                    app.config["MAIL_TO"],
-                                    "pdb catalog failed")
+                                   app.config["MAIL_SMTP_PORT"]),
+                                   app.config["MAIL_FROM"],
+                                   app.config["MAIL_TO"],
+                                   "whynot failed")
         mail_handler.setLevel(logging.ERROR)
-        root_logger.addHandler(mail_handler)
+        whynot_logger.addHandler(mail_handler)
         mail_handler.setFormatter(
             logging.Formatter("Message type: %(levelname)s\n" +
                               "Location: %(pathname)s:%(lineno)d\n" +
@@ -56,18 +45,25 @@ def create_app(settings=None):
                               "Time: %(asctime)s\n" +
                               "Message:\n" +
                               "%(message)s"))
-    elif not app.testing:
-        # Only log to the console during development and production, but not
-        # during testing.
-        ch = logging.StreamHandler()
-        formatter = logging.Formatter(
-            '%(asctime)s - %(levelname)s - %(message)s')
-        ch.setFormatter(formatter)
-        root_logger.addHandler(ch)
 
-        root_logger.setLevel(logging.DEBUG)
+    # Only log to the console during development and production, but not during
+    # testing.
+    if app.testing:
+        whynot_logger.setLevel(logging.DEBUG)
     else:
-        root_logger.setLevel(logging.DEBUG)
+        # This is the formatter used for the Flask app.
+        formatter = logging.Formatter(
+            '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        sh.setFormatter(formatter)
+        whynot_logger.addHandler(sh)
+
+        if app.debug:
+            whynot_logger.setLevel(logging.DEBUG)
+        else:
+            whynot_logger.setLevel(logging.INFO)
+
+    # Configure storage
+    storage.authenticate('whynotuser', 'oon6oo4J')
 
     # Use ProxyFix to correct URL's when redirecting.
     from whynot_web.middleware import ReverseProxied
@@ -84,7 +80,7 @@ def create_app(settings=None):
     # Register blueprints
     from whynot_web.frontend.dashboard.views import bp as dashboard_bp
     from whynot_web.frontend.rest.rs import bp as rs_bp
-    app.register_blueprint (dashboard_bp)
-    app.register_blueprint (rs_bp)
+    app.register_blueprint(dashboard_bp)
+    app.register_blueprint(rs_bp)
 
     return app

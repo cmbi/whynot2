@@ -3,7 +3,6 @@ from logging.handlers import SMTPHandler
 
 from flask import Flask
 
-from storage import storage
 
 _log = logging.getLogger(__name__)
 sh = logging.StreamHandler()
@@ -63,7 +62,10 @@ def create_app(settings=None):
             whynot_logger.setLevel(logging.INFO)
 
     # Configure storage
-    storage.authenticate('whynotuser', 'oon6oo4J')
+    from storage import storage
+    storage.uri = app.config['MONGODB_URI']
+    storage.db_name = app.config['MONGODB_DB_NAME']
+    storage.connect()
 
     # Use ProxyFix to correct URL's when redirecting.
     from whynot_web.middleware import ReverseProxied

@@ -67,6 +67,16 @@ def create_app(settings=None):
     storage.db_name = app.config['MONGODB_DB_NAME']
     storage.connect()
 
+    # Setup the default databanks if there are none
+    if storage.count('databanks', {}) == 0:
+        from install import create_databanks
+        storage.create_index('databanks', 'name')
+        storage.create_index('entries', 'databank_name')
+        storage.create_index('entries', 'pdbid')
+        storage.create_index('entries', 'comment')
+        databanks = create_databanks()
+        storage.insert('databanks', databanks)
+
     # Use ProxyFix to correct URL's when redirecting.
     from whynot_web.middleware import ReverseProxied
     app.wsgi_app = ReverseProxied(app.wsgi_app)

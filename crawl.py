@@ -2,9 +2,16 @@
 
 import sys,os,re,shutil
 
+# Must import storage before utils
+import update_settings as settings
+from storage import storage
+storage.uri = settings.MONGODB_URI
+storage.db_name = settings.MONGODB_DB_NAME
+storage.connect()
+storage.authenticate ('whynotadmin', 'waivuy8N')
+
 from time import time
 from ftplib import FTP
-from storage import storage
 from defs import CRAWLTYPE_LINE as LINE, CRAWLTYPE_FILE as FILE
 from utils import (download, entries_by_pdbid, get_present_entries,
                    get_missing_entries, read_http, parse_regex, valid_path)
@@ -162,8 +169,6 @@ if not len(sys.argv) == 3:
 
 databank_name = sys.argv [1]
 source = sys.argv [2]
-
-storage.authenticate ('whynotadmin', 'waivuy8N')
 
 databank = storage.find_one ('databanks', {'name':databank_name, 'crawltype':{'$in':[LINE,FILE]}})
 if not databank:

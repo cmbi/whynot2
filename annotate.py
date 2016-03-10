@@ -2,13 +2,18 @@
 
 import sys,os,commands
 
+# Must import storage before utils
+import update_settings as settings
+from storage import storage
+storage.uri = settings.MONGODB_URI
+storage.db_name = settings.MONGODB_DB_NAME
+storage.connect()
+storage.authenticate ('whynotadmin', 'waivuy8N')
+
 from utils import entries_by_pdbid, get_unannotated_entries, get_missing_entries, read_http
 
-from storage import storage
 from time import time
 from sets import Set
-
-storage.authenticate ('whynotadmin', 'waivuy8N')
 
 dsspcmbi = os.path.join (os.path.dirname (sys.argv [0]), 'scripts/dsspcmbi')
 

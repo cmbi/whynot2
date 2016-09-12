@@ -15,7 +15,7 @@ from utils import entries_by_pdbid, get_unannotated_entries, get_missing_entries
 from time import time
 from sets import Set
 
-dsspcmbi = os.path.join (os.path.dirname (sys.argv [0]), 'scripts/dsspcmbi')
+mkdssp = '/usr/local/bin/mkdssp'
 
 # whynot comment files look like this:
 # COMMENT: <text 1>
@@ -224,13 +224,13 @@ for entry in get_unannotated_entries('HSSP'):
 
     pdbid = entry['pdbid']
 
-    inputfile = '/data/pdb/all/pdb%s.ent.gz' % pdbid
+    inputfile = '/srv/data/pdb/all/pdb%s.ent.gz' % pdbid
     if not os.path.isfile(inputfile):
-        inputfile = '/data/mmCIF/%s.cif.gz' % pdbid
+        inputfile = '/srv/data/mmCIF/%s.cif.gz' % pdbid
 
     # Get hssp error from log file.
     # If the log is missing, run mkhssp.
-    errfile = '/data/scratch/whynot2/hssp/%s.err' % pdbid
+    errfile = '/srv/data/scratch/whynot2/hssp/%s.err' % pdbid
     if os.path.isfile (errfile):
         line = open (errfile, 'r').read ()
     else:
@@ -268,34 +268,19 @@ for dbname in ['DSSP', 'DSSP_REDO']:
 
             # DSSP uses pdb files as input, DSSP_REDO uses pdb_redo files:
             if dbname == 'DSSP':
-                inputfile = '/data/pdb/all/pdb%s.ent.gz' % pdbid
+                inputfile = '/srv/data/pdb/all/pdb%s.ent.gz' % pdbid
                 if not os.path.isfile(inputfile):
-                    inputfile = '/data/mmCIF/%s.cif.gz' % pdbid
+                    inputfile = '/srv/data/mmCIF/%s.cif.gz' % pdbid
             else:
-                inputfile = '/data/pdb_redo/%s/%s/%s_final.pdb' % (pdbid[1:3], pdbid, pdbid)
+                inputfile = '/srv/data/pdb_redo/%s/%s/%s_final.pdb' % (pdbid[1:3], pdbid, pdbid)
                 if not os.path.isfile(inputfile):
                     continue
 
             # Run dsspcmbi and catch stderr:
-            lines = commands.getoutput('%s %s /tmp/%s.dssp 2>&1 >/dev/null' % (dsspcmbi, inputfile, pdbid)).split('\n')
-            statement = ''
-            for line in lines:
-
-                line = line.strip()
-                if line.startswith('!!!'):
-                    statement = line[3:].strip()
-
-                if line.endswith('!!!'):
-
-                    if statement.endswith('!!!'):
-                        statement = statement[:-3].strip()
-                    else:
-                        statement += ' ' + line[:-3].strip()
-
-                    if statement == 'No residues with complete backbone':
-                        entry['comment'] = statement
-                        entry['mtime'] = time()
-                        break
+            lines = commands.getoutput('%s %s /tmp/%s.dssp 2>&1 >/dev/null' % (mkdssp, inputfile, pdbid)).split('\n')
+            if lines [-1].strip () == 'empty protein, or no valid complete residues':
+                entry['comment'] = 'No residues with complete backbone' # for backwards compatibility
+                entry['mtime'] = time()
 
         if 'comment' in entry:
             update_entry (entry)
@@ -305,7 +290,7 @@ for entry in get_missing_entries('BDB'):
 
     pdbid = entry['pdbid']
     part = pdbid[1:3]
-    whynotfile = '/data/bdb/%s/%s/%s.whynot' % (part, pdbid, pdbid)
+    whynotfile = '/srv/data/bdb/%s/%s/%s.whynot' % (part, pdbid, pdbid)
     if not os.path.isfile(whynotfile):
         continue
 
@@ -324,7 +309,7 @@ for lis in ['acc', 'cal', 'cc1', 'cc2', 'cc3', 'chi', 'dsp', 'iod', 'sbh', 'sbr'
         for entry in get_missing_entries (dbname):
 
             pdbid = entry['pdbid']
-            whynotfile = '/data/wi-lists/%s/%s/%s/%s.%s.whynot' % (src, lis, pdbid, pdbid, lis)
+            whynotfile = '/srv/data/wi-lists/%s/%s/%s/%s.%s.whynot' % (src, lis, pdbid, pdbid, lis)
             if not os.path.isfile(whynotfile):
                 continue
 
@@ -343,7 +328,7 @@ for lis in ['iod', 'ss2']:
         for entry in get_missing_entries(dbname):
 
             pdbid = entry['pdbid']
-            whynotfile = '/data/wi-lists/%s/scenes/%s/%s/%s.%s.whynot' % (src, lis, pdbid, pdbid, lis)
+            whynotfile = '/srv/data/wi-lists/%s/scenes/%s/%s/%s.%s.whynot' % (src, lis, pdbid, pdbid, lis)
             if not os.path.isfile(whynotfile):
                 continue
 

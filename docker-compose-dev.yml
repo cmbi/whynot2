@@ -1,3 +1,0 @@
-whynot:
-    volumes:
-        - ".:/app"

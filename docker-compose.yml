@@ -1,9 +1,13 @@
-whynot:
-    build: .
-    dockerfile: "Dockerfile"
+version: "2"
+
+services:
+  whynot:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-        - "15000:15000"
-mongo:
+      - "15000:15000"
+    environment:
+      - WHYNOT_SETTINGS=/usr/src/app/prd_settings.py
+  mongo:
     image: mongo
-    ports:
-        - "27017:27017"

@@ -9,5 +9,3 @@ services:
       - "15000:15000"
     environment:
       - WHYNOT_SETTINGS=/usr/src/app/prd_settings.py
-  mongo:
-    image: mongo

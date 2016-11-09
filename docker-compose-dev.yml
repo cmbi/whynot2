@@ -1,0 +1,11 @@
+version: "2"
+
+services:
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: watchmedo auto-restart -d /usr/src/app -p "*.py" -D -R -- gunicorn -k gevent -b 0.0.0.0:15000 whynot_web.application:app
+    environment:
+      - WHYNOT_SETTINGS=/usr/src/app/dev_settings.py

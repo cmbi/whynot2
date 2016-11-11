@@ -5,12 +5,28 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile-frontend
     command: gunicorn -k gevent -b 0.0.0.0:15000 whynot.application:app
+    depends_on:
+      - mongo
     environment:
       - WHYNOT_SETTINGS=/usr/src/app/prd_settings.py
     ports:
       - "15000:15000"
 
+  celery:
+    build:
+      context: .
+      dockerfile: Dockerfile-celery
+    depends_on:
+      - rabbitmq
+      - mongo
+    command: celery -A hope.application:celery beat
+    environment:
+      - WHYNOT_SETTINGS=/usr/src/app/prd_settings.py
+
   mongo:
     image: mongo
+
+  rabbitmq:
+    image: rabbitmq

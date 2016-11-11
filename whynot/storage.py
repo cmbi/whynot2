@@ -55,7 +55,6 @@ class Storage(object):
         assert self._db is not None
 
     def authenticate (self, username, passwd):
-
         self._db.authenticate (username, passwd)
 
     def insert(self, collection, documents):
@@ -68,12 +67,12 @@ class Storage(object):
         _log.info("Inserting documents into '{}'".format(collection))
         return self._db[collection].insert(documents)
 
-    def update(self, collection, selector, options):
+    def update(self, collection, selector, options, upsert=False):
         if self._db is None:
             raise Exception("Not connected to storage. Did you call connect()?")
 
         _log.info("Updating document in '{}'".format(collection))
-        return self._db[collection].update(selector, options)
+        return self._db[collection].update(selector, upsert, options)
 
     def remove(self, collection, spec_or_id=None):
         if self._db is None:
@@ -121,7 +120,7 @@ class Storage(object):
             raise Exception("Not connected to storage. Did you call connect()?")
 
         _log.info("Querying distinct {} documents in '{}'".format(field, collection))
-        return self._db[collection].distinct (field, query) 
+        return self._db[collection].distinct (field, query)
 
     def create_index(self, collection, selector):
         if self._db is None:

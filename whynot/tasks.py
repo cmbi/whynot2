@@ -16,6 +16,7 @@ def update():
     for databank in storage.find('databanks', {}):
         crawl(databank)
         annotate(databank)
+    annotate_from_comments(celery_app.config['WHYNOT_COMMENTS_DIR'])
 
 
 def crawl(databank):
@@ -115,4 +116,17 @@ def _crawl_dir(path, regex):
 
 def annotate(databank):
     _log.info("Annotating %s" % databank['name'])
-    raise NotImplemented
+
+    annotator = databank['annotator']
+    if not annotator:
+        _log.info("No annotator for '%s'" % databank['name'])
+
+    _log.info("Using annotator '%s'" % annotator.__name__
+
+    annotator.annotate(databank)
+
+
+def annotate_from_comments(comments_dir):
+    annotator = CommentFileAnnotator(comments_dir)
+    entries = annotator.annotate()
+    # TODO: Update database entries

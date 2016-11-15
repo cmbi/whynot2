@@ -12,7 +12,7 @@ class Annotator:
         An entry is considered missing when there exists an entry for the
         parent but no entry for the given databank.
         """
-        result = storage.aggregate('entries', [
+        result = storage.db.entries.aggregate([
             # Match only entries in the current databank and the parent
             # databank.
             {'$match': {
@@ -30,7 +30,7 @@ class Annotator:
                     '$addToSet': {
                         '$cond': {
                             'if': { '$eq': ['$databank_name',
-                                            databank['parent_name'] },
+                                            databank['parent_name']] },
                             'then': '$pdb_id',
                             'else': None
                         }
@@ -46,7 +46,7 @@ class Annotator:
                         }
                     }
                 }
-            }}
+            }},
 
             # Project the difference between those in the parent and those in
             # the current databank.
@@ -57,7 +57,7 @@ class Annotator:
             }}
         ])
 
-        missing_entries = storage.find('entries': {
+        missing_entries = storage.db.entries.find({
             'databank_name': databank['databank_name'],
             'pdb_id': { '$in': result['pdb_ids'] }
         })
@@ -71,7 +71,7 @@ class Annotator:
 
         An entry is considered unannotated when the `comment` field is empty.
         """
-        unannotated_entries = storage.find('entries', {
+        unannotated_entries = storage.db.entries.find({
             { 'databank_name': databank['databank_name'] },
             { 'comment': None }
         })

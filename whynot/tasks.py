@@ -33,6 +33,8 @@ def update():
     # changed by ensuring the parent databanks are done first, but requires
     # setting up a dependency graph.
 
+    # TODO: Add last_crawled and last_annotated fields to databank entry
+
     for databank in celery_app.config['DATABANKS']:
         crawl(databank)
 
@@ -48,11 +50,10 @@ def annotate(databank):
 
     annotator = databank['annotator']
     if not annotator:
-        _log.debug("No annotation required for '{}'".format(databank['databank_name'])
+        _log.debug("No annotation required for '{}'".format(databank['databank_name']))
         return
 
-    _log.info("Annotating '{}' with '{}'".format(databank['databank_name'],
-        annotator.class.__name__)
+    _log.info("Annotating '{}' with '{}'".format(databank['databank_name'], annotator.__class__.__name__))
     annotator.annotate(databank)
 
 
@@ -64,7 +65,7 @@ def crawl(databank):
 
     # Get the raw entries using the crawler
     Crawler = databank['crawler']
-    _log.info("Using '{}' crawler".format(crawler.class.__name__))
+    _log.info("Using '{}' crawler".format(crawler.__class__.__name__))
     entries = Crawler.crawl(databank['source'], databank['regex'])
 
     # Update the entries in the database

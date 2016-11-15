@@ -1,6 +1,6 @@
 class FileCrawler:
     @staticmethod
-    def crawl(path, regex)
+    def crawl(path, regex):
         """
         Crawls the file given by `path` for lines that match `regex`.
 

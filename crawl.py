@@ -13,7 +13,7 @@ storage.authenticate ('whynotadmin', 'waivuy8N')
 from time import time
 from ftplib import FTP
 from defs import CRAWLTYPE_LINE as LINE, CRAWLTYPE_FILE as FILE
-from utils import (download, entries_by_pdbid, get_present_entries,
+from utils import (entries_by_pdbid, get_present_entries,
                    get_missing_entries, read_http, parse_regex, valid_path)
 
 # Each entry has a pdbid and databank_name, this is what makes it unique.

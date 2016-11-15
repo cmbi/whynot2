@@ -101,28 +101,6 @@ def read_http (url):
 
     return s
 
-def download (url, destdir):
-
-    destpath = os.path.join (destdir, url.split ('/')[-1])
-    open (destpath,'w').write (urlopen(url).read ())
-    return destpath
-
-def has_annotated_parent (databank_name, pdbid):
-
-    parent = get_parent (databank_name, pdbid)
-    if parent:
-        return 'comment' in parent
-
-    return False
-
-def has_present_parent (databank_name, pdbid):
-
-    parent = get_parent (databank_name, pdbid)
-    if parent:
-        return 'filepath' in parent
-
-    return False
-
 def get_parent (databank_name, pdbid):
 
     databank = storage.find_one ('databanks', {'name': databank_name})
@@ -142,21 +120,6 @@ def get_parent (databank_name, pdbid):
         return parent_entry
 
     return None
-
-def get_entry (databank_name, pdbid):
-
-    return storage.find_one ('entries', {'databank_name': databank_name, 'pdbid': pdbid})
-
-def get_parent_name (databank_name):
-
-    databank = storage.find_one ('databanks', {'name': databank_name})
-    if not databank:
-        raise Exception ("no such databank: " + databank_name)
-
-    if 'parent_name' in databank:
-        return databank ['parent_name']
-    else:
-        return ''
 
 def entries_by_databank (entries):
 

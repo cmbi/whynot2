@@ -82,14 +82,6 @@ class Storage(object):
         _log.info("Removing documents from '{}'".format(collection))
         return self._db[collection].remove(spec_or_id)
 
-    def aggregate(self, collection, stages):
-        if self._db is None:
-            raise Exception("Not connected to storage. Did you call connect()?")
-
-        _log.info("Aggregating documents in '{}'".format(collection))
-        cursor = self._db[collection].aggregate(stages)
-        return [d for d in cursor['result']]
-
     def count(self, collection, selector):
         if self._db is None:
             raise Exception("Not connected to storage. Did you call connect()?")
@@ -115,13 +107,6 @@ class Storage(object):
 
         _log.info("Querying single document in '{}'".format(collection))
         return self._db[collection].find_one(selector,projection)
-
-    def distinct (self, collection, field, query=None):
-        if self._db is None:
-            raise Exception("Not connected to storage. Did you call connect()?")
-
-        _log.info("Querying distinct {} documents in '{}'".format(field, collection))
-        return self._db[collection].distinct (field, query) 
 
     def create_index(self, collection, selector):
         if self._db is None:

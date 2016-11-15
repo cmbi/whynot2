@@ -62,11 +62,13 @@ def create_app(settings=None):
         else:
             whynot_logger.setLevel(logging.INFO)
 
-    # Configure storage
+    # Initialise services
     from storage import storage
+    from wwpdb import WwPdb
     storage.uri = app.config['MONGODB_URI']
     storage.db_name = app.config['MONGODB_DB_NAME']
     storage.connect()
+    wwpdb.url = app.config['URL_WWPDB']
 
     # Setup the default databanks if there are none
     # TODO: If the databank settings are changed in the file, the database
@@ -83,6 +85,7 @@ def create_app(settings=None):
     app.wsgi_app = ReverseProxied(app.wsgi_app)
 
     # Initialise extensions
+    # TODO: Remove debug toolbar
     from whynot import toolbar
     toolbar.init_app(app)
 

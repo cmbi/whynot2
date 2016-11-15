@@ -11,122 +11,75 @@ _log = logging.getLogger(__name__)
 
 
 @celery_app.task
+def annotate_from_comments():
+    """
+    Annotates database entries from comment files placed in
+    WHYNOT_COMMENTS_DIR.
+
+    This is run as a separate task because it is not dependant on databank
+    updates.
+    """
+    _log.info("Annotating databanks from comments")
+
+    annotator = CommentFileAnnotator(celery_app.config['WHYNOT_COMMENTS_DIR'])
+    entries = annotator.annotate()
+
+
+@celery_app.task
 def update():
     _log.info("Updating databanks")
-    for databank in storage.find('databanks', {}):
+
+    # There are two loops because crawling must finish first. This can be
+    # changed by ensuring the parent databanks are done first, but requires
+    # setting up a dependency graph.
+
+    for databank in celery_app.config['DATABANKS']:
         crawl(databank)
+
+    for databank in celery_app.config['DATABANKS']:
         annotate(databank)
-    annotate_from_comments(celery_app.config['WHYNOT_COMMENTS_DIR'])
-
-
-def crawl(databank):
-    """
-    Crawls the given databank's source for changes.
-
-    New entries are inserted into the database and changes are updated. Any
-    entries that have been removed are also removed from the database.
-
-    If the `crawl_type` is `FILE`, the contents of the source that match
-    `regex` are parsed for entries. If the `crawl_type` is `DIR`, the filenames
-    that match `regex` are parsed for entries.
-    """
-
-    _log.info("Crawling %s (%s)" % (databank['name'], databank['crawl_type']))
-
-    if databank['crawl_type'] == 'FILE':
-        entries = _crawl_file(databank['source'], databank['regex'])
-    elif databank['crawl_type'] == 'DIR':
-        entries = _crawl_dir(databank['source'], databank['regex'])
-    else:
-        raise ValueError("Unexpected crawl type: %s" % databank['crawl_type'])
-
-    _log.debug("Found %d entries" % len(entries))
-
-    for entry in entries:
-        entry['databank_name'] = databank['name']
-
-    # TODO: upsert the entries into the database
-    # TODO: remove deleted entries
-
-
-def _crawl_file(path, regex):
-    """
-    Crawls the file given by `path` for lines that match `regex`.
-
-    Returns a list of entries.
-    """
-
-    _log.info("Crawling file '%s'" % path)
-
-    if not os.path.exists(path):
-        raise ValueError("Source '%s' not found" % path)
-
-    entries = []
-    r = re.compile(databank['regex'])
-    with open(path, 'r') as f:
-        for line in f:
-            m = r.search(line)
-            if not m:
-                continue
-
-            entries.append({
-                'pdbid': m.group(1).lower(),
-                'filepath': filepath,
-                'mtime': mtime
-            })
-    return entries
-
-
-def _crawl_dir(path, regex):
-    """
-    Crawls the directory given by `path` for files that match `regex`.
-
-    Returns a list of entries.
-    """
-
-    _log.info("Crawling dir '%s'" % path)
-
-    if not os.path.exists(path):
-        raise ValueError("Source '%s' not found" % path)
-
-    if not os.path.isdir(path):
-        raise ValueError("Source '%s' must be a directory" % path)
-
-    entries = []
-    r = re.compile(databank['regex'])
-    for root, dirs, files in os.walk(path):
-        dirs = [d for d in dirs if d not in ['obsolete']]
-
-        for f in files:
-            if os.path.splitext(f)[1] in ['.gif', '.html']:
-                continue
-
-            p = os.path.join(root, f)
-            m = r.search(p)
-            if not m:
-                continue
-
-            entries.append({
-                'pdbid': m.group(1).lower(),
-                'filepath': f,
-                'mtime': os.path.getmtime(p),
-            })
-    return entries
 
 
 def annotate(databank):
+    """
+    Annotates the given databank using its annotator.
+    """
     _log.info("Annotating %s" % databank['name'])
 
     annotator = databank['annotator']
     if not annotator:
-        _log.info("No annotator for '%s'" % databank['name'])
+        _log.debug("No annotation required for '{}'".format(databank['databank_name'])
+        return
 
-    _log.info("Using annotator '%s'" % annotator.__name__
-
+    _log.info("Annotating '{}' with '{}'".format(databank['databank_name'],
+        annotator.class.__name__)
     annotator.annotate(databank)
 
 
-def annotate_from_comments(comments_dir):
-    annotator = CommentFileAnnotator(comments_dir)
-    entries = annotator.annotate()
-    # TODO: Update database entries
+def crawl(databank):
+    """
+    Crawls the given databank using its crawler.
+    """
+    _log.info("Crawling %s" % databank['name'])
+
+    # Get the raw entries using the crawler
+    Crawler = databank['crawler']
+    _log.info("Using '{}' crawler".format(crawler.class.__name__))
+    entries = Crawler.crawl(databank['source'], databank['regex'])
+
+    # Update the entries in the database
+    _log.info("Updating {} entries in database".format(len(entries)))
+    for entry in entries:
+        entry['databank_name'] = databank['name']
+        storage.db.update_one({
+            'databank_name': databank['name'],
+            'pdb_id': entry['pdb_id'],
+        }, entry, upsert=True)
+
+    # Delete entries removed since the last update
+    _log.info("Deleting removed entries from database")
+    raw_entry_pdb_ids = [e['pdb_id'] for e in entries]
+    storage.db.delete_many({
+        'databank_name': databank['name'],
+        'pdb_id': { '$nin': raw_entry_pdb_ids },
+    })

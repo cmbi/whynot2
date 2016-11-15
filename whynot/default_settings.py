@@ -4,6 +4,10 @@ import os
 from celery.schedules import crontab
 from kombu import Exchange, Queue
 
+# TODO: Don't do this
+from whynot.annotators import *
+from whynot.crawlers import *
+
 # Celery
 default_exchange = Exchange('whynot', type='direct')
 
@@ -24,19 +28,23 @@ CELERYBEAT_SCHEDULE = {
 MONGODB_URI = "mongodb://whynot_mongo_1"
 MONGODB_DB_NAME = "whynot"
 
+# URLs
+URL_WWPDB = 'ftp://ftp.wwpdb.org/pub/pdb/derived_data/pdb_entry_type.txt'
+
 # Databanks
 #
 # TODO: describe fields here
 #
 # name: name of the databank
-# crawl_type: FILE, DIR
+# crawler: FILE, DIR
 #             source=file (parse file content)
 #             source=dir (parse filenames)
 DATABANK_ROOT = '/srv/data'
 DATABANKS = [
     {
         'name': 'mmcif',
-        'crawl_type': 'DIR',
+        'annotator': None,
+        'crawler': DirCrawler,
         'filelink': 'ftp://ftp.wwpdb.org/pub/pdb/data/structures/divided/mmCIF/${PART}/${PDBID}.cif.gz',
         'parent': None,
         'reference': 'http://www.wwpdb.org/',
@@ -45,7 +53,8 @@ DATABANKS = [
     },
     {
         'name': 'pdb',
-        'crawl_type': 'DIR',
+        'annotator': None,
+        'crawler': DirCrawler,
         'filelink': 'ftp://ftp.wwpdb.org/pub/pdb/data/structures/divided/pdb/${PART}/pdb${PDBID}.ent.gz',
         'parent': 'mmcif',
         'reference': 'http://www.wwpdb.org/',
@@ -54,7 +63,8 @@ DATABANKS = [
     },
     {
         'name': 'bdb',
-        'crawl_type': 'DIR',
+        'annotator': BdbAnnotator,
+        'crawler': DirCrawler,
         'filelink': 'ftp://ftp.cmbi.ru.nl/pub/molbio/data/bdb/${PART}/${PDBID}/${PDBID}.bdb',
         'reference': 'http://www.cmbi.ru.nl/bdb/',
         'regex': r'.*/([\w]{4})\.bdb',
@@ -63,7 +73,8 @@ DATABANKS = [
     },
     {
         'name': 'dssp',
-        'crawl_type': 'DIR',
+        'annotator': DsspAnnotator,
+        'crawler': DirCrawler,
         'filelink': 'ftp://ftp.cmbi.ru.nl/pub/molbio/data/dssp/${PDBID}.dssp',
         'reference': 'http://swift.cmbi.ru.nl/gv/dssp/',
         'regex': r'.*/([\w]{4})\.dssp',
@@ -72,7 +83,8 @@ DATABANKS = [
     },
     {
         'name': 'hssp',
-        'crawl_type': 'DIR',
+        'annotator': HsspAnnotator,
+        'crawler': DirCrawler,
         'filelink': 'ftp://ftp.cmbi.ru.nl/pub/molbio/data/hssp/${PDBID}.hssp.bz2',
         'reference': 'http://swift.cmbi.ru.nl/gv/hssp/',
         'regex': r'.*/([\w]{4})\.hssp.bz2',
@@ -81,7 +93,8 @@ DATABANKS = [
     },
     {
         'name': 'pdbfinder',
-        'crawl_type': 'FILE',
+        'annotator': None,
+        'crawler': FileCrawler,
         'filelink': 'ftp://ftp.cmbi.ru.nl/pub/molbio/data/pdbfinder/PDBFIND.TXT.gz',
         'reference': 'http://swift.cmbi.ru.nl/gv/pdbfinder/',
         'regex': r'ID           : ([\w]{4})',
@@ -90,7 +103,8 @@ DATABANKS = [
     },
     {
         'name': 'pdbfinder2',
-        'crawl_type': 'FILE',
+        'annotator': None,
+        'crawler': FileCrawler,
         'filelink': 'ftp://ftp.cmbi.ru.nl/pub/molbio/data/pdbfinder2/PDBFIND2.TXT.gz',
         'reference': 'http://swift.cmbi.ru.nl/gv/pdbfinder/',
         'regex': r'ID           : ([\w]{4})',
@@ -99,7 +113,8 @@ DATABANKS = [
     },
     {
         'name': 'nmr',
-        'crawl_type': 'DIR',
+        'annotator': NmrAnnotator,
+        'crawler': DirCrawler,
         'filelink': 'ftp://ftp.wwpdb.org/pub/pdb/data/structures/all/nmr_restraints/${PDBID}.mr.gz',
         'reference': 'http://www.bmrb.wisc.edu/',
         'regex': r'.*/([\w]{4}).mr.gz',
@@ -108,7 +123,8 @@ DATABANKS = [
     },
     {
         'name': 'structurefactors',
-        'crawl_type': 'DIR',
+        'annotator': StructureFactorsAnnotator,
+        'crawler': DirCrawler,
         'filelink': 'ftp://ftp.wwpdb.org/pub/pdb/data/structures/divided/structure_factors/${PART}/r${PDBID}sf.ent.gz',
         'reference': 'http://swift.cmbi.ru.nl/gv/pdbreport/',
         'regex': r'.*/r([\w]{4})sf\.ent\.gz',
@@ -117,7 +133,8 @@ DATABANKS = [
     },
     {
         'name': 'pdbreport',
-        'crawl_type': 'DIR',
+        'annotator': None,
+        'crawler': DirCrawler,
         'filelink': 'http://www.cmbi.ru.nl/pdbreport/cgi-bin/nonotes?PDBID=${PDBID}',
         'reference': 'http://swift.cmbi.ru.nl/gv/pdbreport/',
         'regex': r'pdbreport\/\w{2}\/(\w{4})\/pdbout\.txt',
@@ -126,7 +143,8 @@ DATABANKS = [
     },
     {
         'name': 'pdb_redo',
-        'crawl_type': 'DIR',
+        'annotator': None,
+        'crawler': DirCrawler,
         'filelink': 'http://www.cmbi.ru.nl/pdb_redo/cgi-bin/redir2.pl?pdbCode=${PDBID}',
         'reference': 'http://www.cmbi.ru.nl/pdb_redo/',
         'regex': r'\/\w{2}\/\w{4}\/(\w{4})_final\.pdb',
@@ -135,7 +153,8 @@ DATABANKS = [
     },
     {
         'name': 'dssp_redo',
-        'crawl_type': 'DIR',
+        'annotator': DsspAnnotator,
+        'crawler': DirCrawler,
         'filelink': 'ftp://ftp.cmbi.ru.nl/pub/molbio/data/dssp_redo/${PDBID}.dssp',
         'reference': 'http://swift.cmbi.ru.nl/gv/dssp/',
         'regex': r'.*/([\w]{4})\.dssp',
@@ -149,7 +168,8 @@ for lis in ['dsp','iod','sbh','sbr','ss1','ss2','tau','acc','cal','wat',
             'cc1','cc2','cc3','chi']:
     DATABANKS.append({
         'name': 'whatif_pdb_%s' % lis,
-        'crawl_type': 'DIR',
+        'annotator': WhatifListAnnotator,
+        'crawler': DirCrawler,
         'filelink': 'ftp://ftp.cmbi.ru.nl/pub/molbio/data/wi-lists/pdb/%s/${PDBID}/${PDBID}.%s.bz2' % (lis, lis),
         'reference': 'http://swift.cmbi.ru.nl/whatif/',
         'regex': r'.*/([\w]{4})\.' + lis + r'(\.bz2)?$',
@@ -158,7 +178,8 @@ for lis in ['dsp','iod','sbh','sbr','ss1','ss2','tau','acc','cal','wat',
     })
     DATABANKS.append({
         'name': 'whatif_redo_%s' % lis,
-        'crawl_type': 'DIR',
+        'annotator': WhatifListAnnotator,
+        'crawler': DirCrawler,
         'filelink': 'ftp://ftp.cmbi.ru.nl/pub/molbio/data/wi-lists/redo/%s/${PDBID}/${PDBID}.%s.bz2' % (lis, lis),
         'reference': 'http://swift.cmbi.ru.nl/whatif/',
         'regex': r'.*/([\w]{4})\.' + lis + r'(\.bz2)?$',
@@ -170,7 +191,8 @@ for lis in ['dsp','iod','sbh','sbr','ss1','ss2','tau','acc','cal','wat',
 for lis, name in { 'ss2': 'sym-contacts', 'iod': 'ion-sites'}.iteritems():
     DATABANKS.append({
         'name': 'pdb_scenes_%s' % lis,
-        'crawl_type': 'DIR',
+        'annotator': WhatifSceneAnnotator,
+        'crawler': DirCrawler,
         'filelink': 'ftp://ftp.cmbi.ru.nl/pub/molbio/data/wi-lists/pdb/scenes/%s/${PDBID}/${PDBID}_%s.sce' % (lis, name),
         'reference': 'http://www.cmbi.ru.nl/pdb-vis/',
         'regex': r'.*/([\w]{4})_' + name + r'\.sce',
@@ -179,7 +201,8 @@ for lis, name in { 'ss2': 'sym-contacts', 'iod': 'ion-sites'}.iteritems():
     })
     DATABANKS.append({
         'name': 'redo_scenes_%s' % lis,
-        'crawl_type': 'DIR',
+        'annotator': WhatifSceneAnnotator,
+        'crawler': DirCrawler,
         'filelink': 'ftp://ftp.cmbi.ru.nl/pub/molbio/data/wi-lists/redo/scenes/%s/${PDBID}/${PDBID}_%s.sce' % (lis, name),
         'reference': 'http://www.cmbi.ru.nl/pdb-vis/',
         'regex': r'.*/([\w]{4})_' + name + r'\.sce',

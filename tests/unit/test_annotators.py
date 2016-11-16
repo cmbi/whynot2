@@ -2,8 +2,7 @@ from mock import ANY, call, Mock, mock_open, patch
 from nose.tools import assert_raises, eq_, raises, with_setup
 
 from whynot.default_settings import DATABANKS
-from whynot.annotators import (StructureFactorsAnnotator, HsspAnnotator,
-                               NmrAnnotator)
+from whynot.annotators import *
 
 
 class TestStructureFactorsAnnotator:
@@ -128,3 +127,39 @@ class TestHsspAnnotator:
                 'mtime': ANY,
             }),
         ])
+
+
+class TestDsspAnnotator:
+    @patch('whynot.annotators.wwpdb')
+    def test_annotate(self, mock_wwpdb):
+        mock_wwpdb.get.return_value = [
+            { 'pdb_id': '1hua', 'c_type': 'carb', 'method': 'NMR' },
+            { 'pdb_id': '1ht7', 'c_type': 'nuc', 'method': 'NMR' },
+        ]
+
+        entries = [
+            { 'databank_name': 'dssp', 'pdb_id': '1hua', 'comment': None },
+            { 'databank_name': 'dssp', 'pdb_id': '1ht7', 'comment': None },
+        ]
+
+        annotator = DsspAnnotator
+        annotator.get_unannotated_entries = Mock(return_value=entries)
+        mock_update_entry = Mock()
+        annotator.update_entry = mock_update_entry
+
+        annotator.annotate({ 'databank_name': 'dssp' })
+
+        mock_update_entry.assert_has_calls([
+            call({
+                'databank_name': 'dssp',
+                'pdb_id': '1hua',
+                'comment': 'Carbohydrates only',
+                'mtime': ANY,
+            }),
+            call({
+                'databank_name': 'dssp',
+                'pdb_id': '1ht7',
+                'comment': 'Nucleic acids only',
+                'mtime': ANY,
+            }),
+        ]);

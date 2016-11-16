@@ -196,13 +196,13 @@ class DsspAnnotator(Annotator):
             pdb_id = entry['pdb_id']
 
             if pdb_id in [d['pdb_id'] for d in wwpdb_data
-                          if d['content'] == 'nuc']:
+                          if d['c_type'] == 'nuc']:
                 entry['comment'] = 'Nucleic acids only'
                 entry['mtime'] = time.time()
                 cls.update_entry(entry)
                 continue
             elif pdb_id in [d['pdb_id'] for d in wwpdb_data
-                          if d['content'] == 'carb']:
+                          if d['c_type'] == 'carb']:
                 entry['comment'] = 'Carbohydrates only'
                 entry['mtime'] = time.time()
                 cls.update_entry(entry)

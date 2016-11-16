@@ -1,6 +1,7 @@
+import os
 import time
 
-from whynot.services import wwpdb
+from whynot.services.wwpdb import wwpdb
 from whynot.storage import storage
 
 
@@ -182,7 +183,7 @@ class HsspAnnotator(Annotator):
                            'multiple occurrences',
                            'No hits found',
                            'empty protein, or no valid complete residues']:
-                entry['comment'] = line
+                entry['comment'] = comment
                 entry['mtime'] = time.time()
                 cls.update_entry(entry)
 

@@ -10,7 +10,6 @@ class WwPdb:
     def url(self, url):
         self._url = url
 
-    # TODO: doesn't really belong here
     def get(self):
         """
         Parses the wwpdb file into a dict.

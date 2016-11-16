@@ -196,7 +196,7 @@ for lis, name in { 'ss2': 'sym-contacts', 'iod': 'ion-sites'}.iteritems():
         'filelink': 'ftp://ftp.cmbi.ru.nl/pub/molbio/data/wi-lists/pdb/scenes/%s/${PDBID}/${PDBID}_%s.sce' % (lis, name),
         'reference': 'http://www.cmbi.ru.nl/pdb-vis/',
         'regex': r'.*/([\w]{4})_' + name + r'\.sce',
-        'parent': 'WHATIF_PDB_%s' % lis,
+        'parent': 'whatif_pdb_%s' % lis,
         'source': os.path.join(DATABANK_ROOT, 'wi-lists', 'pdb', 'scenes', lis),
     })
     DATABANKS.append({
@@ -206,6 +206,6 @@ for lis, name in { 'ss2': 'sym-contacts', 'iod': 'ion-sites'}.iteritems():
         'filelink': 'ftp://ftp.cmbi.ru.nl/pub/molbio/data/wi-lists/redo/scenes/%s/${PDBID}/${PDBID}_%s.sce' % (lis, name),
         'reference': 'http://www.cmbi.ru.nl/pdb-vis/',
         'regex': r'.*/([\w]{4})_' + name + r'\.sce',
-        'parent': 'WHATIF_REDO_%s' % lis,
+        'parent': 'whatif_redo_%s' % lis,
         'source': os.path.join(DATABANK_ROOT, 'wi-lists', 'redo', 'scenes', lis),
     })

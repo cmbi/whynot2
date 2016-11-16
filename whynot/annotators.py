@@ -101,9 +101,10 @@ class Annotator:
         comment = lines[0][8:].strip()
 
         for line in lines[1:]:
-            line = line.replace(' ','').strip()
+            line = line.replace(' ','').strip().upper()
             db_entry = '%s,%s' % (entry['databank_name'].upper(),
-                                  entry['pdb_id'])
+                                  entry['pdb_id'].upper())
+
             if line == db_entry:
                 return comment
 
@@ -238,6 +239,7 @@ class WhatifListAnnotator(Annotator):
     def annotate(cls, databank):
         for entry in cls.get_unannotated_entries(databank):
             pdb_id = entry['pdb_id']
+            _, src, lis = entry['databank_name'].split('_')
             # TODO: hardcoded path
             whynot_file = '/srv/data/wi-lists/%s/%s/%s/%s.%s.whynot' % (src, lis, pdb_id, pdb_id, lis)
 
@@ -257,18 +259,18 @@ class WhatifListAnnotator(Annotator):
 class WhatifSceneAnnotator(Annotator):
     @classmethod
     def annotate(cls, databank):
-        pass
         for entry in cls.get_unannotated_entries(databank):
             pdb_id = entry['pdb_id']
+            src, _, lis = entry['databank_name'].split('_')
             # TODO: hardcoded path
-            whynot_file = '/srv/data/wi-lists/%s/scenes/%s/%s/%s.%s.whynot' % (src, lis, pdbid, pdbid, lis)
+            whynot_file = '/srv/data/wi-lists/%s/scenes/%s/%s/%s.%s.whynot' % (src, lis, pdb_id, pdb_id, lis)
             if not os.path.isfile(whynot_file):
                 continue
 
             with open(whynot_file, 'r') as f:
                 lines = f.readlines()
 
-            comment = parse_comment(lines, entry)
+            comment = cls._parse_comment(lines, entry)
             if comment:
                 entry['comment'] = comment
                 entry['mtime'] = time.time()

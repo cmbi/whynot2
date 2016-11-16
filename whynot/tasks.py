@@ -33,7 +33,9 @@ def update():
     # changed by ensuring the parent databanks are done first, but requires
     # setting up a dependency graph.
 
-    # TODO: Add last_crawled and last_annotated fields to databank entry
+    # TODO: Add last_update field to databank entry
+
+    print celery_app.config
 
     for databank in celery_app.config['DATABANKS']:
         crawl(databank)

@@ -159,7 +159,7 @@ class NmrAnnotator(Annotator):
 
             if pdb_id in [d['pdb_id'] for d in wwpdb_data
                           if d['method'] == 'other']:
-                entry['comment'] = 'Not an NRM experiment'
+                entry['comment'] = 'Not an NMR experiment'
                 entry['mtime'] = time.time()
                 cls.update_entry(entry)
                 continue

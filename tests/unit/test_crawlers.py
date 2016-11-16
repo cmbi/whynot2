@@ -1,4 +1,4 @@
-from mock import ANY, patch
+from mock import ANY, mock_open, patch
 
 from nose.tools import eq_
 
@@ -23,6 +23,20 @@ def test_dir_crawler(mock_exists, mock_isdir, mock_getmtime):
             ),
         ]
 
-        entries = DirCrawler.crawl(pdb_databank['source'], pdb_databank['regex'])
+        entries = DirCrawler.crawl(pdb_databank['source'],
+                                   pdb_databank['regex'])
         mock_walk.assert_called_with(pdb_databank['source'])
         eq_(len(entries), 4)
+
+
+@patch('os.path.exists', return_value=True)
+@patch('os.path.getmtime', return_value=123456)
+def test_file_crawler(mock_exists, mock_getmtime):
+    pdbfinder_databank = DATABANKS[5]
+    assert pdbfinder_databank['name'] == 'pdbfinder'
+
+    lines = 'ID           : 100D\nID           : 101D'
+    with patch('whynot.crawlers.open', mock_open(read_data=lines)):
+        entries = FileCrawler.crawl(pdbfinder_databank['source'],
+                                    pdbfinder_databank['regex'])
+        eq_(len(entries), 2)

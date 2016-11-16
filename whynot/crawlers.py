@@ -14,7 +14,6 @@ class DirCrawler:
 
         Returns a list of entries.
         """
-
         _log.info("Crawling dir '%s'" % path)
 
         if not os.path.exists(path):
@@ -26,8 +25,6 @@ class DirCrawler:
         entries = []
         r = re.compile(regex)
 
-        rv = os.walk(path)
-        print rv
         for root, dirs, files in os.walk(path):
             dirs = [d for d in dirs if d not in ['obsolete']]
 
@@ -57,24 +54,23 @@ class FileCrawler:
 
         Returns a list of entries.
         """
-
         _log.info("Crawling file '%s'" % path)
 
         if not os.path.exists(path):
             raise ValueError("Source '%s' not found" % path)
 
         entries = []
-        r = re.compile(databank['regex'])
+        r = re.compile(regex)
         with open(path, 'r') as f:
-            for line in f:
+            for line in f.readlines():
                 m = r.search(line)
                 if not m:
                     continue
 
                 entries.append({
                     'pdb_id': m.group(1).lower(),
-                    'file_path': filepath,
-                    'mtime': mtime,
+                    'file_path': path,
+                    'mtime': os.path.getmtime(path),
                     'comment': None,
                 })
         return entries

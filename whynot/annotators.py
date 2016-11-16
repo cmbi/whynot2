@@ -102,7 +102,9 @@ class Annotator:
 
         for line in lines[1:]:
             line = line.replace(' ','').strip()
-            if line == '{},{}'.format(entry['databank_name'], entry['pdbid']):
+            db_entry = '%s,%s' % (entry['databank_name'].upper(),
+                                  entry['pdb_id'])
+            if line == db_entry:
                 return comment
 
         return None

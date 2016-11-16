@@ -163,3 +163,30 @@ class TestDsspAnnotator:
                 'mtime': ANY,
             }),
         ]);
+
+
+class TestBdbAnnotator:
+    @patch('os.path.isfile', return_value=True)
+    def test_annotate(self, mock_isfile):
+        entries = [
+            { 'databank_name': 'bdb', 'pdb_id': '1crn', 'comment': None },
+        ]
+        annotator = BdbAnnotator
+        annotator.get_unannotated_entries = Mock(return_value=entries)
+        mock_update_entry = Mock()
+        annotator.update_entry = mock_update_entry
+
+        lines = 'COMMENT: test comment\nBDB,1crn'
+        with patch('whynot.annotators.open', mock_open(read_data=lines)):
+            annotator.annotate({ 'databank_name': 'hssp' })
+
+        err_file_path = '/srv/data/bdb/cr/1crn/1crn.whynot'
+        mock_isfile.assert_called_once_with(err_file_path)
+        mock_update_entry.assert_has_calls([
+            call({
+                'databank_name': 'bdb',
+                'pdb_id': '1crn',
+                'comment': 'test comment',
+                'mtime': ANY,
+            }),
+        ])

@@ -2,13 +2,16 @@ import logging
 import re
 import inspect
 
+from flask import Blueprint, render_template, Response
+
+from utils import get_entries_from_collection
+from whynot.storage import storage
+
+
 _log = logging.getLogger(__name__)
 
-from flask import Blueprint, render_template, Response
-from utils import get_entries_from_collection
-from storage import storage
-
 bp = Blueprint('rest', __name__, url_prefix='/webservice/rs')
+
 
 @bp.route ('/annotations/<databank_name>/<pdbid>/')
 def annotations (databank_name, pdbid):
@@ -20,7 +23,7 @@ def annotations (databank_name, pdbid):
     :return: a text string with all the comments in it.
     """
 
-    entry = storage.find_one ('entries', {'pdbid': pdbid, 'databank_name': databank_name})
+    entry = storage.db.entries.find_one({'pdbid': pdbid, 'databank_name': databank_name})
 
     comment = ''
     if entry:

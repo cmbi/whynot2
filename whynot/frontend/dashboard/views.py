@@ -1,21 +1,22 @@
 import logging
 import os
-from time import strftime, gmtime, time
 from copy import deepcopy
 from sets import Set
+from time import strftime, gmtime, time
 
-from flask import Response, Blueprint, jsonify, render_template, request, redirect, url_for
-from utils import(get_databank_hierarchy, search_results_for, get_entries_from_collection,
-                   get_all_entries_with_comment, get_entries_with_comment, remove_tags,
-                   get_file_link, comments_to_tree, count_summary, comment_summary, top_highest)
+from flask import (Response, Blueprint, jsonify, render_template, request,
+                   redirect, url_for)
+
+# TODO: Not good to import * but utils will be refactored soon
+from utils import *
+from whynot.storage import storage
+
 
 _log = logging.getLogger(__name__)
 
 bp = Blueprint('dashboard', __name__)
 
 date_format = '%d/%m/%Y %H:%M'
-
-from storage import storage
 
 
 def names_from_hierarchy(d):
@@ -92,12 +93,15 @@ def count(databank_name):
 def databanks(name=None):
     start_time = time()
     if name is None:
-        databanks = storage.find('databanks', {})
+        databanks = storage.db.databanks.find({})
     else:
-        databanks = [ storage.find_one('databanks', {'name': name}) ]
+        databanks = [ storage.db.databanks.find_one({'name': name}) ]
     end_time = time()
 
-    return render_template('databank/DatabankPage.html', db_tree=db_tree, nav_disabled='databanks', databanks=databanks)
+    return render_template('databank/DatabankPage.html',
+                           db_tree=db_tree,
+                           nav_disabled='databanks',
+                           databanks=databanks)
 
 @bp.route('/entries/')
 def entries():
@@ -128,7 +132,7 @@ def entries():
         end_time = time()
         title = comment_text
 
-    databank = storage.find_one('databanks', {'name': databank_name})
+    databank = storage.db.databanks.find_one({'name': databank_name})
     for entry in entries:
         if databank and 'filepath' in entry:
             f = {'name': os.path.basename(entry ['filepath']),
@@ -151,7 +155,7 @@ def load_statistics():
 
     #TODO: speed up this method
 
-    ndb = storage.count('databanks', {})
+    ndb = storage.db.databanks.count({})
 
     ne = 0
     na = 0
@@ -161,7 +165,7 @@ def load_statistics():
     unique_comments = Set()
     recent_files = top_highest(10)
     recent_annotations = top_highest(10)
-    for entry in storage.find('entries', {}):
+    for entry in storage.db.entries.find({}):
 
         ne += 1
         if 'mtime' in entry:

@@ -14,13 +14,12 @@ default_exchange = Exchange('whynot', type='direct')
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_BROKER_URL = 'amqp://guest@whynot_rabbitmq_1'
-CELERY_TASK_RESULT_EXPIRES = datetime.timedelta(days=31)
-CELERY_TRACK_STARTED = True
 CELERYBEAT_SCHEDULE = {
     # Every day at midnight
     'update': {
         'task': 'whynot.tasks.update',
-        'schedule': crontab(hour=0, minute=0),
+        #'schedule': crontab(hour=0, minute=0),
+        'schedule': crontab(minute='*/5'),
     },
 }
 

@@ -1,10 +1,16 @@
-import os, re
-
-from urllib2 import urlopen
-from storage import storage
-import pymongo
-from sets import Set
+import os
+import re
 from httplib import HTTPConnection
+from sets import Set
+from urllib2 import urlopen
+
+import pymongo
+
+from whynot.storage import storage
+
+
+# TODO: Eventually all of this will be somewhere else
+
 
 def databanks_by_name (databanks):
 
@@ -14,7 +20,7 @@ def databanks_by_name (databanks):
 
     return d
 
-databanks = databanks_by_name (storage.find ('databanks', {}))
+databanks = databanks_by_name (storage.db.databanks.find({}))
 
 databank_regexes = {}
 for name in databanks:
@@ -218,18 +224,18 @@ def search_results_for (pdbid):
 # Each key is a databank name, each value is a branch.
 # Branch is empty if a databank has no children.
 def get_databank_hierarchy (name = None):
-
     if name is None:
-
-        databanks = storage.find ('databanks', {'parent_name': {'$exists': False}}, {'name': 1, '_id': 0})
+        databanks = storage.db.databanks.find(
+            { 'parent_name': { '$exists': False } },
+            { 'name': 1, '_id': 0 })
     else:
-        databanks = storage.find ('databanks', {'parent_name': name}, {'name': 1, '_id': 0})
+        databanks = storage.db.databanks.find(
+            { 'parent_name': name }, { 'name': 1, '_id': 0 })
 
     tree = {}
     for databank in databanks:
         name = databank ['name']
-        branch = get_databank_hierarchy (name)
-
+        branch = get_databank_hierarchy(name)
         tree [name] = branch
 
     return tree

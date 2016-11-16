@@ -63,8 +63,8 @@ def create_app(settings=None):
             whynot_logger.setLevel(logging.INFO)
 
     # Initialise services
-    from storage import storage
-    from wwpdb import WwPdb
+    from whynot.storage import storage
+    from whynot.services.wwpdb import wwpdb
     storage.uri = app.config['MONGODB_URI']
     storage.db_name = app.config['MONGODB_DB_NAME']
     storage.connect()
@@ -73,12 +73,13 @@ def create_app(settings=None):
     # Setup the default databanks if there are none
     # TODO: If the databank settings are changed in the file, the database
     #       needs to be updated.
-    if storage.count('databanks', {}) == 0:
-        storage.create_index('databanks', 'name')
-        storage.create_index('entries', 'databank_name')
-        storage.create_index('entries', 'pdbid')
-        storage.create_index('entries', 'comment')
-        storage.insert('databanks', app.config['DATABANKS'])
+    # TODO: Uncomment this below to use new interface
+    # if storage.count('databanks', {}) == 0:
+        # storage.create_index('databanks', 'name')
+        # storage.create_index('entries', 'databank_name')
+        # storage.create_index('entries', 'pdbid')
+        # storage.create_index('entries', 'comment')
+        # storage.insert('databanks', app.config['DATABANKS'])
 
     # Use ProxyFix to correct URL's when redirecting.
     from whynot.middleware import ReverseProxied

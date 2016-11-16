@@ -3,6 +3,7 @@ import os
 import re
 
 from celery import current_app as celery_app
+from celery.signals import setup_logging, task_failure, task_prerun
 
 from whynot.storage import storage
 
@@ -35,13 +36,14 @@ def update():
 
     # TODO: Add last_update field to databank entry
 
-    for databank in celery_app.config['DATABANKS']:
+    for databank in celery_app.conf['DATABANKS']:
         crawl(databank)
 
-    for databank in celery_app.config['DATABANKS']:
+    for databank in celery_app.conf['DATABANKS']:
         annotate(databank)
 
 
+# TODO: Move to annotators.py. Base class? Factory? Something else?
 def annotate(databank):
     """
     Annotates the given databank using its annotator.
@@ -57,6 +59,7 @@ def annotate(databank):
     annotator.annotate(databank)
 
 
+# TODO: Move to crawlers.py. Base class? Factory? Something else?
 def crawl(databank):
     """
     Crawls the given databank using its crawler.

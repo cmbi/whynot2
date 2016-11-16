@@ -21,7 +21,7 @@ services:
     depends_on:
       - rabbitmq
       - mongo
-    command: celery -A hope.application:celery beat
+    command: celery -A whynot.application:celery worker -B
     environment:
       - WHYNOT_SETTINGS=/usr/src/app/prd_settings.py
 

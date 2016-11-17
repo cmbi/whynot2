@@ -296,7 +296,7 @@ class CommentFileAnnotator:
                 for text, name, pdb_id in comments:
                     entries.append({
                         'databank_name': name,
-                        'pdbid': pdb_id.lower(),
+                        'pdb_id': pdb_id.lower(),
                         'comment': text,
                         'mtime': os.path.getmtime(p)
                     })

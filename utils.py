@@ -113,23 +113,23 @@ def download (url, destdir):
     open (destpath,'w').write (urlopen(url).read ())
     return destpath
 
-def has_annotated_parent (databank_name, pdbid):
+def has_annotated_parent (databank_name, pdb_id):
 
-    parent = get_parent (databank_name, pdbid)
+    parent = get_parent (databank_name, pdb_id)
     if parent:
         return 'comment' in parent
 
     return False
 
-def has_present_parent (databank_name, pdbid):
+def has_present_parent (databank_name, pdb_id):
 
-    parent = get_parent (databank_name, pdbid)
+    parent = get_parent (databank_name, pdb_id)
     if parent:
         return 'filepath' in parent
 
     return False
 
-def get_parent (databank_name, pdbid):
+def get_parent (databank_name, pdb_id):
 
     databank = storage.find_one ('databanks', {'name': databank_name})
     if not databank:
@@ -143,15 +143,15 @@ def get_parent (databank_name, pdbid):
         if not parent:
             raise Exception ("no such databank: " + parent_name)
 
-        parent_entry = storage.find_one ('entries', {'databank_name': parent_name, 'pdbid': pdbid})
+        parent_entry = storage.find_one ('entries', {'databank_name': parent_name, 'pdb_id': pdb_id})
 
         return parent_entry
 
     return None
 
-def get_entry (databank_name, pdbid):
+def get_entry (databank_name, pdb_id):
 
-    return storage.find_one ('entries', {'databank_name': databank_name, 'pdbid': pdbid})
+    return storage.find_one ('entries', {'databank_name': databank_name, 'pdb_id': pdb_id})
 
 def get_parent_name (databank_name):
 
@@ -172,28 +172,28 @@ def entries_by_databank (entries):
 
     return d
 
-def entries_by_pdbid (entries):
+def entries_by_pdb_id (entries):
 
     d = {}
     for entry in entries:
-        d [entry['pdbid']] = entry
+        d [entry['pdb_id']] = entry
 
     return d
 
-def get_file_link (databank, pdbid):
+def get_file_link (databank, pdb_id):
 
-    part = pdbid [1:3]
+    part = pdb_id [1:3]
 
-    return databank ['filelink'].replace ('${PDBID}', pdbid).replace ('${PART}', part)
+    return databank ['filelink'].replace ('${PDBID}', pdb_id).replace ('${PART}', part)
 
 # Searches all databanks for an entry with given pdb id.
 # Returns a dictionary with a key for every databank.
 # Value is either a link to a file, or a comment if the file is missing.
-def search_results_for (pdbid):
+def search_results_for (pdb_id):
 
-    part = pdbid [1:3]
+    part = pdb_id [1:3]
 
-    entries = entries_by_databank (storage.find ('entries', {'pdbid': pdbid}))
+    entries = entries_by_databank (storage.find ('entries', {'pdb_id': pdb_id}))
     databanks = databanks_by_name (storage.find ('databanks', {}))
 
     results = {}
@@ -206,7 +206,7 @@ def search_results_for (pdbid):
             entry = entries [databank_name]
 
             if 'filepath' in entry:
-                results [databank_name] = get_file_link (databank, pdbid)
+                results [databank_name] = get_file_link (databank, pdb_id)
             elif 'comment' in entry:
                 results [databank_name] = entry ['comment']
         else:
@@ -269,19 +269,19 @@ def get_all_entries_with_comment (comment):
 
     # ordering was found to make it take longer!
 
-    return storage.find ('entries', {'comment': comment}, order=[("pdbid", pymongo.ASCENDING)])
+    return storage.find ('entries', {'comment': comment}, order=[("pdb_id", pymongo.ASCENDING)])
 
 def get_entries_with_comment (databank_name, comment):
 
     # ordering was found to make it take longer!
 
-    return storage.find ('entries', {'databank_name': databank_name, 'comment': comment}, order=[("pdbid", pymongo.ASCENDING)])
+    return storage.find ('entries', {'databank_name': databank_name, 'comment': comment}, order=[("pdb_id", pymongo.ASCENDING)])
 
-def get_entries_with_pdbid (databank_name, pdbid):
+def get_entries_with_pdb_id (databank_name, pdb_id):
 
     # ordering was found to make it take longer!
 
-    return storage.find ('entries', {'databank_name': databank_name, 'pdbid': pdbid}, order=[("pdbid", pymongo.ASCENDING)])
+    return storage.find ('entries', {'databank_name': databank_name, 'pdb_id': pdb_id}, order=[("pdb_id", pymongo.ASCENDING)])
 
 
 # Obsolete entries are present entries of which the parent is NOT present.
@@ -294,9 +294,9 @@ def get_obsolete_entries (databank_name):
     if 'parent_name' in databank:
 
         obsolete = []
-        parent_entries = entries_by_pdbid (get_present_entries (databank ['parent_name']))
+        parent_entries = entries_by_pdb_id (get_present_entries (databank ['parent_name']))
         for entry in get_present_entries (databank_name):
-            if entry ['pdbid'] not in parent_entries:
+            if entry ['pdb_id'] not in parent_entries:
                 obsolete.append (entry)
         return obsolete
     else:
@@ -312,9 +312,9 @@ def get_valid_entries (databank_name):
     if 'parent_name' in databank:
 
         valid=[]
-        parent_entries = entries_by_pdbid(get_present_entries(databank['parent_name']))
+        parent_entries = entries_by_pdb_id(get_present_entries(databank['parent_name']))
         for entry in get_present_entries(databank_name):
-            if entry['pdbid'] in parent_entries:
+            if entry['pdb_id'] in parent_entries:
                 valid.append(entry)
         return valid
     else:
@@ -348,35 +348,35 @@ def count_summary (databank_name):
     if not databank:
         raise Exception("no such databank: " + databank_name)
 
-    projection = {'pdbid':1, '_id':0}
+    projection = {'pdb_id':1, '_id':0}
 
     count = {}
 
-    pdbids = Set ()
+    pdb_ids = Set ()
     for entry in storage.find ('entries', {'databank_name': databank_name,'filepath': {'$exists': True}}, projection):
-        pdbids.add (entry ['pdbid'])
+        pdb_ids.add (entry ['pdb_id'])
 
-    count ['present'] = len (pdbids)
+    count ['present'] = len (pdb_ids)
 
     if 'parent_name' in databank:
 
         parent_name = databank ['parent_name']
 
-        parent_pdbids = Set()
-        missing_pdbids = Set ()
+        parent_pdb_ids = Set()
+        missing_pdb_ids = Set ()
 
         parent_entries = storage.find ('entries', {'databank_name': parent_name,'filepath': {'$exists': True}}, projection)
         comment_entries = storage.find('entries', {'databank_name': databank_name, 'comment': {'$exists': True}}, projection)
 
         for entry in parent_entries:
-            parent_pdbids.add (entry ['pdbid'])
-            if entry ['pdbid'] not in pdbids:
-                missing_pdbids.add (entry ['pdbid'])
+            parent_pdb_ids.add (entry ['pdb_id'])
+            if entry ['pdb_id'] not in pdb_ids:
+                missing_pdb_ids.add (entry ['pdb_id'])
 
-        count ['missing'] = len (missing_pdbids)
+        count ['missing'] = len (missing_pdb_ids)
         count ['annotated'] = 0
         for entry in comment_entries:
-            if entry ['pdbid'] in missing_pdbids:
+            if entry ['pdb_id'] in missing_pdb_ids:
 
                 count ['annotated'] += 1
 
@@ -384,8 +384,8 @@ def count_summary (databank_name):
         count ['unannotated'] = count ['missing'] - count ['annotated']
 
         count ['obsolete'] = 0
-        for pdbid in pdbids:
-            if pdbid not in parent_pdbids:
+        for pdb_id in pdb_ids:
+            if pdb_id not in parent_pdb_ids:
                 count ['obsolete'] += 1
 
         count ['valid'] = count ['present'] - count ['obsolete']
@@ -407,7 +407,7 @@ def get_present_entries (databank_name, ordered=False):
     # ordering was found to make it take longer!
 
     return storage.find('entries', {'databank_name': databank_name,'filepath': {'$exists': True}, 'mtime': {'$exists': True}},
-                        order=[("pdbid", pymongo.ASCENDING)])
+                        order=[("pdb_id", pymongo.ASCENDING)])
 
 
 # An entry is considered missing if no file was found for it, but its parent is present.
@@ -423,16 +423,16 @@ def get_missing_entries (databank_name):
     if 'parent_name' not in databank:
         return []
 
-    entries = entries_by_pdbid (storage.find('entries', {'databank_name': databank_name}))
+    entries = entries_by_pdb_id (storage.find('entries', {'databank_name': databank_name}))
 
     missing = []
     for entry in get_present_entries(databank['parent_name']):
-        pdbid = entry['pdbid']
-        if pdbid in entries:
-            if 'filepath' not in entries[pdbid] or 'mtime' not in entries[pdbid]:
-                missing.append(entries[pdbid])
+        pdb_id = entry['pdb_id']
+        if pdb_id in entries:
+            if 'filepath' not in entries[pdb_id] or 'mtime' not in entries[pdb_id]:
+                missing.append(entries[pdb_id])
         else:
-            entry = {'pdbid':pdbid, 'databank_name': databank_name}
+            entry = {'pdb_id':pdb_id, 'databank_name': databank_name}
             missing.append(entry)
 
     return missing
@@ -442,7 +442,7 @@ def get_missing_entries (databank_name):
 def get_annotated_entries (databank_name):
 
     return storage.find('entries', {'databank_name': databank_name, 'comment': {'$exists': True}, 'filepath': {'$exists': False}},
-                        order=[("pdbid", pymongo.ASCENDING)])
+                        order=[("pdb_id", pymongo.ASCENDING)])
 
 # Entries that are missing but not annotated:
 def get_unannotated_entries (databank_name):

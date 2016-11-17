@@ -22,15 +22,15 @@
             $("#feedback").html (content);
         }
 
-        function on_search (pdbid)
+        function on_search (pdb_id)
         {
-            if (pdbid.length <= 0)
-                set_feedback ('error', "'pdbid' is required.");
-	    else if (!pdbid.match (/^\s*[0-9][0-9a-zA-Z]{3}\s*$/))
+            if (pdb_id.length <= 0)
+                set_feedback ('error', "'pdb_id' is required.");
+	    else if (!pdb_id.match (/^\s*[0-9][0-9a-zA-Z]{3}\s*$/))
                 set_feedback ('error', "Please enter a valid pdb id.");
             else
             {
-		$(location).attr('href', "{{ url_for ('dashboard.search', pdbid='xxxx') }}".replace("xxxx", pdbid.replace(/\s/g,'')));
+		$(location).attr('href', "{{ url_for ('dashboard.search', pdb_id='xxxx') }}".replace("xxxx", pdb_id.replace(/\s/g,'')));
             }
         }
     </script>
@@ -77,10 +77,10 @@
             </ul>
             <h1>Search</h1>
             <div id="search">
-                <form action="{{ url_for ('dashboard.search', pdbid='xxxx') }}"
-		      onsubmit="on_search (document.getElementById('pdbid_input').value); return false;">
+                <form action="{{ url_for ('dashboard.search', pdb_id='xxxx') }}"
+		      onsubmit="on_search (document.getElementById('pdb_id_input').value); return false;">
                     <p>
-                        <input id="pdbid_input" type="text" value="" name="pdbid">
+                        <input id="pdb_id_input" type="text" value="" name="pdb_id">
                     </p>
                 </form>
             </div>

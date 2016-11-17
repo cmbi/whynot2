@@ -31,7 +31,7 @@ comments_psql = {}
 files_psql = {}
 
 for entry in storage.find ('entries', {}):
-    ID = '%s,%s' % (entry ['databank_name'], entry ['pdbid'])
+    ID = '%s,%s' % (entry ['databank_name'], entry ['pdb_id'])
     entries_mongo [ID] = entry
 
     if 'filepath' in entry:
@@ -40,49 +40,49 @@ for entry in storage.find ('entries', {}):
     if 'comment' in entry:
         comments_mongo [ID] = entry ['comment']
 
-entry_query='SELECT name, pdbid FROM databank, entry WHERE databank_id=databank.id;'
+entry_query='SELECT name, pdb_id FROM databank, entry WHERE databank_id=databank.id;'
 for line in commands.getoutput ('%s; echo \'%s\' | %s' % (psql_defs, entry_query, psql_call)).split ('\n') [2:]:
 
     if '|' in line:
 
-        databank_name, pdbid = line.split ('|')
+        databank_name, pdb_id = line.split ('|')
         databank_name = databank_name.strip ()
-        pdbid = pdbid.strip ()
+        pdb_id = pdb_id.strip ()
 
-        ID = '%s,%s' % (databank_name, pdbid)
-        entries_psql [ID] = {'databank_name':databank_name, 'pdbid':pdbid}
+        ID = '%s,%s' % (databank_name, pdb_id)
+        entries_psql [ID] = {'databank_name':databank_name, 'pdb_id':pdb_id}
 
 
-file_query = "SELECT name, pdbid, path FROM entry, file, databank WHERE " + \
+file_query = "SELECT name, pdb_id, path FROM entry, file, databank WHERE " + \
              "databank_id=databank.id AND file.id=file_id;"
 
 for line in commands.getoutput ('%s; echo \'%s\' | %s' % (psql_defs, file_query, psql_call)).split ('\n') [2:]:
 
     if '|' in line:
 
-        databank_name, pdbid, path = line.split ('|')
+        databank_name, pdb_id, path = line.split ('|')
         databank_name = databank_name.strip ()
-        pdbid = pdbid.strip ()
+        pdb_id = pdb_id.strip ()
         path = path.strip ()
 
-        ID = '%s,%s' % (databank_name, pdbid)
+        ID = '%s,%s' % (databank_name, pdb_id)
         entries_psql [ID]['filepath'] = path
         files_psql [ID] = path
 
 
-comment_query = "SELECT name, pdbid, text FROM comment, annotation, entry, databank WHERE " + \
+comment_query = "SELECT name, pdb_id, text FROM comment, annotation, entry, databank WHERE " + \
                 "databank_id=databank.id AND entry_id=entry.id AND comment_id=comment.id"
 
 for line in commands.getoutput ('%s; echo \'%s\' | %s' % (psql_defs, comment_query, psql_call)).split ('\n') [2:]:
 
     if '|' in line:
 
-        databank_name, pdbid, text = line.split ('|')
+        databank_name, pdb_id, text = line.split ('|')
         databank_name = databank_name.strip ()
-        pdbid = pdbid.strip ()
+        pdb_id = pdb_id.strip ()
         text = text.strip ()
 
-        ID = '%s,%s' % (databank_name, pdbid)
+        ID = '%s,%s' % (databank_name, pdb_id)
 
         if 'filepath' not in entries_psql [ID]:
 
@@ -92,7 +92,7 @@ for line in commands.getoutput ('%s; echo \'%s\' | %s' % (psql_defs, comment_que
 
 for ID in files_psql:
 
-    databank_name, pdbid = ID.split (',')
+    databank_name, pdb_id = ID.split (',')
     path = files_psql [ID]
 
     if ID in files_mongo:
@@ -103,14 +103,14 @@ for ID in files_psql:
             print "different file path in mongo", ID, ':', files_mongo [ID], 'vs.', files_psql [ID]
     else:
 
-        if has_present_parent (databank_name, pdbid) and \
+        if has_present_parent (databank_name, pdb_id) and \
                 valid_path (databank_name, path):
 
             print 'file absent in mongo:', ID, path
 
 for ID in comments_psql:
 
-    databank_name, pdbid = ID.split (',')
+    databank_name, pdb_id = ID.split (',')
     comment = comments_psql [ID]
 
     if ID in comments_mongo:
@@ -124,7 +124,7 @@ for ID in comments_psql:
 
             if databank_name == 'DSSP_REDO':
 
-                DSSPID = 'DSSP,%s' % pdbid
+                DSSPID = 'DSSP,%s' % pdb_id
                 if DSSPID in comments_psql and comments_psql [DSSPID].lower () == comments_mongo [ID].lower ():
 
                     continue
@@ -133,13 +133,13 @@ for ID in comments_psql:
 
     else:
 
-        if has_present_parent (databank_name, pdbid):
+        if has_present_parent (databank_name, pdb_id):
 
             print 'comment absent in mongo', ID, comment
 
 for ID in files_mongo:
 
-    databank_name, pdbid = ID.split (',')
+    databank_name, pdb_id = ID.split (',')
     path = files_mongo [ID]
 
     if ID not in files_psql and not valid_path (databank_name, path):
@@ -148,7 +148,7 @@ for ID in files_mongo:
 
 for ID in comments_mongo:
 
-    databank_name, pdbid = ID.split (',')
+    databank_name, pdb_id = ID.split (',')
     comment = comments_mongo [ID]
 
     if ID not in comments_psql:
@@ -157,7 +157,7 @@ for ID in comments_mongo:
 
             # psql has a file path instead
             path = files_psql [ID]
-            if has_present_parent (databank_name, pdbid) and \
+            if has_present_parent (databank_name, pdb_id) and \
                     valid_path (databank_name, path):
 
                 print 'comment absent in psql:', ID, comment, "it has instead", path

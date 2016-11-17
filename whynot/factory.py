@@ -77,7 +77,7 @@ def create_app(settings=None):
     # if storage.count('databanks', {}) == 0:
         # storage.create_index('databanks', 'name')
         # storage.create_index('entries', 'databank_name')
-        # storage.create_index('entries', 'pdbid')
+        # storage.create_index('entries', 'pdb_id')
         # storage.create_index('entries', 'comment')
         # storage.insert('databanks', app.config['DATABANKS'])
 

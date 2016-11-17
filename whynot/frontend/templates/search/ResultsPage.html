@@ -5,7 +5,7 @@
 {% block content %}
     <wicket:container wicket:id="resultslist"></wicket:container>
 
-    <h1>{{ pdbid }}</h1>
+    <h1>{{ pdb_id }}</h1>
     <table>
         {% for databank_name in db_order %}
         {% set result = results [databank_name] %}

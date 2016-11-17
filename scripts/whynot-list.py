@@ -5,12 +5,12 @@ import os,sys,re
 from sets import Set
 
 from utils import (get_obsolete_entries, get_present_entries, get_valid_entries, get_entries_with_comment,
-                   get_missing_entries, get_annotated_entries, get_unannotated_entries, get_entries_with_pdbid)
+                   get_missing_entries, get_annotated_entries, get_unannotated_entries, get_entries_with_pdb_id)
 from storage import storage
 
 # This is simply a commandline tool for quick listing of the database contents.
 
-usage='Usage: %s [DB] [present|missing|valid|obsolete|annotated|unannotated|comment:*|pdbid:????]'%sys.argv[0]
+usage='Usage: %s [DB] [present|missing|valid|obsolete|annotated|unannotated|comment:*|pdb_id:????]'%sys.argv[0]
 if len(sys.argv) < 2:
     print usage
     sys.exit(0)
@@ -35,14 +35,14 @@ if len(sys.argv) == 3:
         entries=get_unannotated_entries(dbname)
     elif category.lower().startswith('comment:'):
         entries=get_entries_with_comment(dbname,category[8:].strip())
-    elif category.lower().startswith('pdbid:'):
-        print get_entries_with_pdbid(dbname,category[6:].strip())
+    elif category.lower().startswith('pdb_id:'):
+        print get_entries_with_pdb_id(dbname,category[6:].strip())
     else:
         print usage
         sys.exit(0)
 
     for entry in entries:
-        print entry['pdbid']
+        print entry['pdb_id']
 
 else:
     print 'valid', len(get_valid_entries(dbname))

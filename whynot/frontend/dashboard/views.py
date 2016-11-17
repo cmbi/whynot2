@@ -34,20 +34,20 @@ db_order = names_from_hierarchy(db_tree)
 def index():
     return render_template('home/HomePage.html', db_tree=db_tree)
 
-@bp.route('/search/pdbid/<pdbid>/')
-def search(pdbid):
-    _log.info("request for pdbid " + pdbid)
+@bp.route('/search/pdb_id/<pdb_id>/')
+def search(pdb_id):
+    _log.info("request for pdb_id " + pdb_id)
 
     # On old browsers, the pdb id might end up in the url parameters:
-    urlparam = request.args.get('pdbid', '')
+    urlparam = request.args.get('pdb_id', '')
     if len(urlparam) == 4:
-        pdbid = urlparam
+        pdb_id = urlparam
 
     start_time = time()
-    results = search_results_for(pdbid)
+    results = search_results_for(pdb_id)
     end_time = time()
 
-    return render_template('search/ResultsPage.html', db_tree=db_tree, db_order=db_order, pdbid=pdbid, results=results)
+    return render_template('search/ResultsPage.html', db_tree=db_tree, db_order=db_order, pdb_id=pdb_id, results=results)
 
 @bp.route('/about/')
 def about():
@@ -136,12 +136,12 @@ def entries():
     for entry in entries:
         if databank and 'filepath' in entry:
             f = {'name': os.path.basename(entry ['filepath']),
-                 'url': get_file_link(databank, entry ['pdbid'])}
+                 'url': get_file_link(databank, entry ['pdb_id'])}
             files.append(f)
         elif 'comment' in entry:
             if entry ['comment'] not in comments:
                 comments [entry ['comment']] = []
-            comments [entry ['comment']].append('%s,%s' %(entry ['databank_name'], entry ['pdbid']))
+            comments [entry ['comment']].append('%s,%s' %(entry ['databank_name'], entry ['pdb_id']))
 
     comment_tree = comments_to_tree(comments)
 
@@ -184,7 +184,7 @@ def load_statistics():
 
     annotations = []
     for a in recent_annotations.get():
-        annotations.append({'comment': a ['comment'], 'pdbid': a ['pdbid'],
+        annotations.append({'comment': a ['comment'], 'pdb_id': a ['pdb_id'],
                              'databank_name': a ['databank_name'],
                              'date':  strftime(date_format, gmtime(a['mtime']))})
 
@@ -222,7 +222,7 @@ def resources(tolist):
 
     text = ''
     for entry in get_entries_from_collection(databank_name, collection):
-        text += entry ['pdbid'] + '\n'
+        text += entry ['pdb_id'] + '\n'
 
     response = Response(text, mimetype='text/plain')
     response.headers["Content-Disposition"] = "attachment; filename=%s" % tolist
@@ -272,19 +272,19 @@ def entries_file():
                 c = entry ['comment']
                 if c not in d:
                     d [c] = ''
-                d [c] += '%s,%s\n' %(entry['databank_name'], entry['pdbid'])
+                d [c] += '%s,%s\n' %(entry['databank_name'], entry['pdb_id'])
 
         for comment in d:
             text += comment + ":\n" + d [comment]
     else:
         for entry in entries:
 
-            if listing == 'pdbids':
-                text += entry ['pdbid'] + '\n'
+            if listing == 'pdb_ids':
+                text += entry ['pdb_id'] + '\n'
             elif listing == 'entries':
-                text += '%s,%s\n' %(entry['databank_name'], entry ['pdbid'])
+                text += '%s,%s\n' %(entry['databank_name'], entry ['pdb_id'])
             elif listing == 'files' and 'filepath' in entry:
-                text += '%s,%s,%s\n' %(entry['databank_name'], entry ['pdbid'], entry ['filepath'])
+                text += '%s,%s,%s\n' %(entry['databank_name'], entry ['pdb_id'], entry ['filepath'])
 
     response = Response(text, mimetype='text/plain')
     response.headers["Content-Disposition"] = "attachment; filename=%s" %('%s_%s' %(name, listing))

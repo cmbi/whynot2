@@ -3,7 +3,7 @@
 {% set show_max_entries_per_comment = 100 %}
 {% set items_per_page = 2000 %}
 {% set num_pages = {'entries' : ((( entries | length | float) / items_per_page) | round(0, 'ceil')) | int,
-                    'pdbids' : ((( entries | length | float) / items_per_page) | round(0, 'ceil')) | int,
+                    'pdb_ids' : ((( entries | length | float) / items_per_page) | round(0, 'ceil')) | int,
                     'files' : ((( files | length | float) / items_per_page) | round(0, 'ceil')) | int} %}
 
 {% macro page_browser (identifier, length, items_per_page) %}
@@ -195,8 +195,8 @@
         }
     }
 
-    var page_index = {'entries':0, 'files':0, 'pdbids':0},
-        max_length = {'entries':{{ num_pages ['entries'] }}, 'files':{{ num_pages['files'] }}, 'pdbids':{{ num_pages ['entries'] }}};
+    var page_index = {'entries':0, 'files':0, 'pdb_ids':0},
+        max_length = {'entries':{{ num_pages ['entries'] }}, 'files':{{ num_pages['files'] }}, 'pdb_ids':{{ num_pages ['entries'] }}};
 
     function setPage (tab, index)
     {
@@ -246,8 +246,8 @@
     <span>
         <div class="tab-row">
             <ul>
-                <li id="select-pdbids" class="selector selected">
-                    <a href="#" onclick="selectTab('pdbids');"><span>PDBIDs</span></a>
+                <li id="select-pdb_ids" class="selector selected">
+                    <a href="#" onclick="selectTab('pdb_ids');"><span>PDBIDs</span></a>
                 </li>
                 <li id="select-entries" class="selector">
                     <a href="#" onclick="selectTab('entries');"><span>Entries</span></a>
@@ -260,17 +260,17 @@
                 </li>
             </ul>
         </div>
-        <div id="pdbids" class="tab-panel">
+        <div id="pdb_ids" class="tab-panel">
             <a href="{{ url_for('dashboard.entries_file', listing='PDBIDs', comment=comment, databank=databank_name, collection=collection) }}"
                class="download">Download as file</a>
             {% if entries|length > 0 %}<h1>Unique PDBIDs ({{ entries|length }})</h1>{% endif %}
-            {% if num_pages ['pdbids'] > 1 %}{{ page_browser ('pdbids', entries|length, 2000) }}{% endif %}
+            {% if num_pages ['pdb_ids'] > 1 %}{{ page_browser ('pdb_ids', entries|length, 2000) }}{% endif %}
 
-            {% for page_index in range( num_pages ['pdbids'] ) %}
-            <p class="pdbids-page" id="pdbids-page-{{ page_index }}" style="font-family:monospace;{% if page_index > 0 %}display:none{% endif %}">
+            {% for page_index in range( num_pages ['pdb_ids'] ) %}
+            <p class="pdb_ids-page" id="pdb_ids-page-{{ page_index }}" style="font-family:monospace;{% if page_index > 0 %}display:none{% endif %}">
                 {% for i in range (page_index * items_per_page, (page_index + 1) * items_per_page) %}
                 {% if i < (entries | length) %}
-                {{ entries [i].pdbid }}
+                {{ entries [i].pdb_id }}
                 {% endif %}
                 {% endfor %}
             </p>
@@ -286,7 +286,7 @@
             <p class="entries-page" id="entries-page-{{ page_index }}" style="font-family:monospace;{% if page_index > 0 %}display:none{% endif %}">
                 {% for i in range (page_index * items_per_page, (page_index + 1) * items_per_page) %}
                 {% if i < (entries | length) %}
-                {{ "%s,%s" % (entries[i].databank_name,entries[i].pdbid) }}
+                {{ "%s,%s" % (entries[i].databank_name,entries[i].pdb_id) }}
                 {% endif %}
                 {% endfor %}
             </p>

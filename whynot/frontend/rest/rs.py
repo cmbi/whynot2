@@ -13,17 +13,17 @@ _log = logging.getLogger(__name__)
 bp = Blueprint('rest', __name__, url_prefix='/webservice/rs')
 
 
-@bp.route ('/annotations/<databank_name>/<pdbid>/')
-def annotations (databank_name, pdbid):
+@bp.route ('/annotations/<databank_name>/<pdb_id>/')
+def annotations (databank_name, pdb_id):
     """
     Request all annotations for a given entry.
 
     :param databank_name: Name of the whynot databank.
-    :param pdbid: pdb id of the entry.
+    :param pdb_id: pdb id of the entry.
     :return: a text string with all the comments in it.
     """
 
-    entry = storage.db.entries.find_one({'pdbid': pdbid, 'databank_name': databank_name})
+    entry = storage.db.entries.find_one({'pdb_id': pdb_id, 'databank_name': databank_name})
 
     comment = ''
     if entry:
@@ -44,7 +44,7 @@ def entries (databank_name, collection):
     # TODO: SPEED THIS UP
     text = ""
     for entry in get_entries_from_collection (databank_name, collection):
-        text += entry ['pdbid'] + '\n'
+        text += entry ['pdb_id'] + '\n'
 
     return Response (text, mimetype='text/plain')
 

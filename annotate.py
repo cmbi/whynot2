@@ -10,7 +10,7 @@ storage.db_name = settings.MONGODB_DB_NAME
 storage.connect()
 storage.authenticate ('whynotadmin', 'waivuy8N')
 
-from utils import entries_by_pdbid, get_unannotated_entries, get_missing_entries, read_http
+from utils import entries_by_pdb_id, get_unannotated_entries, get_missing_entries, read_http
 
 from time import time
 from sets import Set
@@ -19,15 +19,15 @@ mkdssp = '/usr/local/bin/mkdssp'
 
 # whynot comment files look like this:
 # COMMENT: <text 1>
-# <databank name>, <pdbid 1>
-# <databank name>, <pdbid 2>
-# <databank name>, <pdbid 3>
+# <databank name>, <pdb_id 1>
+# <databank name>, <pdb_id 2>
+# <databank name>, <pdb_id 3>
 # COMMENT: <text 2>
-# <databank name>, <pdbid 4>
-# <databank name>, <pdbid 5>
+# <databank name>, <pdb_id 4>
+# <databank name>, <pdb_id 5>
 # etc.
 
-# Returns a list of triples: (comment, databank name, pdbid)
+# Returns a list of triples: (comment, databank name, pdb_id)
 def parse_comments (lines):
 
     if len(lines) < 2:
@@ -42,8 +42,8 @@ def parse_comments (lines):
 
         elif ',' in line:
 
-            databank_name, pdbid = line.strip ().replace (' ','').split (',')
-            d.append ((comment, databank_name, pdbid))
+            databank_name, pdb_id = line.strip ().replace (' ','').split (',')
+            d.append ((comment, databank_name, pdb_id))
 
         elif len (line.strip ()) > 0:
 
@@ -68,7 +68,7 @@ def parse_comment(lines, entry):
     for line in lines[1:]:
 
         line = line.replace (' ','').strip ()
-        if line == '%s,%s' % (entry ['databank_name'], entry ['pdbid']):
+        if line == '%s,%s' % (entry ['databank_name'], entry ['pdb_id']):
             return comment
 
     return ''
@@ -76,11 +76,11 @@ def parse_comment(lines, entry):
 def update_entry (entry):
 
     databank_name = entry ['databank_name']
-    pdbid = entry ['pdbid']
+    pdb_id = entry ['pdb_id']
 
-    if storage.find_one ('entries', {'databank_name': databank_name, 'pdbid': pdbid}):
+    if storage.find_one ('entries', {'databank_name': databank_name, 'pdb_id': pdb_id}):
 
-        storage.update ('entries', {'databank_name': databank_name, 'pdbid': pdbid}, entry)
+        storage.update ('entries', {'databank_name': databank_name, 'pdb_id': pdb_id}, entry)
     else:
         storage.insert ('entries', entry)
 
@@ -90,9 +90,9 @@ def annotate_from_file (path):
 
     comments = parse_comments (open (path,'r').readlines ())
 
-    for text, databank_name, pdbid in comments:
+    for text, databank_name, pdb_id in comments:
 
-        entry = {'databank_name': databank_name, 'pdbid': pdbid,
+        entry = {'databank_name': databank_name, 'pdb_id': pdb_id,
                  'comment': text, 'mtime': time()}
 
         update_entry (entry)
@@ -133,7 +133,7 @@ if os.path.isdir (commentsdir):
 
             os.rename (filepath, filepath + ".done")
 
-# List the pdbids for pdb entries by category. For many missing entries,
+# List the pdb_ids for pdb entries by category. For many missing entries,
 # the category is the reason why they are missing. We base the comment on that.
 #
 # A pdb entry can have experimental methods: nmr, em, diffraction or other.
@@ -143,50 +143,50 @@ if os.path.isdir (commentsdir):
 # A pdb entry can contain only carbohydrates or only nucleic acids, in
 # which case no DSSP can be made.
 
-pdbidscarbonly = Set ()
-pdbidsnuconly = Set ()
-pdbidsnmr = Set ()
-pdbidsem = Set ()
-pdbidsother = Set ()
-pdbidsdiff = Set ()
+pdb_idscarbonly = Set ()
+pdb_idsnuconly = Set ()
+pdb_idsnmr = Set ()
+pdb_idsem = Set ()
+pdb_idsother = Set ()
+pdb_idsdiff = Set ()
 
 # Parse wwpdb entry type record
 for line in read_http('ftp://ftp.wwpdb.org/pub/pdb/derived_data/pdb_entry_type.txt').split('\n'):
     if len(line.strip()) <= 0:
         continue
 
-    pdbid, content, method = line.split()
+    pdb_id, content, method = line.split()
 
     if content=='nuc':
-        pdbidsnuconly.add(pdbid)
+        pdb_idsnuconly.add(pdb_id)
     elif content=='carb':
-        pdbidscarbonly.add(pdbid)
+        pdb_idscarbonly.add(pdb_id)
 
     if method=='diffraction':
-        pdbidsdiff.add(pdbid)
+        pdb_idsdiff.add(pdb_id)
     elif method=='NMR':
-        pdbidsnmr.add(pdbid)
+        pdb_idsnmr.add(pdb_id)
     elif method=='EM':
-        pdbidsem.add(pdbid)
+        pdb_idsem.add(pdb_id)
     elif method=='other':
-        pdbidsother.add(pdbid)
+        pdb_idsother.add(pdb_id)
 
 # Generate comments for missing structure factors.
 # Do this wherever the experimental method is not diffraction:
 for entry in get_unannotated_entries('STRUCTUREFACTORS'):
 
-    pdbid = entry['pdbid']
-    if pdbid in pdbidsnmr:
+    pdb_id = entry['pdb_id']
+    if pdb_id in pdb_idsnmr:
 
         entry['comment'] = 'NMR experiment'
         entry['mtime'] = time()
 
-    elif pdbid in pdbidsem:
+    elif pdb_id in pdb_idsem:
 
         entry['comment'] = 'Electron microscopy experiment'
         entry['mtime'] = time()
 
-    elif pdbid in pdbidsother:
+    elif pdb_id in pdb_idsother:
 
         entry['comment'] = 'Not a Diffraction experiment'
         entry['mtime'] = time()
@@ -199,18 +199,18 @@ for entry in get_unannotated_entries('STRUCTUREFACTORS'):
 # Do this wherever the experimental method is not nmr:
 for entry in get_unannotated_entries('NMR'):
 
-    pdbid = entry['pdbid']
-    if pdbid in pdbidsdiff:
+    pdb_id = entry['pdb_id']
+    if pdb_id in pdb_idsdiff:
 
         entry['comment'] = 'Diffraction experiment'
         entry['mtime'] = time()
 
-    elif pdbid in pdbidsem:
+    elif pdb_id in pdb_idsem:
 
         entry['comment'] = 'Electron microscopy experiment'
         entry['mtime'] = time()
 
-    elif pdbid in pdbidsother:
+    elif pdb_id in pdb_idsother:
 
         entry['comment'] = 'Not an NMR experiment'
         entry['mtime'] = time()
@@ -222,19 +222,19 @@ for entry in get_unannotated_entries('NMR'):
 # mkhssp when it ran. It's been stored in a reserved directory:
 for entry in get_unannotated_entries('HSSP'):
 
-    pdbid = entry['pdbid']
+    pdb_id = entry['pdb_id']
 
-    inputfile = '/srv/data/pdb/all/pdb%s.ent.gz' % pdbid
+    inputfile = '/srv/data/pdb/all/pdb%s.ent.gz' % pdb_id
     if not os.path.isfile(inputfile):
-        inputfile = '/srv/data/mmCIF/%s.cif.gz' % pdbid
+        inputfile = '/srv/data/mmCIF/%s.cif.gz' % pdb_id
 
     # Get hssp error from log file.
     # If the log is missing, run mkhssp.
-    errfile = '/srv/data/scratch/whynot2/hssp/%s.err' % pdbid
+    errfile = '/srv/data/scratch/whynot2/hssp/%s.err' % pdb_id
     if os.path.isfile (errfile):
         line = open (errfile, 'r').read ()
     else:
-        line = commands.getoutput('/usr/local/bin/mkhssp -a1 -i %s -o /tmp/%s.hssp.bz2 2>&1 >/dev/null' % (inputfile,pdbid))
+        line = commands.getoutput('/usr/local/bin/mkhssp -a1 -i %s -o /tmp/%s.hssp.bz2 2>&1 >/dev/null' % (inputfile,pdb_id))
 
     # We filter for a set of commonly ocurring errors:
     line = line.strip()
@@ -247,19 +247,19 @@ for entry in get_unannotated_entries('HSSP'):
 # 1 the structure has no protein, carbohydrates/nucleic acids only
 # 2 the structure hase no backbone, only alpha carbon atoms
 #
-# 1 can be found, using the predefined sets pdbidsnuconly and pdbidscarbonly.
+# 1 can be found, using the predefined sets pdb_idsnuconly and pdb_idscarbonly.
 # 2 can be found by running dsspcmbi and catching its error output.
 for dbname in ['DSSP', 'DSSP_REDO']:
     for entry in get_missing_entries (dbname):
 
-        pdbid = entry['pdbid']
+        pdb_id = entry['pdb_id']
 
-        if pdbid in pdbidsnuconly:
+        if pdb_id in pdb_idsnuconly:
 
             entry['comment'] = 'Nucleic acids only'
             entry['mtime'] = time()
 
-        elif pdbid in pdbidscarbonly:
+        elif pdb_id in pdb_idscarbonly:
 
             entry['comment'] = 'Carbohydrates only'
             entry['mtime'] = time()
@@ -268,16 +268,16 @@ for dbname in ['DSSP', 'DSSP_REDO']:
 
             # DSSP uses pdb files as input, DSSP_REDO uses pdb_redo files:
             if dbname == 'DSSP':
-                inputfile = '/srv/data/pdb/all/pdb%s.ent.gz' % pdbid
+                inputfile = '/srv/data/pdb/all/pdb%s.ent.gz' % pdb_id
                 if not os.path.isfile(inputfile):
-                    inputfile = '/srv/data/mmCIF/%s.cif.gz' % pdbid
+                    inputfile = '/srv/data/mmCIF/%s.cif.gz' % pdb_id
             else:
-                inputfile = '/srv/data/pdb_redo/%s/%s/%s_final.pdb' % (pdbid[1:3], pdbid, pdbid)
+                inputfile = '/srv/data/pdb_redo/%s/%s/%s_final.pdb' % (pdb_id[1:3], pdb_id, pdb_id)
                 if not os.path.isfile(inputfile):
                     continue
 
             # Run dsspcmbi and catch stderr:
-            lines = commands.getoutput('%s %s /tmp/%s.dssp 2>&1 >/dev/null' % (mkdssp, inputfile, pdbid)).split('\n')
+            lines = commands.getoutput('%s %s /tmp/%s.dssp 2>&1 >/dev/null' % (mkdssp, inputfile, pdb_id)).split('\n')
             if lines [-1].strip () == 'empty protein, or no valid complete residues':
                 entry['comment'] = 'No residues with complete backbone' # for backwards compatibility
                 entry['mtime'] = time()
@@ -288,9 +288,9 @@ for dbname in ['DSSP', 'DSSP_REDO']:
 # BDB comments are simply stored in a file, generated by the bdb script.
 for entry in get_missing_entries('BDB'):
 
-    pdbid = entry['pdbid']
-    part = pdbid[1:3]
-    whynotfile = '/srv/data/bdb/%s/%s/%s.whynot' % (part, pdbid, pdbid)
+    pdb_id = entry['pdb_id']
+    part = pdb_id[1:3]
+    whynotfile = '/srv/data/bdb/%s/%s/%s.whynot' % (part, pdb_id, pdb_id)
     if not os.path.isfile(whynotfile):
         continue
 
@@ -308,8 +308,8 @@ for lis in ['acc', 'cal', 'cc1', 'cc2', 'cc3', 'chi', 'dsp', 'iod', 'sbh', 'sbr'
 
         for entry in get_missing_entries (dbname):
 
-            pdbid = entry['pdbid']
-            whynotfile = '/srv/data/wi-lists/%s/%s/%s/%s.%s.whynot' % (src, lis, pdbid, pdbid, lis)
+            pdb_id = entry['pdb_id']
+            whynotfile = '/srv/data/wi-lists/%s/%s/%s/%s.%s.whynot' % (src, lis, pdb_id, pdb_id, lis)
             if not os.path.isfile(whynotfile):
                 continue
 
@@ -327,8 +327,8 @@ for lis in ['iod', 'ss2']:
 
         for entry in get_missing_entries(dbname):
 
-            pdbid = entry['pdbid']
-            whynotfile = '/srv/data/wi-lists/%s/scenes/%s/%s/%s.%s.whynot' % (src, lis, pdbid, pdbid, lis)
+            pdb_id = entry['pdb_id']
+            whynotfile = '/srv/data/wi-lists/%s/scenes/%s/%s/%s.%s.whynot' % (src, lis, pdb_id, pdb_id, lis)
             if not os.path.isfile(whynotfile):
                 continue
 

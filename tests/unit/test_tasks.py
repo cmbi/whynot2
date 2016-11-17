@@ -26,10 +26,10 @@ def test_crawl(mock_storage):
 
     crawl(databank)
 
-    mock_storage.db.update_one.assert_has_calls([
+    mock_storage.db.entries.replace_one.assert_has_calls([
         call({ 'databank_name': 'pdb', 'pdb_id': '1crn' }, entries[0], upsert=True),
         call({ 'databank_name': 'pdb', 'pdb_id': '2ltw' }, entries[1], upsert=True),
     ])
-    mock_storage.db.delete_many.assert_has_calls([
+    mock_storage.db.entries.delete_many.assert_has_calls([
         call({ 'databank_name': 'pdb', 'pdb_id': {'$nin': ['1crn', '2ltw']}})
     ])

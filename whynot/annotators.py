@@ -83,7 +83,7 @@ class Annotator:
 
     @classmethod
     def update_entry(cls, entry):
-        storage.db.update_one({
+        storage.db.replace_one({
             'databank_name': entry['name'],
             'pdb_id': entry['pdb_id'],
         }, entry)

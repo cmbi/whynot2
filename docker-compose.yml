@@ -24,6 +24,8 @@ services:
     command: celery -A whynot.application:celery worker -B
     environment:
       - WHYNOT_SETTINGS=/usr/src/app/prd_settings.py
+    volumes:
+      - "/srv/data:/srv/data"
 
   mongo:
     image: mongo

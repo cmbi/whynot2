@@ -2,6 +2,8 @@ import logging
 import os
 import re
 
+from pymongo import ReplaceOne
+
 from celery import current_app as celery_app
 from celery.signals import setup_logging, task_failure, task_prerun
 
@@ -71,19 +73,21 @@ def crawl(databank):
     _log.info("Using '{}'".format(Crawler.__name__))
     entries = Crawler.crawl(databank['source'], databank['regex'])
 
-    # Update the entries in the database
+    # Update the entries in the database in bulk
     _log.info("Updating {} entries in database".format(len(entries)))
+    ops = []
     for entry in entries:
         entry['databank_name'] = databank['name']
-        storage.db.update_one({
+        ops.append(ReplaceOne({
             'databank_name': databank['name'],
             'pdb_id': entry['pdb_id'],
-        }, entry, upsert=True)
+        }, entry, upsert=True))
+    storage.db.entries.bulk_write(ops)
 
     # Delete entries removed since the last update
     _log.info("Deleting removed entries from database")
     raw_entry_pdb_ids = [e['pdb_id'] for e in entries]
-    storage.db.delete_many({
+    storage.db.entries.delete_many({
         'databank_name': databank['name'],
         'pdb_id': { '$nin': raw_entry_pdb_ids },
     })

@@ -231,7 +231,7 @@ def get_all_entries_with_comment(comment):
     # ordering was found to make it take longer!
     return storage.db.entries.find({
         'comment': comment
-    }, order=[("pdb_id", pymongo.ASCENDING)])
+    }, sort=[("pdb_id", pymongo.ASCENDING)])
 
 
 def get_entries_with_comment(databank_name, comment):
@@ -239,7 +239,7 @@ def get_entries_with_comment(databank_name, comment):
     return storage.db.entries.find({
         'databank_name': databank_name,
         'comment': comment
-    }, order=[("pdb_id", pymongo.ASCENDING)])
+    }, sort=[("pdb_id", pymongo.ASCENDING)])
 
 
 def get_entries_with_pdb_id(databank_name, pdb_id):
@@ -247,7 +247,7 @@ def get_entries_with_pdb_id(databank_name, pdb_id):
     return storage.db.entries.find({
         'databank_name': databank_name,
         'pdb_id': pdb_id
-    }, order=[("pdb_id", pymongo.ASCENDING)])
+    }, sort=[("pdb_id", pymongo.ASCENDING)])
 
 
 # Obsolete entries are present entries of which the parent is NOT present.
@@ -382,7 +382,7 @@ def get_present_entries(databank_name, ordered=False):
         'databank_name': databank_name,
         'filepath': {'$exists': True},
         'mtime': {'$exists': True}
-    }, order=[("pdb_id", pymongo.ASCENDING)])
+    }, sort=[("pdb_id", pymongo.ASCENDING)])
 
 
 # An entry is considered missing if no file was found for it, but its parent is
@@ -420,7 +420,7 @@ def get_annotated_entries(databank_name):
         'databank_name': databank_name,
         'comment': {'$exists': True},
         'filepath': {'$exists': False}
-    }, order=[("pdb_id", pymongo.ASCENDING)])
+    }, sort=[("pdb_id", pymongo.ASCENDING)])
 
 
 # Entries that are missing but not annotated:

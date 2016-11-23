@@ -121,13 +121,13 @@ def entries():
     comments = {}
 
     if databank_name and collection:
-        entries = get_entries_from_collection(databank_name, collection)
+        entries = list(get_entries_from_collection(databank_name, collection))
         title = "%s %s" % (databank_name, collection)
     elif databank_name and comment_text:
-        entries = get_entries_with_comment(databank_name, comment_text)
+        entries = list(get_entries_with_comment(databank_name, comment_text))
         title = comment_text
     elif comment_text:
-        entries = get_all_entries_with_comment(comment_text)
+        entries = list(get_all_entries_with_comment(comment_text))
         title = comment_text
 
     databank = storage.db.databanks.find_one({'name': databank_name})

@@ -35,7 +35,15 @@ def update():
     # TODO: Add last_update field to databank entry
 
     for databank in celery_app.conf['DATABANKS']:
-        crawl(databank)
+        try:
+            crawl(databank)
+        except Exception as e:
+            _log.error("Error crawling '{}': {}".format(
+                databank['name'], str(e)))
 
     for databank in celery_app.conf['DATABANKS']:
-        annotate(databank)
+        try:
+            annotate(databank)
+        except Exception as e:
+            _log.error("Error annotating '{}': {}".format(
+                databank['name'], str(e)))

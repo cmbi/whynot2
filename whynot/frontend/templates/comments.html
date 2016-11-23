@@ -1,45 +1,38 @@
-{% extends "home/HomePage.html" %}
+{% extends "index.html" %}
+
 {% block header %}
 <script type="text/javascript">
 
-function load ()
-{
-
-    if (!window.XMLHttpRequest)
-    {
+function load() {
+    if (!window.XMLHttpRequest) {
         alert ("Your browser does not support Ajax, so this page cannot load fully!");
         return;
     }
 
-    var x = new XMLHttpRequest ();
-    x.open ("GET", "{{ url_for('dashboard.load_comments') }}", true);
-    x.onreadystatechange = function()
-    {
+    var x = new XMLHttpRequest();
+    x.open ("GET", "{{ url_for('frontend.load_comments') }}", true);
+    x.onreadystatechange = function() {
         if (x.readyState != 4)
             return
 
-        if (x.status == 200)
-        {
+        if (x.status == 200) {
             document.getElementById ("comments").style.display = "block";
 
-            var data = JSON.parse (x.responseText),
+            var data = JSON.parse (x.responseText);
+            var comments_table = document.getElementById("comments-table");
 
-                comments_table = document.getElementById("comments-table");
-
-            for (var i = 0; i < data.comments.length; i++)
-            {
+            for (var i = 0; i < data.comments.length; i++) {
                 var comment = data.comments [i];
 
                 var html = "<tr>";
                 html += "<td><span class=\"comment\">" + comment.text + "</span></td>";
                 html += "<td class=\"number\">" +
-                        "<a href=\"{{ url_for ('dashboard.entries',comment='TTTTTT') }}\">".replace ("TTTTTT", encodeURI(comment.text)) +
+                        "<a href=\"{{ url_for ('frontend.entries',comment='TTTTTT') }}\">".replace ("TTTTTT", encodeURI(comment.text)) +
                         "<span>" + comment.n_entries + "</span></a></td>";
                 html += "<td class=\"date\">" + comment.latest + "</td>";
                 html += "</tr>";
 
                 comments_table.innerHTML = comments_table.innerHTML + html;
-                //$("#comments-table").append (html);
             }
 
             // Completely remove the loading tag
@@ -47,39 +40,10 @@ function load ()
             loadingtag.parentNode.removeChild (loadingtag);
         }
     }
-    x.send ();
-
-/*
-    $.ajax({
-    timeout: 0, // unlimited
-        type: 'GET',
-        url: "{{ url_for('dashboard.load_comments') }}",
-        success: function (data, status)
-        {
-            $("#comments").show ();
-
-            for (var i = 0; i < data.comments.length; i++)
-            {
-                var comment = data.comments [i];
-
-                var html = "<tr>";
-                html += "<td><span class=\"comment\">" + comment.text + "</span></td>";
-                html += "<td class=\"number\">" +
-                        "<a href=\"{{ url_for ('dashboard.entries',comment='TTTTTT') }}\">".replace ("TTTTTT", encodeURI(comment.text)) +
-                        "<span>" + comment.n_entries + "</span></a></td>";
-                html += "<td class=\"date\">" + comment.latest + "</td>";
-                html += "</tr>";
-
-                $("#comments-table").append (html);
-            }
-
-            $("#loading-comments").hide ();
-        }
-    });
-*/
+    x.send();
 }
 
-load ();
+load();
 
 </script>
 {% endblock %}

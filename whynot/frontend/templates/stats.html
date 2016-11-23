@@ -1,34 +1,30 @@
-{% extends "home/HomePage.html" %}
+{% extends "index.html" %}
+
 {% block header %}
 <script type="text/javascript">
-function load ()
-{
-    if (!window.XMLHttpRequest)
-    {
+function load () {
+    if (!window.XMLHttpRequest) {
         alert ("Your browser does not support Ajax, so this page cannot load fully!");
         return;
     }
 
-    var x = new XMLHttpRequest ();
-    x.open ("GET", "{{ url_for('dashboard.load_statistics') }}", true);
-    x.onreadystatechange = function()
-    {
+    var x = new XMLHttpRequest();
+    x.open ("GET", "{{ url_for('frontend.load_statistics') }}", true);
+    x.onreadystatechange = function() {
         if (x.readyState != 4)
             return
 
-        if (x.status == 200)
-        {
-            var statistics = JSON.parse (x.responseText);
+        if (x.status == 200) {
+            var statistics = JSON.parse(x.responseText);
 
-            document.getElementById ("total_databanks").innerHTML = statistics.total_databanks;
-            document.getElementById ("total_entries").innerHTML = statistics.total_entries;
-            document.getElementById ("total_files").innerHTML = statistics.total_files;
-            document.getElementById ("total_annotations").innerHTML = statistics.total_annotations;
-            document.getElementById ("total_comments").innerHTML = statistics.total_comments;
+            document.getElementById("total_databanks").innerHTML = statistics.total_databanks;
+            document.getElementById("total_entries").innerHTML = statistics.total_entries;
+            document.getElementById("total_files").innerHTML = statistics.total_files;
+            document.getElementById("total_annotations").innerHTML = statistics.total_annotations;
+            document.getElementById("total_comments").innerHTML = statistics.total_comments;
 
             var htmlAnnotations = "";
-            for (var i = 0; i < statistics.annotations.length; i++)
-            {
+            for (var i = 0; i < statistics.annotations.length; i++) {
                 var annotation = statistics.annotations [i];
 
                 htmlAnnotations += "<tr>";
@@ -40,71 +36,26 @@ function load ()
             document.getElementById ("annotations").innerHTML = htmlAnnotations;
 
             var htmlFiles = "";
-            for (var i = 0; i < statistics.files.length; i++)
-            {
-                var file = statistics.files [i];
+            for (var i = 0; i < statistics.files.length; i++) {
+                var file = statistics.files[i];
 
                 htmlFiles += "<tr>";
                 htmlFiles += "<td>" + file.path + "</td>";
                 htmlFiles += "<td>" + file.date + "</td>";
                 htmlFiles += "</tr>";
             }
-            document.getElementById ("files").innerHTML = htmlFiles;
-
-            document.getElementById ("statistics").style.display = "block";
+            document.getElementById("files").innerHTML = htmlFiles;
+            document.getElementById("statistics").style.display = "block";
 
             // Completely remove the loading tag
-            var loadingtag = document.getElementById ("loading-statistics");
-            loadingtag.parentNode.removeChild (loadingtag);
+            var loadingtag = document.getElementById("loading-statistics");
+            loadingtag.parentNode.removeChild(loadingtag);
         }
     }
-    x.send ();
-/*
-    .ajax({
-    timeout: 0, // unlimited
-        type: 'GET',
-        url: "{{ url_for('dashboard.load_statistics') }}",
-        success: function (statistics, status)
-        {
-            $("#total_databanks").text (statistics.total_databanks);
-            $("#total_entries").text (statistics.total_entries);
-            $("#total_files").text (statistics.total_files);
-            $("#total_annotations").text (statistics.total_annotations);
-            $("#total_comments").text (statistics.total_comments);
-
-            var htmlAnnotations = "";
-            for (var i = 0; i < statistics.annotations.length; i++)
-            {
-                var annotation = statistics.annotations [i];
-
-                htmlAnnotations += "<tr>";
-                htmlAnnotations += "<td>" + annotation.comment + "</td>";
-                htmlAnnotations += "<td><span>" + annotation.databank_name + "</span>,<span>" + annotation.pdb_id + "</span></td>";
-                htmlAnnotations += "<td>" + annotation.date + "</td>";
-                htmlAnnotations += "</tr>";
-            }
-            $("#annotations").html (htmlAnnotations);
-
-            var htmlFiles = "";
-            for (var i = 0; i < statistics.files.length; i++)
-            {
-                var file = statistics.files [i];
-
-                htmlFiles += "<tr>";
-                htmlFiles += "<td>" + file.path + "</td>";
-                htmlFiles += "<td>" + file.date + "</td>";
-                htmlFiles += "</tr>";
-            }
-            $("#files").html (htmlFiles);
-
-            $("#statistics").show ();
-            $("#loading-statistics").hide ();
-        }
-    });
-*/
+    x.send();
 }
 
-load ();
+load();
 </script>
 {% endblock %}
 {% block content %}

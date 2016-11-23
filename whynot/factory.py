@@ -73,13 +73,21 @@ def create_app(settings=None):
     # Setup the default databanks if there are none
     # TODO: If the databank settings are changed in the file, the database
     #       needs to be updated.
-    # TODO: Uncomment this below to use new interface
-    # if storage.count('databanks', {}) == 0:
-    #     storage.create_index('databanks', 'name')
-    #     storage.create_index('entries', 'databank_name')
-    #     storage.create_index('entries', 'pdb_id')
-    #     storage.create_index('entries', 'comment')
-    #     storage.insert('databanks', app.config['DATABANKS'])
+    if storage.db.databanks.count() == 0:
+        storage.db.databanks.create_index('name')
+        storage.db.entries.create_index('databank_name')
+        storage.db.entries.create_index('pdb_id')
+        storage.db.entries.create_index('comment')
+
+        for databank in app.config['DATABANKS']:
+            storage.db.databanks.insert({
+                'name': databank['name'],
+                'filelink': databank['filelink'],
+                'parent': databank['parent'],
+                'reference': databank['reference'],
+                'regex': databank['regex'],
+                'source': databank['source'],
+            })
 
     # Use ProxyFix to correct URL's when redirecting.
     from whynot.middleware import ReverseProxied

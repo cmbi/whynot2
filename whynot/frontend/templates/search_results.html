@@ -1,10 +1,10 @@
-{% extends "home/HomePage.html" %}
+{% extends "index.html" %}
+
 {% block header %}
     <link rel="stylesheet" href="{{ url_for('static', filename='panels.css') }}" type="text/css" />
 {% endblock %}
-{% block content %}
-    <wicket:container wicket:id="resultslist"></wicket:container>
 
+{% block content %}
     <h1>{{ pdb_id }}</h1>
     <table>
         {% for databank_name in db_order %}

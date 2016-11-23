@@ -1,6 +1,6 @@
+import logging
 import os
 import re
-from httplib import HTTPConnection
 from sets import Set
 from urllib2 import urlopen
 
@@ -8,6 +8,8 @@ import pymongo
 
 from whynot.storage import storage
 
+
+_log = logging.getLogger(__name__)
 
 # TODO: Eventually all of this will be somewhere else
 
@@ -19,37 +21,9 @@ p_single_tag = re.compile("\\<\\w+(\\s+\\w+\\=.+)*\\/\\>")
 def databanks_by_name(databanks):
     d = {}
     for databank in databanks:
+        _log.debug(databank)
         d[databank['name']] = databank
     return d
-
-
-databanks = databanks_by_name(storage.db.databanks.find({}))
-databank_regexes = {}
-for name in databanks:
-    databank_regexes[name] = databanks[name]['regex'].try_compile()
-
-
-# Verifies that the path contains the regex that the databank prescribes.
-# For a file path, checks that the file exists
-# For an url, checks that the url points to a vallid location. (hssp response
-# 200)
-def valid_path(databank_name, path):
-    if not databank_regexes[databank_name].search(path):
-        return False
-
-    if path.startswith('http://') or path.startswith('ftp://'):
-        host = path.split('/')[2]
-        location = path[path.find('/', path.find(host)):]
-
-        # Request just the head, it's faster
-        conn = HTTPConnection(host)
-        conn.request('HEAD', location)
-        response = conn.getresponse()
-        conn.close()
-
-        return response.status == 200
-    else:
-        return os.path.exists(path)
 
 
 # A data structure that remembers the N highest objects added
@@ -188,7 +162,7 @@ def get_file_link(databank, pdb_id):
 # Value is either a link to a file, or a comment if the file is missing.
 def search_results_for(pdb_id):
     entries = entries_by_databank(storage.db.entries.find({'pdb_id': pdb_id}))
-    databanks = databanks_by_name(storage.db.databanks.find('databanks', {}))
+    databanks = databanks_by_name(storage.db.databanks.find({}))
 
     results = {}
     for databank_name in databanks.keys():

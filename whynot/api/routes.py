@@ -70,4 +70,4 @@ def docs():
         docstring = inspect.getdoc(f)
         docs[url] = docstring
 
-    return render_template('rest/docs.html', docs=docs)
+    return render_template('docs.html', docs=docs)

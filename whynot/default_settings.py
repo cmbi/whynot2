@@ -47,8 +47,7 @@ DATABANKS = [
         'name': 'mmcif',
         'annotator': None,
         'crawler': DirCrawler,
-        'filelink':
-        'ftp://ftp.wwpdb.org/pub/pdb/data/structures/divided/mmCIF/${PART}/${PDBID}.cif.gz',  # NOQA
+        'filelink': 'ftp://ftp.wwpdb.org/pub/pdb/data/structures/divided/mmCIF/${PART}/${PDBID}.cif.gz',  # NOQA
         'parent': None,
         'reference': 'http://www.wwpdb.org/',
         'regex': r'.*/([\w]{4})\.cif(\.gz)?',

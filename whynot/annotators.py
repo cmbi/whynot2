@@ -1,8 +1,27 @@
+import logging
 import os
 import time
 
 from whynot.services.wwpdb import wwpdb
 from whynot.storage import storage
+
+
+_log = logging.getLogger(__name__)
+
+
+def annotate(databank):
+    """
+    Annotates the given databank using its annotator.
+    """
+    _log.info("Annotating %s" % databank['name'])
+
+    annotator = databank['annotator']
+    if not annotator:
+        _log.debug("No annotation required for '{}'".format(databank['databank_name']))
+        return
+
+    _log.info("Annotating '{}' with '{}'".format(databank['databank_name'], annotator.__class__.__name__))
+    annotator.annotate(databank)
 
 
 class Annotator:

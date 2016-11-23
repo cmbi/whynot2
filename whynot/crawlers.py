@@ -2,8 +2,41 @@ import logging
 import os
 import re
 
+from pymongo import ReplaceOne
+
 
 _log = logging.getLogger(__name__)
+
+
+def crawl(databank):
+    """
+    Crawls the given databank using its crawler.
+    """
+    _log.info("Crawling %s" % databank['name'])
+
+    # Get the raw entries using the crawler
+    Crawler = databank['crawler']
+    _log.info("Using '{}'".format(Crawler.__name__))
+    entries = Crawler.crawl(databank['source'], databank['regex'])
+
+    # Update the entries in the database in bulk
+    _log.info("Updating {} entries in database".format(len(entries)))
+    ops = []
+    for entry in entries:
+        entry['databank_name'] = databank['name']
+        ops.append(ReplaceOne({
+            'databank_name': databank['name'],
+            'pdb_id': entry['pdb_id'],
+        }, entry, upsert=True))
+    storage.db.entries.bulk_write(ops)
+
+    # Delete entries removed since the last update
+    _log.info("Deleting removed entries from database")
+    raw_entry_pdb_ids = [e['pdb_id'] for e in entries]
+    storage.db.entries.delete_many({
+        'databank_name': databank['name'],
+        'pdb_id': { '$nin': raw_entry_pdb_ids },
+    })
 
 
 class DirCrawler:

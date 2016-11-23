@@ -4,6 +4,8 @@ import re
 
 from pymongo import ReplaceOne
 
+from whynot.storage import storage
+
 
 _log = logging.getLogger(__name__)
 
@@ -35,7 +37,7 @@ def crawl(databank):
     raw_entry_pdb_ids = [e['pdb_id'] for e in entries]
     storage.db.entries.delete_many({
         'databank_name': databank['name'],
-        'pdb_id': { '$nin': raw_entry_pdb_ids },
+        'pdb_id': {'$nin': raw_entry_pdb_ids},
     })
 
 
@@ -107,5 +109,3 @@ class FileCrawler:
                     'comment': None,
                 })
         return entries
-
-

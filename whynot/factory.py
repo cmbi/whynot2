@@ -75,11 +75,11 @@ def create_app(settings=None):
     #       needs to be updated.
     # TODO: Uncomment this below to use new interface
     # if storage.count('databanks', {}) == 0:
-        # storage.create_index('databanks', 'name')
-        # storage.create_index('entries', 'databank_name')
-        # storage.create_index('entries', 'pdb_id')
-        # storage.create_index('entries', 'comment')
-        # storage.insert('databanks', app.config['DATABANKS'])
+    #     storage.create_index('databanks', 'name')
+    #     storage.create_index('entries', 'databank_name')
+    #     storage.create_index('entries', 'pdb_id')
+    #     storage.create_index('entries', 'comment')
+    #     storage.insert('databanks', app.config['DATABANKS'])
 
     # Use ProxyFix to correct URL's when redirecting.
     from whynot.middleware import ReverseProxied
@@ -122,6 +122,6 @@ def create_celery_app(app):  # pragma: no cover
                 return TaskBase.__call__(self, *args, **kwargs)
     celery.Task = ContextTask
 
-    import whynot.tasks
+    import whynot.tasks  # NOQA
 
     return celery

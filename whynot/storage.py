@@ -1,6 +1,5 @@
 import logging
 
-from bson.objectid import ObjectId
 from pymongo import MongoClient
 
 
@@ -41,7 +40,7 @@ class Storage(object):
     def uri(self, uri):
         self._uri = uri
 
-    def connect (self):
+    def connect(self):
         if self.uri is None or self._db_name is None:
             raise Exception("Storage hasn't been configured")
 

@@ -17,10 +17,11 @@ def annotate(databank):
 
     annotator = databank['annotator']
     if not annotator:
-        _log.debug("No annotation required for '{}'".format(databank['databank_name']))
+        _log.debug("No annotation required for %s" % databank['databank_name'])
         return
 
-    _log.info("Annotating '{}' with '{}'".format(databank['databank_name'], annotator.__class__.__name__))
+    _log.info("Annotating '{}' with '{}'".format(
+        databank['databank_name'], annotator.__class__.__name__))
     annotator.annotate(databank)
 
 
@@ -39,20 +40,20 @@ class Annotator:
             # databank.
             {'$match': {
                 '$or': [
-                    { 'databank_name': databank['databank_name'] },
-                    { 'databank_name': databank['parent_name'] },
+                    {'databank_name': databank['databank_name']},
+                    {'databank_name': databank['parent_name']},
                 ]
             }},
 
             # Group over all records, storing the parent database pdb ids in
             # parent_ids and the current databank pdb ids in pdb_ids.
-            { '$group': {
+            {'$group': {
                 '_id': None,
                 'parent_pdb_ids': {
                     '$addToSet': {
                         '$cond': {
-                            'if': { '$eq': ['$databank_name',
-                                            databank['parent_name']] },
+                            'if': {'$eq': ['$databank_name',
+                                           databank['parent_name']]},
                             'then': '$pdb_id',
                             'else': None
                         }
@@ -61,8 +62,8 @@ class Annotator:
                 'pdb_ids': {
                     '$addToSet': {
                         '$cond': {
-                            'if': { '$eq': ['$databank_name',
-                                            databank['databank_name']] },
+                            'if': {'$eq': ['$databank_name',
+                                           databank['databank_name']]},
                             'then': '$pdb_id',
                             'else': None
                         }
@@ -72,16 +73,16 @@ class Annotator:
 
             # Project the difference between those in the parent and those in
             # the current databank.
-            { '$project': {
+            {'$project': {
                 'pdb_ids': {
-                    '$setDifference': ['$parent_pdb_ids', '$pdb_ids' ]
+                    '$setDifference': ['$parent_pdb_ids', '$pdb_ids']
                 }
             }}
         ])
 
         missing_entries = storage.db.entries.find({
             'databank_name': databank['databank_name'],
-            'pdb_id': { '$in': result['pdb_ids'] }
+            'pdb_id': {'$in': result['pdb_ids']}
         })
 
         return missing_entries
@@ -94,8 +95,8 @@ class Annotator:
         An entry is considered unannotated when the `comment` field is empty.
         """
         unannotated_entries = storage.db.entries.find({
-            { 'databank_name': databank['databank_name'] },
-            { 'comment': None }
+            {'databank_name': databank['databank_name']},
+            {'comment': None}
         })
 
         return unannotated_entries
@@ -120,7 +121,7 @@ class Annotator:
         comment = lines[0][8:].strip()
 
         for line in lines[1:]:
-            line = line.replace(' ','').strip().upper()
+            line = line.replace(' ', '').strip().upper()
             db_entry = '%s,%s' % (entry['databank_name'].upper(),
                                   entry['pdb_id'].upper())
 
@@ -193,7 +194,7 @@ class HsspAnnotator(Annotator):
     def annotate(cls, databank):
         for entry in cls.get_unannotated_entries(databank):
             # TODO: hardcoded paths
-            err_file = '/srv/data/scratch/whynot2/hssp/%s.err' % entry['pdb_id']
+            err_file = '/srv/data/scratch/whynot2/hssp/%s.err' % entry['pdb_id']  # NOQA
             if not os.path.isfile(err_file):
                 continue
 
@@ -224,7 +225,7 @@ class DsspAnnotator(Annotator):
                 cls.update_entry(entry)
                 continue
             elif pdb_id in [d['pdb_id'] for d in wwpdb_data
-                          if d['c_type'] == 'carb']:
+                            if d['c_type'] == 'carb']:
                 entry['comment'] = 'Carbohydrates only'
                 entry['mtime'] = time.time()
                 cls.update_entry(entry)
@@ -238,7 +239,7 @@ class BdbAnnotator(Annotator):
             pdb_id = entry['pdb_id']
             # TODO: hardcoded path
             whynot_file = '/srv/data/bdb/%s/%s/%s.whynot' % (pdb_id[1:3],
-                    pdb_id, pdb_id)
+                                                             pdb_id, pdb_id)
 
             if not os.path.isfile(whynot_file):
                 continue
@@ -260,7 +261,8 @@ class WhatifListAnnotator(Annotator):
             pdb_id = entry['pdb_id']
             _, src, lis = entry['databank_name'].split('_')
             # TODO: hardcoded path
-            whynot_file = '/srv/data/wi-lists/%s/%s/%s/%s.%s.whynot' % (src, lis, pdb_id, pdb_id, lis)
+            whynot_file = '/srv/data/wi-lists/%s/%s/%s/%s.%s.whynot' % (
+                src, lis, pdb_id, pdb_id, lis)
 
             if not os.path.isfile(whynot_file):
                 continue
@@ -282,7 +284,8 @@ class WhatifSceneAnnotator(Annotator):
             pdb_id = entry['pdb_id']
             src, _, lis = entry['databank_name'].split('_')
             # TODO: hardcoded path
-            whynot_file = '/srv/data/wi-lists/%s/scenes/%s/%s/%s.%s.whynot' % (src, lis, pdb_id, pdb_id, lis)
+            whynot_file = '/srv/data/wi-lists/%s/scenes/%s/%s/%s.%s.whynot' % (
+                src, lis, pdb_id, pdb_id, lis)
             if not os.path.isfile(whynot_file):
                 continue
 
@@ -302,10 +305,11 @@ class CommentFileAnnotator:
 
     def annotate(cls):
         if not os.path.exists(cls._comments_dir):
-            raise ValueError("Comments folder '%s' doesn't exist" % comments_dir)
+            raise ValueError("Comments folder '%s' doesn't exist" %
+                             cls._comments_dir)
 
         if not os.path.isdir(cls._comments_dir):
-            raise ValueError("'%s' is not a folder" % comments_dir)
+            raise ValueError("'%s' is not a folder" % cls._comments_dir)
 
         entries = []
         for f in os.listdir(cls._comments_dir):

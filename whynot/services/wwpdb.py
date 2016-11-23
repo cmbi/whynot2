@@ -1,3 +1,8 @@
+import os
+
+import requests
+
+
 class WwPdb:
     def __init__(self, url=None):
         self._url = url
@@ -39,7 +44,7 @@ class WwPdb:
         r = requests.get(url, stream=True)
         with open(local_filename, 'wb') as f:
             for chunk in r.iter_content(chunk_size=1024):
-                if chunk: # filter out keep-alive new chunks
+                if chunk:  # filter out keep-alive new chunks
                     f.write(chunk)
         return local_filename
 

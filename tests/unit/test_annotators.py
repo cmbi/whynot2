@@ -1,29 +1,30 @@
 from mock import ANY, call, Mock, mock_open, patch
-from nose.tools import assert_raises, eq_, raises, with_setup
 
-from whynot.default_settings import DATABANKS
-from whynot.annotators import *
+from whynot.annotators import (BdbAnnotator, DsspAnnotator,
+                               WhatifListAnnotator, WhatifSceneAnnotator,
+                               StructureFactorsAnnotator, NmrAnnotator,
+                               HsspAnnotator)
 
 
 class TestStructureFactorsAnnotator:
     @patch('whynot.annotators.wwpdb')
     def test_annotate(self, mock_wwpdb):
         mock_wwpdb.get.return_value = [
-            { 'pdb_id': '1crn', 'c_type': 'prot', 'method': 'diffraction' },
-            { 'pdb_id': '1crp', 'c_type': 'prot', 'method': 'NMR' },
-            { 'pdb_id': '1d3e', 'c_type': 'prot', 'method': 'EM' },
-            { 'pdb_id': '1dfw', 'c_type': 'prot', 'method': 'other' },
+            {'pdb_id': '1crn', 'c_type': 'prot', 'method': 'diffraction'},
+            {'pdb_id': '1crp', 'c_type': 'prot', 'method': 'NMR'},
+            {'pdb_id': '1d3e', 'c_type': 'prot', 'method': 'EM'},
+            {'pdb_id': '1dfw', 'c_type': 'prot', 'method': 'other'},
         ]
 
         entries = [
-            { 'databank_name': 'structurefactors',
-              'pdb_id': '1crn', 'comment': None },
-            { 'databank_name': 'structurefactors',
-              'pdb_id': '1crp', 'comment': None },
-            { 'databank_name': 'structurefactors',
-              'pdb_id': '1d3e', 'comment': None },
-            { 'databank_name': 'structurefactors',
-              'pdb_id': '1dfw', 'comment': None },
+            {'databank_name': 'structurefactors',
+             'pdb_id': '1crn', 'comment': None},
+            {'databank_name': 'structurefactors',
+             'pdb_id': '1crp', 'comment': None},
+            {'databank_name': 'structurefactors',
+             'pdb_id': '1d3e', 'comment': None},
+            {'databank_name': 'structurefactors',
+             'pdb_id': '1dfw', 'comment': None},
         ]
 
         annotator = StructureFactorsAnnotator
@@ -31,7 +32,7 @@ class TestStructureFactorsAnnotator:
         mock_update_entry = Mock()
         annotator.update_entry = mock_update_entry
 
-        annotator.annotate({ 'databank_name': 'structurefactors' })
+        annotator.annotate({'databank_name': 'structurefactors'})
 
         mock_update_entry.assert_has_calls([
             call({
@@ -52,24 +53,24 @@ class TestStructureFactorsAnnotator:
                 'comment': 'Not a diffraction experiment',
                 'mtime': ANY,
             }),
-        ]);
+        ])
 
 
 class TestNmrAnnotator:
     @patch('whynot.annotators.wwpdb')
     def test_annotate(self, mock_wwpdb):
         mock_wwpdb.get.return_value = [
-            { 'pdb_id': '1crn', 'c_type': 'prot', 'method': 'diffraction' },
-            { 'pdb_id': '1crp', 'c_type': 'prot', 'method': 'NMR' },
-            { 'pdb_id': '1d3e', 'c_type': 'prot', 'method': 'EM' },
-            { 'pdb_id': '1dfw', 'c_type': 'prot', 'method': 'other' },
+            {'pdb_id': '1crn', 'c_type': 'prot', 'method': 'diffraction'},
+            {'pdb_id': '1crp', 'c_type': 'prot', 'method': 'NMR'},
+            {'pdb_id': '1d3e', 'c_type': 'prot', 'method': 'EM'},
+            {'pdb_id': '1dfw', 'c_type': 'prot', 'method': 'other'},
         ]
 
         entries = [
-            { 'databank_name': 'nmr', 'pdb_id': '1crn', 'comment': None },
-            { 'databank_name': 'nmr', 'pdb_id': '1crp', 'comment': None },
-            { 'databank_name': 'nmr', 'pdb_id': '1d3e', 'comment': None },
-            { 'databank_name': 'nmr', 'pdb_id': '1dfw', 'comment': None },
+            {'databank_name': 'nmr', 'pdb_id': '1crn', 'comment': None},
+            {'databank_name': 'nmr', 'pdb_id': '1crp', 'comment': None},
+            {'databank_name': 'nmr', 'pdb_id': '1d3e', 'comment': None},
+            {'databank_name': 'nmr', 'pdb_id': '1dfw', 'comment': None},
         ]
 
         annotator = NmrAnnotator
@@ -77,7 +78,7 @@ class TestNmrAnnotator:
         mock_update_entry = Mock()
         annotator.update_entry = mock_update_entry
 
-        annotator.annotate({ 'databank_name': 'structurefactors' })
+        annotator.annotate({'databank_name': 'structurefactors'})
 
         mock_update_entry.assert_has_calls([
             call({
@@ -98,14 +99,14 @@ class TestNmrAnnotator:
                 'comment': 'Not an NMR experiment',
                 'mtime': ANY,
             }),
-        ]);
+        ])
 
 
 class TestHsspAnnotator:
     @patch('os.path.isfile', return_value=True)
     def test_annotate(self, mock_isfile):
         entries = [
-            { 'databank_name': 'hssp', 'pdb_id': '1crn', 'comment': None },
+            {'databank_name': 'hssp', 'pdb_id': '1crn', 'comment': None},
         ]
         annotator = HsspAnnotator
         annotator.get_unannotated_entries = Mock(return_value=entries)
@@ -114,7 +115,7 @@ class TestHsspAnnotator:
 
         comment = 'Not enough sequences in PDB file of length 25'
         with patch('whynot.annotators.open', mock_open(read_data=comment)):
-            annotator.annotate({ 'databank_name': 'hssp' })
+            annotator.annotate({'databank_name': 'hssp'})
 
         err_file_path = '/srv/data/scratch/whynot2/hssp/1crn.err'
         mock_isfile.assert_called_once_with(err_file_path)
@@ -133,13 +134,13 @@ class TestDsspAnnotator:
     @patch('whynot.annotators.wwpdb')
     def test_annotate(self, mock_wwpdb):
         mock_wwpdb.get.return_value = [
-            { 'pdb_id': '1hua', 'c_type': 'carb', 'method': 'NMR' },
-            { 'pdb_id': '1ht7', 'c_type': 'nuc', 'method': 'NMR' },
+            {'pdb_id': '1hua', 'c_type': 'carb', 'method': 'NMR'},
+            {'pdb_id': '1ht7', 'c_type': 'nuc', 'method': 'NMR'},
         ]
 
         entries = [
-            { 'databank_name': 'dssp', 'pdb_id': '1hua', 'comment': None },
-            { 'databank_name': 'dssp', 'pdb_id': '1ht7', 'comment': None },
+            {'databank_name': 'dssp', 'pdb_id': '1hua', 'comment': None},
+            {'databank_name': 'dssp', 'pdb_id': '1ht7', 'comment': None},
         ]
 
         annotator = DsspAnnotator
@@ -147,7 +148,7 @@ class TestDsspAnnotator:
         mock_update_entry = Mock()
         annotator.update_entry = mock_update_entry
 
-        annotator.annotate({ 'databank_name': 'dssp' })
+        annotator.annotate({'databank_name': 'dssp'})
 
         mock_update_entry.assert_has_calls([
             call({
@@ -162,14 +163,14 @@ class TestDsspAnnotator:
                 'comment': 'Nucleic acids only',
                 'mtime': ANY,
             }),
-        ]);
+        ])
 
 
 class TestBdbAnnotator:
     @patch('os.path.isfile', return_value=True)
     def test_annotate(self, mock_isfile):
         entries = [
-            { 'databank_name': 'bdb', 'pdb_id': '1crn', 'comment': None },
+            {'databank_name': 'bdb', 'pdb_id': '1crn', 'comment': None},
         ]
         annotator = BdbAnnotator
         annotator.get_unannotated_entries = Mock(return_value=entries)
@@ -178,7 +179,7 @@ class TestBdbAnnotator:
 
         lines = 'COMMENT: test comment\nBDB,1crn'
         with patch('whynot.annotators.open', mock_open(read_data=lines)):
-            annotator.annotate({ 'databank_name': 'hssp' })
+            annotator.annotate({'databank_name': 'hssp'})
 
         whynot_file_path = '/srv/data/bdb/cr/1crn/1crn.whynot'
         mock_isfile.assert_called_once_with(whynot_file_path)
@@ -196,7 +197,8 @@ class TestWhatifListAnnotator:
     @patch('os.path.isfile', return_value=True)
     def test_annotate(self, mock_isfile):
         entries = [
-            { 'databank_name': 'whatif_pdb_iod', 'pdb_id': '1crn', 'comment': None },
+            {'databank_name': 'whatif_pdb_iod',
+             'pdb_id': '1crn', 'comment': None},
         ]
         annotator = WhatifListAnnotator
         annotator.get_unannotated_entries = Mock(return_value=entries)
@@ -205,7 +207,7 @@ class TestWhatifListAnnotator:
 
         lines = 'COMMENT: test comment\nwhatif_pdb_iod,1crn'
         with patch('whynot.annotators.open', mock_open(read_data=lines)):
-            annotator.annotate({ 'databank_name': 'whatif_pdb_iod' })
+            annotator.annotate({'databank_name': 'whatif_pdb_iod'})
 
         whynot_file_path = '/srv/data/wi-lists/pdb/iod/1crn/1crn.iod.whynot'
         mock_isfile.assert_called_once_with(whynot_file_path)
@@ -223,7 +225,8 @@ class TestWhatifSceneAnnotator:
     @patch('os.path.isfile', return_value=True)
     def test_annotate(self, mock_isfile):
         entries = [
-            { 'databank_name': 'pdb_scenes_iod', 'pdb_id': '1crn', 'comment': None },
+            {'databank_name': 'pdb_scenes_iod',
+             'pdb_id': '1crn', 'comment': None},
         ]
         annotator = WhatifSceneAnnotator
         annotator.get_unannotated_entries = Mock(return_value=entries)
@@ -232,9 +235,9 @@ class TestWhatifSceneAnnotator:
 
         lines = 'COMMENT: test comment\npdb_scenes_iod,1crn'
         with patch('whynot.annotators.open', mock_open(read_data=lines)):
-            annotator.annotate({ 'databank_name': 'pdb_scenes_iod' })
+            annotator.annotate({'databank_name': 'pdb_scenes_iod'})
 
-        whynot_file_path = '/srv/data/wi-lists/pdb/scenes/iod/1crn/1crn.iod.whynot'
+        whynot_file_path = '/srv/data/wi-lists/pdb/scenes/iod/1crn/1crn.iod.whynot'  # NOQA
         mock_isfile.assert_called_once_with(whynot_file_path)
         mock_update_entry.assert_has_calls([
             call({

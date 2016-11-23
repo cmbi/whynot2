@@ -1,13 +1,9 @@
 import logging
-import os
-import re
 
 from celery import current_app as celery_app
-from celery.signals import setup_logging, task_failure, task_prerun
 
-from whynot.annotators import annotate
+from whynot.annotators import annotate, CommentFileAnnotator
 from whynot.crawlers import crawl
-from whynot.storage import storage
 
 
 _log = logging.getLogger(__name__)
@@ -25,7 +21,7 @@ def annotate_from_comments():
     _log.info("Annotating databanks from comments")
 
     annotator = CommentFileAnnotator(celery_app.config['WHYNOT_COMMENTS_DIR'])
-    entries = annotator.annotate()
+    annotator.annotate()
 
 
 @celery_app.task

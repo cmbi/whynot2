@@ -1,4 +1,4 @@
-from mock import ANY, mock_open, patch
+from mock import mock_open, patch
 
 from nose.tools import eq_
 

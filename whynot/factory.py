@@ -85,20 +85,15 @@ def create_app(settings=None):
     from whynot.middleware import ReverseProxied
     app.wsgi_app = ReverseProxied(app.wsgi_app)
 
-    # Initialise extensions
-    # TODO: Remove debug toolbar
-    from whynot import toolbar
-    toolbar.init_app(app)
-
     # Register jinja2 filters
     from whynot.frontend.filters import beautify_docstring
     app.jinja_env.filters['beautify_docstring'] = beautify_docstring
 
     # Register blueprints
-    from whynot.frontend.dashboard.views import bp as dashboard_bp
-    from whynot.frontend.rest.rs import bp as rs_bp
-    app.register_blueprint(dashboard_bp)
-    app.register_blueprint(rs_bp)
+    from whynot.frontend.routes import bp as frontend_bp
+    from whynot.api.routes import bp as api_bp
+    app.register_blueprint(frontend_bp)
+    app.register_blueprint(api_bp)
 
     return app
 

@@ -11,12 +11,8 @@ from whynot.crawlers import DirCrawler, FileCrawler
 
 # Celery
 default_exchange = Exchange('whynot', type='direct')
-
-
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_BROKER_URL = 'amqp://guest@whynot_rabbitmq_1'
-CELERYBEAT_SCHEDULE = {
+broker_url = 'amqp://guest@whynot_rabbitmq_1'
+beat_schedule = {
     # Every day at midnight
     'update': {
         'task': 'whynot.tasks.update',
@@ -190,7 +186,7 @@ for lis in ['dsp', 'iod', 'sbh', 'sbr', 'ss1', 'ss2', 'tau', 'acc', 'cal',
     })
 
 
-for lis, name in {'ss2': 'sym-contacts', 'iod': 'ion-sites'}.iteritems():
+for lis, name in list({'ss2': 'sym-contacts', 'iod': 'ion-sites'}.items()):
     DATABANKS.append({
         'name': 'pdb_scenes_%s' % lis,
         'annotator': WhatifSceneAnnotator,

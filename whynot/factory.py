@@ -111,9 +111,8 @@ def create_celery_app(app):  # pragma: no cover
 
     app = app or create_app()
 
-    celery = Celery(__name__,
-                    backend='amqp',
-                    broker=app.config['CELERY_BROKER_URL'])
+    celery = Celery(__name__, backend='amqp')
+    celery.config_from_object('whynot.default_settings')
     celery.conf.update(app.config)
     TaskBase = celery.Task
 

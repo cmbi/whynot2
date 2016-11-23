@@ -1,4 +1,4 @@
-from mock import ANY, call, Mock, mock_open, patch
+from unittest.mock import ANY, call, Mock, mock_open, patch
 
 from whynot.annotators import (BdbAnnotator, DsspAnnotator,
                                WhatifListAnnotator, WhatifSceneAnnotator,

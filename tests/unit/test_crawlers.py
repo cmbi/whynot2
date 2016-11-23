@@ -1,5 +1,5 @@
 import time
-from mock import mock_open, patch, call, Mock
+from unittest.mock import mock_open, patch, call, Mock
 
 from nose.tools import eq_
 

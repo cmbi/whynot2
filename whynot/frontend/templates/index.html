@@ -98,7 +98,7 @@
                 </ul>
             {%- endmacro %}
             <div id="hierarchy">
-                {% for key, value in db_tree.iteritems() recursive %}
+                {% for key, value in db_tree.items() recursive %}
                     {{ render_hierarchy_fragment (key, value) }}
                 {% endfor %}
             </div>

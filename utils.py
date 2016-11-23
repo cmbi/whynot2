@@ -1,8 +1,7 @@
 import logging
 import os
 import re
-from sets import Set
-from urllib2 import urlopen
+from urllib.request import urlopen
 
 import pymongo
 
@@ -165,7 +164,7 @@ def search_results_for(pdb_id):
     databanks = databanks_by_name(storage.db.databanks.find({}))
 
     results = {}
-    for databank_name in databanks.keys():
+    for databank_name in list(databanks.keys()):
         databank = databanks[databank_name]
 
         if databank_name in entries:
@@ -310,7 +309,7 @@ def comment_summary():
         comments[text]['n_entries'] += 1
         if comments[text]['mtime'] < entry['mtime']:
             comments[text]['mtime'] = entry['mtime']
-    return comments.values()
+    return list(comments.values())
 
 
 # Counts present, missing, annotated, etc. entries for a single databank.
@@ -324,7 +323,7 @@ def count_summary(databank_name):
 
     count = {}
 
-    pdb_ids = Set()
+    pdb_ids = set()
     query = {'databank_name': databank_name, 'filepath': {'$exists': True}}
     for entry in storage.db.entries.find(query, projection):
         pdb_ids.add(entry['pdb_id'])
@@ -334,8 +333,8 @@ def count_summary(databank_name):
     if 'parent_name' in databank:
         parent_name = databank['parent_name']
 
-        parent_pdb_ids = Set()
-        missing_pdb_ids = Set()
+        parent_pdb_ids = set()
+        missing_pdb_ids = set()
 
         parent_entries = storage.db.entries.find({
             'databank_name': parent_name,
@@ -460,7 +459,7 @@ class comment_node (object):
 
     def list_entries(self):
         entries = self.entries
-        for child in self.subtree.values():
+        for child in list(self.subtree.values()):
             entries.extend(child.list_entries())
         return entries
 
@@ -502,7 +501,7 @@ def remove_unbranched_comment_nodes(tree):
         if len(tree[key].subtree) == 1:
             subtree = tree[key].subtree
             tree.pop(key)
-            key = subtree.keys()[0]
+            key = list(subtree.keys())[0]
             tree[key] = subtree[key]
         tree[key].subtree = remove_unbranched_comment_nodes(tree[key].subtree)
     return tree

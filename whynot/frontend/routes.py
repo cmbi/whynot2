@@ -1,6 +1,5 @@
 import logging
 import os
-from sets import Set
 from time import strftime, gmtime, time
 
 from flask import Response, Blueprint, jsonify, render_template, request
@@ -165,7 +164,7 @@ def load_statistics():
     nf = 0
     nc = 0
 
-    unique_comments = Set()
+    unique_comments = set()
     recent_files = top_highest(10)
     recent_annotations = top_highest(10)
     for entry in storage.db.entries.find({}):

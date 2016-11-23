@@ -1,6 +1,6 @@
-FROM python:2.7
+FROM python:3.5
 
-# whynot
+# app
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 

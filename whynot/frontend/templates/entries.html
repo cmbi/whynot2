@@ -40,7 +40,7 @@
 
 {% macro comment_trees (dict,depth) %}
 
-{% for text, node in dict.iteritems () %}
+{% for text, node in dict.items () %}
 <div class="tree-branch tree-branch-mid">
     {% set comment_id = '%i_%i' % (depth, loop.index) %}
     <div class="tree-node">

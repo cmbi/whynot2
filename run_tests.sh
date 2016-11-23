@@ -32,7 +32,7 @@ case "$_tests" in
         ;;
 esac
 
-_nose_opts="-v -a !disabled --with-coverage --cover-inclusive --cover-package whynot"
+_nose_opts="-v -a !disabled --with-coverage --cover-erase --cover-inclusive --cover-package whynot"
 _dc_opts="-f docker-compose.yml -f docker-compose-dev.yml"
 _command="docker-compose $_dc_opts run $_dc_run_opts frontend nosetests $_nose_opts $_tests"
 echo $_command

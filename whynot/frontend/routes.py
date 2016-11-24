@@ -1,6 +1,8 @@
+import inspect
 import logging
 import os
-from time import strftime, gmtime, time
+import re
+import time
 
 from flask import Response, Blueprint, jsonify, render_template, request
 
@@ -15,8 +17,6 @@ _log = logging.getLogger(__name__)
 
 bp = Blueprint('frontend', __name__)
 
-date_format = '%d/%m/%Y %H:%M'
-
 
 def names_from_hierarchy(d):
     names = []
@@ -27,12 +27,9 @@ def names_from_hierarchy(d):
     return names
 
 
-db_tree = get_databank_hierarchy()
-db_order = names_from_hierarchy(db_tree)
-
-
 @bp.route('/')
 def index():
+    db_tree = get_databank_hierarchy()
     return render_template('index.html', db_tree=db_tree)
 
 
@@ -45,7 +42,9 @@ def search(pdb_id):
     if len(urlparam) == 4:
         pdb_id = urlparam
 
+    db_tree = get_databank_hierarchy()
     results = search_results_for(pdb_id)
+    db_order = names_from_hierarchy(db_tree)
 
     return render_template('search_results.html', db_tree=db_tree,
                            db_order=db_order, pdb_id=pdb_id, results=results)
@@ -53,45 +52,15 @@ def search(pdb_id):
 
 @bp.route('/about/')
 def about():
+    db_tree = get_databank_hierarchy()
     return render_template('about.html', db_tree=db_tree, nav_disabled='about')
-
-
-@bp.route('/load_comments/')
-def load_comments():
-    _log.info("request for comment summary")
-
-    # TODO: speed up this method
-
-    start_time = time()
-    comments = comment_summary()
-    end_time = time()
-
-    _log.info("transaction finished in %d seconds" % (end_time - start_time))
-
-    for i in range(len(comments)):
-        comments[i]['latest'] = strftime(date_format,
-                                         gmtime(comments[i]['mtime']))
-
-    return jsonify({'comments': comments})
 
 
 @bp.route('/comment/')
 def comment():
+    db_tree = get_databank_hierarchy()
     return render_template('comments.html', db_tree=db_tree,
                            nav_disabled='comments')
-
-
-@bp.route('/count/<databank_name>/')
-def count(databank_name):
-    "Called by the databank page, while the loading icon is displayed"
-
-    # TODO: speed up this method
-
-    _log.info("request for databank %s summary" % databank_name)
-
-    cs = count_summary(databank_name)
-
-    return jsonify(cs)
 
 
 @bp.route('/databanks/')
@@ -102,6 +71,7 @@ def databanks(name=None):
     else:
         databanks = [storage.db.databanks.find_one({'name': name})]
 
+    db_tree = get_databank_hierarchy()
     return render_template('databank.html', db_tree=db_tree,
                            nav_disabled='databanks', databanks=databanks)
 
@@ -144,6 +114,7 @@ def entries():
 
     comment_tree = comments_to_tree(comments)
 
+    db_tree = get_databank_hierarchy()
     return render_template('entries.html', db_tree=db_tree,
                            nav_disabled='entries', collection=collection,
                            databank_name=databank_name, comment=comment_text,
@@ -151,65 +122,9 @@ def entries():
                            comment_tree=comment_tree)
 
 
-@bp.route('/load_statistics/')
-def load_statistics():
-    _log.info("request for statistics")
-
-    # TODO: speed up this method
-
-    ndb = storage.db.databanks.count({})
-
-    ne = 0
-    na = 0
-    nf = 0
-    nc = 0
-
-    unique_comments = set()
-    recent_files = top_highest(10)
-    recent_annotations = top_highest(10)
-    for entry in storage.db.entries.find({}):
-
-        ne += 1
-        if 'mtime' in entry:
-            if 'filepath' in entry:
-                nf += 1
-                recent_files.add(entry['mtime'], entry)
-            elif 'comment' in entry:
-                na += 1
-                unique_comments.add(entry['comment'])
-                recent_annotations.add(entry['mtime'], entry)
-
-    # Perform time-consuming operations only on the last 10 files and
-    # annotations
-    files = []
-    for f in recent_files.get():
-        files.append({
-            'path': f['filepath'],
-            'date': strftime(date_format, gmtime(f['mtime']))
-        })
-
-    annotations = []
-    for a in recent_annotations.get():
-        annotations.append({'comment': a['comment'], 'pdb_id': a['pdb_id'],
-                            'databank_name': a['databank_name'],
-                            'date': strftime(date_format, gmtime(a['mtime']))})
-
-    nc = len(unique_comments)
-
-    statistics = {}
-    statistics['total_databanks'] = ndb
-    statistics['total_entries'] = ne
-    statistics['total_files'] = nf
-    statistics['total_annotations'] = na
-    statistics['total_comments'] = nc
-    statistics['annotations'] = annotations
-    statistics['files'] = files
-
-    return jsonify(statistics)
-
-
 @bp.route('/statistics/')
 def statistics():
+    db_tree = get_databank_hierarchy()
     return render_template('stats.html', nav_disabled='statistics',
                            db_tree=db_tree)
 
@@ -297,3 +212,118 @@ def entries_file():
     response.headers["Content-Disposition"] = header_val
 
     return response
+
+
+@bp.route('/api/docs')
+def docs():
+    from whynot.api.routes import annotations, entries
+
+    p = re.compile(r"\@bp\.route\s*\(\'([\w\/\<\>]*)\'\)")
+    fs = [annotations, entries]
+    docs = {}
+    for f in fs:
+        src = inspect.getsourcelines(f)
+        m = p.search(src[0][0])
+        if not m:  # pragma: no cover
+            _log.debug("Unable to document function '{}'".format(f))
+            continue
+
+        url = m.group(1)
+        docstring = inspect.getdoc(f)
+        docs[url] = docstring
+
+    db_tree = get_databank_hierarchy()
+    return render_template('docs.html', docs=docs, db_tree=db_tree)
+
+
+# TODO: All routes below this comment are used in AJAX calls on the page. These
+#       should be integrated into the API.
+
+@bp.route('/load_statistics/')
+def load_statistics():
+    _log.info("request for statistics")
+
+    # TODO: speed up this method
+
+    ndb = storage.db.databanks.count({})
+
+    ne = 0
+    na = 0
+    nf = 0
+    nc = 0
+
+    unique_comments = set()
+    recent_files = top_highest(10)
+    recent_annotations = top_highest(10)
+    for entry in storage.db.entries.find({}):
+
+        ne += 1
+        if 'mtime' in entry:
+            if 'filepath' in entry:
+                nf += 1
+                recent_files.add(entry['mtime'], entry)
+            elif 'comment' in entry:
+                na += 1
+                unique_comments.add(entry['comment'])
+                recent_annotations.add(entry['mtime'], entry)
+
+    # Perform time-consuming operations only on the last 10 files and
+    # annotations
+    files = []
+    for f in recent_files.get():
+        files.append({
+            'path': f['filepath'],
+            'date': time.strftime('%d/%m/%Y %H:%M', time.gmtime(f['mtime']))
+        })
+
+    annotations = []
+    for a in recent_annotations.get():
+        annotations.append({'comment': a['comment'], 'pdb_id': a['pdb_id'],
+                            'databank_name': a['databank_name'],
+                            'date': time.strftime('%d/%m/%Y %H:%M',
+                                                  time.gmtime(a['mtime']))})
+
+    nc = len(unique_comments)
+
+    statistics = {}
+    statistics['total_databanks'] = ndb
+    statistics['total_entries'] = ne
+    statistics['total_files'] = nf
+    statistics['total_annotations'] = na
+    statistics['total_comments'] = nc
+    statistics['annotations'] = annotations
+    statistics['files'] = files
+
+    return jsonify(statistics)
+
+
+@bp.route('/count/<databank_name>/')
+def count(databank_name):
+    "Called by the databank page, while the loading icon is displayed"
+
+    # TODO: speed up this method
+
+    _log.info("request for databank %s summary" % databank_name)
+
+    cs = count_summary(databank_name)
+
+    return jsonify(cs)
+
+
+@bp.route('/load_comments/')
+def load_comments():
+    _log.info("request for comment summary")
+
+    # TODO: speed up this method
+
+    start_time = time.time()
+    comments = comment_summary()
+    end_time = time.time()
+
+    _log.info("transaction finished in %d seconds" % (end_time - start_time))
+
+    for i in range(len(comments)):
+        comments[i]['latest'] = time.strftime(
+                '%d/%m/%Y %H:%M', time.gmtime(comments[i]['mtime']))
+
+    return jsonify({'comments': comments})

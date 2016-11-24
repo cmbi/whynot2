@@ -1,8 +1,6 @@
 import logging
-import re
-import inspect
 
-from flask import Blueprint, render_template, Response
+from flask import Blueprint, Response
 
 from utils import get_entries_from_collection
 from whynot.storage import storage
@@ -10,7 +8,7 @@ from whynot.storage import storage
 
 _log = logging.getLogger(__name__)
 
-bp = Blueprint('api', __name__, url_prefix='/webservice/rs')
+bp = Blueprint('api', __name__, url_prefix='/api')
 
 
 # TODO: Return JSON
@@ -52,22 +50,3 @@ def entries(databank_name, collection):
         text += entry['pdb_id'] + '\n'
 
     return Response(text, mimetype='text/plain')
-
-
-@bp.route('/')
-def docs():
-    p = re.compile(r"\@bp\.route\s*\(\'([\w\/\<\>]*)\'\)")
-    fs = [annotations, entries]
-    docs = {}
-    for f in fs:
-        src = inspect.getsourcelines(f)
-        m = p.search(src[0][0])
-        if not m:  # pragma: no cover
-            _log.debug("Unable to document function '{}'".format(f))
-            continue
-
-        url = m.group(1)
-        docstring = inspect.getdoc(f)
-        docs[url] = docstring
-
-    return render_template('docs.html', docs=docs)

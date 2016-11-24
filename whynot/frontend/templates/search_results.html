@@ -5,20 +5,20 @@
 {% endblock %}
 
 {% block content %}
-    <h1>{{ pdb_id }}</h1>
-    <table>
-        {% for databank_name in db_order %}
-        {% set result = results [databank_name] %}
-        <tr id="databanklist">
-            <th width="120px">{{ databank_name }}</th>
-            {% if result.startswith ('http://') or result.startswith ('https://') or result.startswith ('ftp://')%}
-                <td>
-                    <a href="{{ result }}" class="file">{{ result.split ('/')[-1] }}</a>
-                </td>
-            {% else %}
-                <td style="padding-left:0px;" class="annotation">{{ result }}</td>
-            {% endif %}
-        </tr>
-        {% endfor %}
-    </table>
+  <h1>{{ pdb_id }}</h1>
+  <table>
+    {% for databank_name in db_order %}
+    {% set result = results [databank_name] %}
+    <tr id="databanklist">
+      <th width="120px">{{ databank_name }}</th>
+        {% if result and (result.startswith('http://') or result.startswith('https://') or result.startswith('ftp://')) %}
+          <td>
+            <a href="{{ result }}" class="file">{{ result.split ('/')[-1] }}</a>
+          </td>
+        {% else %}
+          <td style="padding-left:0px;" class="annotation">{{ result }}</td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+  </table>
 {% endblock %}

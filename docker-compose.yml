@@ -6,7 +6,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: gunicorn -k gevent -b 0.0.0.0:15000 whynot.application:app
+    command: gunicorn -k gevent -b 0.0.0.0:15001 whynot.application:app
     depends_on:
       - mongo
     environment:

@@ -82,7 +82,7 @@ def create_app(settings=None):
             storage.db.databanks.insert({
                 'name': databank['name'],
                 'filelink': databank['filelink'],
-                'parent': databank['parent'],
+                'parent_name': databank['parent'],
                 'reference': databank['reference'],
                 'regex': databank['regex'],
                 'source': databank['source'],
@@ -97,10 +97,7 @@ def create_app(settings=None):
     app.jinja_env.filters['beautify_docstring'] = beautify_docstring
 
     # Initialise scheduler
-    from whynot import tasks as t
-    from apscheduler.schedulers.background import BackgroundScheduler
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(t.update, 'interval', minutes=1)
+    from whynot.tasks import scheduler
     scheduler.start()
 
     # Register blueprints

@@ -1,5 +1,7 @@
 import logging
 
+from apscheduler.schedulers.background import BackgroundScheduler
+
 from whynot import default_settings as config
 from whynot.annotators import annotate, CommentFileAnnotator
 from whynot.crawlers import crawl
@@ -7,7 +9,10 @@ from whynot.crawlers import crawl
 
 _log = logging.getLogger(__name__)
 
+scheduler = BackgroundScheduler()
 
+
+@scheduler.scheduled_job('cron', hour=5, minute=0)
 def annotate_from_comments():
     """
     Annotates database entries from comment files placed in
@@ -22,7 +27,15 @@ def annotate_from_comments():
     annotator.annotate()
 
 
+@scheduler.scheduled_job('cron', hour=0, minute=0)
 def update():
+    """
+    Updates the database entries by crawling the filesystem for changes.
+
+    There is nothing intelligent about this process. First the filesystem is
+    crawled and all files are added to the database. This is done for all
+    databanks. Finally each entry in the database is annotated.
+    """
     _log.info("Updating databanks")
 
     # There are two loops because crawling must finish first. This can be

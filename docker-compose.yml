@@ -13,22 +13,8 @@ services:
       - WHYNOT_SETTINGS=/usr/src/app/prd_settings.py
     ports:
       - "15000:15000"
-
-  celery:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    depends_on:
-      - rabbitmq
-      - mongo
-    command: celery -A whynot.application:celery worker -B
-    environment:
-      - WHYNOT_SETTINGS=/usr/src/app/prd_settings.py
     volumes:
       - "/srv/data:/srv/data"
 
   mongo:
     image: mongo
-
-  rabbitmq:
-    image: rabbitmq

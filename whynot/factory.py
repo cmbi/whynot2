@@ -1,7 +1,6 @@
 import logging
 from logging.handlers import SMTPHandler
 
-from celery import Celery
 from flask import Flask
 
 
@@ -97,6 +96,13 @@ def create_app(settings=None):
     from whynot.frontend.filters import beautify_docstring
     app.jinja_env.filters['beautify_docstring'] = beautify_docstring
 
+    # Initialise scheduler
+    from whynot import tasks as t
+    from apscheduler.schedulers.background import BackgroundScheduler
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(t.update, 'interval', minutes=1)
+    scheduler.start()
+
     # Register blueprints
     from whynot.frontend.routes import bp as frontend_bp
     from whynot.api.routes import bp as api_bp
@@ -104,26 +110,3 @@ def create_app(settings=None):
     app.register_blueprint(api_bp)
 
     return app
-
-
-def create_celery_app(app):  # pragma: no cover
-    _log.info("Creating celery app")
-
-    app = app or create_app()
-
-    celery = Celery(__name__, backend='amqp')
-    celery.config_from_object('whynot.default_settings')
-    celery.conf.update(app.config)
-    TaskBase = celery.Task
-
-    class ContextTask(TaskBase):
-        abstract = True
-
-        def __call__(self, *args, **kwargs):
-            with app.app_context():
-                return TaskBase.__call__(self, *args, **kwargs)
-    celery.Task = ContextTask
-
-    import whynot.tasks  # NOQA
-
-    return celery

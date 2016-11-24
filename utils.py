@@ -193,7 +193,7 @@ def search_results_for(pdb_id):
 def get_databank_hierarchy(name=None):
     if name is None:
         databanks = storage.db.databanks.find(
-            {'parent_name': {'$exists': False}},
+            {'parent_name': None},
             {'name': 1, '_id': 0})
     else:
         databanks = storage.db.databanks.find({
@@ -292,8 +292,8 @@ def get_valid_entries(databank_name):
 def comment_summary():
     comments = {}
     query = {
-        'comment': {'$exists': True},
-        'mtime': {'$exists': True}
+        'comment': None,
+        'mtime': None
     }
 
     for entry in storage.db.entries.find(query, {'mtime': 1, 'comment': 1}):
@@ -324,7 +324,7 @@ def count_summary(databank_name):
     count = {}
 
     pdb_ids = set()
-    query = {'databank_name': databank_name, 'filepath': {'$exists': True}}
+    query = {'databank_name': databank_name, 'filepath': None}
     for entry in storage.db.entries.find(query, projection):
         pdb_ids.add(entry['pdb_id'])
 
@@ -338,12 +338,12 @@ def count_summary(databank_name):
 
         parent_entries = storage.db.entries.find({
             'databank_name': parent_name,
-            'filepath': {'$exists': True}
+            'filepath': None
         }, projection)
 
         comment_entries = storage.db.entries.find({
             'databank_name': databank_name,
-            'comment': {'$exists': True}
+            'comment': None
         }, projection)
 
         for entry in parent_entries:
@@ -380,8 +380,8 @@ def get_present_entries(databank_name, ordered=False):
     # ordering was found to make it take longer!
     return storage.db.entries.find({
         'databank_name': databank_name,
-        'filepath': {'$exists': True},
-        'mtime': {'$exists': True}
+        'filepath': None,
+        'mtime': None
     }, sort=[("pdb_id", pymongo.ASCENDING)])
 
 
@@ -418,8 +418,8 @@ def get_missing_entries(databank_name):
 def get_annotated_entries(databank_name):
     return storage.db.entries.find({
         'databank_name': databank_name,
-        'comment': {'$exists': True},
-        'filepath': {'$exists': False}
+        'comment': None,
+        'filepath': None
     }, sort=[("pdb_id", pymongo.ASCENDING)])
 
 

@@ -17,11 +17,11 @@ def annotate(databank):
 
     annotator = databank['annotator']
     if not annotator:
-        _log.debug("No annotation required for %s" % databank['databank_name'])
+        _log.debug("No annotation required for %s" % databank['name'])
         return
 
     _log.info("Annotating '{}' with '{}'".format(
-        databank['databank_name'], annotator.__class__.__name__))
+        databank['name'], annotator.__name__))
     annotator.annotate(databank)
 
 
@@ -40,7 +40,7 @@ class Annotator:
             # databank.
             {'$match': {
                 '$or': [
-                    {'databank_name': databank['databank_name']},
+                    {'databank_name': databank['name']},
                     {'databank_name': databank['parent_name']},
                 ]
             }},
@@ -63,7 +63,7 @@ class Annotator:
                     '$addToSet': {
                         '$cond': {
                             'if': {'$eq': ['$databank_name',
-                                           databank['databank_name']]},
+                                           databank['name']]},
                             'then': '$pdb_id',
                             'else': None
                         }
@@ -81,7 +81,7 @@ class Annotator:
         ])
 
         missing_entries = storage.db.entries.find({
-            'databank_name': databank['databank_name'],
+            'databank_name': databank['name'],
             'pdb_id': {'$in': result['pdb_ids']}
         })
 
@@ -95,16 +95,16 @@ class Annotator:
         An entry is considered unannotated when the `comment` field is empty.
         """
         unannotated_entries = storage.db.entries.find({
-            {'databank_name': databank['databank_name']},
-            {'comment': None}
+            'databank_name': databank['name'],
+            'comment': None
         })
 
         return unannotated_entries
 
     @classmethod
     def update_entry(cls, entry):
-        storage.db.replace_one({
-            'databank_name': entry['name'],
+        storage.db.entries.replace_one({
+            'databank_name': entry['databank_name'],
             'pdb_id': entry['pdb_id'],
         }, entry)
 

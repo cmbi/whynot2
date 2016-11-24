@@ -1,33 +1,17 @@
 import os
 
-from celery.schedules import crontab
-from kombu import Exchange
-
 from whynot.annotators import (BdbAnnotator, NmrAnnotator, DsspAnnotator,
                                HsspAnnotator, WhatifListAnnotator,
                                WhatifSceneAnnotator, StructureFactorsAnnotator)
 from whynot.crawlers import DirCrawler, FileCrawler
 
 
-# Celery
-default_exchange = Exchange('whynot', type='direct')
-broker_url = 'amqp://guest@whynot_rabbitmq_1'
-beat_schedule = {
-    # Every day at midnight
-    'update': {
-        'task': 'whynot.tasks.update',
-        # TODO: Set correct schedule
-        # 'schedule': crontab(hour=0, minute=0),
-        'schedule': crontab(minute='*/10'),
-    },
-}
-
 # Mongo
 MONGODB_URI = "mongodb://whynot_mongo_1"
 MONGODB_DB_NAME = "whynot"
 
 # URLs
-URL_WWPDB = 'ftp://ftp.wwpdb.org/pub/pdb/derived_data/pdb_entry_type.txt'
+URL_WWPDB = 'http://ftp.wwpdb.org/pub/pdb/derived_data/pdb_entry_type.txt'
 
 # Databanks
 #

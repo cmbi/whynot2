@@ -8,10 +8,3 @@ services:
       - WHYNOT_SETTINGS=/usr/src/app/dev_settings.py
     volumes:
       - ".:/usr/src/app"
-
-  celery:
-    command: watchmedo auto-restart -d /usr/src/app -p "*.py" -D -R -- celery -A whynot.application:celery worker -B
-    environment:
-      - WHYNOT_SETTINGS=/usr/src/app/dev_settings.py
-    volumes:
-      - ".:/usr/src/app"

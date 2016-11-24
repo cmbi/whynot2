@@ -39,7 +39,7 @@ class WwPdb:
 
     # TODO: Cache this with dogpile. Check every month?
     # TODO: Put this code in helper module
-    def _download_file(url):
+    def _download_file(self, url):
         local_filename = os.path.join('/tmp', url.split('/')[-1])
         r = requests.get(url, stream=True)
         with open(local_filename, 'wb') as f:

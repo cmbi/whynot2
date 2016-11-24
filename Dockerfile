@@ -18,4 +18,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . /usr/src/app
 
 # settings
-EXPOSE 15000
+EXPOSE 15001

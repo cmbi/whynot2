@@ -9,22 +9,14 @@ from flask import Response, Blueprint, jsonify, render_template, request
 from utils import (search_results_for, get_databank_hierarchy, comment_summary,
                    get_entries_from_collection, get_all_entries_with_comment,
                    get_entries_with_comment, top_highest, count_summary,
-                   remove_tags, get_file_link, comments_to_tree)
+                   remove_tags, get_file_link, comments_to_tree,
+                   names_from_hierarchy)
 from whynot.storage import storage
 
 
 _log = logging.getLogger(__name__)
 
 bp = Blueprint('frontend', __name__)
-
-
-def names_from_hierarchy(d):
-    names = []
-    for key in sorted(d.keys()):
-        names.append(key)
-        names.extend(names_from_hierarchy(d[key]))
-
-    return names
 
 
 @bp.route('/')

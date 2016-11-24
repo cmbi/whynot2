@@ -208,6 +208,14 @@ def get_databank_hierarchy(name=None):
     return tree
 
 
+def names_from_hierarchy(d):
+    names = []
+    for key in sorted(d.keys()):
+        names.append(key)
+        names.extend(names_from_hierarchy(d[key]))
+    return names
+
+
 def get_entries_from_collection(databank_name, collection):
     collection = collection.lower()
 

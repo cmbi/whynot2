@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block header %}
+  <link href="{{ url_for('static', filename='about.css') }}" rel="stylesheet"/>
+{% endblock %}
+
+{% block content %}
+  <h1>About</h1>
+  <p>
+    Why Not was developed at the CMBI by Tim te Beek (t.tebeek@cmbi.ru.nl) as
+    part of the Modeling &amp; Data mining group of Gert Vriend. Feel free to
+    contact me about any questions or requests concerning Why Not, including
+    inclusion of additional databanks.
+  </p>
+
+  <h1>Technologies</h1>
+
+  <p>A short list of technologies used to build Why Not</p>
+
+  <ul class="about">
+    <li>Python</li>
+    <li>GitHub</li>
+    <li>MongoDB</li>
+    <li>PyMongo</li>
+    <li>Flask</li>
+  </ul>
+
+  <p>
+    The sourcecode is freely available upon request and could easily be adapted
+    to support other uses.
+  </p>
+{% endblock %}

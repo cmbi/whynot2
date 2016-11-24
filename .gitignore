@@ -1,75 +1,57 @@
-#******************************************************************************
-# logs
-#******************************************************************************
+*.py[cod]
 
-*.log
-*.log.gz
+# C extensions
+*.so
 
-#******************************************************************************
-# java
-#******************************************************************************
+# Packages
+*.egg
+*.egg-info
+dist
+build
+eggs
+parts
+bin
+var
+sdist
+develop-eggs
+.installed.cfg
+lib
+lib64
+__pycache__
 
-*.class
-*.jar
-*.war
-*.ear
+# Installer logs
+pip-log.txt
 
-#******************************************************************************
-# python
-#******************************************************************************
+# Unit test / coverage reports
+.coverage
+.tox
+nosetests.xml
 
-*.pyc
+# Translations
+*.mo
 
-#******************************************************************************
-# maven
-#******************************************************************************
-
-target/
-release.properties
-
-#******************************************************************************
-# eclipse
-#******************************************************************************
-
-*.pydevproject
+# Mr Developer
+.mr.developer.cfg
 .project
-.metadata
-bin/**
-tmp/**
-tmp/**/*
-*.tmp
-*.bak
-*.swp
-*~.nib
-local.properties
-.classpath
-.settings/
-.loadpath
+.pydevproject
 
-# External tool builders
-.externalToolBuilders/
-
-# Locally stored "Eclipse launch configurations"
-*.launch
-
-# CDT-specific
-.cproject
-
-# PDT-specific
-.buildpath
-
-#******************************************************************************
-# vim
-#******************************************************************************
-
-*.swp
+# Vim
+*.sw[a-z]
 *.un~
 Session.vim
 .netrwhist
 *~
 
-#******************************************************************************
-# Hope
-#******************************************************************************
+# rope
+.ropeproject/
 
-hope/hope-web/logs/
+# celery
+celerybeat-schedule
+celerybeat-schedule.db
+celerybeat.pid
+
+# bower
+whynot/frontend/static/libs
+
+# venv
+venv/

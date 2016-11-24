@@ -1,8 +1,0 @@
-{% extends "home/HomePage.html" %}
-{% block content %}
-    <h1>Error</h1>
-    <p>An internal error occurred. Please notify an administrator (t.tebeek@cmbi.ru.nl) and/or try again later.</p>
-    <h3>{{ error }}</h3>
-    <pre>{{ stack }}</pre>
-    <p><img src="{{ url_for ('static', filename='image/img.jpg') }}" style="float:right" /></p>
-{% endblock %}

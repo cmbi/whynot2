@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block header %}
+<script type="text/javascript">
+
+function load() {
+    if (!window.XMLHttpRequest) {
+        alert ("Your browser does not support Ajax, so this page cannot load fully!");
+        return;
+    }
+
+    var x = new XMLHttpRequest();
+    x.open ("GET", "{{ url_for('frontend.load_comments') }}", true);
+    x.onreadystatechange = function() {
+        if (x.readyState != 4)
+            return
+
+        if (x.status == 200) {
+            document.getElementById ("comments").style.display = "block";
+
+            var data = JSON.parse (x.responseText);
+            var comments_table = document.getElementById("comments-table");
+
+            for (var i = 0; i < data.comments.length; i++) {
+                var comment = data.comments [i];
+
+                var html = "<tr>";
+                html += "<td><span class=\"comment\">" + comment.text + "</span></td>";
+                html += "<td class=\"number\">" +
+                        "<a href=\"{{ url_for ('frontend.entries',comment='TTTTTT') }}\">".replace ("TTTTTT", encodeURI(comment.text)) +
+                        "<span>" + comment.n_entries + "</span></a></td>";
+                html += "<td class=\"date\">" + comment.latest + "</td>";
+                html += "</tr>";
+
+                comments_table.innerHTML = comments_table.innerHTML + html;
+            }
+
+            // Completely remove the loading tag
+            var loadingtag = document.getElementById ("loading-comments");
+            loadingtag.parentNode.removeChild (loadingtag);
+        }
+    }
+    x.send();
+}
+
+load();
+
+</script>
+{% endblock %}
+{% block content %}
+<div id="comments" style="display:none">
+    <h1>Comments</h1>
+    <table id="comments-table">
+    <tr>
+        <th>Comment</th>
+        <th class="number">Entries</th>
+        <th class="date">Last used</th>
+    </tr>
+    </table>
+</div>
+<div id="loading-comments"><img alt="Loading..." src="{{ url_for('static', filename='image/indicator.gif') }}"></div>
+{% endblock %}

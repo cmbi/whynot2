@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block header %}
+  <link href="{{ url_for('static', filename='databank.css') }}"
+        rel="stylesheet" />
+{% endblock %}
+
+{% block content %}
+  {% for databank in databanks %}
+    <div style="clear:both;">
+      <h1>{{ databank['name'] }}</h1>
+
+      <canvas id="chart-{{ databank['name'] }}" width="485" height="250">
+      </canvas>
+
+      <div id="loading-{{ databank['name'] }}">
+        <img alt="Loading..."
+             src="{{ url_for('static', filename='image/indicator.gif') }}">
+      </div>
+      <a href="{{ databank['reference'] }}">
+        <span>{{ databank['reference'] }}</span>
+      </a>
+    </div>
+    {% endfor %}
+{% endblock %}
+
+{% block js %}
+
+<script src="{{ url_for('static', filename='libs/chart.js/dist/Chart.min.js')}}">
+</script>
+<script>
+  var renderChart = function(databank_name) {
+    $.ajax({
+      url: "{{ url_for('frontend.count', databank_name='DDDDDD') }}".replace("DDDDDD", databank_name),
+      method: 'GET',
+      dataType: 'json',
+      success: function(d) {
+        // TODO: format data
+        var ctx = document.getElementById("chart-" + databank_name);
+
+        var chart = new Chart(ctx, {
+          type: 'pie',
+          data: {
+            labels: d.labels,
+            datasets: [{
+              data: d.data,
+              backgroundColor: [
+                "#FFCE56", "#FF6384", "#B2B2B2", "#36A2EB", "#F99744", "#57CE54"
+              ],
+              hoverBackgroundColor: [
+                "#FFCE56", "#FF6384", "#B2B2B2", "#36A2EB", "#F99744", "#57CE54"
+              ]
+            }]
+          },
+        });
+
+        // Remove the loading tag
+        var loadingtag = document.getElementById("loading-" + databank_name);
+        loadingtag.parentNode.removeChild(loadingtag);
+      }
+    });
+  };
+
+  $(document).ready(function(){
+    {% for databank in databanks %}
+      renderChart("{{ databank['name'] }}");
+    {% endfor %}
+  });
+</script>
+
+{% endblock %}

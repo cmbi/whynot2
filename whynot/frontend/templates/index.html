@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Home</h1>
+<p>
+  Why Not aims to answer a common question when working with PDB derived
+  databanks: <i>Why is there no entry for ...?</i> To accomplish this we've
+  looked at dependencies between PDB derived databanks (<i>entry X can only
+  exist if entry Y is present, or if condition Z is met</i>) and compiled
+  these into a databank hierarchy.</p> By indexing all entries for each
+  databank, and comparing these with entries found higher up the hierarchy, we
+  can find out which entries are missing. These lists can then be used to try
+  to recreate any of the missing databank entries.</p> Should for any reason
+  the creation of an entry fail, then the respective databank maintainer is
+  given the option to either manually or automatically annotate the reason why
+  a given entry could not be created.</p> Why Not offers a way to conveniently
+  access this information for all databanks.
+</p>
+
+<h1>Usage</h1>
+
+<p>
+  To find out why a specific entry does not exist enter the PDBID into the
+  search field on the right.  Click on any of the links on the right to drill
+  down into collections of databank entries.
+</p>
+
+{% endblock %}

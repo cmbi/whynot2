@@ -1,0 +1,80 @@
+{% import '_nav_macros.html' as nav %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Why Not?</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+    <!-- "Bright Blue" by Christopher Robinson: http://www.edg3.co.uk/ -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='brightblue.css') }}" type="text/css" media="screen" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='feedback.css') }}" type="text/css" />
+
+    <script type="text/javascript">
+        function set_feedback(type, text) {
+            var content = "";
+            if (text.length > 0) {
+                var cl1 = "feedbackPanel";
+                var cl2 = cl1 + type.toUpperCase();
+                content = "<ul class=\"" + cl1 + "\"><li class=\"" + cl2 + "\"><span class=\"" + cl2 + "\">" + text + "</span></li></ul>"
+            }
+            $("#feedback").html(content);
+        }
+
+        function on_search(pdb_id) {
+            if (pdb_id.length <= 0) {
+                set_feedback ('error', "'pdb_id' is required.");
+            } else if (!pdb_id.match (/^\s*[0-9][0-9a-zA-Z]{3}\s*$/)) {
+                set_feedback ('error', "Please enter a valid pdb id.");
+            } else {
+                $(location).attr('href', "{{ url_for('frontend.search', pdb_id='xxxx') }}".replace("xxxx", pdb_id.replace(/\s/g,'')));
+            }
+        }
+    </script>
+
+    {% block header %}
+    {% endblock %}
+</head>
+<body>
+    <div id="header">
+        <h1><a href="{{ url_for ('frontend.index') }}">Why <span>Not?</span></a></h1>
+    </div>
+    <div id="content">
+        <div id="feedback">
+        </div>
+        <div id="main">
+            {% block content %}
+            {% endblock %}
+        </div>
+        <div id="sidebar">
+            <ul class="navigation">
+                {{ nav.link(url_for('frontend.about'), 'About') }}
+                {{ nav.link(url_for('frontend.comment'), 'Comments') }}
+                {{ nav.link(url_for('frontend.databanks'), 'Databanks') }}
+                {{ nav.link(url_for('frontend.entries'), 'Entries') }}
+                {{ nav.link(url_for('frontend.statistics'), 'Statistics') }}
+            </ul>
+            <h1>Search</h1>
+            <div id="search">
+                <form action="{{ url_for('frontend.search', pdb_id='xxxx') }}"
+                 onsubmit="on_search (document.getElementById('pdb_id_input').value); return false;">
+                    <p>
+                        <input id="pdb_id_input" type="text" value="" name="pdb_id">
+                    </p>
+                </form>
+            </div>
+            <h1>Hierarchy</h1>
+            <div id="hierarchy">
+                {% for key, value in db_tree.items() recursive %}
+                    {{ nav.databank(key, value) }}
+                {% endfor %}
+            </div>
+            <h1>Web service</h1>
+            <ul class="navigation">
+            <li><a href="{{ url_for('api.docs') }}">REST</a></li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

@@ -12,7 +12,7 @@ services:
     environment:
       - WHYNOT_SETTINGS=/usr/src/app/prd_settings.py
     ports:
-      - "15000:15000"
+      - "15001:15001"
     volumes:
       - "/srv/data:/srv/data"
 

@@ -8,3 +8,4 @@ services:
       - WHYNOT_SETTINGS=/usr/src/app/dev_settings.py
     volumes:
       - ".:/usr/src/app"
+      - "/usr/src/app/whynot/frontend/static/libs"

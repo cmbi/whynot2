@@ -1,0 +1,22 @@
+{
+  "name": "whynot",
+  "version": "0.0.0",
+  "homepage": "https://github.com/cmbi/whynot",
+  "authors": [
+    "Jon Black <Jon.Black@radboudumc.nl>"
+  ],
+  "license": "Unknown",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "whynot/frontend/static/libs",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "chart.js": "~2.4.0",
+    "jquery": "~3.1.1"
+  }
+}

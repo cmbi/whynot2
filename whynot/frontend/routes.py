@@ -59,7 +59,7 @@ def comment():
 @bp.route('/databanks/name/<name>/')
 def databanks(name=None):
     if name is None:
-        databanks = storage.db.databanks.find({})
+        databanks = list(storage.db.databanks.find({}))
     else:
         databanks = [storage.db.databanks.find_one({'name': name})]
 
@@ -154,10 +154,8 @@ def entries_file():
     # comments, file names, etc.)
     listing = request.args.get('listing')
 
-    _log.info("request for entries file %s %s %s %s" % (collection,
-                                                        databank_name,
-                                                        comment_text,
-                                                        listing))
+    _log.info("request for entries file %s %s %s %s" % (
+        collection, databank_name, comment_text, listing))
 
     if not listing:
         return ''
@@ -299,7 +297,10 @@ def count(databank_name):
 
     cs = count_summary(databank_name)
 
-    return jsonify(cs)
+    return jsonify({
+      'labels': list(sorted(cs.keys())),
+      'data': list(sorted(cs.values()))
+    })
 
 
 @bp.route('/load_comments/')

@@ -291,11 +291,10 @@ def load_statistics():
 def count(databank_name):
     "Called by the databank page, while the loading icon is displayed"
 
-    # TODO: speed up this method
-
     _log.info("request for databank %s summary" % databank_name)
 
     cs = count_summary(databank_name)
+    cs = {l: d for l, d in list(cs.items()) if l not in ['missing', 'present']}
 
     return jsonify({
       'labels': list(sorted(cs.keys())),

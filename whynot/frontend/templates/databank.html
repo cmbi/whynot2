@@ -35,9 +35,7 @@
       method: 'GET',
       dataType: 'json',
       success: function(d) {
-        // TODO: format data
         var ctx = document.getElementById("chart-" + databank_name);
-
         var chart = new Chart(ctx, {
           type: 'pie',
           data: {
@@ -45,10 +43,10 @@
             datasets: [{
               data: d.data,
               backgroundColor: [
-                "#FFCE56", "#FF6384", "#B2B2B2", "#36A2EB", "#F99744", "#57CE54"
+                "#FFCE56", "#B2B2B2", "#F99744", "#57CE54"
               ],
               hoverBackgroundColor: [
-                "#FFCE56", "#FF6384", "#B2B2B2", "#36A2EB", "#F99744", "#57CE54"
+                "#FFCE56", "#B2B2B2", "#F99744", "#57CE54"
               ]
             }]
           },

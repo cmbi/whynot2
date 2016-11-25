@@ -13,6 +13,9 @@ MONGODB_DB_NAME = "whynot"
 # URLs
 URL_WWPDB = 'http://ftp.wwpdb.org/pub/pdb/derived_data/pdb_entry_type.txt'
 
+# Paths
+WHYNOT_COMMENTS_DIR = '/srv/data/whynot2/comment'
+
 # Databanks
 #
 # TODO: describe fields here

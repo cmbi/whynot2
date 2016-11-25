@@ -26,6 +26,8 @@ def annotate_from_comments():
     annotator = CommentFileAnnotator(config.WHYNOT_COMMENTS_DIR)
     annotator.annotate()
 
+    _log.info("Finished annotating databanks from comments")
+
 
 @scheduler.scheduled_job('cron', hour=0, minute=0)
 def update():

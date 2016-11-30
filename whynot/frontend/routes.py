@@ -8,7 +8,7 @@ from flask import Response, Blueprint, jsonify, render_template, request
 
 from utils import (search_results_for, get_databank_hierarchy, comment_summary,
                    get_entries_from_collection, get_all_entries_with_comment,
-                   get_entries_with_comment, top_highest, count_summary,
+                   get_entries_with_comment, count_summary,
                    remove_tags, get_file_link, comments_to_tree,
                    names_from_hierarchy)
 from whynot.storage import storage
@@ -231,60 +231,38 @@ def docs():
 
 @bp.route('/load_statistics/')
 def load_statistics():
-    _log.info("request for statistics")
+    _log.info("Loading statistics")
 
-    # TODO: speed up this method
+    stats = {}
+    stats['total_databanks'] = storage.db.databanks.count()
+    stats['total_entries'] = storage.db.entries.count()
+    stats['total_files'] = storage.db.entries.count({
+        'file_path': {'$ne': None}
+    })
+    stats['total_annotations'] = storage.db.entries.count({
+        'comment': {'$ne': None}
+    })
+    stats['total_comments'] = len(storage.db.entries.distinct('comment'))
+    stats['annotations'] = list(storage.db.entries.aggregate([
+        {'$match': {'comment': {'$ne': None}}},
+        {'$sort': {'mtime': -1}},
+        {'$limit': 10},
+        {'$project': {
+            '_id': 0,
+            'comment': 1,
+            'mtime': 1,
+            'pdb_id': 1,
+            'databank_name': 1
+        }}
+    ]))
+    stats['files'] = list(storage.db.entries.aggregate([
+        {'$match': {'file_path': {'$ne': None}}},
+        {'$sort': {'mtime': -1}},
+        {'$limit': 10},
+        {'$project': {'_id': 0, 'file_path': 1, 'mtime': 1}}
+    ]))
 
-    ndb = storage.db.databanks.count({})
-
-    ne = 0
-    na = 0
-    nf = 0
-    nc = 0
-
-    unique_comments = set()
-    recent_files = top_highest(10)
-    recent_annotations = top_highest(10)
-    for entry in storage.db.entries.find({}):
-
-        ne += 1
-        if 'mtime' in entry:
-            if 'filepath' in entry:
-                nf += 1
-                recent_files.add(entry['mtime'], entry)
-            elif 'comment' in entry:
-                na += 1
-                unique_comments.add(entry['comment'])
-                recent_annotations.add(entry['mtime'], entry)
-
-    # Perform time-consuming operations only on the last 10 files and
-    # annotations
-    files = []
-    for f in recent_files.get():
-        files.append({
-            'path': f['filepath'],
-            'date': time.strftime('%d/%m/%Y %H:%M', time.gmtime(f['mtime']))
-        })
-
-    annotations = []
-    for a in recent_annotations.get():
-        annotations.append({'comment': a['comment'], 'pdb_id': a['pdb_id'],
-                            'databank_name': a['databank_name'],
-                            'date': time.strftime('%d/%m/%Y %H:%M',
-                                                  time.gmtime(a['mtime']))})
-
-    nc = len(unique_comments)
-
-    statistics = {}
-    statistics['total_databanks'] = ndb
-    statistics['total_entries'] = ne
-    statistics['total_files'] = nf
-    statistics['total_annotations'] = na
-    statistics['total_comments'] = nc
-    statistics['annotations'] = annotations
-    statistics['files'] = files
-
-    return jsonify(statistics)
+    return jsonify(stats)
 
 
 @bp.route('/count/<databank_name>/')

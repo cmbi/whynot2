@@ -35,13 +35,4 @@ esac
 _nose_opts="-v -a !disabled --with-coverage --cover-erase --cover-inclusive --cover-package whynot"
 _dc_opts="-f docker-compose.yml -f docker-compose-dev.yml"
 _command="docker-compose $_dc_opts run $_dc_run_opts frontend nosetests $_nose_opts $_tests"
-echo $_command
 $_command
-exit_code=$?
-
-# Remove all containers and network only if the tests passed. Keep them around
-# for debugging the failed tests.
-if [ $exit_code -eq 0 ]; then
-    docker-compose down
-fi
-exit $exit_code

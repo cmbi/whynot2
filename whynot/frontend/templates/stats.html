@@ -40,8 +40,8 @@
                   var file = statistics.files[i];
 
                   htmlFiles += "<tr>";
-                  htmlFiles += "<td>" + file.path + "</td>";
-                  htmlFiles += "<td>" + file.date + "</td>";
+                  htmlFiles += "<td>" + file.file_path + "</td>";
+                  htmlFiles += "<td>" + new Date(file.mtime * 1000) + "</td>";
                   htmlFiles += "</tr>";
               }
               document.getElementById("files").innerHTML = htmlFiles;

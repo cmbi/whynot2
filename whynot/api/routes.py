@@ -1,4 +1,5 @@
 import logging
+import traceback
 
 from flask import Blueprint, Response
 
@@ -50,3 +51,9 @@ def entries(databank_name, collection):
         text += entry['pdb_id'] + '\n'
 
     return Response(text, mimetype='text/plain')
+
+
+@bp.errorhandler(Exception)
+def exception_error_handler(error):  # pragma: no cover
+    _log.error(traceback.format_exc())
+    return Response(error, mimetype='text/plain')

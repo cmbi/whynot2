@@ -3,6 +3,7 @@ import logging
 import os
 import re
 import time
+import traceback
 
 from flask import Response, Blueprint, jsonify, render_template, request
 
@@ -297,3 +298,9 @@ def load_comments():
                 '%d/%m/%Y %H:%M', time.gmtime(comments[i]['mtime']))
 
     return jsonify({'comments': comments})
+
+
+@bp.errorhandler(Exception)
+def exception_error_handler(error):  # pragma: no cover
+    _log.error(traceback.format_exc())
+    return render_template('error.html', msg=error), 500

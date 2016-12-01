@@ -124,15 +124,18 @@ def statistics():
 
 @bp.route('/resources/list/<tolist>/')
 def resources(tolist):
-    _log.info("request for resources " + tolist)
+    # TODO: Pass two parameters: /<databank>/<state>
+    # TODO: Consider moving to api/routes.py and return a JSON response
 
+    _log.info("Request for resources " + tolist)
+
+    # TODO: This error isn't useful
     if '_' not in tolist:
         return '', 400
 
-    # TODO: speed up this method
     last = tolist.rfind('_')
-    databank_name = tolist[:last]
-    collection = tolist[last + 1:]
+    databank_name = tolist[:last].lower()
+    collection = tolist[last + 1:].lower()
 
     text = ''
     for entry in get_entries_from_collection(databank_name, collection):

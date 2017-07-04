@@ -10,7 +10,7 @@ from storage import storage
 storage.uri = settings.MONGODB_URI
 storage.db_name = settings.MONGODB_DB_NAME
 storage.connect()
-storage.authenticate ('whynotadmin', 'waivuy8N')
+#storage.authenticate ('whynotadmin', 'waivuy8N')
 
 from utils import entries_by_pdbid, get_unannotated_entries, get_missing_entries, read_http
 
@@ -31,7 +31,7 @@ mkdssp = '/usr/local/bin/mkdssp'
 
 
 # Returns a list of triples: (comment, databank name, pdbid)
-def parse_comments (lines):
+def parse_comments(lines):
 
     if len(lines) < 2:
         return {}
@@ -46,6 +46,7 @@ def parse_comments (lines):
         elif ',' in line:
 
             databank_name, pdbid = line.strip ().replace (' ','').split (',')
+            databank_name.replace('-', '_')
             d.append ((comment, databank_name, pdbid))
 
         elif len (line.strip ()) > 0:
@@ -70,7 +71,7 @@ def parse_comment(lines, entry):
 
     for line in lines[1:]:
 
-        line = line.replace (' ','').strip ()
+        line = line.replace (' ','').replace('-', '_').strip ()
         if line == '%s,%s' % (entry ['databank_name'], entry ['pdbid']):
             return comment
 

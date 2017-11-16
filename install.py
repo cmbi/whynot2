@@ -52,7 +52,7 @@ def create_databanks():
         re.compile(r'.*/([\w]{4})\.hssp.bz2'),FILE,'DSSP'))
     docs.append(_create_databank('PDBFINDER','http://swift.cmbi.ru.nl/gv/pdbfinder/',
         'ftp://ftp.cmbi.ru.nl/pub/molbio/data/pdbfinder/PDBFIND.TXT.gz',
-        re.compile(r'ID           : ([\w]{4})'),LINE,'PDB'))
+        re.compile(r'ID           : ([\w]{4})'),LINE,'HSSP'))
     docs.append(_create_databank('PDBFINDER2','http://swift.cmbi.ru.nl/gv/pdbfinder/',
         'ftp://ftp.cmbi.ru.nl/pub/molbio/data/pdbfinder2/PDBFIND2.TXT.gz',
         re.compile(r'ID           : ([\w]{4})'),LINE,'PDBFINDER'))

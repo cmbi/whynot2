@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w4.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+    <title>Why Not?</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+    <!-- "Bright Blue" by Christopher Robinson: http://www.edg3.co.uk/ -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='brightblue.css') }}" type="text/css" media="screen" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='feedback.css') }}" type="text/css" />
+
+    <script type="text/javascript">
+        function set_feedback (type, text)
+        {
+            var content = "";
+            if (text.length > 0)
+            {
+                var cl1 = "feedbackPanel",
+                    cl2 = cl1 + type.toUpperCase();
+                content = "<ul class=\"" + cl1 + "\"><li class=\"" + cl2 + "\"><span class=\"" + cl2 + "\">" + text + "</span></li></ul>"
+            }
+            $("#feedback").html (content);
+        }
+
+        function on_search (pdbid)
+        {
+            if (pdbid.length <= 0)
+                set_feedback ('error', "'pdbid' is required.");
+	    else if (!pdbid.match (/^\s*[0-9][0-9a-zA-Z]{3}\s*$/))
+                set_feedback ('error', "Please enter a valid pdb id.");
+            else
+            {
+		$(location).attr('href', "{{ url_for ('dashboard.search', pdbid='xxxx') }}".replace("xxxx", pdbid.replace(/\s/g,'')));
+            }
+        }
+    </script>
+{% block header %}{% endblock %}
+</head>
+
+{% macro nav_entry (url, title) %}
+    <li>
+    {% if title|lower == nav_disabled %}
+        <span><em>{{ title }}</em></span>
+    {% else %}
+        <a href="{{ url }}">{{ title }}</a>
+    {% endif %}
+    </li>
+{% endmacro %}
+
+<body>
+    <div id="header">
+        <h1><a href="{{ url_for ('dashboard.index') }}">Why <span>Not?</span></a></h1>
+    </div>
+    <div id="content">
+        <div id="feedback">
+        </div>
+        <div id="main">
+{% block content %}
+            <h1>Home</h1>
+            <p>Why Not aims to answer a common question when working with PDB derived databanks: <i>Why is there no entry for ...?</i></p>
+            <p>To accomplish this we've looked at dependencies between PDB derived databanks (<i>entry X can only exist if entry Y is present, or if condition Z is met</i>) and compiled these into a databank hierarchy.</p>
+            <p>By indexing all entries for each databank, and comparing these with entries found higher up the hierarchy, we can find out which entries are missing. These lists can then be used to try to recreate any of the missing databank entries.</p>
+            <p>Should for any reason the creation of an entry fail, then the respective databank maintainer is given the option to either manually or automatically annotate the reason why a given entry could not be created.</p>
+            <p>Why Not offers a way to conveniently access this information for all databanks.</p>
+            <h1>Usage</h1>
+            <p>To find out why a specific entry does not exist enter the PDBID into the search field on the right.</p>
+            <p>Click on any of the links on the right to drill down into collections of databank entries.</p>
+{% endblock %}
+        </div>
+        <div id="sidebar">
+            <ul class="navigation">
+                {{ nav_entry (url_for ('dashboard.about'), 'About') }}
+                {{ nav_entry (url_for ('dashboard.comment'), 'Comments') }}
+                {{ nav_entry (url_for ('dashboard.databanks'), 'Databanks') }}
+                {{ nav_entry (url_for ('dashboard.entries'), 'Entries') }}
+                {{ nav_entry (url_for ('dashboard.statistics'), 'Statistics') }}
+            </ul>
+            <h1>Search</h1>
+            <div id="search">
+                <form action="{{ url_for ('dashboard.search', pdbid='xxxx') }}"
+		      onsubmit="on_search (document.getElementById('pdbid_input').value); return false;">
+                    <p>
+                        <input id="pdbid_input" type="text" value="" name="pdbid">
+                    </p>
+                </form>
+            </div>
+            <h1>Hierarchy</h1>
+            {% macro render_hierarchy_fragment (name, branch) -%}
+                <a href="{{ url_for('dashboard.databanks', name=name) }}"><span>{{ name }}</span></a>
+                <ul>
+                {% for key, value in branch|dictsort %}
+                    <li>{{ render_hierarchy_fragment (key, value) }}</li>
+                {% endfor %}
+                </ul>
+            {%- endmacro %}
+            <div id="hierarchy">
+                {% for key, value in db_tree.iteritems() recursive %}
+                    {{ render_hierarchy_fragment (key, value) }}
+                {% endfor %}
+            </div>
+            <h1>Web service</h1>
+            <ul class="navigation">
+<!--
+            <li><a href="webservice/">Overview</a></li>
+            <li><a href="webservice/ws?wsdl">Web service</a></li>
+-->
+            <li><a href="{{ url_for ('rest.docs') }}">REST</a></li>
+            </ul>
+        </div>
+    </div>
+    <!--<div id="footer"><p>Contact <a href="mailto:t.tebeek@cmbi.ru.nl">Tim te Beek</a></p></div>-->
+</body>
+</html>

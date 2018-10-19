@@ -50,8 +50,8 @@ DATABANKS = [
         'name': 'bdb',
         'annotator': BdbAnnotator,
         'crawler': DirCrawler,
-        'filelink': 'ftp://ftp.cmbi.ru.nl/pub/molbio/data/bdb/${PART}/${PDBID}/${PDBID}.bdb',  # NOQA
-        'reference': 'http://www.cmbi.ru.nl/bdb/',
+        'filelink': 'ftp://ftp.cmbi.umcn.nl/pub/molbio/data/bdb/${PART}/${PDBID}/${PDBID}.bdb',  # NOQA
+        'reference': 'http://www.cmbi.umcn.nl/bdb/',
         'regex': r'.*/([\w]{4})\.bdb',
         'parent': 'pdb',
         'source': os.path.join(DATABANK_ROOT, 'bdb'),
@@ -60,8 +60,8 @@ DATABANKS = [
         'name': 'dssp',
         'annotator': DsspAnnotator,
         'crawler': DirCrawler,
-        'filelink': 'ftp://ftp.cmbi.ru.nl/pub/molbio/data/dssp/${PDBID}.dssp',
-        'reference': 'http://swift.cmbi.ru.nl/gv/dssp/',
+        'filelink': 'ftp://ftp.cmbi.umcn.nl/pub/molbio/data/dssp/${PDBID}.dssp',
+        'reference': 'http://swift.cmbi.umcn.nl/gv/dssp/',
         'regex': r'.*/([\w]{4})\.dssp',
         'parent': 'mmcif',
         'source': os.path.join(DATABANK_ROOT, 'dssp'),
@@ -70,8 +70,8 @@ DATABANKS = [
         'name': 'hssp',
         'annotator': HsspAnnotator,
         'crawler': DirCrawler,
-        'filelink': 'ftp://ftp.cmbi.ru.nl/pub/molbio/data/hssp/${PDBID}.hssp.bz2',  # NOQA
-        'reference': 'http://swift.cmbi.ru.nl/gv/hssp/',
+        'filelink': 'ftp://ftp.cmbi.umcn.nl/pub/molbio/data/hssp/${PDBID}.hssp.bz2',  # NOQA
+        'reference': 'http://swift.cmbi.umcn.nl/gv/hssp/',
         'regex': r'.*/([\w]{4})\.hssp.bz2',
         'parent': 'dssp',
         'source': os.path.join(DATABANK_ROOT, 'hssp'),
@@ -80,8 +80,8 @@ DATABANKS = [
         'name': 'pdbfinder',
         'annotator': None,
         'crawler': FileCrawler,
-        'filelink': 'ftp://ftp.cmbi.ru.nl/pub/molbio/data/pdbfinder/PDBFIND.TXT.gz',  # NOQA
-        'reference': 'http://swift.cmbi.ru.nl/gv/pdbfinder/',
+        'filelink': 'ftp://ftp.cmbi.umcn.nl/pub/molbio/data/pdbfinder/PDBFIND.TXT.gz',  # NOQA
+        'reference': 'http://swift.cmbi.umcn.nl/gv/pdbfinder/',
         'regex': r'ID           : ([\w]{4})',
         'parent': 'pdb',
         'source': os.path.join(DATABANK_ROOT, 'pdbfinder', 'PDBFIND.TXT'),
@@ -90,8 +90,8 @@ DATABANKS = [
         'name': 'pdbfinder2',
         'annotator': None,
         'crawler': FileCrawler,
-        'filelink': 'ftp://ftp.cmbi.ru.nl/pub/molbio/data/pdbfinder2/PDBFIND2.TXT.gz',  # NOQA
-        'reference': 'http://swift.cmbi.ru.nl/gv/pdbfinder/',
+        'filelink': 'ftp://ftp.cmbi.umcn.nl/pub/molbio/data/pdbfinder2/PDBFIND2.TXT.gz',  # NOQA
+        'reference': 'http://swift.cmbi.umcn.nl/gv/pdbfinder/',
         'regex': r'ID           : ([\w]{4})',
         'parent': 'pdbfinder',
         'source': os.path.join(DATABANK_ROOT, 'pdbfinder2', 'PDBFIND2.TXT'),
@@ -111,7 +111,7 @@ DATABANKS = [
         'annotator': StructureFactorsAnnotator,
         'crawler': DirCrawler,
         'filelink': 'ftp://ftp.wwpdb.org/pub/pdb/data/structures/divided/structure_factors/${PART}/r${PDBID}sf.ent.gz',  # NOQA
-        'reference': 'http://swift.cmbi.ru.nl/gv/pdbreport/',
+        'reference': 'http://swift.cmbi.umcn.nl/gv/pdbreport/',
         'regex': r'.*/r([\w]{4})sf\.ent\.gz',
         'parent': 'mmcif',
         'source': os.path.join(DATABANK_ROOT, 'structure_factors'),
@@ -120,8 +120,8 @@ DATABANKS = [
         'name': 'pdbreport',
         'annotator': None,
         'crawler': DirCrawler,
-        'filelink': 'http://www.cmbi.ru.nl/pdbreport/cgi-bin/nonotes?PDBID=${PDBID}',  # NOQA
-        'reference': 'http://swift.cmbi.ru.nl/gv/pdbreport/',
+        'filelink': 'http://www.cmbi.umcn.nl/pdbreport/cgi-bin/nonotes?PDBID=${PDBID}',  # NOQA
+        'reference': 'http://swift.cmbi.umcn.nl/gv/pdbreport/',
         'regex': r'pdbreport\/\w{2}\/(\w{4})\/pdbout\.txt',
         'parent': 'pdb',
         'source': os.path.join(DATABANK_ROOT, 'pdbreport'),
@@ -130,8 +130,8 @@ DATABANKS = [
         'name': 'pdb_redo',
         'annotator': None,
         'crawler': DirCrawler,
-        'filelink': 'http://www.cmbi.ru.nl/pdb_redo/cgi-bin/redir2.pl?pdbCode=${PDBID}',  # NOQA
-        'reference': 'http://www.cmbi.ru.nl/pdb_redo/',
+        'filelink': 'http://www.cmbi.umcn.nl/pdb_redo/cgi-bin/redir2.pl?pdbCode=${PDBID}',  # NOQA
+        'reference': 'http://www.cmbi.umcn.nl/pdb_redo/',
         'regex': r'\/\w{2}\/\w{4}\/(\w{4})_final\.pdb',
         'parent': 'structurefactors',
         'source': os.path.join(DATABANK_ROOT, 'pdb_redo'),
@@ -140,8 +140,8 @@ DATABANKS = [
         'name': 'dssp_redo',
         'annotator': DsspAnnotator,
         'crawler': DirCrawler,
-        'filelink': 'ftp://ftp.cmbi.ru.nl/pub/molbio/data/dssp_redo/${PDBID}.dssp',  # NOQA
-        'reference': 'http://swift.cmbi.ru.nl/gv/dssp/',
+        'filelink': 'ftp://ftp.cmbi.umcn.nl/pub/molbio/data/dssp_redo/${PDBID}.dssp',  # NOQA
+        'reference': 'http://swift.cmbi.umcn.nl/gv/dssp/',
         'regex': r'.*/([\w]{4})\.dssp',
         'parent': 'pdb_redo',
         'source': os.path.join(DATABANK_ROOT, 'dssp_redo'),
@@ -155,8 +155,8 @@ for lis in ['dsp', 'iod', 'sbh', 'sbr', 'ss1', 'ss2', 'tau', 'acc', 'cal',
         'name': 'whatif_pdb_%s' % lis,
         'annotator': WhatifListAnnotator,
         'crawler': DirCrawler,
-        'filelink': 'ftp://ftp.cmbi.ru.nl/pub/molbio/data/wi-lists/pdb/%s/${PDBID}/${PDBID}.%s.bz2' % (lis, lis),  # NOQA
-        'reference': 'http://swift.cmbi.ru.nl/whatif/',
+        'filelink': 'ftp://ftp.cmbi.umcn.nl/pub/molbio/data/wi-lists/pdb/%s/${PDBID}/${PDBID}.%s.bz2' % (lis, lis),  # NOQA
+        'reference': 'http://swift.cmbi.umcn.nl/whatif/',
         'regex': r'.*/([\w]{4})\.' + lis + r'(\.bz2)?$',
         'parent': 'pdb',
         'source': os.path.join(DATABANK_ROOT, 'wi-lists', 'pdb', lis),
@@ -165,8 +165,8 @@ for lis in ['dsp', 'iod', 'sbh', 'sbr', 'ss1', 'ss2', 'tau', 'acc', 'cal',
         'name': 'whatif_redo_%s' % lis,
         'annotator': WhatifListAnnotator,
         'crawler': DirCrawler,
-        'filelink': 'ftp://ftp.cmbi.ru.nl/pub/molbio/data/wi-lists/redo/%s/${PDBID}/${PDBID}.%s.bz2' % (lis, lis),  # NOQA
-        'reference': 'http://swift.cmbi.ru.nl/whatif/',
+        'filelink': 'ftp://ftp.cmbi.umcn.nl/pub/molbio/data/wi-lists/redo/%s/${PDBID}/${PDBID}.%s.bz2' % (lis, lis),  # NOQA
+        'reference': 'http://swift.cmbi.umcn.nl/whatif/',
         'regex': r'.*/([\w]{4})\.' + lis + r'(\.bz2)?$',
         'parent': 'pdb_redo',
         'source': os.path.join(DATABANK_ROOT, 'wi-lists', 'redo', lis),
@@ -178,8 +178,8 @@ for lis, name in list({'ss2': 'sym-contacts', 'iod': 'ion-sites'}.items()):
         'name': 'pdb_scenes_%s' % lis,
         'annotator': WhatifSceneAnnotator,
         'crawler': DirCrawler,
-        'filelink': 'ftp://ftp.cmbi.ru.nl/pub/molbio/data/wi-lists/pdb/scenes/%s/${PDBID}/${PDBID}_%s.sce' % (lis, name),  # NOQA
-        'reference': 'http://www.cmbi.ru.nl/pdb-vis/',
+        'filelink': 'ftp://ftp.cmbi.umcn.nl/pub/molbio/data/wi-lists/pdb/scenes/%s/${PDBID}/${PDBID}_%s.sce' % (lis, name),  # NOQA
+        'reference': 'http://www.cmbi.umcn.nl/pdb-vis/',
         'regex': r'.*/([\w]{4})_' + name + r'\.sce',
         'parent': 'whatif_pdb_%s' % lis,
         'source': os.path.join(DATABANK_ROOT, 'wi-lists', 'pdb', 'scenes', lis),  # NOQA
@@ -188,8 +188,8 @@ for lis, name in list({'ss2': 'sym-contacts', 'iod': 'ion-sites'}.items()):
         'name': 'redo_scenes_%s' % lis,
         'annotator': WhatifSceneAnnotator,
         'crawler': DirCrawler,
-        'filelink': 'ftp://ftp.cmbi.ru.nl/pub/molbio/data/wi-lists/redo/scenes/%s/${PDBID}/${PDBID}_%s.sce' % (lis, name),  # NOQA
-        'reference': 'http://www.cmbi.ru.nl/pdb-vis/',
+        'filelink': 'ftp://ftp.cmbi.umcn.nl/pub/molbio/data/wi-lists/redo/scenes/%s/${PDBID}/${PDBID}_%s.sce' % (lis, name),  # NOQA
+        'reference': 'http://www.cmbi.umcn.nl/pdb-vis/',
         'regex': r'.*/([\w]{4})_' + name + r'\.sce',
         'parent': 'whatif_redo_%s' % lis,
         'source': os.path.join(DATABANK_ROOT, 'wi-lists', 'redo', 'scenes', lis),  # NOQA

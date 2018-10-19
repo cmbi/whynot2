@@ -81,10 +81,6 @@ def create_app(settings=None):
     from whynot_web.middleware import ReverseProxied
     app.wsgi_app = ReverseProxied(app.wsgi_app)
 
-    # Initialise extensions
-    from whynot_web import toolbar
-    toolbar.init_app(app)
-
     # Register jinja2 filters
     from whynot_web.frontend.filters import beautify_docstring
     app.jinja_env.filters['beautify_docstring'] = beautify_docstring

@@ -97,7 +97,7 @@ class Annotator:
         unannotated_entries = storage.db.entries.find({
             'databank_name': databank['name'],
             'comment': None
-        })
+        }, no_cursor_timeout=True)
 
         return unannotated_entries
 

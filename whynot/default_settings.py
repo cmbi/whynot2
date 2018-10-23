@@ -7,7 +7,7 @@ from whynot.crawlers import DirCrawler, FileCrawler
 
 
 # Mongo
-MONGODB_URI = "mongodb://whynot_mongo_1"
+MONGODB_URI = "mongodb://whynot2_mongo_1"
 MONGODB_DB_NAME = "whynot"
 
 # URLs

@@ -1,6 +1,10 @@
 import os
 import re
 
+from whynot.settings import settings
+from whynot.services.wwpdb import get_content_types, get_method_types
+from whynot.controllers.dssp import has_complete_backbone
+
 
 class Databank:
     def __init__(self, name, reference_url, parent=None):
@@ -120,9 +124,9 @@ class DsspDatabank(Databank):
         content_types = get_content_types()
         annotations = []
         for pdbid in self.find_all_missing():
-            if content_types[pdbid] == "nuc":
+            if pdbid in content_types and content_types[pdbid] == "nuc":
                 annotations.append((pdbid, "Nucleic acids only"))
-            elif content_types[pdbid] == "carb":
+            elif pdbid in content_types and content_types[pdbid] == "carb":
                 annotations.append((pdbid, "Carbohydrates only"))
             elif not has_complete_backbone(pdbid):
                 annotations.append((pdbid, "No residues with complete backbone"))
@@ -223,11 +227,11 @@ class StructureFactorsDatabank(Databank):
         method_types = get_method_types()
 
         for pdbid in self.find_all_missing():
-            if method_types[pdbid] == "NMR":
+            if pdbid in method_types and method_types[pdbid] == "NMR":
                 annotations.append((pdbid, "NMR experiment"))
-            elif method_types[pdbid] == "EM":
+            elif pdbid in method_types and method_types[pdbid] == "EM":
                 annotations.append((pdbid, "Electron microscopy experiment"))
-            elif method_types[pdbid] == "other":
+            elif pdbid in method_types and method_types[pdbid] == "other":
                 annotations.append((pdbid, "Not a Diffraction experiment"))
             else:
                 annotations.append((pdbid, "Not deposited"))
@@ -256,11 +260,11 @@ class NmrDatabank(Databank):
         method_types = get_method_types()
 
         for pdbid in self.find_all_missing():
-            if method_types[pdbid] == "diffraction":
+            if pdbid in method_types and method_types[pdbid] == "diffraction":
                 annotations.append((pdbid, "Diffraction experiment"))
-            elif method_types[pdbid] == "EM":
+            elif pdbid in method_types and method_types[pdbid] == "EM":
                 annotations.append((pdbid, "Electron microscopy experiment"))
-            elif method_types[pdbid] == "other":
+            elif pdbid in method_types and method_types[pdbid] == "other":
                 annotations.append((pdbid, "Not an NMR experiment"))
             else:
                 annotations.append((pdbid, "Not deposited"))
@@ -342,9 +346,9 @@ class DsspRedoDatabank(Databank):
         content_types = get_content_types()
         annotations = []
         for pdbid in self.find_all_missing():
-            if content_types[pdbid] == "nuc":
+            if pdbid in content_types and content_types[pdbid] == "nuc":
                 annotations.append((pdbid, "Nucleic acids only"))
-            elif content_types[pdbid] == "carb":
+            elif pdbid in content_types and content_types[pdbid] == "carb":
                 annotations.append((pdbid, "Carbohydrates only"))
             elif not has_complete_backbone(pdbid):
                 annotations.append((pdbid, "No residues with complete backbone"))

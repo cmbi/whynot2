@@ -1,0 +1,15 @@
+version: "2"
+
+services:
+  whynot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - mongo
+    volumes:
+      - "/mnt/chelonium:/mnt/chelonium"
+  mongo:
+    image: mongo
+    volumes:
+      - '/srv/hope/mongo:/data/db'

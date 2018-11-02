@@ -1,9 +1,11 @@
 import os
 import re
+from glob import glob
 
 from whynot.settings import settings
 from whynot.services.wwpdb import get_content_types, get_method_types
 from whynot.controllers.dssp import has_complete_backbone
+from whynot.parsers.whynot import parse_whynot
 
 
 class Databank:
@@ -32,7 +34,7 @@ class Databank:
         return missing_pdbids
 
     def find_all_annotations(self):
-        return []
+        return {}
 
 
 P_WHYNOT = re.compile(r'^.*\.whynot$')
@@ -52,7 +54,7 @@ class MmCifDatabank(Databank):
         for filename in os.listdir(os.path.join(settings["DATADIR"], 'mmCIF')):
             m = P_MMCIF.match(filename)
             if m:
-                present_pdbids.append(m.group(1))
+                present_pdbids.append(m.group(1).lower())
         return present_pdbids
 
 
@@ -68,10 +70,10 @@ class PdbDatabank(Databank):
 
     def find_all_present(self):
         present_pdbids = []
-        for filename in os.listdir(os.path.join(settings["DATADIR"], 'pdb')):
+        for filename in os.listdir(os.path.join(settings["DATADIR"], 'pdb/all')):
             m = P_PDB.match(filename)
             if m:
-                present_pdbids.append(m.group(1))
+                present_pdbids.append(m.group(1).lower())
         return present_pdbids
 
 
@@ -91,15 +93,19 @@ class BdbDatabank(Databank):
             for filename in os.listdir(os.path.join(settings["DATADIR"], 'bdb', dirname)):
                 m = P_BDB.match(filename)
                 if m:
-                    present_pdbids.append(m.group(1))
+                    present_pdbids.append(m.group(1).lower())
         return present_pdbids
 
     def find_all_annotations(self):
-        annotations = []
+        annotations = {}
         for dirname in os.listdir(os.path.join(settings["DATADIR"], 'bdb')):
             for filename in os.listdir(os.path.join(settings["DATADIR"], 'bdb', dirname)):
                 if P_WHYNOT.match(filename):
-                    annotations.extend(parse_whynot(os.path.join(settings["DATADIR"], 'bdb', dirname, filename)))
+                    comments = parse_whynot(os.path.join(settings["DATADIR"], 'bdb', dirname, filename))
+                    for comment in comments:
+                        db, pdbid = comments[comment]
+                        if db == self.name:
+                            annotations.extend(pdbid, comment)
         return annotations
 
 
@@ -117,20 +123,20 @@ class DsspDatabank(Databank):
         for filename in os.listdir(os.path.join(settings["DATADIR"], 'dssp')):
             m = P_DSSP.match(filename)
             if m:
-                present_pdbids.append(m.group(1))
+                present_pdbids.append(m.group(1).lower())
         return present_pdbids
 
     def find_all_annotations(self):
         content_types = get_content_types()
-        annotations = []
+        annotations = {}
         for pdbid in self.find_all_missing():
             if pdbid in content_types and content_types[pdbid] == "nuc":
-                annotations.append((pdbid, "Nucleic acids only"))
+                annotations[pdbid] = "Nucleic acids only"
             elif pdbid in content_types and content_types[pdbid] == "carb":
-                annotations.append((pdbid, "Carbohydrates only"))
+                annotations[pdbid] = "Carbohydrates only"
             elif not has_complete_backbone(pdbid):
-                annotations.append((pdbid, "No residues with complete backbone"))
-        return annnotations
+                annotations[pdbid] = "No residues with complete backbone"
+        return annotations
 
 
 P_HSSP = re.compile(r'^([0-9][a-z0-9]{3})\.hssp.bz2$', re.IGNORECASE)
@@ -138,7 +144,7 @@ P_HSSP_ERR = re.compile(r'^([0-9][a-z0-9]{3})\.err$', re.IGNORECASE)
 
 class HsspDatabank(Databank):
     def __init__(self, dssp_databank):
-        Databank.__init__(self, 'DSSP', "http://swift.cmbi.umcn.nl/gv/hssp/", dssp_databank)
+        Databank.__init__(self, 'HSSP', "http://swift.cmbi.umcn.nl/gv/hssp/", dssp_databank)
 
     def get_entry_url(self, pdbid):
         return "ftp://ftp.cmbi.umcn.nl/pub/molbio/data/hssp/%s.hssp.bz2" % pdbid
@@ -148,15 +154,15 @@ class HsspDatabank(Databank):
         for filename in os.listdir(os.path.join(settings["DATADIR"], 'hssp')):
             m = P_HSSP.match(filename)
             if m:
-                present_pdbids.append(m.group(1))
+                present_pdbids.append(m.group(1).lower())
         return present_pdbids
 
     def find_all_annotations(self):
-        annotations = []
+        annotations = {}
         for filename in os.listdir(os.path.join(settings["DATADIR"], 'scratch/whynot2/hssp')):
             m = P_HSSP_ERR.match(filename)
             if m:
-                pdbid = m.group(1)
+                pdbid = m.group(1).lower()
                 with open(os.path.join(settings["DATADIR"], 'scratch/whynot2/hssp', filename), 'r') as f:
                     for line in f:
                         line = line.strip()
@@ -164,7 +170,7 @@ class HsspDatabank(Databank):
                                     'multiple occurrences',
                                     'No hits found',
                                     'empty protein, or no valid complete residues']:
-                            annotations.append((pdbid, line))
+                            annotations[pdbid] = line
         return annotations
 
 
@@ -183,7 +189,7 @@ class PdbFinderDatabank(Databank):
             for line in f:
                 m = P_PDBF.match(line)
                 if m:
-                    present_pdbids.append(m.group(1))
+                    present_pdbids.append(m.group(1).lower())
         return present_pdbids
 
 
@@ -200,7 +206,7 @@ class PdbFinder2Databank(Databank):
             for line in f:
                 m = P_PDBF.match(line)
                 if m:
-                    present_pdbids.append(m.group(1))
+                    present_pdbids.append(m.group(1).lower())
         return present_pdbids
 
 
@@ -219,22 +225,22 @@ class StructureFactorsDatabank(Databank):
         for filename in os.listdir(os.path.join(settings["DATADIR"], 'structure_factors')):
             m = P_PDBF.match(filename)
             if m:
-                present_pdbids.append(m.group(1))
+                present_pdbids.append(m.group(1).lower())
         return present_pdbids
 
     def find_all_annotations(self):
-        annotations = []
+        annotations = {}
         method_types = get_method_types()
 
         for pdbid in self.find_all_missing():
             if pdbid in method_types and method_types[pdbid] == "NMR":
-                annotations.append((pdbid, "NMR experiment"))
+                annotations[pdbid] = "NMR experiment"
             elif pdbid in method_types and method_types[pdbid] == "EM":
-                annotations.append((pdbid, "Electron microscopy experiment"))
+                annotations[pdbid] = "Electron microscopy experiment"
             elif pdbid in method_types and method_types[pdbid] == "other":
-                annotations.append((pdbid, "Not a Diffraction experiment"))
+                annotations[pdbid] = "Not a Diffraction experiment"
             else:
-                annotations.append((pdbid, "Not deposited"))
+                annotations[pdbid] = "Not deposited"
         return annotations
 
 
@@ -252,22 +258,22 @@ class NmrDatabank(Databank):
         for filename in os.listdir(os.path.join(settings["DATADIR"], 'nmr_restraints')):
             m = P_NMR.match(filename)
             if m:
-                present_pdbids.append(m.group(1))
+                present_pdbids.append(m.group(1).lower())
         return present_pdbids
 
     def find_all_annotations(self):
-        annotations = []
+        annotations = {}
         method_types = get_method_types()
 
         for pdbid in self.find_all_missing():
             if pdbid in method_types and method_types[pdbid] == "diffraction":
-                annotations.append((pdbid, "Diffraction experiment"))
+                annotations[pdbid] = "Diffraction experiment"
             elif pdbid in method_types and method_types[pdbid] == "EM":
-                annotations.append((pdbid, "Electron microscopy experiment"))
+                annotations[pdbid] = "Electron microscopy experiment"
             elif pdbid in method_types and method_types[pdbid] == "other":
-                annotations.append((pdbid, "Not an NMR experiment"))
+                annotations[pdbid] = "Not an NMR experiment"
             else:
-                annotations.append((pdbid, "Not deposited"))
+                annotations[pdbid] = "Not deposited"
         return annotations
 
 
@@ -280,17 +286,11 @@ class PdbReportDatabank(Databank):
 
     def find_all_present(self):
         present_pdbids = []
-        for dirname in os.listdir(os.path.join(settings["DATADIR"], 'pdbreport')):
-
-            dirpath = os.path.join(settings["DATADIR"], 'pdbreport', dirname)
-            if not os.path.isdir(dirpath) or len(dirname) > 2:
-                continue
-
-            for pdbid in os.listdir(dirpath):
-                m = P_PDBID.match(pdbid)
-                if m:
-                    if os.path.isfile(os.path.join(dirpath, pdbid, "index.html")):
-                        present_pdbids.append(pdbid)
+        for path in glob(os.path.join(settings["DATADIR"], 'pdbreport/??/????/index.html')):
+            pdbid = os.path.basename(os.path.dirname(path))
+            m = P_PDBID.match(pdbid)
+            if m:
+                present_pdbids.append(pdbid.lower())
         return present_pdbids
 
 
@@ -315,15 +315,19 @@ class PdbRedoDatabank(Databank):
                 m = P_PDBID.match(pdbid)
                 if m:
                     if os.path.isfile(os.path.join(dirpath, pdbid, "%s_final.pdb" % pdbid)):
-                        present_pdbids.append(pdbid)
+                        present_pdbids.append(pdbid.lower())
         return present_pdbids
 
     def find_all_annotations(self):
-        annotations = []
+        annotations = {}
         for pdbid in self.find_all_missing():
             path = os.path.join(settings["DATADIR"], "pdb_redo/whynot/%s.txt" % pdbid)
             if os.path.isfile(path):
-                annotations.extend(parse_whynot(path))
+                comments = parse_whynot(path)
+                for comment in comments:
+                    db, pdbid = comments[comment]
+                    if db == self.name:
+                        annotations[pdbid.lower()]  = comment
         return annotations
 
 
@@ -339,20 +343,20 @@ class DsspRedoDatabank(Databank):
         for filename in os.listdir(settings["DATADIR"], 'dssp_redo'):
             m = P_DSSP.match(filename)
             if m:
-                present_pdbids.append(m.group(1))
+                present_pdbids.append(m.group(1).lower())
         return present_pdbids
 
     def find_all_annotations(self):
         content_types = get_content_types()
-        annotations = []
+        annotations = {}
         for pdbid in self.find_all_missing():
             if pdbid in content_types and content_types[pdbid] == "nuc":
-                annotations.append((pdbid, "Nucleic acids only"))
+                annotations[pdbid.lower()] = "Nucleic acids only"
             elif pdbid in content_types and content_types[pdbid] == "carb":
-                annotations.append((pdbid, "Carbohydrates only"))
+                annotations[pdbid.lower()] = "Carbohydrates only"
             elif not has_complete_backbone(pdbid):
-                annotations.append((pdbid, "No residues with complete backbone"))
-        return annnotations
+                annotations[pdbid.lower()] = "No residues with complete backbone"
+        return annotations
 
 
 class WhatifDatabank(Databank):
@@ -375,15 +379,19 @@ class WhatifDatabank(Databank):
         present_pdbids = []
         for pdbid in os.listdir(os.path.join(settings["DATADIR"], 'wi-lists', self.input_type, self.list_type)):
             if os.path.isfile(os.path.join(settings["DATADIR"], 'wi-lists', self.input_type, self.list_type, pdbid, '%s.%s.bz2' % (pdbid, self.list_type))):
-                 present_pdbids.append(pdbid)
+                 present_pdbids.append(pdbid.lower())
         return present_pdbids
 
     def find_all_annotations(self):
-        annotations = []
+        annotations = {}
         for pdbid in os.listdir(os.path.join(settings["DATADIR"], 'wi-lists', self.input_type, self.list_type)):
             whynot_path = os.path.join(settings["DATADIR"], 'wi-lists', self.input_type, self.list_type, pdbid, '%s.whynot' % pdbid)
             if os.path.isfile(whynot_path):
-                annotations.extend(parse_whynot(whynot_path))
+                comments = parse_whynot(whynot_path)
+                for comment in comments:
+                    db, pdbid = comments[comment]
+                    if db == self.name:
+                        annotations[pdbid.lower()] = comment
         return annotations
 
 
@@ -407,15 +415,19 @@ class SceneDatabank(Databank):
         present_pdbids = []
         for pdbid in os.listdir(os.path.join(settings["DATADIR"], 'wi-lists', self.input_type, 'scenes', self.list_type)):
             if os.path.isfile(os.path.join(settings["DATADIR"], 'wi-lists', self.input_type, 'scenes', self.list_type, pdbid, '%s_%s.sce' % pdbid, SCENE_NAMES[self.list_type])):
-                present_pdbids.append(pdbid)
+                present_pdbids.append(pdbid.lower())
         return present_pdbids
 
     def find_all_annotations(self):
-        annotations = []
+        annotations = {}
         for pdbid in os.listdir(os.path.join(settings["DATADIR"], 'wi-lists', self.input_type, 'scenes', self.list_type)):
             whynot_path = os.path.join(settings["DATADIR"], 'wi-lists', self.input_type, 'scenes', self.list_type, pdbid, '%s.%s.whynot' % (pdbid, self.list_type))
             if os.path.isfile(whynot_path):
-                annotations.extend(parse_whynot(whynot_path))
+                comments = parse_whynot(whynot_path)
+                for comment in comments:
+                    db, pdbid = comments[comment]
+                    if db == self.name:
+                        annotations[pdbid.lower()] = comment
         return annotations
 
 

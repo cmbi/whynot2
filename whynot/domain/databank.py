@@ -90,22 +90,24 @@ class BdbDatabank(Databank):
     def find_all_present(self):
         present_pdbids = []
         for dirname in os.listdir(os.path.join(settings["DATADIR"], 'bdb')):
-            for filename in os.listdir(os.path.join(settings["DATADIR"], 'bdb', dirname)):
-                m = P_BDB.match(filename)
-                if m:
-                    present_pdbids.append(m.group(1).lower())
+            for pdbid in os.listdir(os.path.join(settings["DATADIR"], 'bdb', dirname)):
+                for filename in os.listdir(os.path.join(settings["DATADIR"], 'bdb', dirname, pdbid)):
+                    m = P_BDB.match(filename)
+                    if m:
+                        present_pdbids.append(m.group(1).lower())
         return present_pdbids
 
     def find_all_annotations(self):
         annotations = {}
         for dirname in os.listdir(os.path.join(settings["DATADIR"], 'bdb')):
-            for filename in os.listdir(os.path.join(settings["DATADIR"], 'bdb', dirname)):
-                if P_WHYNOT.match(filename):
-                    comments = parse_whynot(os.path.join(settings["DATADIR"], 'bdb', dirname, filename))
-                    for comment in comments:
-                        db, pdbid = comments[comment]
-                        if db == self.name:
-                            annotations.extend(pdbid, comment)
+            for pdbid in os.listdir(os.path.join(settings["DATADIR"], 'bdb', dirname)):
+                for filename in os.listdir(os.path.join(settings["DATADIR"], 'bdb', dirname, pdbid)):
+                    if P_WHYNOT.match(filename):
+                        comments = parse_whynot(os.path.join(settings["DATADIR"], 'bdb', dirname, pdbid, filename))
+                        for comment in comments:
+                            db, pdbid = comments[comment]
+                            if db == self.name:
+                                annotations.extend(pdbid, comment)
         return annotations
 
 

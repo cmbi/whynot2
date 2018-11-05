@@ -40,7 +40,7 @@
 
 {% macro comment_trees (dict,depth) %}
 
-{% for text, node in dict.iteritems () %}
+{% for text, node in dict.items () %}
 <div class="tree-branch tree-branch-mid">
     {% set comment_id = '%i_%i' % (depth, loop.index) %}
     <div class="tree-node">
@@ -261,7 +261,7 @@
             </ul>
         </div>
         <div id="pdbids" class="tab-panel">
-            <a href="{{ url_for('dashboard.entries_file', listing='PDBIDs', comment=comment, databank=databank_name, collection=collection) }}"
+            <a href="{{ url_for('dashboard.entries_file', listing='PDBIDs', comment=comment, databank=databank_name, status=status) }}"
                class="download">Download as file</a>
             {% if entries|length > 0 %}<h1>Unique PDBIDs ({{ entries|length }})</h1>{% endif %}
             {% if num_pages ['pdbids'] > 1 %}{{ page_browser ('pdbids', entries|length, 2000) }}{% endif %}
@@ -277,7 +277,7 @@
             {% endfor %}
         </div>
         <div id="entries" class="tab-panel" style="display:none;" >
-            <a href="{{ url_for('dashboard.entries_file', listing='entries', comment=comment, databank=databank_name, collection=collection) }}"
+            <a href="{{ url_for('dashboard.entries_file', listing='entries', comment=comment, databank=databank_name, status=status) }}"
                class="download">Download as file</a>
             {% if entries|length > 0 %}<h1>Entries ({{ entries|length }})</h1>{% endif %}
             {% if num_pages ['entries'] > 1 %}{{ page_browser ('entries', entries|length, 2000) }}{% endif %}
@@ -293,7 +293,7 @@
             {% endfor %}
         </div>
         <div id="files" class="tab-panel" style="display:none;" >
-            <a href="{{ url_for('dashboard.entries_file', listing='files', comment=comment, databank=databank_name, collection=collection) }}"
+            <a href="{{ url_for('dashboard.entries_file', listing='files', comment=comment, databank=databank_name, status=status) }}"
                class="download">Download as file</a>
             {% if files|length > 0 %}<h1>Files ({{ files|length }})</h1>{% endif %}
             {% if num_pages ['files'] > 1 %}{{ page_browser ('files', files|length, 2000) }}{% endif %}
@@ -309,7 +309,7 @@
             {% endfor %}
         </div>
         <div id="comments" class="tab-panel" style="display:none;" >
-            <a href="{{ url_for('dashboard.entries_file', listing='comments', comment=comment, databank=databank_name, collection=collection) }}"
+            <a href="{{ url_for('dashboard.entries_file', listing='comments', comment=comment, databank=databank_name, status=status) }}"
                class="download">Download as file</a>
 
             <div class="tree-theme-human">

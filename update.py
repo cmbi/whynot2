@@ -12,4 +12,7 @@ logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 storage.connect(settings['MONGODB_URI'], settings['MONGODB_DB_NAME'])
 
 
-update_all()
+if len(sys.argv) > 1:
+    update_all(sys.argv[1:])
+else:
+    update_all()

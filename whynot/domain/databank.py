@@ -36,6 +36,12 @@ class Databank:
     def find_all_annotations(self):
         return {}
 
+    def __eq__(self, other):
+        if other is None:
+            return False
+
+        return self.name == other.name
+
 
 P_WHYNOT = re.compile(r'^.*\.whynot$')
 
@@ -105,9 +111,9 @@ class BdbDatabank(Databank):
                     if P_WHYNOT.match(filename):
                         comments = parse_whynot(os.path.join(settings["DATADIR"], 'bdb', dirname, pdbid, filename))
                         for comment in comments:
-                            db, pdbid = comments[comment]
-                            if db == self.name:
-                                annotations.extend(pdbid, comment)
+                            for db, pdbid in comments[comment]:
+                                if db == self.name:
+                                    annotations[pdbid.lower()] = comment
         return annotations
 
 
@@ -327,9 +333,9 @@ class PdbRedoDatabank(Databank):
             if os.path.isfile(path):
                 comments = parse_whynot(path)
                 for comment in comments:
-                    db, pdbid = comments[comment]
-                    if db == self.name:
-                        annotations[pdbid.lower()]  = comment
+                    for db, pdbid in comments[comment]:
+                        if db == self.name:
+                            annotations[pdbid.lower()] = comment
         return annotations
 
 
@@ -391,9 +397,9 @@ class WhatifDatabank(Databank):
             if os.path.isfile(whynot_path):
                 comments = parse_whynot(whynot_path)
                 for comment in comments:
-                    db, pdbid = comments[comment]
-                    if db == self.name:
-                        annotations[pdbid.lower()] = comment
+                    for db, pdbid in comments[comment]:
+                        if db == self.name:
+                            annotations[pdbid.lower()] = comment
         return annotations
 
 
@@ -427,9 +433,9 @@ class SceneDatabank(Databank):
             if os.path.isfile(whynot_path):
                 comments = parse_whynot(whynot_path)
                 for comment in comments:
-                    db, pdbid = comments[comment]
-                    if db == self.name:
-                        annotations[pdbid.lower()] = comment
+                    for db, pdbid in comments[comment]:
+                        if db == self.name:
+                            annotations[pdbid.lower()] = comment
         return annotations
 
 
@@ -469,3 +475,19 @@ databanks.extend(whatif_pdb_databanks)
 databanks.extend(whatif_redo_databanks)
 databanks.extend(scene_pdb_databanks)
 databanks.extend(scene_redo_databanks)
+
+
+def get_databank_tree(db=mmcif):
+    tree = {}
+    for child in databanks:
+        if child.parent == db:
+            tree.update(get_databank_tree(child))
+
+    return {db.name: tree}
+
+def get_databank(name):
+    for databank in databanks:
+        if databank.name == name:
+            return databank
+
+    raise ValueError("No such databank: {}".format(name))

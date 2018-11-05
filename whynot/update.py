@@ -2,7 +2,7 @@ import logging
 from threading import Thread
 
 from whynot.models.entry import Entry
-from whynot.domain.databank import databanks
+from whynot.domain.databank import databanks, get_databank
 from whynot.storage import storage
 
 
@@ -50,9 +50,13 @@ class UpdateThread(Thread):
         update(self.databank)
 
 
-def update_all():
+def update_all(db_names=[]):
+    dbs = databanks
+    if len(db_names) > 0:
+        dbs = [get_databank(name) for name in db_names]
+
     threads = []
-    for databank in databanks:
+    for databank in dbs:
         t = UpdateThread(databank)
         t.start()
         threads.append(t)

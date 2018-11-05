@@ -5,8 +5,7 @@ import inspect
 _log = logging.getLogger(__name__)
 
 from flask import Blueprint, render_template, Response
-from utils import get_entries_from_collection
-from storage import storage
+from whynot.storage import storage
 
 bp = Blueprint('rest', __name__, url_prefix='/webservice/rs')
 

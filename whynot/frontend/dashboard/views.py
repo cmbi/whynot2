@@ -2,20 +2,19 @@ import logging
 import os
 from time import strftime, gmtime, time
 from copy import deepcopy
-from sets import Set
 
 from flask import Response, Blueprint, jsonify, render_template, request, redirect, url_for
-from utils import(get_databank_hierarchy, search_results_for, get_entries_from_collection,
-                   get_all_entries_with_comment, get_entries_with_comment, remove_tags,
-                   get_file_link, comments_to_tree, count_summary, comment_summary, top_highest)
+
+from whynot.storage import storage
+from whynot.domain.databank import get_databank_tree, get_databank, databanks as dbs
+from whynot.parsers.comment import comments_to_tree
+from whynot.models.status import Status, VALID, OBSOLETE, MISSING, PRESENT, ANNOTATED, UNANNOTATED
 
 _log = logging.getLogger(__name__)
 
 bp = Blueprint('dashboard', __name__)
 
 date_format = '%d/%m/%Y %H:%M'
-
-from storage import storage
 
 
 def names_from_hierarchy(d):
@@ -26,8 +25,7 @@ def names_from_hierarchy(d):
 
     return names
 
-db_tree = get_databank_hierarchy()
-db_order = names_from_hierarchy(db_tree)
+db_tree = get_databank_tree()
 
 @bp.route('/')
 def index():
@@ -46,7 +44,7 @@ def search(pdbid):
     results = search_results_for(pdbid)
     end_time = time()
 
-    return render_template('search/ResultsPage.html', db_tree=db_tree, db_order=db_order, pdbid=pdbid, results=results)
+    return render_template('search/ResultsPage.html', db_tree=db_tree, db_order=dbs, pdbid=pdbid, results=results)
 
 @bp.route('/about/')
 def about():
@@ -81,68 +79,67 @@ def count(databank_name):
 
     _log.info("request for databank %s summary" % databank_name)
 
-    start_time = time()
-    cs = count_summary(databank_name)
-    end_time = time()
+    cs = {
+        'valid': storage.count_entries_with_status(databank_name, VALID),
+        'obsolete': storage.count_entries_with_status(databank_name, OBSOLETE),
+        'annotated': storage.count_entries_with_status(databank_name, ANNOTATED),
+        'unannotated': storage.count_entries_with_status(databank_name, UNANNOTATED),
+    }
+    cs['present'] = cs['valid'] + cs['obsolete']
+    cs['missing'] = cs['annotated'] + cs['unannotated']
 
     return jsonify(cs)
 
 @bp.route('/databanks/')
 @bp.route('/databanks/name/<name>/')
 def databanks(name=None):
-    start_time = time()
-    if name is None:
-        databanks = storage.find('databanks', {})
-    else:
-        databanks = [ storage.find_one('databanks', {'name': name}) ]
-    end_time = time()
+    db_list = dbs
+    if name is not None:
+        db_list = [db for db in dbs if db.name == name]
 
-    return render_template('databank/DatabankPage.html', db_tree=db_tree, nav_disabled='databanks', databanks=databanks)
+    return render_template('databank/DatabankPage.html', db_tree=db_tree, nav_disabled='databanks', databanks=db_list)
 
 @bp.route('/entries/')
 def entries():
-    collection = request.args.get('collection')
+    status = request.args.get('collection')
     databank_name = request.args.get('databank')
     comment_text = request.args.get('comment')
 
-    _log.info("request for entries %s %s %s" %(collection, databank_name, comment_text))
+    if status is not None:
+        status = Status.from_string(status)
+
+    _log.info("request for entries {} {} {}".format(status, databank_name, comment_text))
 
     title = 'No entries selected'
     entries = []
     files = []
     comments = {}
 
-    if databank_name and collection:
-        start_time = time()
-        entries = get_entries_from_collection(databank_name, collection)
-        end_time = time()
-        title = "%s %s" %(databank_name, collection)
-    elif databank_name and comment_text:
-        start_time = time()
-        entries = get_entries_with_comment(databank_name, comment_text)
-        end_time = time()
+    if databank_name is not None and status is not None:
+        entries = storage.find_entries_by_status(databank_name, status)
+        title = "%s %s" % (databank_name, status)
+    elif databank_name is not None and comment_text is not None:
+        entries = storage.find_entries_by_comment(databank_name, comment_text)
         title = comment_text
-    elif comment_text:
-        start_time = time()
-        entries = get_all_entries_with_comment(comment_text)
-        end_time = time()
+    elif comment_text is not None:
+        entries = storage.find_entries_by_comment('.*', comment_text)
         title = comment_text
 
-    databank = storage.find_one('databanks', {'name': databank_name})
+    databank = get_databank(databank_name)
     for entry in entries:
-        if databank and 'filepath' in entry:
-            f = {'name': os.path.basename(entry ['filepath']),
-                 'url': get_file_link(databank, entry ['pdbid'])}
+        if entry['status'] in ['VALID', 'OBSOLETE']:
+            url = databank.get_entry_url(entry['pdbid'])
+            f = {'name': os.path.basename(url), 'url': url}
             files.append(f)
         elif 'comment' in entry:
-            if entry ['comment'] not in comments:
-                comments [entry ['comment']] = []
-            comments [entry ['comment']].append('%s,%s' %(entry ['databank_name'], entry ['pdbid']))
+            if entry['comment'] not in comments:
+                comments[entry['comment']] = []
+            comments[entry['comment']].append('%s,%s' %(entry['databank_name'], entry['pdbid']))
 
     comment_tree = comments_to_tree(comments)
 
     return render_template('entries/EntriesPage.html', db_tree=db_tree, nav_disabled='entries',
-                            collection=collection, databank_name=databank_name, comment=comment_text,
+                            status=status, databank_name=databank_name, comment=comment_text,
                             title=title, entries=entries, files=files, comment_tree=comment_tree)
 
 @bp.route('/load_statistics/')
@@ -158,7 +155,7 @@ def load_statistics():
     nf = 0
     nc = 0
 
-    unique_comments = Set()
+    unique_comments = set()
     recent_files = top_highest(10)
     recent_annotations = top_highest(10)
     for entry in storage.find('entries', {}):
@@ -181,8 +178,8 @@ def load_statistics():
     annotations = []
     for a in recent_annotations.get():
         annotations.append({'comment': a ['comment'], 'pdbid': a ['pdbid'],
-                             'databank_name': a ['databank_name'],
-                             'date':  strftime(date_format, gmtime(a['mtime']))})
+                            'databank_name': a ['databank_name'],
+                            'date':  strftime(date_format, gmtime(a['mtime']))})
 
     nc = len(unique_comments)
 
@@ -214,10 +211,10 @@ def resources(tolist):
     # TODO: speed up this method
     last = tolist.rfind('_')
     databank_name = tolist [:last]
-    collection = tolist [last + 1:]
+    status = tolist [last + 1:]
 
     text = ''
-    for entry in get_entries_from_collection(databank_name, collection):
+    for entry in get_entries_from_collection(databank_name, status):
         text += entry ['pdbid'] + '\n'
 
     response = Response(text, mimetype='text/plain')
@@ -228,14 +225,14 @@ def resources(tolist):
 @bp.route('/entries_file/')
 def entries_file():
     # TODO: speed up this method
-    collection = request.args.get('collection')
+    status = request.args.get('status')
     databank_name = request.args.get('databank')
     comment_text = request.args.get('comment')
 
     # listing determines what is shown per entry(pdb ids, databank names, comments, file names, etc.)
     listing = request.args.get('listing')
 
-    _log.info("request for entries file %s %s %s %s" %(collection, databank_name, comment_text, listing))
+    _log.info("request for entries file %s %s %s %s" %(status, databank_name, comment_text, listing))
 
     if not listing:
         return ''
@@ -244,10 +241,10 @@ def entries_file():
 
     entries = []
     name="0"
-    if databank_name and collection:
+    if databank_name and status:
 
-        entries = get_entries_from_collection(databank_name, collection)
-        name = "%s%s" %(databank_name, collection)
+        entries = get_entries_from_collection(databank_name, status)
+        name = "%s%s" %(databank_name, status)
 
     elif databank_name and comment_text:
 

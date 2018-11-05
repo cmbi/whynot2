@@ -2,13 +2,18 @@ version: "2"
 
 services:
   whynot:
+    environment:
+      - WHYNOT_SETTINGS=/usr/src/app/prd_settings.py
     build:
       context: .
       dockerfile: Dockerfile
+    command: gunicorn -k gevent -b 0.0.0.0:15000 whynot.application:app
     depends_on:
       - mongo
     volumes:
       - "/mnt/chelonium:/mnt/chelonium"
+    ports:
+      - "15000:15000"
   mongo:
     image: mongo
     volumes:

@@ -1,0 +1,9 @@
+version: "2"
+
+services:
+  whynot:
+    environment:
+      - WHYNOT_SETTINGS=/usr/src/app/dev_settings.py
+    volumes:
+      - ".:/usr/src/app"
+    command: watchmedo auto-restart -d /usr/src/app -p "*.py" -D -R -- gunicorn -k gevent -b 0.0.0.0:15000 whynot.application:app

@@ -14,7 +14,7 @@ def create_app(settings=None):
     app = Flask(__name__, static_folder='frontend/static',
                 template_folder='frontend/templates')
 
-    app.config.from_object('whynot_web.default_settings')
+    app.config.from_object('whynot.default_settings')
     if settings:
         app.config.update(settings)
     else:  # pragma: no cover
@@ -25,7 +25,7 @@ def create_app(settings=None):
     app.logger_name = "nowhere"
     app.logger
 
-    whynot_logger = logging.getLogger('whynot_web')
+    whynot_logger = logging.getLogger('whynot')
 
     # Only log to email during production.
     if not app.debug and not app.testing:  # pragma: no cover
@@ -62,32 +62,20 @@ def create_app(settings=None):
             whynot_logger.setLevel(logging.INFO)
 
     # Configure storage
-    from storage import storage
-    storage.uri = app.config['MONGODB_URI']
-    storage.db_name = app.config['MONGODB_DB_NAME']
-    storage.connect()
-
-    # Setup the default databanks if there are none
-    if storage.count('databanks', {}) == 0:
-        from install import create_databanks
-        storage.create_index('databanks', 'name')
-        storage.create_index('entries', 'databank_name')
-        storage.create_index('entries', 'pdbid')
-        storage.create_index('entries', 'comment')
-        databanks = create_databanks()
-        storage.insert('databanks', databanks)
+    from whynot.storage import storage
+    storage.connect(app.config['MONGODB_URI'], app.config['MONGODB_DB_NAME'])
 
     # Use ProxyFix to correct URL's when redirecting.
-    from whynot_web.middleware import ReverseProxied
+    from whynot.middleware import ReverseProxied
     app.wsgi_app = ReverseProxied(app.wsgi_app)
 
     # Register jinja2 filters
-    from whynot_web.frontend.filters import beautify_docstring
+    from whynot.frontend.filters import beautify_docstring
     app.jinja_env.filters['beautify_docstring'] = beautify_docstring
 
     # Register blueprints
-    from whynot_web.frontend.dashboard.views import bp as dashboard_bp
-    from whynot_web.frontend.rest.rs import bp as rs_bp
+    from whynot.frontend.dashboard.views import bp as dashboard_bp
+    from whynot.frontend.rest.rs import bp as rs_bp
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(rs_bp)
 

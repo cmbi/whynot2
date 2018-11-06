@@ -7,11 +7,11 @@
 
     <h1>{{ pdbid }}</h1>
     <table>
-        {% for databank_name in db_order %}
-        {% set result = results [databank_name] %}
+        {% for databank in db_order %}
+        {% set result = results[databank.name] %}
         <tr id="databanklist">
-            <th width="120px">{{ databank_name }}</th>
-            {% if result.startswith ('http://') or result.startswith ('https://') or result.startswith ('ftp://')%}
+            <th width="120px">{{ databank.name }}</th>
+            {% if result.startswith('http://') or result.startswith('https://') or result.startswith('ftp://')%}
                 <td>
                     <a href="{{ result }}" class="file">{{ result.split ('/')[-1] }}</a>
                 </td>

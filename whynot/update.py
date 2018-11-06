@@ -9,36 +9,37 @@ from whynot.storage import storage
 _log = logging.getLogger(__name__)
 
 def update(databank):
-    parent_pdbids = []
+    parent_present = []
     if databank.parent is not None:
         _log.debug("finding parent pdbids for {}".format(databank.name))
 
-        parent_pdbids = databank.parent.find_all_present()
+        parent_present = databank.parent.find_all_present()
 
     _log.debug("finding present pdbids for {}".format(databank.name))
-    present_pdbids = databank.find_all_present()
+    present = databank.find_all_present()
 
     _log.debug("finding annotations for {}".format(databank.name))
     annotations = databank.find_all_annotations()
 
     entries = []
 
-    # Determine what is present.
-    for pdbid in present_pdbids:
-        if pdbid in parent_pdbids or databank.parent is None:
-            entries.append(Entry(databank.name, pdbid, 'VALID'))
+    _log.debug("determining present for {}".format(databank.name))
+    for pdbid in present:
+        if pdbid in parent_present or databank.parent is None:
+            entries.append(Entry(databank.name, pdbid, 'VALID', databank.get_file_mtime(pdbid)))
         else:
-            entries.append(Entry(databank.name, pdbid, 'OBSOLETE'))
+            entries.append(Entry(databank.name, pdbid, 'OBSOLETE', databank.get_file_mtime(pdbid)))
 
-    # Determine what is missing:
-    for pdbid in parent_pdbids:
-        if pdbid not in present_pdbids:
+    _log.debug("determining missing for {}".format(databank.name))
+    for pdbid in parent_present:
+        if pdbid not in present:
             if pdbid in annotations:
-                entries.append(Entry(databank.name, pdbid, 'ANNOTATED', annotations[pdbid]))
+                entries.append(Entry(databank.name, pdbid, 'ANNOTATED', databank.get_comment_mtime(pdbid), annotations[pdbid]))
             else:
                 entries.append(Entry(databank.name, pdbid, 'UNANNOTATED'))
 
-    storage.replace_entries(entries)
+    _log.debug("replacing entries for {}".format(databank.name))
+    storage.replace_entries(databank, entries)
 
 
 class UpdateThread(Thread):

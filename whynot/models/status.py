@@ -16,6 +16,24 @@ class Status:
     def __repr__(self):
         return self.value
 
+    def is_present(self):
+        return self.value in ['PRESENT', 'VALID', 'OBSOLETE']
+
+    def is_missing(self):
+        return self.value in ['MISSING', 'UNANNOTATED', 'ANNOTATED']
+
+    def is_obsolete(self):
+        return self.value == 'OBSOLETE'
+
+    def is_valid(self):
+        return self.value == 'VALID'
+
+    def is_unannotated(self):
+        return self.value == 'UNANNOTATED'
+
+    def is_annotated(self):
+        return self.value == 'ANNOTATED'
+
 
 PRESENT = Status('PRESENT')
 VALID = Status('VALID')

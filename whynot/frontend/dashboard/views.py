@@ -1,10 +1,12 @@
 import logging
 import os
+import re
 from time import strftime, gmtime, time
 from copy import deepcopy
 
 from flask import Response, Blueprint, jsonify, render_template, request, redirect, url_for
 
+from whynot.controllers.top import top_highest
 from whynot.storage import storage
 from whynot.domain.databank import get_databank_tree, get_databank, databanks as dbs
 from whynot.parsers.comment import comments_to_tree
@@ -40,9 +42,20 @@ def search(pdbid):
     if len(urlparam) == 4:
         pdbid = urlparam
 
-    start_time = time()
-    results = search_results_for(pdbid)
-    end_time = time()
+    results = {}
+    for entry in storage.find_entries_by_pdbid(pdbid):
+        databank = get_databank(entry.databank_name)
+        if Status.from_string(entry.status).is_present():
+            results[databank.name] = databank.get_entry_url(pdbid)
+        elif 'comment' in entry:
+            results[databank.name] = entry.comment
+
+    for databank in dbs:
+        if databank.name not in results:
+            if databank.parent is not None:
+                results[databank.name] = "Not available, depends on %s" % databank.parent.name
+            else:
+                results[databank.name] = "Not available"
 
     return render_template('search/ResultsPage.html', db_tree=db_tree, db_order=dbs, pdbid=pdbid, results=results)
 
@@ -52,20 +65,22 @@ def about():
 
 @bp.route('/load_comments/')
 def load_comments():
-    _log.info("request for comment summary")
+    entries = storage.find_entries_by_status(re.compile('.*'), ANNOTATED)
 
-    # TODO: speed up this method
+    comments = {}
+    for entry in entries:
+        text = entry.comment
+        if text not in comments:
+            comments[text] = {'text':text, 'n_entries': 0, 'mtime': entry.mtime}
 
-    start_time = time()
-    comments = comment_summary()
-    end_time = time()
+        comments[text]['n_entries'] += 1
+        if comments[text]['mtime'] < entry.mtime:
+            comments[text]['mtime'] = entry.mtime
 
-    _log.info("transaction finished in %d seconds" %(end_time - start_time))
+    for key in comments:
+        comments[key]['latest'] = strftime(date_format, gmtime(comments[key]['mtime']))
 
-    for i in range(len(comments)):
-        comments [i]['latest'] = strftime(date_format, gmtime(comments [i]['mtime']))
-
-    return jsonify({'comments':comments})
+    return jsonify({'comments': list(comments.values())})
 
 @bp.route('/comment/')
 def comment():
@@ -74,10 +89,6 @@ def comment():
 @bp.route('/count/<databank_name>/')
 def count(databank_name):
     "Called by the databank page, while the loading icon is displayed"
-
-    # TODO: speed up this method
-
-    _log.info("request for databank %s summary" % databank_name)
 
     cs = {
         'valid': storage.count_entries_with_status(databank_name, VALID),
@@ -122,19 +133,20 @@ def entries():
         entries = storage.find_entries_by_comment(databank_name, comment_text)
         title = comment_text
     elif comment_text is not None:
-        entries = storage.find_entries_by_comment('.*', comment_text)
+        entries = storage.find_entries_by_comment(re.compile('.*'), comment_text)
         title = comment_text
 
-    databank = get_databank(databank_name)
     for entry in entries:
-        if entry['status'] in ['VALID', 'OBSOLETE']:
-            url = databank.get_entry_url(entry['pdbid'])
+        databank = get_databank(entry.databank_name)
+
+        if entry.status.is_present():
+            url = databank.get_entry_url(entry.pdbid)
             f = {'name': os.path.basename(url), 'url': url}
             files.append(f)
-        elif 'comment' in entry:
-            if entry['comment'] not in comments:
-                comments[entry['comment']] = []
-            comments[entry['comment']].append('%s,%s' %(entry['databank_name'], entry['pdbid']))
+        elif entry.comment is not None:
+            if entry.comment not in comments:
+                comments[entry.comment] = []
+            comments[entry.comment].append('%s,%s' %(entry.databank_name, entry.pdbid))
 
     comment_tree = comments_to_tree(comments)
 
@@ -148,7 +160,7 @@ def load_statistics():
 
     #TODO: speed up this method
 
-    ndb = storage.count('databanks', {})
+    ndb = len(dbs)
 
     ne = 0
     na = 0
@@ -158,17 +170,15 @@ def load_statistics():
     unique_comments = set()
     recent_files = top_highest(10)
     recent_annotations = top_highest(10)
-    for entry in storage.find('entries', {}):
-
+    for entry in storage.get_all_entries():
         ne += 1
-        if 'mtime' in entry:
-            if 'filepath' in entry:
-                nf += 1
-                recent_files.add(entry ['mtime'], entry)
-            elif 'comment' in entry:
-                na += 1
-                unique_comments.add(entry ['comment'])
-                recent_annotations.add(entry ['mtime'], entry)
+        if entry.status.is_present():
+            nf += 1
+            recent_files.add(entry.mtime, entry)
+        elif entry.comment is not None:
+            na += 1
+            unique_comments.add(entry.comment)
+            recent_annotations.add(entry.mtime, entry)
 
     # Perform time-consuming operations only on the last 10 files and annotations
     files = []
@@ -184,13 +194,13 @@ def load_statistics():
     nc = len(unique_comments)
 
     statistics = {}
-    statistics ['total_databanks'] = ndb
-    statistics ['total_entries'] = ne
-    statistics ['total_files'] = nf
-    statistics ['total_annotations'] = na
-    statistics ['total_comments'] = nc
-    statistics ['annotations'] = annotations
-    statistics ['files'] = files
+    statistics['total_databanks'] = ndb
+    statistics['total_entries'] = ne
+    statistics['total_files'] = nf
+    statistics['total_annotations'] = na
+    statistics['total_comments'] = nc
+    statistics['annotations'] = annotations
+    statistics['files'] = files
 
     return jsonify(statistics)
 
@@ -214,8 +224,8 @@ def resources(tolist):
     status = tolist [last + 1:]
 
     text = ''
-    for entry in get_entries_from_collection(databank_name, status):
-        text += entry ['pdbid'] + '\n'
+    for entry in storage.find_entries_by_status(databank_name, status):
+        text += entry.pdbid + '\n'
 
     response = Response(text, mimetype='text/plain')
     response.headers["Content-Disposition"] = "attachment; filename=%s" % tolist
@@ -262,10 +272,10 @@ def entries_file():
         d = {}
         for entry in entries:
             if 'comment' in entry:
-                c = entry ['comment']
+                c = entry.comment
                 if c not in d:
                     d [c] = ''
-                d [c] += '%s,%s\n' %(entry['databank_name'], entry['pdbid'])
+                d [c] += '%s,%s\n' %(entry.databank_name, entry.pdbid)
 
         for comment in d:
             text += comment + ":\n" + d [comment]
@@ -273,11 +283,12 @@ def entries_file():
         for entry in entries:
 
             if listing == 'pdbids':
-                text += entry ['pdbid'] + '\n'
+                text += entry.pdbid + '\n'
             elif listing == 'entries':
-                text += '%s,%s\n' %(entry['databank_name'], entry ['pdbid'])
-            elif listing == 'files' and 'filepath' in entry:
-                text += '%s,%s,%s\n' %(entry['databank_name'], entry ['pdbid'], entry ['filepath'])
+                text += '%s,%s\n' %(entry.databank_name, entry.pdbid)
+            elif listing == 'files' and entry.status.is_present():
+                databank = get_databank(entry.databank_name)
+                text += '%s,%s,%s\n' %(entry.databank_name, entry.pdbid, os.path.basename(databank.get_entry_url(entry.pdbid)))
 
     response = Response(text, mimetype='text/plain')
     response.headers["Content-Disposition"] = "attachment; filename=%s" %('%s_%s' %(name, listing))

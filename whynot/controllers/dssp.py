@@ -9,6 +9,9 @@ def has_complete_backbone(pdbid):
     inputfile = os.path.join(settings['DATADIR'], 'mmCIF', '%s.cif.gz' % pdbid)
     dsspfile = tempfile.mktemp()
 
+    if os.system("test -x %s" % settings['MKDSSP']) != 0:
+        raise RuntimeError("Not executable: {}".format(settings['MKDSSP']))
+
     try:
         lines = subprocess.check_output('%s %s %s 2>&1 >/dev/null || true' % (settings['MKDSSP'], inputfile, dsspfile), shell=True).decode('ascii').split('\n')
 

@@ -1,6 +1,7 @@
 import os
 import re
 from glob import glob
+from time import time
 
 from whynot.settings import settings
 from whynot.services.wwpdb import get_content_types, get_method_types
@@ -13,6 +14,12 @@ class Databank:
         self.name = name
         self.reference_url = reference_url
         self.parent = parent
+
+    def get_file_mtime(self, pdbid):
+        return 0
+
+    def get_comment_mtime(self, pdbid):
+        return 0
 
     def get_entry_url(self, pdbid):
         return None
@@ -63,6 +70,9 @@ class MmCifDatabank(Databank):
                 present_pdbids.append(m.group(1).lower())
         return present_pdbids
 
+    def get_file_mtime(self, pdbid):
+        return os.path.getmtime(os.path.join(settings["DATADIR"], 'mmCIF/%s.cif.gz' % pdbid))
+
 
 P_PDB = re.compile(r'^pdb([0-9][a-z0-9]{3})\.ent\.gz$', re.IGNORECASE)
 
@@ -81,6 +91,9 @@ class PdbDatabank(Databank):
             if m:
                 present_pdbids.append(m.group(1).lower())
         return present_pdbids
+
+    def get_file_mtime(self, pdbid):
+        return os.path.getmtime(os.path.join(settings["DATADIR"], 'pdb/all/pdb%s.ent.gz' % pdbid))
 
 
 P_BDB = re.compile(r'^([0-9][a-z0-9]{3})\.bdb$', re.IGNORECASE)
@@ -103,6 +116,10 @@ class BdbDatabank(Databank):
                         present_pdbids.append(m.group(1).lower())
         return present_pdbids
 
+    def get_file_mtime(self, pdbid):
+        part = pdbid[1:3]
+        return os.path.getmtime(os.path.join(settings["DATADIR"], 'bdb/%s/%s/%s.bdb' % (part, pdbid, pdbid)))
+
     def find_all_annotations(self):
         annotations = {}
         for dirname in os.listdir(os.path.join(settings["DATADIR"], 'bdb')):
@@ -115,6 +132,10 @@ class BdbDatabank(Databank):
                                 if db == self.name:
                                     annotations[pdbid.lower()] = comment
         return annotations
+
+    def get_comment_mtime(self, pdbid):
+        part = pdbid[1:3]
+        return os.path.getmtime(os.path.join(settings["DATADIR"], 'bdb/%s/%s/%s.whynot' % (part, pdbid, pdbid)))
 
 
 P_DSSP = re.compile(r'^([0-9][a-z0-9]{3})\.dssp$', re.IGNORECASE)
@@ -134,6 +155,9 @@ class DsspDatabank(Databank):
                 present_pdbids.append(m.group(1).lower())
         return present_pdbids
 
+    def get_file_mtime(self, pdbid):
+        return os.path.getmtime(os.path.join(settings["DATADIR"], 'dssp/%s.dssp' % pdbid))
+
     def find_all_annotations(self):
         content_types = get_content_types()
         annotations = {}
@@ -145,6 +169,9 @@ class DsspDatabank(Databank):
             elif not has_complete_backbone(pdbid):
                 annotations[pdbid] = "No residues with complete backbone"
         return annotations
+
+    def get_comment_mtime(self, pdbid):
+        return time()
 
 
 P_HSSP = re.compile(r'^([0-9][a-z0-9]{3})\.hssp.bz2$', re.IGNORECASE)
@@ -165,6 +192,9 @@ class HsspDatabank(Databank):
                 present_pdbids.append(m.group(1).lower())
         return present_pdbids
 
+    def get_file_mtime(self, pdbid):
+        return os.path.getmtime(os.path.join(settings["DATADIR"], 'hssp/%s.hssp.bz2' % pdbid))
+
     def find_all_annotations(self):
         annotations = {}
         for filename in os.listdir(os.path.join(settings["DATADIR"], 'scratch/whynot2/hssp')):
@@ -181,6 +211,9 @@ class HsspDatabank(Databank):
                             annotations[pdbid] = line
         return annotations
 
+    def get_comment_mtime(self, pdbid):
+        return time()
+
 
 P_PDBF = re.compile(r'^ID\s+\:\s+([0-9][a-z0-9]{3})\s*$', re.IGNORECASE)
 
@@ -190,6 +223,9 @@ class PdbFinderDatabank(Databank):
 
     def get_entry_url(self, pdbid):
         return "ftp://ftp.cmbi.umcn.nl/pub/molbio/data/pdbfinder/PDBFIND.TXT.gz"
+
+    def get_file_mtime(self, pdbid):
+        return os.path.getmtime(os.path.join(settings["DATADIR"], 'pdbfinder/PDBFIND.TXT.gz'))
 
     def find_all_present(self):
         present_pdbids = []
@@ -207,6 +243,9 @@ class PdbFinder2Databank(Databank):
 
     def get_entry_url(self, pdbid):
         return "ftp://ftp.cmbi.umcn.nl/pub/molbio/data/pdbfinder2/PDBFIND2.TXT.gz"
+
+    def get_file_mtime(self, pdbid):
+        return os.path.getmtime(os.path.join(settings["DATADIR"], 'pdbfinder2/PDBFIND2.TXT.gz'))
 
     def find_all_present(self):
         present_pdbids = []
@@ -236,6 +275,10 @@ class StructureFactorsDatabank(Databank):
                 present_pdbids.append(m.group(1).lower())
         return present_pdbids
 
+    def get_file_mtime(self, pdbid):
+        part = pdbid[1:3]
+        return os.path.getmtime(os.path.join(settings["DATADIR"], 'structure_factors/%s/r%ssf.ent.gz' % (part, pdbid)))
+
     def find_all_annotations(self):
         annotations = {}
         method_types = get_method_types()
@@ -250,6 +293,9 @@ class StructureFactorsDatabank(Databank):
             else:
                 annotations[pdbid] = "Not deposited"
         return annotations
+
+    def get_comment_mtime(self, pdbid):
+        return time()
 
 
 P_NMR = re.compile(r'^([0-9][a-z0-9]{3})\.mr\.gz$', re.IGNORECASE)
@@ -269,6 +315,9 @@ class NmrDatabank(Databank):
                 present_pdbids.append(m.group(1).lower())
         return present_pdbids
 
+    def get_file_mtime(self, pdbid):
+        return os.path.getmtime(os.path.join(settings["DATADIR"], 'nmr_restraints/%s.mr.gz' % pdbid))
+
     def find_all_annotations(self):
         annotations = {}
         method_types = get_method_types()
@@ -284,6 +333,9 @@ class NmrDatabank(Databank):
                 annotations[pdbid] = "Not deposited"
         return annotations
 
+    def get_comment_mtime(self, pdbid):
+        return time()
+
 
 class PdbReportDatabank(Databank):
     def __init__(self, pdb_databank):
@@ -291,6 +343,10 @@ class PdbReportDatabank(Databank):
 
     def get_entry_url(self, pdbid):
         return "http://www.cmbi.umcn.nl/pdbreport/cgi-bin/nonotes?PDBID=%s" % pdbid
+
+    def get_file_mtime(self, pdbid):
+        part = pdbid[1:3]
+        return os.path.getmtime(os.path.join(settings["DATADIR"], 'pdbreport/%s/%s/index.html' % (part, pdbid)))
 
     def find_all_present(self):
         present_pdbids = []
@@ -326,6 +382,10 @@ class PdbRedoDatabank(Databank):
                         present_pdbids.append(pdbid.lower())
         return present_pdbids
 
+    def get_file_mtime(self, pdbid):
+        part = pdbid[1:3]
+        return os.path.getmtime(os.path.join(settings["DATADIR"], 'pdb_redo/%s/%s/%s_final.pdb' % (part, pdbid. pdbid)))
+
     def find_all_annotations(self):
         annotations = {}
         for pdbid in self.find_all_missing():
@@ -337,6 +397,9 @@ class PdbRedoDatabank(Databank):
                         if db == self.name:
                             annotations[pdbid.lower()] = comment
         return annotations
+
+    def get_file_mtime(self, pdbid):
+        return os.path.getmtime(os.path.join(settings["DATADIR"], "pdb_redo/whynot/%s.txt" % pdbid))
 
 
 class DsspRedoDatabank(Databank):
@@ -354,6 +417,9 @@ class DsspRedoDatabank(Databank):
                 present_pdbids.append(m.group(1).lower())
         return present_pdbids
 
+    def get_file_mtime(self, pdbid):
+        return os.path.getmtime(os.path.join(settings["DATADIR"], 'dssp_redo/%s.dssp' % pdbid))
+
     def find_all_annotations(self):
         content_types = get_content_types()
         annotations = {}
@@ -365,6 +431,9 @@ class DsspRedoDatabank(Databank):
             elif not has_complete_backbone(pdbid):
                 annotations[pdbid.lower()] = "No residues with complete backbone"
         return annotations
+
+    def get_comment_mtime(self, pdbid):
+        return time()
 
 
 class WhatifDatabank(Databank):
@@ -390,6 +459,9 @@ class WhatifDatabank(Databank):
                  present_pdbids.append(pdbid.lower())
         return present_pdbids
 
+    def get_file_mtime(self, pdbid):
+        return os.path.getmtime(os.path.join(settings["DATADIR"], 'wi-lists', self.input_type, self.list_type, pdbid, '%s.%s.bz2' % (pdbid, self.list_type)))
+
     def find_all_annotations(self):
         annotations = {}
         for pdbid in os.listdir(os.path.join(settings["DATADIR"], 'wi-lists', self.input_type, self.list_type)):
@@ -401,6 +473,9 @@ class WhatifDatabank(Databank):
                         if db == self.name:
                             annotations[pdbid.lower()] = comment
         return annotations
+
+    def get_comment_mtime(self, pdbid):
+        return os.path.getmtime(os.path.join(settings["DATADIR"], 'wi-lists', self.input_type, self.list_type, pdbid, '%s.whynot' % pdbid))
 
 
 SCENE_NAMES = {'ss2': 'sym-contacts', 'iod': 'ion-sites'}
@@ -422,9 +497,12 @@ class SceneDatabank(Databank):
     def find_all_present(self):
         present_pdbids = []
         for pdbid in os.listdir(os.path.join(settings["DATADIR"], 'wi-lists', self.input_type, 'scenes', self.list_type)):
-            if os.path.isfile(os.path.join(settings["DATADIR"], 'wi-lists', self.input_type, 'scenes', self.list_type, pdbid, '%s_%s.sce' % pdbid, SCENE_NAMES[self.list_type])):
+            if os.path.isfile(os.path.join(settings["DATADIR"], 'wi-lists', self.input_type, 'scenes', self.list_type, pdbid, '%s_%s.sce' % (pdbid, SCENE_NAMES[self.list_type]))):
                 present_pdbids.append(pdbid.lower())
         return present_pdbids
+
+    def get_file_mtime(self, pdbid):
+        return os.path.getmtime(os.path.join(settings["DATADIR"], 'wi-lists', self.input_type, 'scenes', self.list_type, pdbid, '%s_%s.sce' % (pdbid, SCENE_NAMES[self.list_type])))
 
     def find_all_annotations(self):
         annotations = {}
@@ -437,6 +515,9 @@ class SceneDatabank(Databank):
                         if db == self.name:
                             annotations[pdbid.lower()] = comment
         return annotations
+
+    def get_comment_mtime(self, pdbid):
+        return os.path.getmtime(os.path.join(settings["DATADIR"], 'wi-lists', self.input_type, 'scenes', self.list_type, pdbid, '%s.%s.whynot' % (pdbid, self.list_type)))
 
 
 mmcif = MmCifDatabank()

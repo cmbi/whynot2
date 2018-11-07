@@ -43,16 +43,18 @@ def search(pdbid):
         pdbid = urlparam
 
     results = {}
+    present = []
     for entry in storage.find_entries_by_pdbid(pdbid):
         databank = get_databank(entry.databank_name)
-        if Status.from_string(entry.status).is_present():
+        if entry.status.is_present():
             results[databank.name] = databank.get_entry_url(pdbid)
-        elif 'comment' in entry:
+            present.append(databank.name)
+        elif entry.comment is not None:
             results[databank.name] = entry.comment
 
     for databank in dbs:
         if databank.name not in results:
-            if databank.parent is not None:
+            if databank.parent is not None and databank.parent.name not in present:
                 results[databank.name] = "Not available, depends on %s" % databank.parent.name
             else:
                 results[databank.name] = "Not available"

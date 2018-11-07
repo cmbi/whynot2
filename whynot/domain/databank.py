@@ -398,7 +398,7 @@ class PdbRedoDatabank(Databank):
                             annotations[pdbid.lower()] = comment
         return annotations
 
-    def get_file_mtime(self, pdbid):
+    def get_comment_mtime(self, pdbid):
         return os.path.getmtime(os.path.join(settings["DATADIR"], "pdb_redo/whynot/%s.txt" % pdbid))
 
 

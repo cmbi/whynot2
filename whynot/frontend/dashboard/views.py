@@ -6,17 +6,15 @@ from copy import deepcopy
 
 from flask import Response, Blueprint, jsonify, render_template, request, redirect, url_for
 
-from whynot.controllers.top import top_highest
 from whynot.storage import storage
 from whynot.domain.databank import get_databank_tree, get_databank, databanks as dbs
 from whynot.parsers.comment import comments_to_tree
 from whynot.models.status import Status, VALID, OBSOLETE, MISSING, PRESENT, ANNOTATED, UNANNOTATED
+from whynot.settings import settings
 
 _log = logging.getLogger(__name__)
 
 bp = Blueprint('dashboard', __name__)
-
-date_format = '%d/%m/%Y %H:%M'
 
 
 def names_from_hierarchy(d):
@@ -80,7 +78,7 @@ def load_comments():
             comments[text]['mtime'] = entry.mtime
 
     for key in comments:
-        comments[key]['latest'] = strftime(date_format, gmtime(comments[key]['mtime']))
+        comments[key]['latest'] = strftime(settings['DATE_FORMAT'], gmtime(comments[key]['mtime']))
 
     return jsonify({'comments': list(comments.values())})
 
@@ -158,51 +156,15 @@ def entries():
 
 @bp.route('/load_statistics/')
 def load_statistics():
-    _log.info("request for statistics")
-
-    #TODO: speed up this method
-
-    ndb = len(dbs)
-
-    ne = 0
-    na = 0
-    nf = 0
-    nc = 0
-
-    unique_comments = set()
-    recent_files = top_highest(10)
-    recent_annotations = top_highest(10)
-    for entry in storage.get_all_entries():
-        ne += 1
-        if entry.status.is_present():
-            nf += 1
-            recent_files.add(entry.mtime, entry)
-        elif entry.comment is not None:
-            na += 1
-            unique_comments.add(entry.comment)
-            recent_annotations.add(entry.mtime, entry)
-
-    # Perform time-consuming operations only on the last 10 files and annotations
-    files = []
-    for f in recent_files.get():
-        files.append({'path': f['filepath'], 'date': strftime(date_format, gmtime(f['mtime']))})
-
-    annotations = []
-    for a in recent_annotations.get():
-        annotations.append({'comment': a ['comment'], 'pdbid': a ['pdbid'],
-                            'databank_name': a ['databank_name'],
-                            'date':  strftime(date_format, gmtime(a['mtime']))})
-
-    nc = len(unique_comments)
 
     statistics = {}
-    statistics['total_databanks'] = ndb
-    statistics['total_entries'] = ne
-    statistics['total_files'] = nf
-    statistics['total_annotations'] = na
-    statistics['total_comments'] = nc
-    statistics['annotations'] = annotations
-    statistics['files'] = files
+    statistics['total_databanks'] = len(dbs)
+    statistics['total_entries'] = storage.count_all_entries()
+    statistics['total_files'] = storage.count_entries_with_status(re.compile('.*'), PRESENT)
+    statistics['total_annotations'] = storage.count_entries_with_status(re.compile('.*'), ANNOTATED)
+    statistics['total_comments'] = len(storage.get_unique_comments())
+    statistics['annotations'] = storage.get_recent_annotations(10)
+    statistics['files'] = storage.get_recent_files(10)
 
     return jsonify(statistics)
 

@@ -4,3 +4,5 @@ DATADIR = "/mnt/chelonium"
 
 MONGODB_URI = "mongodb://whynot2_mongo_1"
 MONGODB_DB_NAME = "whynot"
+
+DATE_FORMAT = "%d/%m/%Y %H:%M"

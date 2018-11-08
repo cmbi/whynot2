@@ -1,9 +1,12 @@
 import logging
+from time import strftime, gmtime
 
-from pymongo import MongoClient, ASCENDING
+from pymongo import MongoClient, ASCENDING, DESCENDING
 
 from whynot.models.status import PRESENT, VALID, OBSOLETE, ANNOTATED, UNANNOTATED, MISSING
 from whynot.models.entry import Entry
+from whynot.domain.databank import get_databank
+from whynot.settings import settings
 
 _log = logging.getLogger(__name__)
 
@@ -21,6 +24,7 @@ class Storage:
     def replace_entries(self, databank, entries):
         self._db.entries.create_index([("databank_name", ASCENDING), ("status", ASCENDING)])
         self._db.entries.create_index("pdbid")
+        self._db.entries.create_index("mtime", ASCENDING)
 
         pdbids = []
         for entry in entries:
@@ -31,10 +35,33 @@ class Storage:
             pdbids.append(entry.pdbid)
 
         # Remove everything that's not in the inserted set.
-        for entry in self._db.entries.find({'databank_name': databank.name}).noCursorTimeout() :
+        for entry in list(self._db.entries.find({'databank_name': databank.name})) :
             if entry['pdbid'] not in pdbids:
                 _log.debug("removing {} entry {}".format(databank.name, entry['pdbid']))
                 self._db.entries.remove({'databank_name': databank.name, 'pdbid': entry['pdbid']})
+
+    def get_unique_comments(self):
+        return list(self._db.entries.find({'comment': {'$exists': True}}).distinct('comment'))
+
+    def get_recent_annotations(self, count):
+        return [{'comment': e['comment'],
+                 'date': strftime(settings['DATE_FORMAT'], gmtime(float(e['mtime']))),
+                 'databank_name': e['databank_name'],
+                 'pdbid': e['pdbid']} for e in self._db.entries.find({'comment': {'$exists': True}})
+                                                               .sort('mtime', DESCENDING)
+                                                               .limit(count)]
+
+    def get_recent_files(self, count):
+        unique_files = {}
+        for e in self._db.entries.find({'$or': [{'status': "VALID"}, {'status': "OBSOLETE"}]}).sort('mtime', DESCENDING):
+            databank = get_databank(e['databank_name'])
+            path = databank.get_entry_url(e['pdbid'])
+            unique_files[path] = {'path': path,
+                                  'date': strftime(settings['DATE_FORMAT'], gmtime(float(e['mtime'])))}
+            if len(unique_files) >= count:
+                break
+
+        return list(unique_files.values())
 
     def get_all_entries(self):
         return [Entry.from_dict(e) for e in self._db.entries.find({})]
@@ -70,6 +97,8 @@ class Storage:
         else:
             return self._db.entries.count({'databank_name': databank_name,
                                            'status': str(status)})
+    def count_all_entries(self):
+        return self._db.entries.count({})
 
 
 storage = Storage()

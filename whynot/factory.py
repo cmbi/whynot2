@@ -63,7 +63,8 @@ def create_app(settings=None):
 
     # Configure storage
     from whynot.storage import storage
-    storage.connect(app.config['MONGODB_URI'], app.config['MONGODB_DB_NAME'])
+    storage.db_uri = app.config['MONGODB_URI']
+    storage.db_name = app.config['MONGODB_DB_NAME']
 
     # Use ProxyFix to correct URL's when redirecting.
     from whynot.middleware import ReverseProxied

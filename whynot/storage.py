@@ -69,8 +69,8 @@ class Storage:
                      'date': strftime(settings['DATE_FORMAT'], gmtime(float(e['mtime']))),
                      'databank_name': e['databank_name'],
                      'pdbid': e['pdbid']} for e in self.get_db().entries.find({'comment': {'$exists': True}})
-                                                                   .sort('mtime', DESCENDING)
-                                                                   .limit(count)]
+                                                                        .sort('mtime', DESCENDING)
+                                                                        .limit(count)]
 
     def get_recent_files(self, count):
         with _DBObject(self.db_uri, self.db_name) as db:
@@ -91,7 +91,11 @@ class Storage:
 
     def find_entry_by_pdbid(self, databank_name, pdbid):
         with _DBObject(self.db_uri, self.db_name) as db:
-            return Entry.from_dict(db.entries.find_one({'databank_name': databank_name, 'pdbid': pdbid}))
+            d = db.entries.find_one({'databank_name': databank_name, 'pdbid': pdbid})
+            if d is None:
+                return Entry(databank_name, pdbid, UNANNOTATED)
+
+            return Entry.from_dict(d)
 
     def find_entries_by_pdbid(self, pdbid):
         with _DBObject(self.db_uri, self.db_name) as db:

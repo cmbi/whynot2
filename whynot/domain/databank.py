@@ -486,13 +486,13 @@ class SceneDatabank(Databank):
         if s != 'WHATIF':
             raise ValueError("scene was given %s as parent" % whatif_databank.name)
 
-        self.input_type = i
+        self.input_type = i.lower()
         self.list_type = l
 
         Databank.__init__(self, '%s_SCENES_%s' % (self.input_type.upper(), self.list_type), "http://www.cmbi.umcn.nl/pdb-vis/", whatif_databank)
 
     def get_entry_url(self, pdbid):
-        return "ftp://ftp.cmbi.umcn.nl/pub/molbio/data/wi-lists/redo/scenes/%s/%s/%s_%s.sce" % (self.list_type, pdbid, pdbid, SCENE_NAMES[self.list_type])
+        return "ftp://ftp.cmbi.umcn.nl/pub/molbio/data/wi-lists/%s/scenes/%s/%s/%s_%s.sce" % (self.input_type, self.list_type, pdbid, pdbid, SCENE_NAMES[self.list_type])
 
     def find_all_present(self):
         present_pdbids = []

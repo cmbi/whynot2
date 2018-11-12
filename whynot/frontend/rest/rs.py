@@ -55,6 +55,7 @@ def link(databank_name, pdbid):
 
     :param databank_name: Name of the whynot databank.
     :param pdbid: pdb id of the entry.
+    :return: the link to the entry file, or an empty string if the entry doesn't exist.
     """
 
     entry = storage.find_entry_by_pdbid(databank_name, pdbid)

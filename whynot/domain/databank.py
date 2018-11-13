@@ -270,7 +270,7 @@ class StructureFactorsDatabank(Databank):
     def find_all_present(self):
         present_pdbids = []
         for filename in os.listdir(os.path.join(settings["DATADIR"], 'structure_factors')):
-            m = P_PDBF.match(filename)
+            m = P_STRUCTUREFACTOR.match(filename)
             if m:
                 present_pdbids.append(m.group(1).lower())
         return present_pdbids

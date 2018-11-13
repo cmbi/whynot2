@@ -276,8 +276,7 @@ class StructureFactorsDatabank(Databank):
         return present_pdbids
 
     def get_file_mtime(self, pdbid):
-        part = pdbid[1:3]
-        return os.path.getmtime(os.path.join(settings["DATADIR"], 'structure_factors/%s/r%ssf.ent.gz' % (part, pdbid)))
+        return os.path.getmtime(os.path.join(settings["DATADIR"], 'structure_factors/r%ssf.ent.gz' % pdbid))
 
     def find_all_annotations(self):
         annotations = {}
@@ -384,7 +383,7 @@ class PdbRedoDatabank(Databank):
 
     def get_file_mtime(self, pdbid):
         part = pdbid[1:3]
-        return os.path.getmtime(os.path.join(settings["DATADIR"], 'pdb_redo/%s/%s/%s_final.pdb' % (part, pdbid. pdbid)))
+        return os.path.getmtime(os.path.join(settings["DATADIR"], 'pdb_redo/%s/%s/%s_final.pdb' % (part, pdbid, pdbid)))
 
     def find_all_annotations(self):
         annotations = {}
@@ -411,7 +410,7 @@ class DsspRedoDatabank(Databank):
 
     def find_all_present(self):
         present_pdbids = []
-        for filename in os.listdir(settings["DATADIR"], 'dssp_redo'):
+        for filename in os.listdir(os.path.join(settings["DATADIR"], 'dssp_redo')):
             m = P_DSSP.match(filename)
             if m:
                 present_pdbids.append(m.group(1).lower())

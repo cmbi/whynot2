@@ -7,7 +7,9 @@ def parse_whynot(path):
                 comment = line[8:].strip()
                 if comment not in comments:
                     comments[comment] = []
-            elif len(line.strip()) > 0:
+            elif "," in line and comment is not None:
                 db, pdbid = line.strip().split(',')
                 comments[comment].append((db, pdbid))
+            elif len(line.strip()) > 0:
+                comment = None
     return comments

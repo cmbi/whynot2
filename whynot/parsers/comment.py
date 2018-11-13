@@ -81,7 +81,7 @@ def remove_unbranched_comment_nodes (tree):
 
             subtree = tree [key].subtree
             tree.pop (key)
-            key = subtree.keys () [0]
+            key = list(subtree)[0]
             tree [key] = subtree [key]
 
         tree [key].subtree = remove_unbranched_comment_nodes (tree [key].subtree)

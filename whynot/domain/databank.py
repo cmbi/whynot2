@@ -464,7 +464,7 @@ class WhatifDatabank(Databank):
     def find_all_annotations(self):
         annotations = {}
         for pdbid in os.listdir(os.path.join(settings["DATADIR"], 'wi-lists', self.input_type, self.list_type)):
-            whynot_path = os.path.join(settings["DATADIR"], 'wi-lists', self.input_type, self.list_type, pdbid, '%s.whynot' % pdbid)
+            whynot_path = os.path.join(settings["DATADIR"], 'wi-lists', self.input_type, self.list_type, pdbid, '%s.%s.whynot' % (pdbid, self.list_type))
             if os.path.isfile(whynot_path):
                 comments = parse_whynot(whynot_path)
                 for comment in comments:
@@ -474,7 +474,7 @@ class WhatifDatabank(Databank):
         return annotations
 
     def get_comment_mtime(self, pdbid):
-        return os.path.getmtime(os.path.join(settings["DATADIR"], 'wi-lists', self.input_type, self.list_type, pdbid, '%s.whynot' % pdbid))
+        return os.path.getmtime(os.path.join(settings["DATADIR"], 'wi-lists', self.input_type, self.list_type, pdbid, '%s.%s.whynot' % (pdbid, self.list_type)))
 
 
 SCENE_NAMES = {'ss2': 'sym-contacts', 'iod': 'ion-sites'}

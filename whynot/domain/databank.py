@@ -393,7 +393,7 @@ class PdbRedoDatabank(Databank):
                 comments = parse_whynot(path)
                 for comment in comments:
                     for db, pdbid in comments[comment]:
-                        if db == self.name:
+                        if db in ['PDB_REDO', 'PDB-REDO']:
                             annotations[pdbid.lower()] = comment
         return annotations
 

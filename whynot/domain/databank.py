@@ -506,7 +506,7 @@ class SceneDatabank(Databank):
     def find_all_annotations(self):
         annotations = {}
         for pdbid in os.listdir(os.path.join(settings["DATADIR"], 'wi-lists', self.input_type, 'scenes', self.list_type)):
-            whynot_path = os.path.join(settings["DATADIR"], 'wi-lists', self.input_type, 'scenes', self.list_type, pdbid, '%s.%s.whynot' % (pdbid, self.list_type))
+            whynot_path = os.path.join(settings["DATADIR"], 'wi-lists', self.input_type, 'scenes', self.list_type, pdbid, '%s_%s.whynot' % (pdbid, SCENE_NAMES[self.list_type]))
             if os.path.isfile(whynot_path):
                 comments = parse_whynot(whynot_path)
                 for comment in comments:
@@ -516,7 +516,7 @@ class SceneDatabank(Databank):
         return annotations
 
     def get_comment_mtime(self, pdbid):
-        return os.path.getmtime(os.path.join(settings["DATADIR"], 'wi-lists', self.input_type, 'scenes', self.list_type, pdbid, '%s.%s.whynot' % (pdbid, self.list_type)))
+        return os.path.getmtime(os.path.join(settings["DATADIR"], 'wi-lists', self.input_type, 'scenes', self.list_type, pdbid, '%s_%s.whynot' % (pdbid, SCENE_NAMES[self.list_type])))
 
 
 mmcif = MmCifDatabank()

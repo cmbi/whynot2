@@ -145,18 +145,18 @@ class DsspDatabank(Databank):
         Databank.__init__(self, 'DSSP', "http://swift.cmbi.umcn.nl/gv/dssp/", mmcif_databank)
 
     def get_entry_url(self, pdbid):
-        return "ftp://ftp.cmbi.umcn.nl/pub/molbio/data/dssp/%s.dssp" % pdbid
+        return "ftp://ftp.cmbi.umcn.nl/pub/molbio/data/dssp-from-mmcif/%s.dssp" % pdbid
 
     def find_all_present(self):
         present_pdbids = []
-        for filename in os.listdir(os.path.join(settings["DATADIR"], 'dssp')):
+        for filename in os.listdir(os.path.join(settings["DATADIR"], 'dssp-from-mmcif')):
             m = P_DSSP.match(filename)
             if m:
                 present_pdbids.append(m.group(1).lower())
         return present_pdbids
 
     def get_file_mtime(self, pdbid):
-        return os.path.getmtime(os.path.join(settings["DATADIR"], 'dssp/%s.dssp' % pdbid))
+        return os.path.getmtime(os.path.join(settings["DATADIR"], 'dssp-from-mmcif/%s.dssp' % pdbid))
 
     def find_all_annotations(self):
         content_types = get_content_types()

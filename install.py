@@ -65,8 +65,8 @@ def create_databanks():
     docs.append(_create_databank('PDBREPORT','http://swift.cmbi.umcn.nl/gv/pdbreport/',
         'http://www.cmbi.umcn.nl/pdbreport/cgi-bin/nonotes?PDBID=${PDBID}',
         re.compile(r'pdbreport\/\w{2}\/(\w{4})\/pdbout\.txt'),FILE,'PDB'))
-    docs.append(_create_databank('PDB_REDO','http://www.cmbi.umcn.nl/pdb_redo/',
-        'http://www.cmbi.umcn.nl/pdb_redo/cgi-bin/redir2.pl?pdbCode=${PDBID}',
+    docs.append(_create_databank('PDB_REDO','https://pdb-redo.eu/',
+        "https://pdb-redo.eu/db/${PDBID}/${PDBID}_final.pdb",
         re.compile(r'\/\w{2}\/\w{4}\/(\w{4})_final\.pdb'),FILE,'STRUCTUREFACTORS'))
     docs.append(_create_databank('DSSP_REDO','http://swift.cmbi.umcn.nl/gv/dssp/',
         'ftp://ftp.cmbi.umcn.nl/pub/molbio/data/dssp_redo/${PDBID}.dssp',

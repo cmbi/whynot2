@@ -2,7 +2,6 @@ import logging
 import os
 from time import strftime, gmtime, time
 from copy import deepcopy
-from sets import Set
 
 from flask import Response, Blueprint, jsonify, render_template, request, redirect, url_for
 from utils import(get_databank_hierarchy, search_results_for, get_entries_from_collection,
@@ -158,7 +157,7 @@ def load_statistics():
     nf = 0
     nc = 0
 
-    unique_comments = Set()
+    unique_comments = set([])
     recent_files = top_highest(10)
     recent_annotations = top_highest(10)
     for entry in storage.find('entries', {}):

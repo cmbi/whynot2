@@ -1,10 +1,9 @@
 import os, re
+from urllib.request import urlopen
+import requests
 
-from urllib2 import urlopen
 from storage import storage
 import pymongo
-from sets import Set
-from httplib import HTTPConnection
 
 def databanks_by_name (databanks):
 
@@ -35,12 +34,9 @@ def valid_path (databank_name, path):
         location = path [path.find ('/', path.find (host)):]
 
         # Request just the head, it's faster
-        conn = HTTPConnection (host)
-        conn.request('HEAD', location)
-        response = conn.getresponse()
-        conn.close()
+        response = requests.head(host + '/' + location)
 
-        return response.status == 200
+        return response.status_code == 200
 
     else:
         return os.path.exists (path)
@@ -92,7 +88,7 @@ def parse_regex (mongoRegex):
 def read_http (url):
 
     s = ''
-    stream = urlopen (url)
+    stream = urlopen(url)
     while True:
         data = stream.read ()
         if len (data) <= 0:
@@ -346,7 +342,7 @@ def count_summary (databank_name):
 
     count = {}
 
-    pdbids = Set ()
+    pdbids = set([])
     for entry in storage.find ('entries', {'databank_name': databank_name,'filepath': {'$exists': True}}, projection):
         pdbids.add (entry ['pdbid'])
 
@@ -356,8 +352,8 @@ def count_summary (databank_name):
 
         parent_name = databank ['parent_name']
 
-        parent_pdbids = Set()
-        missing_pdbids = Set()
+        parent_pdbids = set([])
+        missing_pdbids = set([])
 
         parent_entries = storage.find ('entries', {'databank_name': parent_name,'filepath': {'$exists': True}}, projection)
         comment_entries = storage.find('entries', {'databank_name': databank_name, 'comment': {'$exists': True}}, projection)

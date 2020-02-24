@@ -90,10 +90,10 @@ def read_http (url):
     s = ''
     stream = urlopen(url)
     while True:
-        data = stream.read ()
+        data = stream.read()
         if len (data) <= 0:
             break
-        s += data
+        s += data.decode('ascii')
 
     return s
 

@@ -73,7 +73,7 @@ class Storage(object):
             raise Exception("Not connected to storage. Did you call connect()?")
 
         _log.info("Updating document in '{}'".format(collection))
-        return self._db[collection].update(selector, options)
+        return self._db[collection].update(selector, options, upsert=True)
 
     def remove(self, collection, spec_or_id=None):
         if self._db is None:

@@ -20,9 +20,6 @@ from utils import entries_by_pdbid, get_unannotated_entries, get_missing_entries
 
 from time import time
 
-mkdssp = '/usr/local/bin/mkdssp'
-mkhssp = '/usr/local/bin/mkhssp'
-
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 _log = logging.getLogger(__name__)
 
@@ -95,11 +92,7 @@ def update_entry(entry):
     databank_name = entry['databank_name']
     pdbid = entry['pdbid']
 
-    if storage.find_one('entries', {'databank_name': databank_name, 'pdbid': pdbid}):
-
-        storage.update('entries', {'databank_name': databank_name, 'pdbid': pdbid}, entry)
-    else:
-        storage.insert('entries', entry)
+    storage.update('entries', {'databank_name': databank_name, 'pdbid': pdbid}, entry)
 
 
 def comment_entry(entry, comment):
@@ -308,7 +301,7 @@ def update_comments(check_pdbids=None):
                 lines = f.readlines()
         else:
             hsspfile = tempfile.mktemp()
-            cmd = [mkhssp, '-a1', '-i', inputfile, '-o', hsspfile, '-d', settings.SPROT_FASTA, '-d', settings.TREMBL_FASTA]
+            cmd = [settings.MKHSSP, '-a1', '-i', inputfile, '-o', hsspfile, '-d', settings.SPROT_FASTA, '-d', settings.TREMBL_FASTA]
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             try:
                 stdout, stderr = p.communicate(timeout=5)
@@ -324,7 +317,7 @@ def update_comments(check_pdbids=None):
         # We filter for a set of commonly ocurring errors:
         for line in lines:
             line = line.strip()
-            _log.debug("{}: '{}'".format(cmd, line))
+            _log.debug("HSSP on {}: '{}'".format(pdbid, line))
 
             if line in ['Not enough sequences in PDB file of length 25', 'multiple occurrences', 'No hits found', 'empty protein, or no valid complete residues']:
                 comment_entry(entry, line)
@@ -367,7 +360,7 @@ def update_comments(check_pdbids=None):
 
                 # Run dsspcmbi and capture stderr:
                 dsspfile = tempfile.mktemp()
-                cmd = [mkdssp, inputfile, dsspfile]
+                cmd = [settings.MKDSSP, inputfile, dsspfile]
 
                 p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 stdout, stderr = p.communicate()

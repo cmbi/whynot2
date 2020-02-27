@@ -6,6 +6,7 @@ import sys
 import os
 import subprocess
 from ftplib import FTP
+from argparse import ArgumentParser
 
 # Must import storage before utils
 import update_settings as settings
@@ -20,6 +21,7 @@ from utils import entries_by_pdbid, get_unannotated_entries, get_missing_entries
 from time import time
 
 mkdssp = '/usr/local/bin/mkdssp'
+mkhssp = '/usr/local/bin/mkhssp'
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 _log = logging.getLogger(__name__)
@@ -100,6 +102,13 @@ def update_entry(entry):
         storage.insert('entries', entry)
 
 
+def comment_entry(entry, comment):
+    entry['comment'] = comment
+    entry['mtime'] = time()
+
+    update_entry(entry)
+
+
 # This function gets all comment information from a whynot
 # file and updates the corresponding entries with it.
 def annotate_from_file(path):
@@ -116,39 +125,16 @@ def annotate_from_file(path):
             update_entry(entry)
 
 
-# On the commandline, the user can give the filename of
-# one or more whynot files as argument. This will make the
-# script annotate only information from the files and skip
-# all other missing entries.
-if len(sys.argv) > 1:
+class EntryTypeData:
+    def __init__(self):
+        self.pdbids_carb = set([])
+        self.pdbids_nuc = set([])
 
-    # just parse the given whynot files
+        self.pdbids_nmr = set([])
+        self.pdbids_em = set([])
+        self.pdbids_diffraction = set([])
+        self.pdbids_other = set([])
 
-    for path in sys.argv[1:]:
-
-        _log.info('annotate', path)
-        annotate_from_file(path)
-
-    sys.exit(0)
-
-# else just check all other sources of information...
-
-
-_log.info('Check the files in the whynot comments directory')
-
-whynotdir = os.path.dirname(sys.argv[0])
-commentsdir = os.path.join(whynotdir, 'comment')
-
-if os.path.isdir(commentsdir):
-    for filename in os.listdir(commentsdir):
-
-        if filename.endswith('.txt'):
-
-            filepath = os.path.join(commentsdir, filename)
-
-            annotate_from_file(filepath)
-
-            os.rename(filepath, filepath + ".done")
 
 # List the pdbids for pdb entries by category. For many missing entries,
 # the category is the reason why they are missing. We base the comment on that.
@@ -159,277 +145,358 @@ if os.path.isdir(commentsdir):
 #
 # A pdb entry can contain only carbohydrates or only nucleic acids, in
 # which case no DSSP can be made.
+def get_entry_types():
+    data = EntryTypeData()
 
-pdbidscarbonly = set([])
-pdbidsnuconly = set([])
-pdbidsnmr = set([])
-pdbidsem = set([])
-pdbidsother = set([])
-pdbidsdiff = set([])
-pdbidssf = set([])
-pdbidsnmrr = set([])
+    _log.info('Parse wwpdb entry type record')
+    for line in read_http('ftp://ftp.wwpdb.org/pub/pdb/derived_data/pdb_entry_type.txt').split('\n'):
+        if len(line.strip()) <= 0:
+            continue
 
-_log.info('Parse wwpdb entry type record')
-for line in read_http('ftp://ftp.wwpdb.org/pub/pdb/derived_data/pdb_entry_type.txt').split('\n'):
-    if len(line.strip()) <= 0:
-        continue
+        pdbid, content, method = line.split()
 
-    pdbid, content, method = line.split()
+        if content=='nuc':
+            data.pdbids_nuc.add(pdbid)
+        elif content=='carb':
+            data.pdbids_carb.add(pdbid)
 
-    if content=='nuc':
-        pdbidsnuconly.add(pdbid)
-    elif content=='carb':
-        pdbidscarbonly.add(pdbid)
+        if method=='diffraction':
+            data.pdbids_diffraction.add(pdbid)
+        elif method=='NMR':
+            data.pdbids_nmr.add(pdbid)
+        elif method=='EM':
+            data.pdbids_em.add(pdbid)
+        elif method=='other':
+            data.pdbids_other.add(pdbid)
 
-    if method=='diffraction':
-        pdbidsdiff.add(pdbid)
-    elif method=='NMR':
-        pdbidsnmr.add(pdbid)
-    elif method=='EM':
-        pdbidsem.add(pdbid)
-    elif method=='other':
-        pdbidsother.add(pdbid)
+    _log.info("{} nucleic acid only, {} carbohydrates only".format(len(data.pdbids_nuc), len(data.pdbids_carb)))
+    _log.info("{} diffraction, {} nmr, {} em, {} other".format(len(data.pdbids_diffraction), len(data.pdbids_nmr),
+                                                               len(data.pdbids_em), len(data.pdbids_other)))
+    return data
 
 
-_log.info("{} nucleic acid only, {} carbohydrates only".format(len(pdbidsnuconly), len(pdbidscarbonly)))
-_log.info("{} diffraction, {} nmr, {} em, {} other".format(len(pdbidsdiff), len(pdbidsnmr), len(pdbidsem), len(pdbidsother)))
+def get_structure_factors_pdbids(check_pdbids=None):
+    pdbids = set([])
+    with FTP('ftp.wwpdb.org') as ftp:
+        ftp.login()
+
+        _log.info('Listing deposited structure factor files')
+        ftp.cwd('/pub/pdb/data/structures/divided/structure_factors/')
+
+        if check_pdbids is None:
+            for part in ftp.nlst():
+                for filename in ftp.nlst(part):
+                    pdbid = filename[1: 5]
+                    pdbids.add(pdbid)
+        else:
+            for pdbid in check_pdbids:
+                part = pdbid[1: 3]
+                filename = "r%ssf.ent.gz" % pdbid
+                if len(ftp.nlst("%s/%s" % (part, filename))) > 0:
+                    pdbids.add(pdbid)
+        return pdbids
 
 
-with FTP('ftp.wwpdb.org') as ftp:
-    ftp.login()
+def get_nmr_restraints_pdbids(check_pdbids=None):
+    pdbids = set([])
+    with FTP('ftp.wwpdb.org') as ftp:
+        ftp.login()
 
-    _log.info('Listing deposited structure factor files')
-    ftp.cwd('/pub/pdb/data/structures/divided/structure_factors/')
-    for part in ftp.nlst():
-        for filename in ftp.nlst(part):
-            pdbid = filename[1: 5]
-            pdbidssf.add(pdbid)
+        _log.info('Listing deposited nmr restraints files')
+        ftp.cwd('/pub/pdb/data/structures/divided/nmr_restraints/')
 
-    _log.info('Listing deposited nmr restraints files')
-    ftp.cwd('/pub/pdb/data/structures/divided/nmr_restraints/')
-    for part in ftp.nlst():
-        for filename in ftp.nlst(part):
-            pdbid = filename[0: 4]
-            pdbidsnmrr.add(pdbid)
+        if check_pdbids is None:
+            for part in ftp.nlst():
+                for filename in ftp.nlst(part):
+                    pdbid = filename[0: 4]
+                    pdbids.add(pdbid)
+        else:
+            for pdbid in check_pdbids:
+                part = pdbid[1: 3]
+                filename = "%s.mr.gz" % pdbid
+                if len(ftp.nlst("%s/%s" % (part, filename))) > 0:
+                    pdbids.add(pdbid)
 
-
-_log.info('Generate comments for missing structure factors')
-for entry in get_unannotated_entries('STRUCTUREFACTORS'):
-
-    pdbid = entry['pdbid']
-    if pdbid in pdbidsnmr:
-
-        entry['comment'] = 'NMR experiment'
-        entry['mtime'] = time()
-
-    elif pdbid in pdbidsem:
-
-        entry['comment'] = 'Electron microscopy experiment'
-        entry['mtime'] = time()
-
-    elif pdbid in pdbidsother:
-
-        entry['comment'] = 'Not a Diffraction experiment'
-        entry['mtime'] = time()
-
-    elif pdbid not in pdbidssf:
-
-        entry['comment'] = 'Not deposited'
-        entry['mtime'] = time()
-
-    if 'comment' in entry:
-        update_entry(entry)
+    return pdbids
 
 
-_log.info('Generate comments for missing nmr data')
-for entry in get_unannotated_entries('NMR'):
-
-    pdbid = entry['pdbid']
-    if pdbid in pdbidsdiff:
-
-        entry['comment'] = 'Diffraction experiment'
-        entry['mtime'] = time()
-
-    elif pdbid in pdbidsem:
-
-        entry['comment'] = 'Electron microscopy experiment'
-        entry['mtime'] = time()
-
-    elif pdbid in pdbidsother:
-
-        entry['comment'] = 'Not an NMR experiment'
-        entry['mtime'] = time()
-
-    elif pdbid not in pdbidsnmrr:
-
-        entry['comment'] = 'Not deposited'
-        entry['mtime'] = time()
-
-    if 'comment' in entry:
-        update_entry(entry)
-
-
-_log.info('Generate comments for missing hssp files')
-# To find out why HSSP entries are missing, one must check the error output of
-# mkhssp when it ran. It's been stored in a reserved directory:
-for entry in get_unannotated_entries('HSSP'):
-
-    pdbid = entry['pdbid']
-
-    inputfile = '/srv/data/pdb/all/pdb%s.ent.gz' % pdbid
-    if not os.path.isfile(inputfile):
-        inputfile = '/srv/data/mmCIF/%s.cif.gz' % pdbid
-
-    # Get hssp error from log file.
-    # If the log is missing, run mkhssp.
-    errfile = '/srv/data/scratch/whynot2/hssp/%s.err' % pdbid
-    if os.path.isfile(errfile):
-        line = open(errfile, 'r').read()
+def get_entries_of_interest(databank_name, check_pdbids=None):
+    entries = []
+    if check_pdbids is not None:
+        for pdbid in check_pdbids:
+            entry = storage.find_one('entries', {'databank_name': databank_name, 'pdbid': pdbid})
+            if entry is None:
+                entry = {'pdbid': pdbid, 'databank_name': databank_name}
+            entries.append(entry)
     else:
-        try:
-            line = subprocess.check_output('/usr/local/bin/mkhssp -a1 -i %s -o /tmp/%s.hssp.bz2',
-                                           stderr=subprocess.STDOUT, shell=True).decode('ascii')
-        except subprocess.CalledProcessError:
-            pass
+        entries = get_missing_entries(databank_name)
 
-    # We filter for a set of commonly ocurring errors:
-    line = line.strip()
-    if line in ['Not enough sequences in PDB file of length 25', 'multiple occurrences', 'No hits found', 'empty protein, or no valid complete residues']:
-        entry['comment'] = line
-        entry['mtime'] = time()
-        update_entry(entry)
+    return entries
 
 
-_log.info('Generate comments for missing dssp files')
-# DSSP files can be missing for multiple reasons:
-# 1 the structure has no protein, carbohydrates/nucleic acids only
-# 2 the structure hase no backbone, only alpha carbon atoms
-#
-# 1 can be found, using the predefined sets pdbidsnuconly and pdbidscarbonly.
-# 2 can be found by running dsspcmbi and catching its error output.
-for dbname in ['DSSP', 'DSSP_REDO']:
-    for entry in get_missing_entries(dbname):
+def update_comments(check_pdbids=None):
+    data = get_entry_types()
+    data.pdbids_sf = get_structure_factors_pdbids(check_pdbids)
+    data.pdbids_nr = get_nmr_restraints_pdbids(check_pdbids)
+
+    _log.info('Generate comments for missing structure factors')
+    for entry in get_entries_of_interest('STRUCTUREFACTORS', check_pdbids):
 
         pdbid = entry['pdbid']
+        if check_pdbids is not None and pdbid not in check_pdbids:
+            continue
 
-        if pdbid in pdbidsnuconly:
+        comment = None
+        if pdbid in data.pdbids_nr:
+            comment = 'NMR experiment'
 
-            _log.debug("{} is nucleic acid only".format(pdbid))
+        elif pdbid in data.pdbids_em:
+            comment = 'Electron microscopy experiment'
 
-            entry['comment'] = 'Nucleic acids only'
-            entry['mtime'] = time()
+        elif pdbid in data.pdbids_other:
+            comment = 'Not a Diffraction experiment'
 
-        elif pdbid in pdbidscarbonly:
+        elif pdbid not in data.pdbids_sf:
+            comment = 'Not deposited'
 
-            _log.debug("{} is carbohydrates only".format(pdbid))
+        if comment is not None:
+            comment_entry(entry, comment)
 
-            entry['comment'] = 'Carbohydrates only'
-            entry['mtime'] = time()
 
+    _log.info('Generate comments for missing nmr data')
+    for entry in get_entries_of_interest('NMR', check_pdbids):
+
+        pdbid = entry['pdbid']
+        if check_pdbids is not None and pdbid not in check_pdbids:
+            continue
+
+        comment = None
+        if pdbid in data.pdbids_diffraction:
+            comment = 'Diffraction experiment'
+
+        elif pdbid in data.pdbids_em:
+            comment = 'Electron microscopy experiment'
+
+        elif pdbid in data.pdbids_other:
+            comment = 'Not an NMR experiment'
+
+        elif pdbid not in data.pdbids_nr:
+            comment = 'Not deposited'
+
+        if comment is not None:
+            comment_entry(entry, comment)
+
+
+    _log.info('Generate comments for missing hssp files')
+    # To find out why HSSP entries are missing, one must check the error output of
+    # mkhssp when it ran. It's been stored in a reserved directory:
+    for entry in get_entries_of_interest('HSSP', check_pdbids):
+
+        pdbid = entry['pdbid']
+        if check_pdbids is not None and pdbid not in check_pdbids:
+            continue
+
+        inputfile = '/srv/data/pdb/all/pdb%s.ent.gz' % pdbid
+        if not os.path.isfile(inputfile):
+            inputfile = '/srv/data/mmCIF/%s.cif.gz' % pdbid
+
+        # Get hssp error from log file.
+        # If the log is missing, run mkhssp.
+        errfile = os.path.join(settings.WHYNOT_HSSP_DIRECTORY, '%s.err' % pdbid)
+        if os.path.isfile(errfile):
+            with open(errfile, 'r') as f:
+                lines = f.readlines()
         else:
-            # DSSP uses pdb files as input, DSSP_REDO uses pdb_redo files:
-            if dbname == 'DSSP':
-                inputfile = '/srv/data/pdb/all/pdb%s.ent.gz' % pdbid
-                if not os.path.isfile(inputfile):
-                    inputfile = '/srv/data/mmCIF/%s.cif.gz' % pdbid
-            else:
-                inputfile = '/srv/data/pdb_redo/%s/%s/%s_final.pdb' % (pdbid[1:3], pdbid, pdbid)
-                if not os.path.isfile(inputfile):
-                    continue
-
-            # Run dsspcmbi and capture stderr:
-            dsspfile = tempfile.mktemp()
-            cmd = [mkdssp, inputfile, dsspfile]
-
+            hsspfile = tempfile.mktemp()
+            cmd = [mkhssp, '-a1', '-i', inputfile, '-o', hsspfile, '-d', settings.SPROT_FASTA, '-d', settings.TREMBL_FASTA]
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            stdout, stderr = p.communicate()
+            try:
+                stdout, stderr = p.communicate(timeout=5)
+            except subprocess.TimeoutExpired:
+                _log.error("timeout on {}".format(cmd))
+                continue
 
-            if os.path.isfile(dsspfile):
-                os.remove(dsspfile)
+            if os.path.isfile(hsspfile):
+                os.remove(hsspfile)
 
             lines = stderr.decode('ascii').split('\n')
-            if lines[-1].strip() == 'empty protein, or no valid complete residues':
 
-                _log.debug("{} has no residues with complete backbone".format(pdbid))
+        # We filter for a set of commonly ocurring errors:
+        for line in lines:
+            line = line.strip()
+            _log.debug("{}: '{}'".format(cmd, line))
 
-                entry['comment'] = 'No residues with complete backbone'  # for backwards compatibility
-                entry['mtime'] = time()
-
-        if 'comment' in entry:
-            update_entry(entry)
-
-
-_log.info('Generate comments for missing pdbredo entries')
-for entry in get_missing_entries('PDB_REDO'):
-
-    pdbid = entry['pdbid']
-    whynotfile = '/srv/data/pdb_redo/whynot/%s.txt' % pdbid
-    if not os.path.isfile(whynotfile):
-        continue
-
-    with open(whynotfile, 'r') as f:
-        comment = parse_comment(f, entry)
-        if len(comment) > 0:
-            entry['comment'] = comment
-            entry['mtime'] = time()
-            update_entry(entry)
+            if line in ['Not enough sequences in PDB file of length 25', 'multiple occurrences', 'No hits found', 'empty protein, or no valid complete residues']:
+                comment_entry(entry, line)
 
 
-_log.info('Generate comments for missing bdb files')
-# BDB comments are simply stored in a file, generated by the bdb script.
-for entry in get_missing_entries('BDB'):
-
-    pdbid = entry['pdbid']
-    part = pdbid[1:3]
-    whynotfile = '/srv/data/bdb/%s/%s/%s.whynot' % (part, pdbid, pdbid)
-    if not os.path.isfile(whynotfile):
-        continue
-
-    with open(whynotfile, 'r') as f:
-        comment = parse_comment(f, entry)
-        if len(comment) > 0:
-            entry['comment'] = comment
-            entry['mtime'] = time()
-            update_entry(entry)
-
-
-_log.info('Generate comments for whatif lists')
-# WHATIF list comments are simply stored in a file, generated by the script.
-for lis in ['acc', 'cal', 'cc1', 'cc2', 'cc3', 'chi', 'dsp', 'iod', 'sbh', 'sbr', 'ss1', 'ss2', 'tau', 'wat']:
-    for src in ['pdb', 'redo']:
-        dbname = 'WHATIF_%s_%s' % (src.upper(), lis)
-
-        for entry in get_missing_entries(dbname):
+    _log.info('Generate comments for missing dssp files')
+    # DSSP files can be missing for multiple reasons:
+    # 1 the structure has no protein, carbohydrates/nucleic acids only
+    # 2 the structure hase no backbone, only alpha carbon atoms
+    #
+    # 1 can be found, using the predefined sets pdbidsnuconly and pdbidscarbonly.
+    # 2 can be found by running dsspcmbi and catching its error output.
+    for dbname in ['DSSP', 'DSSP_REDO']:
+        for entry in get_entries_of_interest(dbname, check_pdbids):
 
             pdbid = entry['pdbid']
-            whynotfile = '/srv/data/wi-lists/%s/%s/%s/%s.%s.whynot' % (src, lis, pdbid, pdbid, lis)
-            if not os.path.isfile(whynotfile):
+            if check_pdbids is not None and pdbid not in check_pdbids:
                 continue
 
-            with open(whynotfile, 'r') as f:
-                comment = parse_comment(f, entry)
-                if len(comment) > 0:
-                    entry['comment'] = comment
-                    entry['mtime'] = time()
-                    update_entry(entry)
+            comment = None
+            if pdbid in data.pdbids_nuc:
+                _log.debug("{} is nucleic acid only".format(pdbid))
+
+                comment = 'Nucleic acids only'
+
+            elif pdbid in data.pdbids_carb:
+                _log.debug("{} is carbohydrates only".format(pdbid))
+
+                comment = 'Carbohydrates only'
+            else:
+                # DSSP uses pdb files as input, DSSP_REDO uses pdb_redo files:
+                if dbname == 'DSSP':
+                    inputfile = '/srv/data/pdb/all/pdb%s.ent.gz' % pdbid
+                    if not os.path.isfile(inputfile):
+                        inputfile = '/srv/data/mmCIF/%s.cif.gz' % pdbid
+                else:
+                    inputfile = '/srv/data/pdb_redo/%s/%s/%s_final.pdb' % (pdbid[1:3], pdbid, pdbid)
+                    if not os.path.isfile(inputfile):
+                        continue
+
+                # Run dsspcmbi and capture stderr:
+                dsspfile = tempfile.mktemp()
+                cmd = [mkdssp, inputfile, dsspfile]
+
+                p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                stdout, stderr = p.communicate()
+
+                if os.path.isfile(dsspfile):
+                    os.remove(dsspfile)
+
+                lines = stderr.decode('ascii').split('\n')
+                for line in lines:
+                    line = line.strip().lower()
+                    _log.debug("{}: '{}'".format(cmd, line))
+
+                    if line == 'empty protein, or no valid complete residues':
+                        comment = 'No residues with complete backbone'  # for backwards compatibility
+
+            if comment is not None:
+                comment_entry(entry, comment)
 
 
-_log.info('Generate comments for scenes')
-# WHATIF scene comments are simply stored in a file, generated by the script.
-for lis in ['iod', 'ss2']:
-    for src in ['pdb', 'redo']:
-        dbname = '%s_SCENES_%s' % (src.upper(), lis)
+    _log.info('Generate comments for missing pdbredo entries')
+    for entry in get_entries_of_interest('PDB_REDO', check_pdbids):
 
-        for entry in get_missing_entries(dbname):
+        pdbid = entry['pdbid']
+        if check_pdbids is not None and pdbid not in check_pdbids:
+            continue
 
-            pdbid = entry['pdbid']
-            whynotfile = '/srv/data/wi-lists/%s/scenes/%s/%s/%s.%s.whynot' % (src, lis, pdbid, pdbid, lis)
-            if not os.path.isfile(whynotfile):
-                continue
+        whynotfile = '/srv/data/pdb_redo/whynot/%s.txt' % pdbid
+        if not os.path.isfile(whynotfile):
+            continue
 
-            with open(whynotfile, 'r') as f:
-                comment = parse_comment(f, entry)
-                if len(comment) > 0:
-                    entry['comment'] = comment
-                    entry['mtime'] = time()
-                    update_entry(entry)
+        with open(whynotfile, 'r') as f:
+            comment = parse_comment(f, entry)
+            if len(comment) > 0:
+                comment_entry(entry, comment)
+
+
+    _log.info('Generate comments for missing bdb files')
+    # BDB comments are simply stored in a file, generated by the bdb script.
+    for entry in get_entries_of_interest('BDB', check_pdbids):
+
+        pdbid = entry['pdbid']
+        if check_pdbids is not None and pdbid not in check_pdbids:
+            continue
+
+        part = pdbid[1:3]
+        whynotfile = '/srv/data/bdb/%s/%s/%s.whynot' % (part, pdbid, pdbid)
+        if not os.path.isfile(whynotfile):
+            continue
+
+        with open(whynotfile, 'r') as f:
+            comment = parse_comment(f, entry)
+            if len(comment) > 0:
+                comment_entry(entry, comment)
+
+
+    _log.info('Generate comments for whatif lists')
+    # WHATIF list comments are simply stored in a file, generated by the script.
+    for lis in ['acc', 'cal', 'cc1', 'cc2', 'cc3', 'chi', 'dsp', 'iod', 'sbh', 'sbr', 'ss1', 'ss2', 'tau', 'wat']:
+        for src in ['pdb', 'redo']:
+            dbname = 'WHATIF_%s_%s' % (src.upper(), lis)
+
+            for entry in get_entries_of_interest(dbname, check_pdbids):
+
+                pdbid = entry['pdbid']
+                if check_pdbids is not None and pdbid not in check_pdbids:
+                    continue
+
+                whynotfile = '/srv/data/wi-lists/%s/%s/%s/%s.%s.whynot' % (src, lis, pdbid, pdbid, lis)
+                if not os.path.isfile(whynotfile):
+                    continue
+
+                with open(whynotfile, 'r') as f:
+                    comment = parse_comment(f, entry)
+                    if len(comment) > 0:
+                        comment_entry(entry, comment)
+
+
+    _log.info('Generate comments for scenes')
+    # WHATIF scene comments are simply stored in a file, generated by the script.
+    for lis in ['iod', 'ss2']:
+        for src in ['pdb', 'redo']:
+            dbname = '%s_SCENES_%s' % (src.upper(), lis)
+
+            for entry in get_entries_of_interest(dbname, check_pdbids):
+
+                pdbid = entry['pdbid']
+                if check_pdbids is not None and pdbid not in check_pdbids:
+                    continue
+
+                whynotfile = '/srv/data/wi-lists/%s/scenes/%s/%s/%s.%s.whynot' % (src, lis, pdbid, pdbid, lis)
+                if not os.path.isfile(whynotfile):
+                    continue
+
+                with open(whynotfile, 'r') as f:
+                    comment = parse_comment(f, entry)
+                    if len(comment) > 0:
+                        comment_entry(entry, comment)
+
+
+arg_parser = ArgumentParser(description="annotate all or some of the missing whynot entries")
+arg_parser.add_argument('-c', '--comment', metavar='FILE', type=str, help="a comment file")
+arg_parser.add_argument('-i', '--pdbid', metavar='ID', type=str, help="a pdbid to annotate")
+args = arg_parser.parse_args()
+
+databanks = None
+annotate_all = True
+annotate_pdbids = []
+
+
+if args.comment is not None:
+
+    annotate_from_file(args.comment)
+    annotate_all = False
+else:
+    # Just check all other sources of information...
+    _log.info('Check the files in the whynot comments directory')
+
+    for filename in os.listdir(settings.COMMENTS_DIRECTORY):
+        if filename.endswith('.txt'):
+            file_path = os.path.join(settings.COMMENTS_DIRECTORY, filename)
+            annotate_from_file(filepath)
+            os.rename(filepath, filepath + ".done")
+
+if args.pdbid is not None:
+    annotate_pdbids = [args.pdbid]
+    annotate_all = False
+
+
+if annotate_all:
+    update_comments()
+else:
+    update_comments(annotate_pdbids)

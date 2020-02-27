@@ -78,7 +78,7 @@ def parse_comment(file_, entry):
                 _log.error("Expecting comment on first line, got '{}'".format(line))
                 return ''
 
-            comment = lines[0][8:].strip()
+            comment = line[8:].strip()
         else:
             line = line.replace(' ','').replace('-', '_').strip()
             if line == '%s,%s' % (entry['databank_name'], entry['pdbid']):

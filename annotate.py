@@ -301,12 +301,13 @@ def update_comments(check_pdbids=None):
                 lines = f.readlines()
         else:
             hsspfile = tempfile.mktemp()
-            cmd = [settings.MKHSSP, '-a1', '-i', inputfile, '-o', hsspfile, '-d', settings.SPROT_FASTA, '-d', settings.TREMBL_FASTA]
+            cmd = [settings.MKHSSP, '-a1', '-m100', '-i', inputfile, '-o', hsspfile, '-d', settings.SPROT_FASTA, '-d', settings.TREMBL_FASTA]
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             try:
                 stdout, stderr = p.communicate(timeout=5)
             except subprocess.TimeoutExpired:
                 _log.error("timeout on {}".format(cmd))
+                p.kill()
                 continue
 
             if os.path.isfile(hsspfile):

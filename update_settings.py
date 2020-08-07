@@ -1,2 +1,2 @@
-MONGODB_URI = "mongodb://chelonium.cmbi.umcn.nl"
+MONGODB_URI = "mongodb://whynot2_mongo_1"
 MONGODB_DB_NAME = "whynot"

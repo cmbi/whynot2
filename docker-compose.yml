@@ -2,6 +2,8 @@ version: "3"
 
 services:
   web:
+    depends_on:
+      - mongo
     build:
       context: .
       dockerfile: Dockerfile
@@ -10,3 +12,8 @@ services:
     environment:
       - WHYNOT_SETTINGS=default_settings.py
     command: gunicorn -k gevent -b 0.0.0.0:15000 whynot_web.application:app
+
+  mongo:
+    image: mongo
+    volumes:
+      - '/srv/whynot/mongo:/data/db'

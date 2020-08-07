@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import sys,os,re,shutil
 
@@ -163,7 +163,7 @@ def crawl_lines (databank, filepath, lines):
             storage.insert('entries', entry)
 
 if not len(sys.argv) == 3:
-    print 'Usage: %s [databank name] [source]' % sys.argv[0]
+    print('Usage: %s [databank name] [source]' % sys.argv[0])
     sys.exit(0)
 
 databank_name = sys.argv [1]

@@ -62,25 +62,27 @@ class Storage(object):
         if self._db is None:
             raise Exception("Not connected to storage. Did you call connect()?")
 
-        if len(documents) == 0:
-            raise ValueError("Document list is empty. Nothing to insert.")
+        if type(documents) == list:
 
-        _log.info("Inserting documents into '{}'".format(collection))
-        return self._db[collection].insert(documents)
+            if len(documents) > 0:
+                return self._db[collection].insert_many(documents)
+        else:
+            _log.info("Inserting documents into '{}'".format(collection))
+            return self._db[collection].insert_one(documents)
 
     def update(self, collection, selector, options):
         if self._db is None:
             raise Exception("Not connected to storage. Did you call connect()?")
 
         _log.info("Updating document in '{}'".format(collection))
-        return self._db[collection].update(selector, options, upsert=True)
+        return self._db[collection].update_one(selector, options, upsert=True)
 
     def remove(self, collection, spec_or_id=None):
         if self._db is None:
             raise Exception("Not connected to storage. Did you call connect()?")
 
         _log.info("Removing documents from '{}'".format(collection))
-        return self._db[collection].remove(spec_or_id)
+        return self._db[collection].delete_one(spec_or_id)
 
     def aggregate(self, collection, stages):
         if self._db is None:
@@ -95,14 +97,14 @@ class Storage(object):
             raise Exception("Not connected to storage. Did you call connect()?")
 
         _log.info("Counting documents in '{}'".format(collection))
-        return self._db[collection].count(selector)
+        return self._db[collection].count_documents(selector)
 
     def find(self, collection, selector, projection=None, order=None):
         if self._db is None:
             raise Exception("Not connected to storage. Did you call connect()?")
 
         _log.info("Querying documents in '{}'".format(collection))
-        cursor = self._db[collection].find(selector,projection)
+        cursor = self._db[collection].find(selector, projection)
 
         if order:
             cursor = cursor.sort (order)
